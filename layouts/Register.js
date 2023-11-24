@@ -4,19 +4,19 @@ import { withRouter } from "next/router";
 
 // core components
 import EnterpriseNavbar from "components/Navbars/EnterpriseNavbar.js";
-import EnterpriseFooter from "components/Footers/EnterpriseFooter.js";
+import RegisterFooter from "components/Footers/RegisterFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 
 import routes from "routes.js";
 
-function Enterprise({ router, children }) {
+function Register({ router, children }) {
   const [sidenavOpen, setSidenavOpen] = React.useState(true);
   const getRoutes = (routes) => {
     return routes.map((prop, key) => {
       if (prop.collapse) {
         return getRoutes(prop.views);
       }
-      if (prop.layout === "/enterprise") {
+      if (prop.layout === "/register") {
         return (
           <Route
             path={prop.layout + prop.path}
@@ -73,7 +73,7 @@ function Enterprise({ router, children }) {
           brandText={getBrandText(router.pathname)}
         />
         {children}
-        <EnterpriseFooter />
+        <RegisterFooter />
       </div>
       {sidenavOpen ? (
         <div className="backdrop d-xl-none" onClick={toggleSidenav} />
@@ -82,4 +82,4 @@ function Enterprise({ router, children }) {
   );
 }
 
-export default withRouter(Enterprise);
+export default withRouter(Register);

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, Card, CardHeader, CardBody, FormGroup, Form, Input, Container, Row, Col } from "reactstrap";
 
-import Enterprise from "../../layouts/Enterprise";
+import Enterprise from "../../layouts/Register";
 import SimpleHeader from "../../components/Headers/SimpleHeader"
 
 function Dashboard() {

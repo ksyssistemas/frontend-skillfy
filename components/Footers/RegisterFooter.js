@@ -4,7 +4,7 @@ import React from "react";
 // reactstrap components
 import {  Container, Row, Col } from "reactstrap";
 
-function EnterpriseFooter() {
+function RegisterFooter() {
   return (
     <Container>
       <Row>
@@ -16,4 +16,4 @@ function EnterpriseFooter() {
   );
 }
 
-export default EnterpriseFooter;
+export default RegisterFooter;
