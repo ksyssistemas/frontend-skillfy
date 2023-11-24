@@ -7,10 +7,11 @@ import SimpleHeader from "../../components/Headers/SimpleHeader"
 function Dashboard() {
   const [formData, setFormData] = useState({
     name: '',
-    lastname: '',
+    lastName: '',
+    birthdate: '',
     email: '',
     password: '',
-    phone: ''
+    phoneNumber: ''
   });
 
   const handleInputChange = (fieldName, value) => {
@@ -21,7 +22,7 @@ function Dashboard() {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch('http://localhost:4008/administrator', {
+      const response = await fetch('http://localhost:4008/employee', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -32,11 +33,11 @@ function Dashboard() {
       if (response.ok) {
         setFormData({
           name: '',
-          lastname: '',
+          lastName: '',
           birthdate: '',
           email: '',
           password: '',
-          phone: ''
+          phoneNumber: ''
         });
         console.log('Data sent successfully!');
       } else {
@@ -50,11 +51,11 @@ function Dashboard() {
 
   return (
     <Form>
-      <SimpleHeader name="Admin" parentName="Ksys Sistemas" />
+      <SimpleHeader name="Funcionário" parentName="Ksys Sistemas" />
       <Container className="mt--6" fluid>
         <Card className="mb-4">
           <CardHeader>
-            <h3 className="mb-0">Cadastrar Admin</h3>
+            <h3 className="mb-0">Cadastrar Funcioário</h3>
           </CardHeader>
           <CardBody>
             <Row>
@@ -68,7 +69,7 @@ function Dashboard() {
                   </label>
                   <Input
                     id="example3cols1Input"
-                    placeholder="Nome do Admin"
+                    placeholder="Nome do Funcionário"
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
                     type="text"
@@ -86,8 +87,8 @@ function Dashboard() {
                   <Input
                     id="example3cols2Input"
                     placeholder="Sobrenome"
-                    value={formData.lastname}
-                    onChange={(e) => handleInputChange('lastname', e.target.value)}
+                    value={formData.lastName}
+                    onChange={(e) => handleInputChange('lastName', e.target.value)}
                     type="text"
                   />
                 </FormGroup>
@@ -103,8 +104,8 @@ function Dashboard() {
                   <Input
                     id="example3cols2Input"
                     placeholder="__/__/__"
-                    value={formData.bithdate}
-                    onChange={(e) => handleInputChange('lastname', e.target.value)}
+                    value={formData.birthdate}
+                    onChange={(e) => handleInputChange('birthdate', e.target.value)}
                     type="text"
                   />
                 </FormGroup>
@@ -151,13 +152,13 @@ function Dashboard() {
                     className="form-control-label"
                     htmlFor="example4cols2Input"
                   >
-                    WhatsApp
+                    Número de Contato
                   </label>
                   <Input
                     id="example4cols2Input"
                     placeholder="Número de contato"
-                    value={formData.phone} 
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    value={formData.phoneNumber} 
+                    onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
                     type="text"
                   />
                 </FormGroup>
