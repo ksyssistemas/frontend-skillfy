@@ -1,47 +1,93 @@
-import React from "react";
+import React, { useState } from "react";
+import { Button, Card, CardHeader, CardBody, FormGroup, Form, Input, Container, Row, Col } from "reactstrap";
 
-// layout for this page
-import Enterprise from "layouts/Enterprise.js";
-
-import SimpleHeader from "components/Headers/SimpleHeader.js";
-
-import {
-  Button,
-  Card,
-  CardHeader,
-  CardBody,
-  Label,
-  FormGroup,
-  Form,
-  Input,
-  Container,
-  Row,
-  Col,
-} from "reactstrap";
+import Enterprise from "../../layouts/Enterprise";
+import SimpleHeader from "../../components/Headers/SimpleHeader"
 
 function Dashboard() {
+  const [formData, setFormData] = useState({
+    name: '',
+    lastname: '',
+    email: '',
+    password: '',
+    phone: ''
+  });
+
+  const handleInputChange = (fieldName, value) => {
+    setFormData({ ...formData, [fieldName]: value });
+  };
+  
+  
+
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch('http://localhost:4008/administrator', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+  
+      if (response.ok) {
+        setFormData({
+          name: '',
+          lastname: '',
+          birthdate: '',
+          email: '',
+          password: '',
+          phone: ''
+        });
+        console.log('Data sent successfully!');
+      } else {
+        console.error('Error in response:', response.status);
+      }
+    } catch (error) {
+      console.error('Error in request:', error);
+    }
+  };
+  
 
   return (
-    <>
-     <SimpleHeader name="Empresa" parentName="Ksys Sistemas" />
+    <Form>
+      <SimpleHeader name="Admin" parentName="Ksys Sistemas" />
       <Container className="mt--6" fluid>
         <Card className="mb-4">
           <CardHeader>
-            <h3 className="mb-0">Cadastrar Empresa</h3>
+            <h3 className="mb-0">Cadastrar Admin</h3>
           </CardHeader>
           <CardBody>
             <Row>
-              <Col md="4" >
+              <Col md="6">
                 <FormGroup>
                   <label
                     className="form-control-label"
                     htmlFor="example3cols1Input"
                   >
-                    Nome da Empresa
+                    Nome
                   </label>
                   <Input
                     id="example3cols1Input"
-                    placeholder="Nome da empresa"
+                    placeholder="Nome do Admin"
+                    value={formData.name}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    type="text"
+                  />
+                </FormGroup>
+              </Col>
+              <Col md="6">
+                <FormGroup>
+                  <label
+                    className="form-control-label"
+                    htmlFor="example3cols2Input"
+                  >
+                    Sobrenome
+                  </label>
+                  <Input
+                    id="example3cols2Input"
+                    placeholder="Sobrenome"
+                    value={formData.lastname}
+                    onChange={(e) => handleInputChange('lastname', e.target.value)}
                     type="text"
                   />
                 </FormGroup>
@@ -52,11 +98,13 @@ function Dashboard() {
                     className="form-control-label"
                     htmlFor="example3cols2Input"
                   >
-                    Marca
+                    Data Aniversário
                   </label>
                   <Input
                     id="example3cols2Input"
-                    placeholder="Marca"
+                    placeholder="__/__/__"
+                    value={formData.bithdate}
+                    onChange={(e) => handleInputChange('lastname', e.target.value)}
                     type="text"
                   />
                 </FormGroup>
@@ -72,6 +120,8 @@ function Dashboard() {
                   <Input
                     id="example3cols3Input"
                     placeholder="Seu melhor e-mail"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
                     type="text"
                   />
                 </FormGroup>
@@ -89,6 +139,8 @@ function Dashboard() {
                   <Input
                     id="example4cols1Input"
                     placeholder="Senha do sistema"
+                    value={formData.password}
+                    onChange={(e) => handleInputChange('password', e.target.value)}
                     type="text"
                   />
                 </FormGroup>
@@ -104,50 +156,25 @@ function Dashboard() {
                   <Input
                     id="example4cols2Input"
                     placeholder="Número de contato"
+                    value={formData.phone} 
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
                     type="text"
                   />
                 </FormGroup>
               </Col>
-              <Col md="8" sm="6">
-
-                <div
-                    className="dropzone dropzone-single mb-3"
-                    id="dropzone-single"
-                >
-             
-                    <div className="fallback">
-                      <div className="custom-file">
-                        <input
-                          className="custom-file-input"
-                          id="projectCoverUploads"
-                          type="file"
-                        />
-                        <label
-                          className="custom-file-label"
-                          htmlFor="projectCoverUploads"
-                        >
-                          Choose file
-                        </label>
-                      </div>
-                    </div>
-
-                </div>
-   
-              </Col>
+              
             </Row>
             <Row>
               <Col md="8">
-                  <Button color="info" size="lg" type="button">
-                    Salvar 
-                  </Button>
+                <Button color="info" size="lg" type="button" onClick={handleSubmit}>
+                  Salvar
+                </Button>
               </Col>
-              
             </Row>
           </CardBody>
         </Card>
       </Container>
-
-    </>
+    </Form>
   );
 }
 
