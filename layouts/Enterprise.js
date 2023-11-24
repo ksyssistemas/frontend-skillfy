@@ -72,8 +72,7 @@ function Enterprise({ router, children }) {
           sidenavOpen={sidenavOpen}
           brandText={getBrandText(router.pathname)}
         />
-
-        
+        {children}
         <EnterpriseFooter />
       </div>
       {sidenavOpen ? (
