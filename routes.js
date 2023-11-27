@@ -17,7 +17,7 @@
 const routes = [
   {
     collapse: true,
-    name: "Cadastros",
+    name: "Registrations",
     icon: "ni ni-shop text-primary",
     state: "dashboardsCollapse",
     views: [
@@ -41,56 +41,56 @@ const routes = [
       },
     ],
   },
-  //{
-  //  collapse: true,
-  //  name: "Examples",
-  //  icon: "ni ni-ungroup text-orange",
-  //  state: "examplesCollapse",
-  //  views: [
-  //    {
-  //      path: "/pricing",
-  //      name: "Pricing",
-  //      miniName: "P",
-  //      layout: "/auth",
-  //    },
-  //    {
-  //      path: "/login",
-  //      name: "Login",
-  //      miniName: "L",
-  //      layout: "/auth",
-  //    },
-  //    {
-  //      path: "/register",
-  //      name: "Register",
-  //      miniName: "R",
-  //      layout: "/auth",
-  //    },
-  //    {
-  //      path: "/lock",
-  //      name: "Lock",
-  //      miniName: "L",
-  //      layout: "/auth",
-  //    },
-  //    {
-  //      path: "/timeline",
-  //      name: "Timeline",
-  //      miniName: "T",
-  //      layout: "/admin",
-  //    },
-  //    {
-  //      path: "/profile",
-  //      name: "Profile",
-  //      miniName: "P",
-  //      layout: "/admin",
-  //    },
-  //    {
-  //      path: "/rtl-support",
-  //      name: "RTL Support",
-  //      miniName: "RS",
-  //      layout: "/rtl",
-  //    },
-  //  ],
-  //},
+  {
+    collapse: true,
+    name: "Reports",
+    icon: "ni ni-ungroup text-orange",
+    state: "examplesCollapse",
+    views: [
+      {
+        path: "/admin",
+        name: "Admin",
+        miniName: "A",
+        layout: "/report",
+      },
+      //{
+      //  path: "/login",
+      //  name: "Login",
+      //  miniName: "L",
+      //  layout: "/auth",
+      //},
+      //{
+      //  path: "/register",
+      //  name: "Register",
+      //  miniName: "R",
+      //  layout: "/auth",
+      //},
+      //{
+      //  path: "/lock",
+      //  name: "Lock",
+      //  miniName: "L",
+      //  layout: "/auth",
+      //},
+      //{
+      //  path: "/timeline",
+      //  name: "Timeline",
+      //  miniName: "T",
+      //  layout: "/admin",
+      //},
+      //{
+      //  path: "/profile",
+      //  name: "Profile",
+      //  miniName: "P",
+      //  layout: "/admin",
+      //},
+      //{
+      //  path: "/rtl-support",
+      //  name: "RTL Support",
+      //  miniName: "RS",
+      //  layout: "/rtl",
+      //},
+    ],
+  },
   //{
   //  collapse: true,
   //  name: "Components",
