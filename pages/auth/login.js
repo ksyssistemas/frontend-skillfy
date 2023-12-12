@@ -47,17 +47,15 @@ function Login() {
       if (response.ok) {
         const data = await response.json();
 
-        console.log(data.role)
-
-        //if(data.role === 'administrator'){
-        //    window.location.href = 'http://localhost:3000/register/admin'
-        //}
-        //if(data.role === 'enterprises'){
-        //  window.location.href = 'http://localhost:3000/register/enterprise'
-        //}
-        //if(data.role === 'employee'){
-        //  window.location.href = 'http://localhost:3000/register/employee'
-        //}     
+        if(data.role === 'administrator'){
+            window.location.href = 'http://localhost:3000/register/admin'
+        }
+        if(data.role === 'enterprise'){
+          window.location.href = 'http://localhost:3000/register/enterprise'
+        }
+        if(data.role === 'employee'){
+          window.location.href = 'http://localhost:3000/register/employee'
+        }     
 
         
       } else {
