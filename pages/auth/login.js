@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import classnames from "classnames";
 // reactstrap components
 import {
+  Alert,
   Button,
   Card,
   CardHeader,
@@ -29,6 +30,8 @@ function Login() {
     password: '',
   });
 
+  const [erro, setErro] = useState('');
+
   const handleInputChange = (fieldName, value) => {
     setFormData({ ...formData, [fieldName]: value });
   };
@@ -46,25 +49,46 @@ function Login() {
   
       if (response.ok) {
         const data = await response.json();
-
-        if(data.role === 'administrator'){
-            window.location.href = 'http://localhost:3000/register/admin'
-        }
-        if(data.role === 'enterprise'){
-          window.location.href = 'http://localhost:3000/register/enterprise'
-        }
-        if(data.role === 'employee'){
-          window.location.href = 'http://localhost:3000/register/employee'
-        }     
-
+  
+        let redirectUrl = 'http://localhost:3000/register/';
         
+        // Verifica o papel (role) retornado e constrói a URL de redirecionamento com base no papel
+        switch (data.role) {
+          case 'administrator':
+            redirectUrl += 'admin';
+            break;
+          case 'enterprise':
+            redirectUrl += 'enterprise';
+            break;
+          case 'employee':
+            redirectUrl += 'employee';
+            break;
+          default:
+            // Se o papel não corresponder a nenhum dos casos acima, pode fornecer um redirecionamento padrão ou lidar com isso conforme necessário
+            redirectUrl = 'http://localhost:3000/default';
+        }
+  
+        // Adiciona o ID como parâmetro de consulta (query parameter) na URL de redirecionamento
+        redirectUrl += `?id=${data.data.id}`;
+  
+        window.location.href = redirectUrl;
       } else {
-        console.log('Erro na requisição:', response.statusText);
+        setErro(
+          <Alert color="danger" style={{ textAlign: 'center' }}>
+            <strong>Erro na requisição:</strong> Houve um problema ao processar sua solicitação.
+          </Alert>
+        );
       }
     } catch (error) {
-      console.error('Erro na requisição:', error);
+      setErro(
+        <Alert color="primary" style={{ textAlign: 'center' }} className="alert-sm">
+          <strong>Dados inválidos</strong>
+        </Alert>
+      );
+      //console.error('Erro na requisição:', error);
     }
   };
+  
   
 
 
@@ -110,6 +134,7 @@ function Login() {
                 {/** begin form */}
 
                 <Form role="form">
+                {erro && <p>{erro}</p>}
                   <FormGroup
                     className={classnames("mb-3", {
                       focused: focusedEmail,
