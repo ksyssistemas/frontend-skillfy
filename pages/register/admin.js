@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { BrowserRouter } from 'react-router-dom';
 import { Button, Card, CardHeader, CardBody, FormGroup, Form, Input, Container, Row, Col } from "reactstrap";
 
 import Enterprise from "../../layouts/Register";
@@ -49,7 +50,8 @@ function Dashboard() {
   
 
   return (
-    <Form>
+
+            <Form>
       <SimpleHeader name="Admin" parentName="Ksys Sistemas" />
       <Container className="mt--6" fluid>
         <Card className="mb-4">
@@ -105,7 +107,7 @@ function Dashboard() {
                     placeholder="__/__/__"
                     value={formData.bithdate}
                     onChange={(e) => handleInputChange('lastname', e.target.value)}
-                    type="text"
+                    type="date"
                   />
                 </FormGroup>
               </Col>
@@ -141,7 +143,7 @@ function Dashboard() {
                     placeholder="Senha do sistema"
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
-                    type="text"
+                    type="password"
                   />
                 </FormGroup>
               </Col>
@@ -151,7 +153,7 @@ function Dashboard() {
                     className="form-control-label"
                     htmlFor="example4cols2Input"
                   >
-                    WhatsApp
+                    Número de Contato
                   </label>
                   <Input
                     id="example4cols2Input"
@@ -167,7 +169,9 @@ function Dashboard() {
             <Row>
               <Col md="8">
                 <Button color="info" size="lg" type="button" onClick={handleSubmit}>
-                  Salvar
+                  <span className="btn-inner--icon">
+                  </span>
+                  <span className="btn-inner--text">Salvar</span>
                 </Button>
               </Col>
             </Row>
@@ -175,6 +179,9 @@ function Dashboard() {
         </Card>
       </Container>
     </Form>
+    
+
+    
   );
 }
 
