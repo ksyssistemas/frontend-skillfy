@@ -28,6 +28,12 @@ const routes = [
         layout: "/register",
       },
       {
+        path: "/profile",
+        name: "Profile",
+        miniName: "A",
+        layout: "/register",
+      },
+      {
         path: "/enterprise",
         name: "Empresa",
         miniName: "E",

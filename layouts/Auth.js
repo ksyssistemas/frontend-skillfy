@@ -33,10 +33,11 @@ function Auth({ children }) {
   return (
     <>
       <div className="main-content">
-        <AuthNavbar />
+        {/*<AuthNavbar /> */}
         {children}
       </div>
-      <AuthFooter />
+      {/** <AuthFooter />*/}
+      
     </>
   );
 }

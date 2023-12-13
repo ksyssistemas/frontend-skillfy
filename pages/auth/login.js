@@ -55,7 +55,7 @@ function Login() {
         // Verifica o papel (role) retornado e constrói a URL de redirecionamento com base no papel
         switch (data.role) {
           case 'administrator':
-            redirectUrl += 'admin';
+            redirectUrl += 'profile';
             break;
           case 'enterprise':
             redirectUrl += 'enterprise';
@@ -98,7 +98,7 @@ function Login() {
     <>
       <AuthHeader
         title="Bem-vindo!"
-        lead="Use these awesome forms to login or create new account in your project for free."
+        lead="Conecte-se de forma verdadeira com as pessoas e desperte o seu maior potencial."
       />
       <Container className="mt--8 pb-5">
         <Row className="justify-content-center">

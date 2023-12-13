@@ -6,6 +6,7 @@ import Enterprise from "../../layouts/Register";
 import SimpleHeader from "../../components/Headers/SimpleHeader"
 
 function Dashboard() {
+
   const [formData, setFormData] = useState({
     name: '',
     lastname: '',
@@ -14,12 +15,12 @@ function Dashboard() {
     phone: ''
   });
 
+  //const [parentName, setParentName] = useState('');
+
   const handleInputChange = (fieldName, value) => {
     setFormData({ ...formData, [fieldName]: value });
   };
   
-  
-
   const handleSubmit = async () => {
     try {
       const response = await fetch('http://localhost:4008/administrator', {
@@ -29,6 +30,8 @@ function Dashboard() {
         },
         body: JSON.stringify(formData),
       });
+
+      console.log(response)
   
       if (response.ok) {
         setFormData({
@@ -52,7 +55,7 @@ function Dashboard() {
   return (
 
             <Form>
-      <SimpleHeader name="Admin" parentName="Ksys Sistemas" />
+      <SimpleHeader name="Admin" parentName="" />
       <Container className="mt--6" fluid>
         <Card className="mb-4">
           <CardHeader>
