@@ -17,7 +17,7 @@
 const routes = [
   {
     collapse: true,
-    name: "Registrations",
+    name: "Cadastro",
     icon: "ni ni-shop text-primary",
     state: "dashboardsCollapse",
     views: [
@@ -41,7 +41,7 @@ const routes = [
       },
       {
         path: "/employee",
-        name: "Funcionário",
+        name: "Colaborador",
         miniName: "F",
         layout: "/register",
       },
@@ -49,7 +49,7 @@ const routes = [
   },
   {
     collapse: true,
-    name: "Reports",
+    name: "Lista",
     icon: "ni ni-ungroup text-orange",
     state: "examplesCollapse",
     views: [

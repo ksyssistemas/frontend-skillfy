@@ -55,7 +55,7 @@ function Dashboard() {
   return (
 
             <Form>
-      <SimpleHeader name="Admin" parentName="" />
+      <SimpleHeader name="Admin" parentName="Ksys Sistemas" />
       <Container className="mt--6" fluid>
         <Card className="mb-4">
           <CardHeader>

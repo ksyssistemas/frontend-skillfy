@@ -51,11 +51,11 @@ function Dashboard() {
 
   return (
     <Form>
-      <SimpleHeader name="Funcionário" parentName="Ksys Sistemas" />
+      <SimpleHeader name="Colaborador" parentName="Ksys Sistemas" />
       <Container className="mt--6" fluid>
         <Card className="mb-4">
           <CardHeader>
-            <h3 className="mb-0">Cadastrar Funcioário</h3>
+            <h3 className="mb-0">Cadastrar Colaborador</h3>
           </CardHeader>
           <CardBody>
             <Row>
@@ -69,7 +69,7 @@ function Dashboard() {
                   </label>
                   <Input
                     id="example3cols1Input"
-                    placeholder="Nome do Funcionário"
+                    placeholder="Nome do Colaborador"
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
                     type="text"
