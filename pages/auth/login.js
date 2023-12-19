@@ -37,7 +37,6 @@ function Login() {
   };
 
   const handleSubmit = async () => {
-
     try {
       const response = await fetch('http://localhost:3006/auth/signin', {
         method: 'POST',
@@ -51,8 +50,7 @@ function Login() {
         const data = await response.json();
   
         let redirectUrl = 'http://localhost:3000/register/';
-        
-        // Verifica o papel (role) retornado e constrói a URL de redirecionamento com base no papel
+  
         switch (data.role) {
           case 'administrator':
             redirectUrl += 'profile';
@@ -64,30 +62,30 @@ function Login() {
             redirectUrl += 'employee';
             break;
           default:
-            // Se o papel não corresponder a nenhum dos casos acima, pode fornecer um redirecionamento padrão ou lidar com isso conforme necessário
             redirectUrl = 'http://localhost:3000/default';
         }
   
-        // Adiciona o ID como parâmetro de consulta (query parameter) na URL de redirecionamento
         redirectUrl += `?id=${data.data.id}`;
   
         window.location.href = redirectUrl;
       } else {
-        setErro(
-          <Alert color="danger" style={{ textAlign: 'center' }}>
-            <strong>Erro na requisição:</strong> Houve um problema ao processar sua solicitação.
-          </Alert>
-        );
+        if (response.status === 404) {
+          setErro(
+            <Alert color="warning" style={{ textAlign: 'center' }}>
+              <strong>Usuário não encontrado</strong>
+            </Alert>
+          );
+        } 
       }
     } catch (error) {
       setErro(
-        <Alert color="primary" style={{ textAlign: 'center' }} className="alert-sm">
-          <strong>Dados inválidos</strong>
+        <Alert color="danger" style={{ textAlign: 'center' }}>
+          <strong>Erro na requisição:</strong> Houve um problema ao processar sua solicitação.
         </Alert>
       );
-      //console.error('Erro na requisição:', error);
     }
   };
+  
   
   
 

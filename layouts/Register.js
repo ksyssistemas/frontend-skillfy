@@ -3,7 +3,7 @@ import React from "react";
 import { withRouter } from "next/router";
 
 // core components
-import EnterpriseNavbar from "components/Navbars/EnterpriseNavbar.js";
+import EnterpriseNavbar from "components/Navbars/RegisterNavbar.js";
 import RegisterFooter from "components/Footers/RegisterFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 

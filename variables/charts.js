@@ -416,7 +416,7 @@ let chartExample2 = {
     },
   },
   data: {
-    labels: ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    labels: ["Jul", "Ago", "Set", "Out", "Nov", "Dez"],
     datasets: [
       {
         label: "Sales",
