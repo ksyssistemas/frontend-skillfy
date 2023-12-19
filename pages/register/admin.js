@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter } from 'react-router-dom';
 import { Button, Card, CardHeader, CardBody, FormGroup, Form, Input, Container, Row, Col } from "reactstrap";
 
@@ -6,6 +6,8 @@ import Enterprise from "../../layouts/Register";
 import SimpleHeader from "../../components/Headers/SimpleHeader"
 
 function Dashboard() {
+
+  const [administratorData, setAdministratorData] = useState({});
 
   const [formData, setFormData] = useState({
     name: '',
@@ -20,6 +22,30 @@ function Dashboard() {
   const handleInputChange = (fieldName, value) => {
     setFormData({ ...formData, [fieldName]: value });
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:4008/administrator/email/adm1@gmail.com', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setAdministratorData(data);
+        } else {
+          console.error('Error in response:', response.status);
+        }
+      } catch (error) {
+        console.error('Error in request:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
   
   const handleSubmit = async () => {
     try {
@@ -30,8 +56,6 @@ function Dashboard() {
         },
         body: JSON.stringify(formData),
       });
-
-      console.log(response)
   
       if (response.ok) {
         setFormData({
@@ -55,7 +79,7 @@ function Dashboard() {
   return (
 
             <Form>
-      <SimpleHeader name="Admin" parentName="Ksys Sistemas" />
+      <SimpleHeader name="Admin" parentName={administratorData.name || 'Ksys Sistemas'} />
       <Container className="mt--6" fluid>
         <Card className="mb-4">
           <CardHeader>
@@ -108,8 +132,8 @@ function Dashboard() {
                   <Input
                     id="example3cols2Input"
                     placeholder="__/__/__"
-                    value={formData.bithdate}
-                    onChange={(e) => handleInputChange('lastname', e.target.value)}
+                    value={formData.birthdate}
+                    onChange={(e) => handleInputChange('birthdate', e.target.value)}
                     type="date"
                   />
                 </FormGroup>
