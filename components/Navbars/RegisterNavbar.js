@@ -1,9 +1,24 @@
-import React from "react";
-import Link from "next/link";
+import React, { useState, useEffect } from "react";
+// nodejs library that concatenates classes
+import classnames from "classnames";
+// nodejs library to set properties for components
+import PropTypes from "prop-types";
 // reactstrap components
 import {
-  UncontrolledCollapse,
-  NavbarBrand,
+  Collapse,
+  DropdownMenu,
+  DropdownItem,
+  UncontrolledDropdown,
+  DropdownToggle,
+  FormGroup,
+  Form,
+  Input,
+  InputGroupAddon,
+  InputGroupText,
+  InputGroup,
+  ListGroupItem,
+  ListGroup,
+  Media,
   Navbar,
   NavItem,
   NavLink,
@@ -11,200 +26,458 @@ import {
   Container,
   Row,
   Col,
-  UncontrolledTooltip,
-  Button,
 } from "reactstrap";
 
-function RegisterNavbar() {
+function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
+  // function that on mobile devices makes the search open
+  const openSearch = () => {
+    document.body.classList.add("g-navbar-search-showing");
+    setTimeout(function () {
+      document.body.classList.remove("g-navbar-search-showing");
+      document.body.classList.add("g-navbar-search-show");
+    }, 150);
+    setTimeout(function () {
+      document.body.classList.add("g-navbar-search-shown");
+    }, 300);
+  };
+  // function that on mobile devices makes the search close
+  const closeSearch = () => {
+    document.body.classList.remove("g-navbar-search-shown");
+    setTimeout(function () {
+      document.body.classList.remove("g-navbar-search-show");
+      document.body.classList.add("g-navbar-search-hiding");
+    }, 150);
+    setTimeout(function () {
+      document.body.classList.remove("g-navbar-search-hiding");
+      document.body.classList.add("g-navbar-search-hidden");
+    }, 300);
+    setTimeout(function () {
+      document.body.classList.remove("g-navbar-search-hidden");
+    }, 500);
+  };
+
+  const [administratorData, setAdministratorData] = useState({});
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:4008/administrator/email/adm1@gmail.com', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setAdministratorData(data);
+        } else {
+          console.error('Error in response:', response.status);
+        }
+      } catch (error) {
+        console.error('Error in request:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <>
       <Navbar
-        className="navbar-horizontal navbar-main navbar-dark bg-info"
-        expand="lg"
-        id="navbar-main"
+        className={classnames(
+          "navbar-top navbar-expand border-bottom",
+          { "navbar-dark bg-dark": theme === "dark" },
+          { "navbar-light bg-secondary": theme === "light" }
+        )}
       >
-        <Container>
-          <Link href="/">
-            <span>
-              <NavbarBrand href="#pablo">
-                <img
-                  alt="..."
-                  src={require("assets/img/brand/nextjs_argon_white.png")}
-                />
-              </NavbarBrand>
-            </span>
-          </Link>
-          <button
-            aria-controls="navbar-collapse"
-            aria-expanded={false}
-            aria-label="Toggle navigation"
-            className="navbar-toggler"
-            data-target="#navbar-collapse"
-            data-toggle="collapse"
-            id="navbar-collapse"
-            type="button"
-          >
-            <span className="navbar-toggler-icon" />
-          </button>
-          <UncontrolledCollapse
-            className="navbar-custom-collapse"
-            navbar
-            toggler="#navbar-collapse"
-          >
-            <div className="navbar-collapse-header">
-              <Row>
-                <Col className="collapse-brand" xs="6">
-                  <Link href="/admin/dashboard">
-                    <img alt="..." src={require("assets/img/brand/blue.png")} />
-                  </Link>
-                </Col>
-                <Col className="collapse-close" xs="6">
-                  <button
-                    aria-controls="navbar-collapse"
-                    aria-expanded={false}
-                    aria-label="Toggle navigation"
-                    className="navbar-toggler"
-                    data-target="#navbar-collapse"
-                    data-toggle="collapse"
-                    id="navbar-collapse"
-                    type="button"
-                  >
-                    <span />
-                    <span />
-                  </button>
-                </Col>
-              </Row>
-            </div>
-            <Nav className="mr-auto" navbar>
-              <NavItem>
-                <Link href="/enterprise/dashboard">
-                  <NavLink href="#pablo">
-                    <span className="nav-link-inner--text">Dashboard</span>
-                  </NavLink>
-                </Link>
-              </NavItem>
-              <NavItem>
-                <Link href="/auth/pricing">
-                  <NavLink href="#pablo">
-                    <span className="nav-link-inner--text">Preços</span>
-                  </NavLink>
-                </Link>
-              </NavItem>
-              <NavItem>
-                <Link href="/auth/login">
-                  <NavLink href="#pablo">
-                    <span className="nav-link-inner--text">Login</span>
-                  </NavLink>
-                </Link>
-              </NavItem>
-              <NavItem>
-                <Link href="/auth/register">
-                  <NavLink href="#pablo">
-                    <span className="nav-link-inner--text">Cadastro</span>
-                  </NavLink>
-                </Link>
-              </NavItem>
-              <NavItem>
-                <Link href="/auth/lock">
-                  <NavLink href="#pablo">
-                    <span className="nav-link-inner--text">Travar</span>
-                  </NavLink>
-                </Link>
-              </NavItem>
-            </Nav>
-            <hr className="d-lg-none" />
-            <Nav className="align-items-lg-center ml-lg-auto" navbar>
-              <NavItem>
-                <NavLink
-                  className="nav-link-icon"
-                  href="https://www.facebook.com"
-                  id="tooltip601201423"
-                  target="_blank"
-                >
-                  <i className="fab fa-facebook-square" />
-                  <span className="nav-link-inner--text d-lg-none">
-                    Facebook
-                  </span>
-                </NavLink>
-                <UncontrolledTooltip delay={0} target="tooltip601201423">
-                Curta-nos no Facebook
-                </UncontrolledTooltip>
-              </NavItem>
-              <NavItem>
-                <NavLink
-                  className="nav-link-icon"
-                  href="https://www.instagram.com"
-                  id="tooltip871243015"
-                  target="_blank"
-                >
-                  <i className="fab fa-instagram" />
-                  <span className="nav-link-inner--text d-lg-none">
-                    Instagram
-                  </span>
-                </NavLink>
-                <UncontrolledTooltip delay={0} target="tooltip871243015">
-                  Siga-nos no Instagram
-                </UncontrolledTooltip>
-              </NavItem>
-              <NavItem>
-                <NavLink
-                  className="nav-link-icon"
-                  href="https://twitter.com"
-                  id="tooltip366258619"
-                  target="_blank"
-                >
-                  <i className="fab fa-twitter-square" />
-                  <span className="nav-link-inner--text d-lg-none">
-                    Twitter
-                  </span>
-                </NavLink>
-                <UncontrolledTooltip delay={0} target="tooltip366258619">
-                  Siga-nos no Twitter
-                </UncontrolledTooltip>
-              </NavItem>
-
-
-                {/**Begin:GitHub 
-              <NavItem>
-                <NavLink
-                  className="nav-link-icon"
-                  href="https://github.com/creativetimofficial?ref=creative-tim"
-                  id="tooltip931502898"
-                  target="_blank"
-                >
-                  <i className="fab fa-github" />
-                  <span className="nav-link-inner--text d-lg-none">Github</span>
-                </NavLink>
+        <Container fluid>
+          <Collapse navbar isOpen={true}>
+            <Form
+              className={classnames(
+                "navbar-search form-inline mr-sm-3",
+                { "navbar-search-light": theme === "dark" },
+                { "navbar-search-dark": theme === "light" }
+              )}
+            >
+              <FormGroup className="mb-0">
+                <InputGroup className="input-group-alternative input-group-merge">
+                  
+                   <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <i className="fas fa-search" />
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  
                 
-                <UncontrolledTooltip delay={0} target="tooltip931502898">
-                  Star us on Github
-                </UncontrolledTooltip>
-              </NavItem>
-              End::GitHub*/}
+                  <Input placeholder="Search" type="text" />
+                </InputGroup>
+              </FormGroup>
+              <button
+                aria-label="Close"
+                className="close"
+                type="button"
+                onClick={closeSearch}
+              >
+                <span aria-hidden={true}>×</span>
+              </button>
+            </Form>
 
-
-                {/**Begin::Purchase now
-              <NavItem className="d-none d-lg-block ml-lg-4">
-                <Button
-                  className="btn-neutral btn-icon"
-                  color="default"
-                  href="https://www.creative-tim.com/product/nextjs-argon-dashboard-pro?ref=njsadp-index-navbar"
-                  target="_blank"
+            <Nav className="align-items-center ml-md-auto" navbar>
+              <NavItem className="d-xl-none">
+                <div
+                  className={classnames(
+                    "pr-3 sidenav-toggler",
+                    { active: sidenavOpen },
+                    { "sidenav-toggler-dark": theme === "dark" }
+                  )}
+                  onClick={toggleSidenav}
                 >
-                  <span className="btn-inner--icon">
-                    <i className="fas fa-shopping-cart mr-2" />
-                  </span>
-                  <span className="nav-link-inner--text">Purchase now</span>
-                </Button>
+                  <div className="sidenav-toggler-inner">
+                    <i className="sidenav-toggler-line" />
+                    <i className="sidenav-toggler-line" />
+                    <i className="sidenav-toggler-line" />
+                  </div>
+                </div>
               </NavItem>
-                End::Purchase now  */}
-              
+              <NavItem className="d-sm-none">
+                <NavLink onClick={openSearch}>
+                  <i className="ni ni-zoom-split-in" />
+                </NavLink>
+              </NavItem>
+              <UncontrolledDropdown nav>
+                <DropdownToggle className="nav-link" color="" tag="a">
+                  <i className="ni ni-bell-55" />
+                </DropdownToggle>
+                <DropdownMenu
+                  className="dropdown-menu-xl py-0 overflow-hidden"
+                  right
+                >
+                  <div className="px-3 py-3">
+                    <h6 className="text-sm text-muted m-0">
+                      Você tem <strong className="text-info">13</strong>{" "}
+                      notificações
+                    </h6>
+                  </div>
+
+                  <ListGroup flush>
+                    <ListGroupItem
+                      className="list-group-item-action"
+                      href="#pablo"
+                      onClick={(e) => e.preventDefault()}
+                      tag="a"
+                    >
+                      <Row className="align-items-center">
+                        <Col className="col-auto">
+                          <img
+                            alt="..."
+                            className="avatar rounded-circle"
+                            src={require("assets/img/theme/team-1.jpg")}
+                          />
+                        </Col>
+                        <div className="col ml--2">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div>
+                              <h4 className="mb-0 text-sm">John Snow</h4>
+                            </div>
+                            <div className="text-right text-muted">
+                              <small>2 hrs ago</small>
+                            </div>
+                          </div>
+                          <p className="text-sm mb-0">
+                            Let's meet at Starbucks at 11:30. Wdyt?
+                          </p>
+                        </div>
+                      </Row>
+                    </ListGroupItem>
+                    <ListGroupItem
+                      className="list-group-item-action"
+                      href="#pablo"
+                      onClick={(e) => e.preventDefault()}
+                      tag="a"
+                    >
+                      <Row className="align-items-center">
+                        <Col className="col-auto">
+                          <img
+                            alt="..."
+                            className="avatar rounded-circle"
+                            src={require("assets/img/theme/team-2.jpg")}
+                          />
+                        </Col>
+                        <div className="col ml--2">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div>
+                              <h4 className="mb-0 text-sm">John Snow</h4>
+                            </div>
+                            <div className="text-right text-muted">
+                              <small>3 hrs ago</small>
+                            </div>
+                          </div>
+                          <p className="text-sm mb-0">
+                            A new issue has been reported for Argon.
+                          </p>
+                        </div>
+                      </Row>
+                    </ListGroupItem>
+                    <ListGroupItem
+                      className="list-group-item-action"
+                      href="#pablo"
+                      onClick={(e) => e.preventDefault()}
+                      tag="a"
+                    >
+                      <Row className="align-items-center">
+                        <Col className="col-auto">
+                          <img
+                            alt="..."
+                            className="avatar rounded-circle"
+                            src={require("assets/img/theme/team-3.jpg")}
+                          />
+                        </Col>
+                        <div className="col ml--2">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div>
+                              <h4 className="mb-0 text-sm">{administratorData.name}</h4>
+                            </div>
+                            <div className="text-right text-muted">
+                              <small>5 hrs ago</small>
+                            </div>
+                          </div>
+                          <p className="text-sm mb-0">
+                            Your posts have been liked a lot.
+                          </p>
+                        </div>
+                      </Row>
+                    </ListGroupItem>
+                    <ListGroupItem
+                      className="list-group-item-action"
+                      href="#pablo"
+                      onClick={(e) => e.preventDefault()}
+                      tag="a"
+                    >
+                      <Row className="align-items-center">
+                        <Col className="col-auto">
+                          <img
+                            alt="..."
+                            className="avatar rounded-circle"
+                            src={require("assets/img/theme/team-4.jpg")}
+                          />
+                        </Col>
+                        <div className="col ml--2">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div>
+                              <h4 className="mb-0 text-sm">John Snow</h4>
+                            </div>
+                            <div className="text-right text-muted">
+                              <small>2 hrs ago</small>
+                            </div>
+                          </div>
+                          <p className="text-sm mb-0">
+                            Let's meet at Starbucks at 11:30. Wdyt?
+                          </p>
+                        </div>
+                      </Row>
+                    </ListGroupItem>
+                    <ListGroupItem
+                      className="list-group-item-action"
+                      href="#pablo"
+                      onClick={(e) => e.preventDefault()}
+                      tag="a"
+                    >
+                      <Row className="align-items-center">
+                        <Col className="col-auto">
+                          <img
+                            alt="..."
+                            className="avatar rounded-circle"
+                            src={require("assets/img/theme/team-5.jpg")}
+                          />
+                        </Col>
+                        <div className="col ml--2">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div>
+                              <h4 className="mb-0 text-sm">{administratorData.name}</h4>
+                            </div>
+                            <div className="text-right text-muted">
+                              <small>3 hrs ago</small>
+                            </div>
+                          </div>
+                          <p className="text-sm mb-0">
+                            A new issue has been reported for Argon.
+                          </p>
+                        </div>
+                      </Row>
+                    </ListGroupItem>
+                  </ListGroup>
+
+                  <DropdownItem
+                    className="text-center text-info font-weight-bold py-3"
+                    href="#pablo"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    ver tudo
+                  </DropdownItem>
+                </DropdownMenu>
+              </UncontrolledDropdown>
+              <UncontrolledDropdown nav>
+                <DropdownToggle className="nav-link" color="" tag="a">
+                  <i className="ni ni-ungroup" />
+                </DropdownToggle>
+                <DropdownMenu
+                  className="dropdown-menu-lg dropdown-menu-dark bg-default"
+                  right
+                >
+                  <Row className="shortcuts px-4">
+                    <Col
+                      className="shortcut-item"
+                      href="#pablo"
+                      onClick={(e) => e.preventDefault()}
+                      xs="4"
+                      tag="a"
+                    >
+                      <span className="shortcut-media avatar rounded-circle bg-gradient-red">
+                        <i className="ni ni-calendar-grid-58" />
+                      </span>
+                      <small>Agenda</small>
+                    </Col>
+                    <Col
+                      className="shortcut-item"
+                      href="#pablo"
+                      onClick={(e) => e.preventDefault()}
+                      xs="4"
+                      tag="a"
+                    >
+                      <span className="shortcut-media avatar rounded-circle bg-gradient-orange">
+                        <i className="ni ni-email-83" />
+                      </span>
+                      <small>Email</small>
+                    </Col>
+                    <Col
+                      className="shortcut-item"
+                      href="#pablo"
+                      onClick={(e) => e.preventDefault()}
+                      xs="4"
+                      tag="a"
+                    >
+                      <span className="shortcut-media avatar rounded-circle bg-gradient-info">
+                        <i className="ni ni-credit-card" />
+                      </span>
+                      <small>Pagamentos</small>
+                    </Col>
+                    <Col
+                      className="shortcut-item"
+                      href="#pablo"
+                      onClick={(e) => e.preventDefault()}
+                      xs="4"
+                      tag="a"
+                    >
+                      <span className="shortcut-media avatar rounded-circle bg-gradient-green">
+                        <i className="ni ni-books" />
+                      </span>
+                      <small>Relatórios</small>
+                    </Col>
+                    <Col
+                      className="shortcut-item"
+                      href="#pablo"
+                      onClick={(e) => e.preventDefault()}
+                      xs="4"
+                      tag="a"
+                    >
+                      <span className="shortcut-media avatar rounded-circle bg-gradient-purple">
+                        <i className="ni ni-pin-3" />
+                      </span>
+                      <small>Mapas</small>
+                    </Col>
+                    <Col
+                      className="shortcut-item"
+                      href="#pablo"
+                      onClick={(e) => e.preventDefault()}
+                      xs="4"
+                      tag="a"
+                    >
+                      <span className="shortcut-media avatar rounded-circle bg-gradient-yellow">
+                        <i className="ni ni-basket" />
+                      </span>
+                      <small>Planos</small>
+                    </Col>
+                  </Row>
+                </DropdownMenu>
+              </UncontrolledDropdown>
             </Nav>
-          </UncontrolledCollapse>
+            <Nav className="align-items-center ml-auto ml-md-0" navbar>
+              <UncontrolledDropdown nav>
+                <DropdownToggle className="nav-link pr-0" color="" tag="a">
+                  <Media className="align-items-center">
+                    <span className="avatar avatar-sm rounded-circle">
+                      <img
+                        alt="..."
+                        src={require("assets/img/theme/team-4.jpg")}
+                      />
+                    </span>
+                    <Media className="ml-2 d-none d-lg-block">
+                      <span className="mb-0 text-sm font-weight-bold">
+                      {administratorData.name} 
+                      </span>
+                    </Media>
+                  </Media>
+                </DropdownToggle>
+                <DropdownMenu right>
+                  <DropdownItem className="noti-title" header tag="div">
+                    <h6 className="text-overflow m-0">Bem Vindo!</h6>
+                  </DropdownItem>
+                  <DropdownItem
+                    href="#pablo"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <i className="ni ni-single-02" />
+                    <span>Perfil</span>
+                  </DropdownItem>
+                  <DropdownItem
+                    href="#pablo"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <i className="ni ni-settings-gear-65" />
+                    <span>Configurações</span>
+                  </DropdownItem>
+                  <DropdownItem
+                    href="#pablo"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <i className="ni ni-calendar-grid-58" />
+                    <span>Agenda</span>
+                  </DropdownItem>
+                  <DropdownItem
+                    href="#pablo"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <i className="ni ni-support-16" />
+                    <span>Suporte</span>
+                  </DropdownItem>
+                  <DropdownItem divider />
+                  <DropdownItem
+                    href="#pablo"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <i className="ni ni-user-run" />
+                    <span>Sair</span>
+                  </DropdownItem>
+                </DropdownMenu>
+              </UncontrolledDropdown>
+            </Nav>
+          </Collapse>
         </Container>
       </Navbar>
     </>
   );
 }
+
+RegisterNavbar.defaultProps = {
+  toggleSidenav: () => {},
+  sidenavOpen: false,
+  theme: "dark",
+};
+RegisterNavbar.propTypes = {
+  toggleSidenav: PropTypes.func,
+  sidenavOpen: PropTypes.bool,
+  theme: PropTypes.oneOf(["dark", "light"]),
+};
 
 export default RegisterNavbar;

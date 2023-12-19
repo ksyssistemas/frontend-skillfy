@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 // node.js library that concatenates classes (strings)
 import classnames from "classnames";
 // javascipt plugin for creating charts
@@ -55,9 +55,11 @@ function Dashboard() {
   if (typeof window !== "undefined" && window.Chart) {
     parseOptions(Chart, chartOptions());
   }
+
+
   return (
     <>
-      <CardsHeader name="Default" parentName="Dashboard" />
+      <CardsHeader name="Admin"  parentName="Dashboard" />
       <Container className="mt--6" fluid>
         <Row>
           <Col xl="0">
