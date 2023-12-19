@@ -1,19 +1,4 @@
-/*!
 
-=========================================================
-* NextJS Argon Dashboard PRO - v1.1.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/nextjs-argon-dashboard-pro
-* Copyright 2021 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
 
 // reactstrap components
@@ -35,9 +20,9 @@ import {
   Col,
 } from "reactstrap";
 // layout for this page
-import Admin from "layouts/Admin.js";
+import Employee from "layouts/Employee.js";
 // core components
-import ProfileHeader from "components/Headers/ProfileHeader.js";
+import ProfileHeader from "components/Headers/ProfileEmployeeHeader.js";
 
 function Profile() {
   return (
@@ -333,7 +318,7 @@ function Profile() {
               <CardHeader>
                 <Row className="align-items-center">
                   <Col xs="8">
-                    <h3 className="mb-0">Edit profile</h3>
+                    <h3 className="mb-0">Editar Perfil</h3>
                   </Col>
                   <Col className="text-right" xs="4">
                     <Button
@@ -350,7 +335,7 @@ function Profile() {
               <CardBody>
                 <Form>
                   <h6 className="heading-small text-muted mb-4">
-                    User information
+                  Informação do usuário
                   </h6>
                   <div className="pl-lg-4">
                     <Row>
@@ -376,7 +361,7 @@ function Profile() {
                             className="form-control-label"
                             htmlFor="input-email"
                           >
-                            Email address
+                            Email 
                           </label>
                           <Input
                             id="input-email"
@@ -393,7 +378,7 @@ function Profile() {
                             className="form-control-label"
                             htmlFor="input-first-name"
                           >
-                            First name
+                            Nome
                           </label>
                           <Input
                             defaultValue="Lucky"
@@ -409,7 +394,7 @@ function Profile() {
                             className="form-control-label"
                             htmlFor="input-last-name"
                           >
-                            Last name
+                            Sobrenome
                           </label>
                           <Input
                             defaultValue="Jesse"
@@ -424,7 +409,7 @@ function Profile() {
                   <hr className="my-4" />
 
                   <h6 className="heading-small text-muted mb-4">
-                    Contact information
+                    Informações de contato
                   </h6>
                   <div className="pl-lg-4">
                     <Row>
@@ -434,7 +419,7 @@ function Profile() {
                             className="form-control-label"
                             htmlFor="input-address"
                           >
-                            Address
+                            Rua
                           </label>
                           <Input
                             defaultValue="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09"
@@ -452,12 +437,12 @@ function Profile() {
                             className="form-control-label"
                             htmlFor="input-city"
                           >
-                            City
+                            Cidade
                           </label>
                           <Input
                             defaultValue="New York"
                             id="input-city"
-                            placeholder="City"
+                            placeholder="Cidade"
                             type="text"
                           />
                         </FormGroup>
@@ -468,12 +453,12 @@ function Profile() {
                             className="form-control-label"
                             htmlFor="input-country"
                           >
-                            Country
+                            Pais
                           </label>
                           <Input
                             defaultValue="United States"
                             id="input-country"
-                            placeholder="Country"
+                            placeholder="Pais"
                             type="text"
                           />
                         </FormGroup>
@@ -484,7 +469,7 @@ function Profile() {
                             className="form-control-label"
                             htmlFor="input-country"
                           >
-                            Postal code
+                            Cep
                           </label>
                           <Input
                             id="input-postal-code"
@@ -497,15 +482,15 @@ function Profile() {
                   </div>
                   <hr className="my-4" />
 
-                  <h6 className="heading-small text-muted mb-4">About me</h6>
+                  <h6 className="heading-small text-muted mb-4">Sobre mim</h6>
                   <div className="pl-lg-4">
                     <FormGroup>
-                      <label className="form-control-label">About Me</label>
+                      <label className="form-control-label">Sobre mim</label>
                       <Input
-                        placeholder="A few words about you ..."
+                        placeholder="Uma breve descrição sobre você"
                         rows="4"
                         type="textarea"
-                        defaultValue="A beautiful premium dashboard for Bootstrap 4."
+                        defaultValue="Uma breve descrição sobre você"
                       />
                     </FormGroup>
                   </div>
@@ -519,6 +504,6 @@ function Profile() {
   );
 }
 
-Profile.layout = Admin;
+Profile.layout = Employee;
 
 export default Profile;

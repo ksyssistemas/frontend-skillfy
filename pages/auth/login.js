@@ -49,17 +49,17 @@ function Login() {
       if (response.ok) {
         const data = await response.json();
   
-        let redirectUrl = 'http://localhost:3000/register/';
+        let redirectUrl = 'http://localhost:3000';
   
         switch (data.role) {
           case 'administrator':
-            redirectUrl += 'profile';
+            redirectUrl += '/register/dashboard';
             break;
           case 'enterprise':
             redirectUrl += 'enterprise';
             break;
           case 'employee':
-            redirectUrl += 'employee';
+            redirectUrl += '/employee/profile';
             break;
           default:
             redirectUrl = 'http://localhost:3000/default';
