@@ -248,6 +248,7 @@ function Profile() {
               </CardBody>
             </Card>
           </Col>
+          
           <Col className="order-xl-1" xl="8">
             <Row>
               <Col lg="6">
@@ -314,6 +315,8 @@ function Profile() {
                 </Card>
               </Col>
             </Row>
+
+            {/**Begin Card 
             <Card>
               <CardHeader>
                 <Row className="align-items-center">
@@ -422,9 +425,9 @@ function Profile() {
                             Rua
                           </label>
                           <Input
-                            defaultValue="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09"
+                            defaultValue="Digite o nome da rua"
                             id="input-address"
-                            placeholder="Home Address"
+                            placeholder="Digite o nome da Rua"
                             type="text"
                           />
                         </FormGroup>
@@ -440,7 +443,7 @@ function Profile() {
                             Cidade
                           </label>
                           <Input
-                            defaultValue="New York"
+                            defaultValue="Blumenau"
                             id="input-city"
                             placeholder="Cidade"
                             type="text"
@@ -497,6 +500,8 @@ function Profile() {
                 </Form>
               </CardBody>
             </Card>
+            End Card */}
+          
           </Col>
         </Row>
       </Container>
