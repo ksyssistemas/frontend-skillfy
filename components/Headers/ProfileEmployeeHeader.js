@@ -62,8 +62,9 @@ function ProfileHeader() {
             <Col lg="7" md="10">
               <h1 className="display-2 text-white">{administratorData.name}</h1>
               <p className="text-white mt-0 mb-5">
-                This is your profile page. You can see the progress you've made
-                with your work and manage your projects or assigned tasks
+              "Confie no Senhor de todo o seu coração e não se apoie em seu
+               próprio entendimento; reconheça o Senhor em todos os seus caminhos, 
+               e ele endireitará as suas veredas."
               </p>
               <Button
                 className="btn-neutral"
