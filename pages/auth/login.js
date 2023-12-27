@@ -102,6 +102,7 @@ function Login() {
         <Row className="justify-content-center">
           <Col lg="5" md="7">
             <Card className="bg-secondary border-0 mb-0">
+              
               <CardHeader className="bg-transparent pb-5">
                 <div className="text-muted text-center mt-2 mb-3">
                   <small>Entrar com</small>
@@ -124,6 +125,7 @@ function Login() {
                   </Button>
                 </div>
               </CardHeader>
+              
               <CardBody className="px-lg-5 py-lg-5">
                 <div className="text-center text-muted mb-4">
                   <small>Ou faça login com credenciais</small>

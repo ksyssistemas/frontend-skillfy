@@ -11,7 +11,7 @@ import {
   Col 
 } from "reactstrap";
 
-import EditProfile from "../Modals/edit"
+import EditProfile from "../Modals/editEmployeeProfile"
 
 function ProfileHeader() {
   const [modalOpen, setModalOpen] = React.useState(false);

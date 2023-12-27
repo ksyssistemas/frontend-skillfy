@@ -87,7 +87,7 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
       <Navbar
         className={classnames(
           "navbar-top navbar-expand border-bottom",
-          { "navbar-dark bg-dark": theme === "dark" },
+          { "navbar-dark bg-indigo": theme === "dark" },
           { "navbar-light bg-secondary": theme === "light" }
         )}
       >

@@ -12462,7 +12462,8 @@ a.btn-icon-only {
   padding: .875rem; }
 
 .card-stats .card-body {
-  padding: 1rem 1.5rem; }
+  padding: 1rem 1.5rem; 
+}
 
 .card-stats .card-status-bullet {
   position: absolute;

@@ -22,7 +22,7 @@ function RegisterFooter() {
                 © {new Date().getFullYear()}{" "}
                 <a
                   className="font-weight-bold ml-1"
-                  href="https://www.creative-tim.com?ref=adpr-admin-footer"
+                  href="#"
                   target="_blank"
                 >
                   Ksys Systemas & Véli
