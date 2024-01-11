@@ -258,6 +258,7 @@ function Sidebar({
       </div>
     </div>
   );
+  
   return (
     <Navbar
       className={

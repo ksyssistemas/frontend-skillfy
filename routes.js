@@ -1,24 +1,25 @@
-/*!
+// /*!
 
-=========================================================
-* NextJS Argon Dashboard PRO - v1.1.0
-=========================================================
+// =========================================================
+// * NextJS Argon Dashboard PRO - v1.1.0
+// =========================================================
 
-* Product Page: https://www.creative-tim.com/product/nextjs-argon-dashboard-pro
-* Copyright 2021 Creative Tim (https://www.creative-tim.com)
+// * Product Page: https://www.creative-tim.com/product/nextjs-argon-dashboard-pro
+// * Copyright 2021 Creative Tim (https://www.creative-tim.com)
 
-* Coded by Creative Tim
+// * Coded by Creative Tim
 
-=========================================================
+// =========================================================
 
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+// * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-*/
+// */
+
 const routes = [
   {
     collapse: true,
     name: "Cadastro",
-    icon: "ni ni-shop text-primary",
+    icon: "ni ni-shop text-orange",
     state: "dashboardsCollapse",
     views: [
       {
@@ -95,6 +96,20 @@ const routes = [
       //  miniName: "RS",
       //  layout: "/rtl",
       //},
+    ],
+  },
+  {
+    collapse: true,
+    name: "Desenvolvimento",
+    icon: "ni ni-paper-diploma text-orange",
+    state: "appraisalsCollapse",
+    views: [
+      {
+        path: "/appraisal-cycle-list",
+        name: "Avaliações",
+        miniName: "A",
+        layout: "/performance",
+      },
     ],
   },
   //{
