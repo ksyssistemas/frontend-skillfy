@@ -20,27 +20,7 @@ function EditProfile({ isOpen, toggle }) {
           </button>
         </div>
         <ModalBody>
-        <Card>
-                {/** Begin CardHead Edit Profile
-              <CardHeader>
-                <Row className="align-items-center">
-                  <Col xs="8">
-                    <h3 className="mb-0">Editar Perfil</h3>
-                  </Col>
-                  <Col className="text-right" xs="4">
-                    <Button
-                      color="primary"
-                      href="#pablo"
-                      onClick={(e) => e.preventDefault()}
-                      size="sm"
-                    >
-                      Settings
-                    </Button>
-                  </Col>
-                </Row>
-              </CardHeader>
-                End CardHead Edit Profile*/}
-
+        <Card>        
               <CardBody>
                 <Form>
                   <h6 className="heading-small text-muted mb-4">
