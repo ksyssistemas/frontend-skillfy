@@ -1,20 +1,4 @@
-/*!
-
-=========================================================
-* NextJS Argon Dashboard PRO - v1.1.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/nextjs-argon-dashboard-pro
-* Copyright 2021 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-import React from "react";
+import React, {useState} from "react";
 // nodejs library to set properties for components
 import PropTypes from "prop-types";
 // reactstrap components
@@ -27,8 +11,16 @@ import {
   Col,
 } from "reactstrap";
 
-function SimpleHeader({ name, parentName }) {
+import ModalAdm from "../Modals/admin/ModalAdm"
+import ModalEnterprise from "../Modals/admin/ModalEnterprise"
+
+
+function RegisterHeader({ name, parentName }) {
+
+  const [modalOpen, setModalOpen] = React.useState(false);
+
   return (
+
     <>
       <div className="header header-dark bg-dark pb-6 content__title content__title--calendar">
         <Container fluid>
@@ -58,11 +50,22 @@ function SimpleHeader({ name, parentName }) {
                 </Breadcrumb>
               </Col>
               <Col className="mt-3 mt-md-0 text-md-right" lg="6" xs="5">
-                <Button className="btn-neutral" color="default" size="sm">
-                  New
+                <Button 
+                  className="btn-neutral" 
+                  color="default" 
+                  size="sm"
+                  onClick={() => setModalOpen(!modalOpen)}
+                  >
+                  Cadastrar Admin
+                  <ModalAdm isOpen={modalOpen} toggle={() => setModalOpen(!modalOpen)} />
                 </Button>
-                <Button className="btn-neutral" color="default" size="sm">
-                  Filters
+                <Button className="btn-neutral" 
+                color="default" 
+                size="sm"
+                onClick={() => setModalOpen(!modalOpen)}
+                >
+                  Cadastrar Empresa
+                  <ModalEnterprise isOpen={modalOpen} toggle={() => setModalOpen(!modalOpen)} />
                 </Button>
               </Col>
             </Row>
@@ -73,9 +76,9 @@ function SimpleHeader({ name, parentName }) {
   );
 }
 
-SimpleHeader.propTypes = {
+RegisterHeader.propTypes = {
   name: PropTypes.string,
   parentName: PropTypes.string,
 };
 
-export default SimpleHeader;
+export default RegisterHeader;

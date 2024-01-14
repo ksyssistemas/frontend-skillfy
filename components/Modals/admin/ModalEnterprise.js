@@ -14,7 +14,7 @@ import {
     Row 
 } from "reactstrap";
 
-function CreateAdm({ isOpen, toggle }) {
+function ModalEnterprise({ isOpen, toggle }) {
 
   //const [administratorData, setAdministratorData] = useState({});
 
@@ -274,4 +274,4 @@ function CreateAdm({ isOpen, toggle }) {
   );
 }
 
-export default CreateAdm;
+export default ModalEnterprise;
