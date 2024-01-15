@@ -1,14 +1,19 @@
 // components/pagination/PaginationComponent.js
 
 import React from 'react';
-import { CardFooter, Pagination as ReactstrapPagination, PaginationItem, PaginationLink } from 'reactstrap';
+import { 
+    CardFooter, 
+    Pagination as ReactstrapPagination, 
+    PaginationItem, 
+    PaginationLink 
+}from 'reactstrap';
 
-const PaginationComponent = () => {
+const PaginationCustom = () => {
     return (
         <CardFooter className="py-4">
             <nav aria-label="...">
                 <ReactstrapPagination
-                    className="pagination justify-content-center mb-0" // Adicionado a classe justify-content-center
+                    className="pagination justify-content-center mb-0" 
                     listClassName="justify-content-center mb-0"
                 >
                     <PaginationItem className="disabled">
@@ -60,4 +65,4 @@ const PaginationComponent = () => {
     );
 };
 
-export default PaginationComponent;
+export default PaginationCustom;

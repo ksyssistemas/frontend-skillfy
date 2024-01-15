@@ -11,16 +11,16 @@ import {
   Col,
 } from "reactstrap";
 
-import ModalAdm from "../Modals/admin/ModalAdm"
-import ModalEnterprise from "../Modals/admin/ModalEnterprise"
-
+import ModalAdm from "../Modals/admin/ModalAdm";
+import ModalEnterprise from "../Modals/admin/ModalEnterprise";
+import ModalEmployee from "../Modals/enterprise/ModalEmployee"
 
 function RegisterHeader({ name, parentName }) {
-
-  const [modalOpen, setModalOpen] = React.useState(false);
+  const [modalAdmOpen, setModalAdmOpen] = React.useState(false);
+  const [modalEnterpriseOpen, setModalEnterpriseOpen] = React.useState(false);
+  const [modalEmployeeOpen, setModalEmployeeOpen] = React.useState(false);
 
   return (
-
     <>
       <div className="header header-dark bg-dark pb-6 content__title content__title--calendar">
         <Container fluid>
@@ -50,23 +50,41 @@ function RegisterHeader({ name, parentName }) {
                 </Breadcrumb>
               </Col>
               <Col className="mt-3 mt-md-0 text-md-right" lg="6" xs="5">
-                <Button 
-                  className="btn-neutral" 
-                  color="default" 
+                <Button
+                  className="btn-neutral"
+                  color="default"
                   size="sm"
-                  onClick={() => setModalOpen(!modalOpen)}
-                  >
+                  onClick={() => setModalAdmOpen(!modalAdmOpen)}
+                >
                   Cadastrar Admin
-                  <ModalAdm isOpen={modalOpen} toggle={() => setModalOpen(!modalOpen)} />
                 </Button>
-                <Button className="btn-neutral" 
-                color="default" 
-                size="sm"
-                onClick={() => setModalOpen(!modalOpen)}
+                <ModalAdm isOpen={modalAdmOpen} toggle={() => setModalAdmOpen(!modalAdmOpen)} />
+
+                <Button
+                  className="btn-neutral"
+                  color="default"
+                  size="sm"
+                  onClick={() => setModalEnterpriseOpen(!modalEnterpriseOpen)}
                 >
                   Cadastrar Empresa
-                  <ModalEnterprise isOpen={modalOpen} toggle={() => setModalOpen(!modalOpen)} />
                 </Button>
+                <ModalEnterprise
+                  isOpen={modalEnterpriseOpen}
+                  toggle={() => setModalEnterpriseOpen(!modalEnterpriseOpen)}
+                />
+                <Button
+                  className="btn-neutral"
+                  color="default"
+                  size="sm"
+                  onClick={() => setModalEmployeeOpen(!modalEnterpriseOpen)}
+                >
+                  Cadastrar Colaborador
+                </Button>
+                <ModalEmployee
+                  isOpen={modalEmployeeOpen}
+                  toggle={() => setModalEmployeeOpen(!modalEmployeeOpen)}
+                />
+                
               </Col>
             </Row>
           </div>
@@ -75,6 +93,7 @@ function RegisterHeader({ name, parentName }) {
     </>
   );
 }
+
 
 RegisterHeader.propTypes = {
   name: PropTypes.string,

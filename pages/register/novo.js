@@ -3,13 +3,13 @@
 import React from "react";
 import Register from "../../layouts/Register";
 import ReportAdmin from "../../pages/report/admin";
-import PaginationComponent from "../../components/pagination/PaginationComponent"; // Ajuste o nome da importação aqui
+import Pagination from "../../components/Pagination/PaginationCustom"; 
 
 function Novo() {
   return (
     <>
       <ReportAdmin />
-      <PaginationComponent />
+      <Pagination />
     </>
   );
 }

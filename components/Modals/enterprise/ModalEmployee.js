@@ -1,5 +1,5 @@
 // ModalComponent.js
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { 
     Card, 
     CardBody, 
@@ -14,7 +14,7 @@ import {
     Row 
 } from "reactstrap";
 
-function ModalEnterprise({ isOpen, toggle }) {
+function ModalEmployee({ isOpen, toggle }) {
 
   //const [administratorData, setAdministratorData] = useState({});
 
@@ -36,7 +36,7 @@ function ModalEnterprise({ isOpen, toggle }) {
     <Modal toggle={toggle} isOpen={isOpen} size="lg">
         <div className=" modal-header">
           <h5 className=" modal-title" id="exampleModalLabel">
-            Cadastrar Adm
+            Cadastrar Colaborador
           </h5>
           <button
             aria-label="Close"
@@ -52,7 +52,7 @@ function ModalEnterprise({ isOpen, toggle }) {
               <CardBody>
               <Form>
   <h6 className="heading-small text-muted mb-4">
-    Informações do Adm
+    Informações de departamento
   </h6>
   <div className="pl-lg-4">
     <Row>
@@ -62,7 +62,7 @@ function ModalEnterprise({ isOpen, toggle }) {
             className="form-control-label"
             htmlFor="input-first-name"
           >
-            Razão Social
+            Nome
           </label>
           <Input
             defaultValue={formData.name}
@@ -79,7 +79,7 @@ function ModalEnterprise({ isOpen, toggle }) {
             className="form-control-label"
             htmlFor="input-last-name"
           >
-            Nome Fantasia
+            Sobrenome
           </label>
           <Input
             defaultValue={formData.lastname}
@@ -115,7 +115,7 @@ function ModalEnterprise({ isOpen, toggle }) {
             className="form-control-label"
             htmlFor="input-birthdate"
           >
-            Data Admissão
+            Data Aniversário
           </label>
           <Input
             defaultValue={formData.birthdate}
@@ -165,6 +165,93 @@ function ModalEnterprise({ isOpen, toggle }) {
     </Row>
   </div>
   <hr className="my-4" />
+
+  <h6 className="heading-small text-muted mb-4">
+    Informações de cargo
+  </h6>
+  <div className="pl-lg-4">
+    <Row>
+      <Col md="12">
+        <FormGroup>
+          <label
+            className="form-control-label"
+            htmlFor="input-address"
+          >
+            Rua
+          </label>
+          <Input
+            defaultValue="Digite o nome da rua"
+            id="input-address"
+            placeholder="Digite o nome da Rua"
+            type="text"
+          />
+        </FormGroup>
+      </Col>
+    </Row>
+    <Row>
+      <Col lg="4">
+        <FormGroup>
+          <label
+            className="form-control-label"
+            htmlFor="input-city"
+          >
+            Cidade
+          </label>
+          <Input
+            defaultValue="Blumenau"
+            id="input-city"
+            placeholder="Cidade"
+            type="text"
+          />
+        </FormGroup>
+      </Col>
+      <Col lg="4">
+        <FormGroup>
+          <label
+            className="form-control-label"
+            htmlFor="input-country"
+          >
+            País
+          </label>
+          <Input
+            defaultValue="Brasil"
+            id="input-country"
+            placeholder="País"
+            type="text"
+          />
+        </FormGroup>
+      </Col>
+      <Col lg="4">
+        <FormGroup>
+          <label
+            className="form-control-label"
+            htmlFor="input-postal-code"
+          >
+            CEP
+          </label>
+          <Input
+            id="input-postal-code"
+            placeholder="Postal code"
+            type="number"
+          />
+        </FormGroup>
+      </Col>
+    </Row>
+  </div>
+  <hr className="my-4" />
+
+  <h6 className="heading-small text-muted mb-4">Informações de Planos</h6>
+  <div className="pl-lg-4">
+    <FormGroup>
+      <label className="form-control-label">Sobre mim</label>
+      <Input
+        placeholder="Uma breve descrição sobre você"
+        rows="4"
+        type="textarea"
+        defaultValue="Uma breve descrição sobre você"
+      />
+    </FormGroup>
+  </div>
 </Form>
 
               </CardBody>
@@ -187,4 +274,4 @@ function ModalEnterprise({ isOpen, toggle }) {
   );
 }
 
-export default ModalEnterprise;
+export default ModalEmployee;
