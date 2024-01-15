@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Container } from "reactstrap";
 import Performance from "../../layouts/Performance";
 import PerformanceHeader from "../../components/Headers/PerformanceHeader";
-import AppraisalCycleTable from "../../components/AppraisalComponents/appraisal-cycle-table";
-import AppraisalListTable from "../../components/AppraisalComponents/appraisal-list-table";
+import AppraisalCycleTable from "../../components/AppraisalComponents/AppraisalList/appraisal-cycle-table";
+import AppraisalListTable from "../../components/AppraisalComponents/AppraisalList/appraisal-list-table";
 
 function AppraisalCycle() {
   const [admins, setAdmins] = useState([]);

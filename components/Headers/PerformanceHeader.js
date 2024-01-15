@@ -26,8 +26,16 @@ import {
   Row,
   Col,
 } from "reactstrap";
+import AddAppraisalCycleModal from "../AppraisalComponents/AppraisalModal/add-appraisal-cycle";
 
 function PerformanceHeader({ name, parentName }) {
+
+  const [modalOpen, setModalOpen] = React.useState(false);
+
+  function handleOpenAddAppraisalCycleModal() {
+    setModalOpen(!modalOpen)
+  }
+
   return (
     <>
       <div className="header header-dark bg-indigo pb-6 content__title content__title--calendar">
@@ -58,8 +66,13 @@ function PerformanceHeader({ name, parentName }) {
                 </Breadcrumb>
               </Col>
               <Col className="mt-3 mt-md-0 text-md-right" lg="6" xs="5">
-                <Button className="btn-neutral" color="default" size="sm">
-                Adicionar Avaliação  
+                <Button 
+                  className="btn-neutral" 
+                  color="default" 
+                  size="sm"
+                  onClick={handleOpenAddAppraisalCycleModal}
+                >
+                  Adicionar Ciclo  
                 </Button>
                 <Button className="btn-neutral" color="default" size="sm">
                   Filtros
@@ -67,6 +80,10 @@ function PerformanceHeader({ name, parentName }) {
               </Col>
             </Row>
           </div>
+          <AddAppraisalCycleModal 
+            handleOpenAddAppraisalCycleModal={handleOpenAddAppraisalCycleModal}
+            modalOpen={modalOpen}
+          />
         </Container>
       </div>
     </>

@@ -392,7 +392,7 @@ function Components() {
               <Card>
                 <CardHeader>
                   <h3 className="mb-0">Datepicker</h3>
-                </CardHeader>
+                </CardHeader>   
                 <CardBody>
                   <Form>
                     <Row>
