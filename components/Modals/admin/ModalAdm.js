@@ -56,13 +56,13 @@ function ModalEnterprise({ isOpen, toggle }) {
   </h6>
   <div className="pl-lg-4">
     <Row>
-      <Col lg="6">
+      <Col lg="4">
         <FormGroup>
           <label
             className="form-control-label"
             htmlFor="input-first-name"
           >
-            Razão Social
+            Nome
           </label>
           <Input
             defaultValue={formData.name}
@@ -73,13 +73,13 @@ function ModalEnterprise({ isOpen, toggle }) {
           />
         </FormGroup>
       </Col>
-      <Col lg="6">
+      <Col lg="5">
         <FormGroup>
           <label
             className="form-control-label"
             htmlFor="input-last-name"
           >
-            Nome Fantasia
+            Sobrenome
           </label>
           <Input
             defaultValue={formData.lastname}
@@ -109,7 +109,7 @@ function ModalEnterprise({ isOpen, toggle }) {
           />
         </FormGroup>
       </Col>
-      <Col lg="6">
+      <Col lg="3">
         <FormGroup>
           <label
             className="form-control-label"
@@ -128,7 +128,7 @@ function ModalEnterprise({ isOpen, toggle }) {
       </Col>
     </Row>
     <Row>
-      <Col lg="6">
+      <Col lg="3">
         <FormGroup>
           <label
             className="form-control-label"
@@ -145,7 +145,24 @@ function ModalEnterprise({ isOpen, toggle }) {
           />
         </FormGroup>
       </Col>
-      <Col lg="6">
+      <Col lg="3">
+        <FormGroup>
+          <label
+            className="form-control-label"
+            htmlFor="input-password"
+          >
+            Confirmar Senha
+          </label>
+          <Input
+            defaultValue={formData.password}
+            id="input-password"
+            placeholder="Senha"
+            type="password"
+            onChange={(e) => handleInputChange('password', e.target.value)}
+          />
+        </FormGroup>
+      </Col>
+      <Col lg="3">
         <FormGroup>
           <label
             className="form-control-label"

@@ -56,13 +56,13 @@ function ModalEnterprise({ isOpen, toggle }) {
               </h6>
               <div className="pl-lg-4">
                 <Row>
-                  <Col lg="6">
+                  <Col lg="3">
                     <FormGroup>
                       <label
                         className="form-control-label"
                         htmlFor="input-first-name"
                       >
-                        Nome
+                        CNPJ
                       </label>
                       <Input
                         defaultValue={formData.name}
@@ -73,13 +73,13 @@ function ModalEnterprise({ isOpen, toggle }) {
                       />
                     </FormGroup>
                   </Col>
-                  <Col lg="6">
+                  <Col lg="5">
                     <FormGroup>
                       <label
                         className="form-control-label"
                         htmlFor="input-last-name"
                       >
-                        Sobrenome
+                        Razão social
                       </label>
                       <Input
                         defaultValue={formData.lastname}
@@ -87,6 +87,23 @@ function ModalEnterprise({ isOpen, toggle }) {
                         placeholder="Sobrenome"
                         type="text"
                         onChange={(e) => handleInputChange('lastname', e.target.value)}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col lg="4">
+                    <FormGroup>
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-email"
+                      >
+                        Nome Fantasia
+                      </label>
+                      <Input
+                        defaultValue={formData.email}
+                        id="input-email"
+                        placeholder="Email"
+                        type="email"
+                        onChange={(e) => handleInputChange('email', e.target.value)}
                       />
                     </FormGroup>
                   </Col>
@@ -98,31 +115,48 @@ function ModalEnterprise({ isOpen, toggle }) {
                         className="form-control-label"
                         htmlFor="input-email"
                       >
-                        Email
+                        E-mail
                       </label>
                       <Input
                         defaultValue={formData.email}
                         id="input-email"
-                        placeholder="Email"
+                        placeholder="E-mail"
                         type="email"
                         onChange={(e) => handleInputChange('email', e.target.value)}
                       />
                     </FormGroup>
                   </Col>
-                  <Col lg="6">
+                  <Col lg="3">
                     <FormGroup>
                       <label
                         className="form-control-label"
-                        htmlFor="input-birthdate"
+                        htmlFor="input-first-name"
                       >
-                        Data Aniversário
+                        Senha
                       </label>
                       <Input
-                        defaultValue={formData.birthdate}
-                        id="input-birthdate"
-                        placeholder="__/__/__"
-                        type="date"
-                        onChange={(e) => handleInputChange('birthdate', e.target.value)}
+                        defaultValue={formData.name}
+                        id="input-first-name"
+                        placeholder="Nome"
+                        type="text"
+                        onChange={(e) => handleInputChange('name', e.target.value)}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col lg="3">
+                    <FormGroup>
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-first-name"
+                      >
+                        Confirma Senha
+                      </label>
+                      <Input
+                        defaultValue={formData.name}
+                        id="input-first-name"
+                        placeholder="Nome"
+                        type="text"
+                        onChange={(e) => handleInputChange('name', e.target.value)}
                       />
                     </FormGroup>
                   </Col>
@@ -134,18 +168,18 @@ function ModalEnterprise({ isOpen, toggle }) {
                         className="form-control-label"
                         htmlFor="input-password"
                       >
-                        Senha
+                        Web Site
                       </label>
                       <Input
                         defaultValue={formData.password}
                         id="input-password"
-                        placeholder="Senha"
+                        placeholder="Web Site"
                         type="password"
                         onChange={(e) => handleInputChange('password', e.target.value)}
                       />
                     </FormGroup>
                   </Col>
-                  <Col lg="6">
+                  <Col lg="3">
                     <FormGroup>
                       <label
                         className="form-control-label"
@@ -163,94 +197,6 @@ function ModalEnterprise({ isOpen, toggle }) {
                     </FormGroup>
                   </Col>
                 </Row>
-              </div>
-              <hr className="my-4" />
-
-              <h6 className="heading-small text-muted mb-4">
-                Informações de contato
-              </h6>
-              <div className="pl-lg-4">
-                <Row>
-                  <Col md="12">
-                    <FormGroup>
-                      <label
-                        className="form-control-label"
-                        htmlFor="input-address"
-                      >
-                        Rua
-                      </label>
-                      <Input
-                        defaultValue="Digite o nome da rua"
-                        id="input-address"
-                        placeholder="Digite o nome da Rua"
-                        type="text"
-                      />
-                    </FormGroup>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col lg="4">
-                    <FormGroup>
-                      <label
-                        className="form-control-label"
-                        htmlFor="input-city"
-                      >
-                        Cidade
-                      </label>
-                      <Input
-                        defaultValue="Blumenau"
-                        id="input-city"
-                        placeholder="Cidade"
-                        type="text"
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col lg="4">
-                    <FormGroup>
-                      <label
-                        className="form-control-label"
-                        htmlFor="input-country"
-                      >
-                        País
-                      </label>
-                      <Input
-                        defaultValue="Brasil"
-                        id="input-country"
-                        placeholder="País"
-                        type="text"
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col lg="4">
-                    <FormGroup>
-                      <label
-                        className="form-control-label"
-                        htmlFor="input-postal-code"
-                      >
-                        CEP
-                      </label>
-                      <Input
-                        id="input-postal-code"
-                        placeholder="Postal code"
-                        type="number"
-                      />
-                    </FormGroup>
-                  </Col>
-                </Row>
-              </div>
-              <hr className="my-4" />
-
-              <h6 className="heading-small text-muted mb-4">Sobre mim</h6>
-              <div className="pl-lg-4">
-                <FormGroup>
-                  <label className="form-control-label">Sobre mim</label>
-                  <Input
-                    placeholder="Uma breve descrição sobre você"
-                    rows="4"
-                    type="textarea"
-                    defaultValue="Uma breve descrição sobre você"
-                  />
-                </FormGroup>
               </div>
             </Form>
 

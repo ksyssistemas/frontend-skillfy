@@ -14,7 +14,7 @@ import {
   Col,
 } from "reactstrap";
 
-import CreateAdm from "../Modals/CreateAdm"
+import CreateAdm from "../Modals/admin/ModalAdm"
 
 function CardsHeader({ name, parentName }) {
 
