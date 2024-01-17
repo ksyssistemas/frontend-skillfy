@@ -47,7 +47,8 @@ function CardsHeader({ name, parentName }) {
                   </BreadcrumbItem>
                 </Breadcrumb>
               </Col>
-              <Col className="text-right" lg="6" xs="5">
+              {/**
+               *    <Col className="text-right" lg="6" xs="5">
                 <Button
                 className="btn-neutral"
                 color="default"
@@ -57,6 +58,9 @@ function CardsHeader({ name, parentName }) {
                 Cadastrar Empresa
                 <CreateAdm isOpen={modalOpen} toggle={() => setModalOpen(!modalOpen)} />
               </Button>
+               * 
+               */}
+           
 
                 {/**Begin::Filters 
                 <Button
@@ -68,9 +72,9 @@ function CardsHeader({ name, parentName }) {
                 >
                   Filters
                 </Button>
-                End::Filters */}
+                End::Filters 
                 
-              </Col>
+              </Col> */}
             </Row>
 
             <Row>

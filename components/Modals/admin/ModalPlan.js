@@ -17,11 +17,18 @@ import {
 
 function ModalPlan({ isOpen, toggle }) {
 
-  const fakeDataList = [
-    { id: 1, name: 'Plano Básico', price: 'R$ 109,90' },
-    { id: 2, name: 'Plano Intermediário', price: 'R$ 299,90' },
-    { id: 3, name: 'Plano Avançado', price: 'R$ 499,90' },
-  ];
+  const handleDeletePlan = (planId) => {
+    const updatedDataList = fakeDataList.filter((item) => item.id !== planId);
+    setFakeDataList(updatedDataList);
+  };
+  
+
+  const [fakeDataList, setFakeDataList] = useState([
+    { id: 1, name: 'Básico', price: 'R$ 9,99' },
+    { id: 2, name: 'Intermediário', price: 'R$ 19,99' },
+    { id: 3, name: 'Avançado', price: 'R$ 29,99' },
+  ]);
+  
   const [planData, setPlanData] = useState({
     planName: '',
     description: '',
@@ -72,15 +79,27 @@ function ModalPlan({ isOpen, toggle }) {
                         </ListGroupItem>
                         {fakeDataList.map((item) => (
                           <ListGroupItem key={item.id}>
-                            <Row>
-                              <Col className="text-center" lg="6">
-                                {item.name}
-                              </Col>
-                              <Col className="text-center" lg="6">
-                                {item.price}
-                              </Col>
-                            </Row>
-                          </ListGroupItem>
+                          <Row>
+                            <Col className="text-center" lg="6">
+                              {item.name}
+                            </Col>
+                            <Col className="text-center" lg="4">
+                              {item.price}
+                            </Col>
+                            <Col className="text-center" lg="2">
+                            <a
+                              className="table-action table-action-delete"
+                              href="#pablo"
+                              //id={`delete${admin.id}`}
+                              //onClick={() => deleteAdmin(admin.id)}
+                            >
+            <i className="fas fa-trash" />
+          </a>
+                            
+                             
+                            </Col>
+                          </Row>
+                        </ListGroupItem>
                         ))}
                       </ListGroup>
                     </FormGroup>
