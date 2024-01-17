@@ -28,7 +28,19 @@ import {
   Col,
 } from "reactstrap";
 
+
+import ModalPlan from "../Modals/admin/ModalPlan";
+
 function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
+
+
+  {/** Modal */}
+  const [modalPlanOpen, setModalPlanOpen] = React.useState(false);
+  const toggleModalPlan = () => {
+    setModalPlanOpen(!modalPlanOpen);
+  };
+
+
   // function that on mobile devices makes the search open
   const openSearch = () => {
     document.body.classList.add("g-navbar-search-showing");
@@ -389,7 +401,7 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                     <Col
                       className="shortcut-item"
                       href="#pablo"
-                      onClick={(e) => e.preventDefault()}
+                      onClick={toggleModalPlan}
                       xs="4"
                       tag="a"
                     >
@@ -398,6 +410,9 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                       </span>
                       <small>Planos</small>
                     </Col>
+                                
+                    <ModalPlan isOpen={modalPlanOpen} toggle={toggleModalPlan} />
+ 
                   </Row>
                 </DropdownMenu>
               </UncontrolledDropdown>
