@@ -48,211 +48,451 @@ function ModalEmployee({ isOpen, toggle }) {
           </button>
         </div>
         <ModalBody>
-          <Card>
+        <Card>
               <CardBody>
-                <Form>
-                  <h6 className="heading-small text-muted mb-4">
-                    Informações de departamento
-                  </h6>
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-first-name"
-                          >
-                            Nome
-                          </label>
-                          <Input
-                            defaultValue={formData.name}
-                            id="input-first-name"
-                            placeholder="Nome"
-                            type="text"
-                            onChange={(e) => handleInputChange('name', e.target.value)}
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-last-name"
-                          >
-                            Sobrenome
-                          </label>
-                          <Input
-                            defaultValue={formData.lastname}
-                            id="input-last-name"
-                            placeholder="Sobrenome"
-                            type="text"
-                            onChange={(e) => handleInputChange('lastname', e.target.value)}
-                          />
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-email"
-                          >
-                            Email
-                          </label>
-                          <Input
-                            defaultValue={formData.email}
-                            id="input-email"
-                            placeholder="Email"
-                            type="email"
-                            onChange={(e) => handleInputChange('email', e.target.value)}
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-birthdate"
-                          >
-                            Data Aniversário
-                          </label>
-                          <Input
-                            defaultValue={formData.birthdate}
-                            id="input-birthdate"
-                            placeholder="__/__/__"
-                            type="date"
-                            onChange={(e) => handleInputChange('birthdate', e.target.value)}
-                          />
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-password"
-                          >
-                            Senha
-                          </label>
-                          <Input
-                            defaultValue={formData.password}
-                            id="input-password"
-                            placeholder="Senha"
-                            type="password"
-                            onChange={(e) => handleInputChange('password', e.target.value)}
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-phone"
-                          >
-                            Número de Contato
-                          </label>
-                          <Input
-                            defaultValue={formData.phone}
-                            id="input-phone"
-                            placeholder="Número de Contato"
-                            type="text"
-                            onChange={(e) => handleInputChange('phone', e.target.value)}
-                          />
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                  </div>
-                  <hr className="my-4" />
+              <Form>
+              <h6 className="heading-small text-muted mb-4">
+    Informações de departamento
+</h6>
+<div className="pl-lg-4">
+    <Row>
+        <Col lg="6">
+            <FormGroup>
+                <label
+                    className="form-control-label"
+                    htmlFor="input-department-name"
+                >
+                    Nome do Departamento
+                </label>
+                <Input
+                    defaultValue={formData.departmentName}
+                    id="input-department-name"
+                    placeholder="Nome do Departamento"
+                    type="text"
+                    onChange={(e) => handleInputChange('departmentName', e.target.value)}
+                />
+            </FormGroup>
+        </Col>
+        <Col lg="6">
+            <FormGroup>
+                <label
+                    className="form-control-label"
+                    htmlFor="input-description"
+                >
+                    Responsável
+                </label>
+                <Input
+                    defaultValue={formData.description}
+                    id="input-description"
+                    placeholder="Responsável"
+                    type="text"
+                    onChange={(e) => handleInputChange('description', e.target.value)}
+                />
+            </FormGroup>
+        </Col>
+    </Row>
+    <Row>
+        <Col lg="9">
+            <FormGroup>
+                <label
+                    className="form-control-label"
+                    htmlFor="input-responsible"
+                >
+                    Descrição
+                </label>
+                <Input
+                    defaultValue={formData.responsible}
+                    id="input-responsible"
+                    placeholder="Descrição do departamento"
+                    type="text"
+                    onChange={(e) => handleInputChange('responsible', e.target.value)}
+                />
+            </FormGroup>
+        </Col>
+        <Col lg="3">
+            <FormGroup>
+                <label
+                    className="form-control-label"
+                    htmlFor="input-foundation-date"
+                >
+                    Data de Fundação
+                </label>
+                <Input
+                    defaultValue={formData.foundationDate}
+                    id="input-foundation-date"
+                    placeholder="__/__/____"
+                    type="date"
+                    onChange={(e) => handleInputChange('foundationDate', e.target.value)}
+                />
+            </FormGroup>
+        </Col>
+    </Row>
+    <Row>
+        <Col lg="3">
+            <FormGroup>
+                <label
+                    className="form-control-label"
+                    htmlFor="input-budget"
+                >
+                    Orçamento
+                </label>
+                <Input
+                    defaultValue={formData.budget}
+                    id="input-budget"
+                    placeholder="Orçamento"
+                    type="number"
+                    onChange={(e) => handleInputChange('budget', e.target.value)}
+                />
+            </FormGroup>
+        </Col>
+        <Col lg="5">
+            <FormGroup>
+                <label
+                    className="form-control-label"
+                    htmlFor="input-localization"
+                >
+                    Cidade
+                </label>
+                <Input
+                    defaultValue={formData.localization}
+                    id="input-localization"
+                    placeholder="Localização"
+                    type="text"
+                    onChange={(e) => handleInputChange('localization', e.target.value)}
+                />
+            </FormGroup>
+        </Col>
+        <Col lg="4">
+            <FormGroup>
+                <label
+                    className="form-control-label"
+                    htmlFor="select-department-type"
+                >
+                    Tipo de Departamento
+                </label>
+                <Input
+                    type="select"
+                    defaultValue={formData.departmentType}
+                    id="select-department-type"
+                    onChange={(e) => handleInputChange('departmentType', e.target.value)}
+                >
+                    <option value="Público">Público</option>
+                    <option value="Privado">Privado</option>
+                </Input>
+            </FormGroup>
+        </Col>
+    </Row>
+</div>
+<hr className="my-4" />
 
-                  <h6 className="heading-small text-muted mb-4">
-                    Informações de cargo
-                  </h6>
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col md="12">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-address"
-                          >
-                            Rua
-                          </label>
-                          <Input
-                            defaultValue="Digite o nome da rua"
-                            id="input-address"
-                            placeholder="Digite o nome da Rua"
-                            type="text"
-                          />
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col lg="4">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-city"
-                          >
-                            Cidade
-                          </label>
-                          <Input
-                            defaultValue="Blumenau"
-                            id="input-city"
-                            placeholder="Cidade"
-                            type="text"
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col lg="4">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-country"
-                          >
-                            País
-                          </label>
-                          <Input
-                            defaultValue="Brasil"
-                            id="input-country"
-                            placeholder="País"
-                            type="text"
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col lg="4">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-postal-code"
-                          >
-                            CEP
-                          </label>
-                          <Input
-                            id="input-postal-code"
-                            placeholder="Postal code"
-                            type="number"
-                          />
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                  </div>
-                  <hr className="my-4" />
+{/* Informções de Cargo*/}
 
-                  <h6 className="heading-small text-muted mb-4">Informações de Planos</h6>
-                  <div className="pl-lg-4">
-                    <FormGroup>
-                      <label className="form-control-label">Sobre mim</label>
-                      <Input
-                        placeholder="Uma breve descrição sobre você"
-                        rows="4"
-                        type="textarea"
-                        defaultValue="Uma breve descrição sobre você"
-                      />
-                    </FormGroup>
-                  </div>
-                </Form>
+  <h6 className="heading-small text-muted mb-4">Informações de Cargo</h6>
+  <div className="pl-lg-4">
+  <Row>
+        <Col lg="6">
+            <FormGroup>
+                <label
+                    className="form-control-label"
+                    htmlFor="select-department-type"
+                >
+                    Nome do Cargo
+                </label>
+                <Input
+                    defaultValue={formData.departmentName}
+                    id="input-department-name"
+                    placeholder="Nome do Cargo"
+                    type="text"
+                    onChange={(e) => handleInputChange('departmentName', e.target.value)}
+                >
+                </Input>
+            </FormGroup>
+        </Col>
+        <Col lg="3">
+            <FormGroup>
+                <label
+                    className="form-control-label"
+                    htmlFor="select-department-type"
+                >
+                    Nível Hierárquico
+                </label>
+                <Input
+                    type="select"
+                    defaultValue={formData.departmentType}
+                    id="select-department-type"
+                    onChange={(e) => handleInputChange('departmentType', e.target.value)}
+                >
+                    <option value="Público">1</option>
+                    <option value="Privado">2</option>
+                    <option value="Público">3</option>
+                    <option value="Privado">4</option>
+                    <option value="Público">5</option>
+                </Input>
+            </FormGroup>
+        </Col>
+    </Row>
+        <Row>         
+            <Col lg="9">
+                <FormGroup>
+                    <label
+                        className="form-control-label"
+                        htmlFor="input-department-name"
+                    >
+                        Descrição
+                    </label>
+                    <Input
+                        defaultValue={formData.departmentName}
+                        id="input-department-name"
+                        placeholder="Descrição do cargo"
+                        type="text"
+                        onChange={(e) => handleInputChange('departmentName', e.target.value)}
+                    />
+                </FormGroup>
+            </Col>
+         </Row> 
+  </div>
+  <hr className="my-4" />
+
+{/* Informções do Colaborador*/}
+
+  <h6 className="heading-small text-muted mb-4">Informações do Colaborador</h6>
+  <div className="pl-lg-4">
+  <Row>
+        <Col lg="4">
+            <FormGroup>
+                <label
+                    className="form-control-label"
+                    htmlFor="select-department-type"
+                >
+                    Nome do Colaborador
+                </label>
+                <Input
+                    defaultValue={formData.departmentName}
+                    id="input-department-name"
+                    placeholder="Nome do Colaborador"
+                    type="text"
+                    onChange={(e) => handleInputChange('departmentName', e.target.value)}
+                >
+                </Input>
+            </FormGroup>
+        </Col>
+        <Col lg="4">
+            <FormGroup>
+                <label
+                    className="form-control-label"
+                    htmlFor="select-department-type"
+                >
+                    Sobrenome
+                </label>
+                <Input
+                    defaultValue={formData.departmentName}
+                    id="input-department-name"
+                    placeholder="Sobrenome"
+                    type="text"
+                    onChange={(e) => handleInputChange('departmentName', e.target.value)}
+                >
+                </Input>
+            </FormGroup>
+        </Col>
+        <Col lg="4">
+            <FormGroup>
+                <label
+                    className="form-control-label"
+                    htmlFor="select-department-type"
+                >
+                    Celular
+                </label>
+                <Input
+                    defaultValue={formData.departmentName}
+                    id="input-department-name"
+                    placeholder="Celular"
+                    type="text"
+                    onChange={(e) => handleInputChange('departmentName', e.target.value)}
+                >
+                </Input>
+            </FormGroup>
+        </Col>
+    </Row>
+    <Row>
+         <Col lg="3">
+            <FormGroup>
+                <label
+                    className="form-control-label"
+                    htmlFor="input-foundation-date"
+                >
+                    Data de Admissão
+                </label>
+                <Input
+                    defaultValue={formData.foundationDate}
+                    id="input-foundation-date"
+                    placeholder="__/__/____"
+                    type="date"
+                    onChange={(e) => handleInputChange('foundationDate', e.target.value)}
+                />
+            </FormGroup>
+        </Col>
+        <Col lg="6">
+            <FormGroup>
+                <label
+                    className="form-control-label"
+                    htmlFor="select-department-type"
+                >
+                    E-mail
+                </label>
+                <Input
+                    defaultValue={formData.departmentName}
+                    id="input-department-name"
+                    placeholder="E-mail"
+                    type="text"
+                    onChange={(e) => handleInputChange('departmentName', e.target.value)}
+                >
+                </Input>
+            </FormGroup>
+        </Col>
+    </Row> 
+    <Row>
+        <Col lg="4">
+            <FormGroup>
+                <label
+                    className="form-control-label"
+                    htmlFor="select-department-type"
+                >
+                    Senha
+                </label>
+                <Input
+                    defaultValue={formData.departmentName}
+                    id="input-department-name"
+                    placeholder="Senha"
+                    type="text"
+                    onChange={(e) => handleInputChange('departmentName', e.target.value)}
+                >
+                </Input>
+            </FormGroup>
+        </Col>
+        <Col lg="4">
+            <FormGroup>
+                <label
+                    className="form-control-label"
+                    htmlFor="select-department-type"
+                >
+                    Confirmar Senha
+                </label>
+                <Input
+                    defaultValue={formData.departmentName}
+                    id="input-department-name"
+                    placeholder="Confirmar senha"
+                    type="text"
+                    onChange={(e) => handleInputChange('departmentName', e.target.value)}
+                >
+                </Input>
+            </FormGroup>
+        </Col>
+    </Row> 
+    <Row>
+        <Col lg="4">
+            <FormGroup>
+                <label
+                    className="form-control-label"
+                    htmlFor="select-department-type"
+                >
+                    Horário de Entrada
+                </label>
+                <Input
+                    defaultValue={formData.departmentName}
+                    id="input-department-name"
+                    placeholder="Horário de entrada"
+                    type="text"
+                    onChange={(e) => handleInputChange('departmentName', e.target.value)}
+                >
+                </Input>
+            </FormGroup>
+        </Col>
+        <Col lg="4">
+            <FormGroup>
+                <label
+                    className="form-control-label"
+                    htmlFor="select-department-type"
+                >
+                    Horário de Intervalo
+                </label>
+                <Input
+                    defaultValue={formData.departmentName}
+                    id="input-department-name"
+                    placeholder="Horário de Intervalo"
+                    type="text"
+                    onChange={(e) => handleInputChange('departmentName', e.target.value)}
+                >
+                </Input>
+            </FormGroup>
+        </Col>
+        <Col lg="4">
+            <FormGroup>
+                <label
+                    className="form-control-label"
+                    htmlFor="select-department-type"
+                >
+                    Horário de Saída
+                </label>
+                <Input
+                    defaultValue={formData.departmentName}
+                    id="input-department-name"
+                    placeholder="Horário de Saída"
+                    type="text"
+                    onChange={(e) => handleInputChange('departmentName', e.target.value)}
+                >
+                </Input>
+            </FormGroup>
+        </Col>
+    </Row> 
+    <Row>
+    <Col lg="4">
+            <FormGroup>
+                <label
+                    className="form-control-label"
+                    htmlFor="select-department-type"
+                >
+                    Tipo de contrato
+                </label>
+                <Input
+                    type="select"
+                    defaultValue={formData.departmentType}
+                    id="select-department-type"
+                    onChange={(e) => handleInputChange('departmentType', e.target.value)}
+                >
+                    <option value="Público">CLT</option>
+                    <option value="Privado">PJ</option>
+                    <option value="Público">Temporário</option>
+                    <option value="Privado">Terceiro</option>
+        
+                </Input>
+            </FormGroup>
+        </Col>
+        <Col lg="4">
+            <FormGroup>
+                <label
+                    className="form-control-label"
+                    htmlFor="select-department-type"
+                >
+                    Local de Trabalho
+                </label>
+                <Input
+                    type="select"
+                    defaultValue={formData.departmentType}
+                    id="select-department-type"
+                    onChange={(e) => handleInputChange('departmentType', e.target.value)}
+                >
+                    <option value="Público">Interno</option>
+                    <option value="Privado">Externo</option>
+                    <option value="Público">Hibrido</option>
+                    <option value="Privado">Home Office</option>
+        
+                </Input>
+            </FormGroup>
+        </Col>
+    </Row>
+  </div>
+</Form>
+
               </CardBody>
             </Card>
         </ModalBody>

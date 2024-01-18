@@ -46,6 +46,12 @@ const routes = [
         miniName: "F",
         layout: "/register",
       },
+      {
+        path: "/plano",
+        name: "Plano",
+        miniName: "F",
+        layout: "/register",
+      },
     ],
   },
   {
