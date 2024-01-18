@@ -14,7 +14,7 @@ import {
     Row 
 } from "reactstrap";
 
-function ModalEnterprise({ isOpen, toggle }) {
+function ModalAdm({ isOpen, toggle }) {
 
   //const [administratorData, setAdministratorData] = useState({});
 
@@ -56,13 +56,13 @@ function ModalEnterprise({ isOpen, toggle }) {
   </h6>
   <div className="pl-lg-4">
     <Row>
-      <Col lg="6">
+      <Col lg="4">
         <FormGroup>
           <label
             className="form-control-label"
             htmlFor="input-first-name"
           >
-            Razão Social
+            Nome
           </label>
           <Input
             defaultValue={formData.name}
@@ -73,13 +73,13 @@ function ModalEnterprise({ isOpen, toggle }) {
           />
         </FormGroup>
       </Col>
-      <Col lg="6">
+      <Col lg="5">
         <FormGroup>
           <label
             className="form-control-label"
             htmlFor="input-last-name"
           >
-            Nome Fantasia
+            Sobrenome
           </label>
           <Input
             defaultValue={formData.lastname}
@@ -90,26 +90,7 @@ function ModalEnterprise({ isOpen, toggle }) {
           />
         </FormGroup>
       </Col>
-    </Row>
-    <Row>
-      <Col lg="6">
-        <FormGroup>
-          <label
-            className="form-control-label"
-            htmlFor="input-email"
-          >
-            Email
-          </label>
-          <Input
-            defaultValue={formData.email}
-            id="input-email"
-            placeholder="Email"
-            type="email"
-            onChange={(e) => handleInputChange('email', e.target.value)}
-          />
-        </FormGroup>
-      </Col>
-      <Col lg="6">
+      <Col lg="3">
         <FormGroup>
           <label
             className="form-control-label"
@@ -128,7 +109,43 @@ function ModalEnterprise({ isOpen, toggle }) {
       </Col>
     </Row>
     <Row>
-      <Col lg="6">
+      <Col lg="8">
+        <FormGroup>
+          <label
+            className="form-control-label"
+            htmlFor="input-email"
+          >
+            Email
+          </label>
+          <Input
+            defaultValue={formData.email}
+            id="input-email"
+            placeholder="Email"
+            type="email"
+            onChange={(e) => handleInputChange('email', e.target.value)}
+          />
+        </FormGroup>
+      </Col>
+      <Col lg="4">
+        <FormGroup>
+          <label
+            className="form-control-label"
+            htmlFor="input-phone"
+          >
+            Número de Contato
+          </label>
+          <Input
+            defaultValue={formData.phone}
+            id="input-phone"
+            placeholder="Número de Contato"
+            type="text"
+            onChange={(e) => handleInputChange('phone', e.target.value)}
+          />
+        </FormGroup>
+      </Col>
+    </Row>
+    <Row>
+      <Col lg="4">
         <FormGroup>
           <label
             className="form-control-label"
@@ -145,20 +162,20 @@ function ModalEnterprise({ isOpen, toggle }) {
           />
         </FormGroup>
       </Col>
-      <Col lg="6">
+      <Col lg="4">
         <FormGroup>
           <label
             className="form-control-label"
-            htmlFor="input-phone"
+            htmlFor="input-password"
           >
-            Número de Contato
+            Confirmar Senha
           </label>
           <Input
-            defaultValue={formData.phone}
-            id="input-phone"
-            placeholder="Número de Contato"
-            type="text"
-            onChange={(e) => handleInputChange('phone', e.target.value)}
+            defaultValue={formData.password}
+            id="input-password"
+            placeholder="Senha"
+            type="password"
+            onChange={(e) => handleInputChange('password', e.target.value)}
           />
         </FormGroup>
       </Col>
@@ -187,4 +204,4 @@ function ModalEnterprise({ isOpen, toggle }) {
   );
 }
 
-export default ModalEnterprise;
+export default ModalAdm;

@@ -32,7 +32,7 @@ const routes = [
         path: "/profile",
         name: "Profile",
         miniName: "A",
-        layout: "/register",
+        layout: "/employee",
       },
       {
         path: "/enterprise",

@@ -4,6 +4,7 @@ import {
   Card,
   CardBody,
   Form,
+  Label,
   FormGroup,
   Input,
   Modal,
@@ -17,6 +18,14 @@ import {
 function ModalEnterprise({ isOpen, toggle }) {
 
   //const [administratorData, setAdministratorData] = useState({});
+
+  const estadosBrasileiros = [
+    "Acre", "Alagoas", "Amapá", "Amazonas", "Bahia", "Ceará", "Distrito Federal",
+    "Espírito Santo", "Goiás", "Maranhão", "Mato Grosso", "Mato Grosso do Sul",
+    "Minas Gerais", "Pará", "Paraíba", "Paraná", "Pernambuco", "Piauí",
+    "Rio de Janeiro", "Rio Grande do Norte", "Rio Grande do Sul", "Rondônia", 
+    "Roraima", "Santa Catarina", "São Paulo", "Sergipe", "Tocantins"
+  ];
 
   const [formData, setFormData] = useState({
     name: '',
@@ -52,41 +61,58 @@ function ModalEnterprise({ isOpen, toggle }) {
           <CardBody>
             <Form>
               <h6 className="heading-small text-muted mb-4">
-                Informação do usuário
+                Informação da empresa
               </h6>
               <div className="pl-lg-4">
                 <Row>
-                  <Col lg="6">
+                  <Col lg="3">
                     <FormGroup>
                       <label
                         className="form-control-label"
                         htmlFor="input-first-name"
                       >
-                        Nome
+                        CNPJ
                       </label>
                       <Input
                         defaultValue={formData.name}
                         id="input-first-name"
-                        placeholder="Nome"
+                        placeholder="CNPJ"
                         type="text"
                         onChange={(e) => handleInputChange('name', e.target.value)}
                       />
                     </FormGroup>
                   </Col>
-                  <Col lg="6">
+                  <Col lg="5">
                     <FormGroup>
                       <label
                         className="form-control-label"
                         htmlFor="input-last-name"
                       >
-                        Sobrenome
+                        Razão social
                       </label>
                       <Input
                         defaultValue={formData.lastname}
                         id="input-last-name"
-                        placeholder="Sobrenome"
+                        placeholder="Razão Social"
                         type="text"
                         onChange={(e) => handleInputChange('lastname', e.target.value)}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col lg="4">
+                    <FormGroup>
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-email"
+                      >
+                        Nome Fantasia
+                      </label>
+                      <Input
+                        defaultValue={formData.email}
+                        id="input-email"
+                        placeholder="Nome Fantasia"
+                        type="email"
+                        onChange={(e) => handleInputChange('email', e.target.value)}
                       />
                     </FormGroup>
                   </Col>
@@ -98,31 +124,48 @@ function ModalEnterprise({ isOpen, toggle }) {
                         className="form-control-label"
                         htmlFor="input-email"
                       >
-                        Email
+                        E-mail
                       </label>
                       <Input
                         defaultValue={formData.email}
                         id="input-email"
-                        placeholder="Email"
+                        placeholder="E-mail"
                         type="email"
                         onChange={(e) => handleInputChange('email', e.target.value)}
                       />
                     </FormGroup>
                   </Col>
-                  <Col lg="6">
+                  <Col lg="3">
                     <FormGroup>
                       <label
                         className="form-control-label"
-                        htmlFor="input-birthdate"
+                        htmlFor="input-first-name"
                       >
-                        Data Aniversário
+                        Senha
                       </label>
                       <Input
-                        defaultValue={formData.birthdate}
-                        id="input-birthdate"
-                        placeholder="__/__/__"
-                        type="date"
-                        onChange={(e) => handleInputChange('birthdate', e.target.value)}
+                        defaultValue={formData.name}
+                        id="input-first-name"
+                        placeholder="Senha"
+                        type="password"
+                        onChange={(e) => handleInputChange('name', e.target.value)}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col lg="3">
+                    <FormGroup>
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-first-name"
+                      >
+                        Confirmar Senha
+                      </label>
+                      <Input
+                        defaultValue={formData.name}
+                        id="input-first-name"
+                        placeholder="Confirmar Senha"
+                        type="password"
+                        onChange={(e) => handleInputChange('name', e.target.value)}
                       />
                     </FormGroup>
                   </Col>
@@ -134,18 +177,18 @@ function ModalEnterprise({ isOpen, toggle }) {
                         className="form-control-label"
                         htmlFor="input-password"
                       >
-                        Senha
+                        Web Site
                       </label>
                       <Input
                         defaultValue={formData.password}
                         id="input-password"
-                        placeholder="Senha"
+                        placeholder="Web Site"
                         type="password"
                         onChange={(e) => handleInputChange('password', e.target.value)}
                       />
                     </FormGroup>
                   </Col>
-                  <Col lg="6">
+                  <Col lg="4">
                     <FormGroup>
                       <label
                         className="form-control-label"
@@ -164,93 +207,129 @@ function ModalEnterprise({ isOpen, toggle }) {
                   </Col>
                 </Row>
               </div>
-              <hr className="my-4" />
+            </Form>
 
+          </CardBody>
+        </Card>
+
+        <Card>
+          <CardBody>
+            <Form>
               <h6 className="heading-small text-muted mb-4">
-                Informações de contato
+                Informação do endereço
               </h6>
               <div className="pl-lg-4">
                 <Row>
-                  <Col md="12">
+                  <Col lg="3">
                     <FormGroup>
                       <label
                         className="form-control-label"
-                        htmlFor="input-address"
-                      >
-                        Rua
-                      </label>
-                      <Input
-                        defaultValue="Digite o nome da rua"
-                        id="input-address"
-                        placeholder="Digite o nome da Rua"
-                        type="text"
-                      />
-                    </FormGroup>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col lg="4">
-                    <FormGroup>
-                      <label
-                        className="form-control-label"
-                        htmlFor="input-city"
-                      >
-                        Cidade
-                      </label>
-                      <Input
-                        defaultValue="Blumenau"
-                        id="input-city"
-                        placeholder="Cidade"
-                        type="text"
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col lg="4">
-                    <FormGroup>
-                      <label
-                        className="form-control-label"
-                        htmlFor="input-country"
-                      >
-                        País
-                      </label>
-                      <Input
-                        defaultValue="Brasil"
-                        id="input-country"
-                        placeholder="País"
-                        type="text"
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col lg="4">
-                    <FormGroup>
-                      <label
-                        className="form-control-label"
-                        htmlFor="input-postal-code"
+                        htmlFor="input-first-name"
                       >
                         CEP
                       </label>
                       <Input
-                        id="input-postal-code"
-                        placeholder="Postal code"
-                        type="number"
+                        defaultValue={formData.name}
+                        id="input-first-name"
+                        placeholder="CEP"
+                        type="text"
+                        onChange={(e) => handleInputChange('name', e.target.value)}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col lg="4">
+                   <FormGroup>
+                     <Label className="form-control-label bold-text" htmlFor="select-state">
+                       Estado
+                     </Label>
+                     <Input
+                       type="select"
+                       name="select"
+                       id="select-state"
+                       value={formData.state}
+                       onChange={(e) => handleInputChange('state', e.target.value)}
+                     >
+                       <option value="">Selecione o estado</option>
+                       {estadosBrasileiros.map((estado, index) => (
+                         <option key={index} value={estado}>
+                           {estado}
+                         </option>
+                       ))}
+                     </Input>
+                   </FormGroup>
+                 </Col>
+
+                  <Col lg="5">
+                    <FormGroup>
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-email"
+                      >
+                        Cidade
+                      </label>
+                      <Input
+                        defaultValue={formData.email}
+                        id="input-email"
+                        placeholder="Cidade"
+                        type="email"
+                        onChange={(e) => handleInputChange('email', e.target.value)}
                       />
                     </FormGroup>
                   </Col>
                 </Row>
-              </div>
-              <hr className="my-4" />
-
-              <h6 className="heading-small text-muted mb-4">Sobre mim</h6>
-              <div className="pl-lg-4">
-                <FormGroup>
-                  <label className="form-control-label">Sobre mim</label>
-                  <Input
-                    placeholder="Uma breve descrição sobre você"
-                    rows="4"
-                    type="textarea"
-                    defaultValue="Uma breve descrição sobre você"
-                  />
-                </FormGroup>
+                <Row>
+                  <Col lg="3">
+                    <FormGroup>
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-email"
+                      >
+                        Pais
+                      </label>
+                      <Input
+                        defaultValue={formData.email}
+                        id="input-email"
+                        placeholder="Pais"
+                        type="email"
+                        onChange={(e) => handleInputChange('email', e.target.value)}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col lg="3">
+                    <FormGroup>
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-first-name"
+                      >
+                        Número
+                      </label>
+                      <Input
+                        defaultValue={formData.name}
+                        id="input-first-name"
+                        placeholder="Número"
+                        type="text"
+                        onChange={(e) => handleInputChange('name', e.target.value)}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col lg="6">
+                    <FormGroup>
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-first-name"
+                      >
+                        Complemento
+                      </label>
+                      <Input
+                        defaultValue={formData.name}
+                        id="input-first-name"
+                        placeholder="Complemento"
+                        type="text"
+                        onChange={(e) => handleInputChange('name', e.target.value)}
+                      />
+                    </FormGroup>
+                  </Col>
+                </Row>
               </div>
             </Form>
 

@@ -36,6 +36,12 @@ function ReportAdmin() {
     }
   };
 
+  const fakeAdmins = [
+    { id: 1, name: 'John Doe', email: 'john.doe@example.com', phone: '123-456-7890' },
+    { id: 2, name: 'Jane Doe', email: 'jane.doe@example.com', phone: '987-654-3210' },
+  ];
+  
+
   return (
     <>
       <SimpleHeader name="Admin" parentName="Ksys Sistemas" />
@@ -67,61 +73,62 @@ function ReportAdmin() {
             </Row>
           </CardHeader>
           <Table className="align-items-center table-flush" responsive>
-            <thead className="thead-light">
-              <tr>
-                <th>Nome</th>
-                <th>Criado em</th>
-                <th>Previlégios</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody className="text-center">
-                {admins.map((admin, index) => (
-                <tr key={index}>
-                  <td className="table-user">
-                    <img
-                      alt="..."
-                      className="avatar rounded-circle mr-3"
-                      src={require(`../../assets/img/theme/team-${index + 1}.jpg`)}
-                    />
-                    <b>{admin.name}</b>
-                  </td>
-                  <td>
-                    <span className="text-muted">{admin.createdAt}</span>
-                  </td>
-                  <td>
-                    <a className="font-weight-bold" href="#pablo" onClick={(e) => e.preventDefault()}>
-                      {admin.privileges}
-                    </a>
-                  </td>
-                  <td className="table-actions">
-                    <a
-                      className="table-action"
-                      href="#pablo"
-                      id={`edit${index}`}
-                      onClick={(e) => e.preventDefault()}
-                    >
-                      <i className="fas fa-user-edit" />
-                    </a>
-                    <UncontrolledTooltip delay={0} target={`edit${index}`}>
-                      Editar
-                    </UncontrolledTooltip>
-                    <a
-                      className="table-action table-action-delete"
-                      href="#pablo"
-                      id={`delete${index}`}
-                      onClick={() => deleteAdmin(admin.id)}
-                    >
-                      <i className="fas fa-trash" />
-                    </a>
-                    <UncontrolledTooltip delay={0} target={`delete${index}`}>
-                      Excluir
-                    </UncontrolledTooltip>
-                  </td>
-                </tr>
-        ))}
-      </tbody>
-          </Table>
+  <thead className="thead-light">
+    <tr>
+      <th>Nome</th>
+      <th>Email</th>
+      <th>Celular</th>
+      <th>Criado em</th>
+      <th>Previlégios</th>
+      <th />
+    </tr>
+  </thead>
+  <tbody className="text-center">
+    {fakeAdmins.map((admin) => (
+      <tr key={admin.id}>
+        <td className="table-user">
+          <img
+            alt="..."
+            className="avatar rounded-circle mr-3"
+            src={require(`../../assets/img/theme/team-${admin.id}.jpg`)}
+          />
+          <b>{admin.name}</b>
+        </td>
+        <td>
+          <span className="text-muted">{admin.email}</span>
+        </td>
+        <td>
+          <span className="text-muted">{admin.phone}</span>
+        </td>
+        <td>
+          <span className="text-muted">Data de criação fictícia</span>
+        </td>
+        <td>
+          <a
+            className="font-weight-bold"
+            href="#pablo"
+            onClick={(e) => e.preventDefault()}
+          >
+            {admin.privileges}
+          </a>
+        </td>
+        <td className="table-actions">
+          <a
+            className="table-action table-action-delete"
+            href="#pablo"
+            id={`delete${admin.id}`}
+            onClick={() => deleteAdmin(admin.id)}
+          >
+            <i className="fas fa-trash" />
+          </a>
+          <UncontrolledTooltip delay={0} target={`delete${admin.id}`}>
+            Excluir
+          </UncontrolledTooltip>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</Table>
         </Card>
       </Container>
     </>

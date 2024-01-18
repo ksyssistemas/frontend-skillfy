@@ -28,7 +28,40 @@ import {
   Col,
 } from "reactstrap";
 
+
+import ModalPlan from "../Modals/admin/ModalPlan";
+import ModalEnterprise from "../Modals/admin/ModalEnterprise"
+import ModalEmployee from "../Modals/enterprise/ModalEmployee"
+import ModalAdm from "../Modals/admin/ModalAdm"
+
 function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
+
+
+  {/** Modal  Plan*/}
+  const [modalPlanOpen, setModalPlanOpen] = React.useState(false);
+  const toggleModalPlan = () => {
+    setModalPlanOpen(!modalPlanOpen);
+  };
+
+   {/** Modal  Company*/}
+   const [modalEnterpriseOpen, setModalEnterpriseOpen] = React.useState(false);
+   const toggleModalEnterprise = () => {
+     setModalEnterpriseOpen(!modalEnterpriseOpen);
+   };
+
+   {/** Modal  Employee*/}
+   const [modalEmployeeOpen, setModalEmployeeOpen] = React.useState(false);
+   const toggleModalEmployee = () => {
+     setModalEmployeeOpen(!modalEmployeeOpen);
+   };
+
+   {/** Modal  Adm*/}
+   const [modalAdmOpen, setModalAdmOpen] = React.useState(false);
+   const toggleModalAdm = () => {
+     setModalAdmOpen(!modalAdmOpen);
+   };
+
+
   // function that on mobile devices makes the search open
   const openSearch = () => {
     document.body.classList.add("g-navbar-search-showing");
@@ -341,27 +374,31 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                     <Col
                       className="shortcut-item"
                       href="#pablo"
-                      onClick={(e) => e.preventDefault()}
+                      onClick={toggleModalAdm}
                       xs="4"
                       tag="a"
                     >
-                      <span className="shortcut-media avatar rounded-circle bg-gradient-orange">
-                        <i className="ni ni-email-83" />
+                      <span className="shortcut-media avatar rounded-circle bg-gradient-blue">
+                        <i className="ni ni-laptop" />                       
                       </span>
-                      <small>Email</small>
+                      <small>Adm</small>
                     </Col>
+                                
+                    <ModalAdm isOpen={modalAdmOpen} toggle={toggleModalAdm} />
                     <Col
                       className="shortcut-item"
                       href="#pablo"
-                      onClick={(e) => e.preventDefault()}
+                      onClick={toggleModalEnterprise}
                       xs="4"
                       tag="a"
                     >
-                      <span className="shortcut-media avatar rounded-circle bg-gradient-info">
-                        <i className="ni ni-credit-card" />
+                      <span className="shortcut-media avatar rounded-circle bg-gradient-blue">
+                        <i className="ni ni-credit-card" />                       
                       </span>
-                      <small>Pagamentos</small>
+                      <small>Empresas</small>
                     </Col>
+                                
+                    <ModalEnterprise isOpen={modalEnterpriseOpen} toggle={toggleModalEnterprise} />
                     <Col
                       className="shortcut-item"
                       href="#pablo"
@@ -377,27 +414,32 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                     <Col
                       className="shortcut-item"
                       href="#pablo"
-                      onClick={(e) => e.preventDefault()}
+                      onClick={toggleModalEmployee}
                       xs="4"
                       tag="a"
                     >
-                      <span className="shortcut-media avatar rounded-circle bg-gradient-purple">
-                        <i className="ni ni-pin-3" />
+                      <span className="shortcut-media avatar rounded-circle bg-gradient-blue">
+                        <i className="ni ni-tablet-button" />                  
                       </span>
-                      <small>Mapas</small>
+                      <small>Colaborador</small>
                     </Col>
+                                
+                    <ModalEmployee isOpen={modalEmployeeOpen} toggle={toggleModalEmployee} />
                     <Col
                       className="shortcut-item"
                       href="#pablo"
-                      onClick={(e) => e.preventDefault()}
+                      onClick={toggleModalPlan}
                       xs="4"
                       tag="a"
                     >
-                      <span className="shortcut-media avatar rounded-circle bg-gradient-yellow">
+                      <span className="shortcut-media avatar rounded-circle bg-gradient-blue">
                         <i className="ni ni-basket" />
                       </span>
                       <small>Planos</small>
                     </Col>
+                                
+                    <ModalPlan isOpen={modalPlanOpen} toggle={toggleModalPlan} />
+ 
                   </Row>
                 </DropdownMenu>
               </UncontrolledDropdown>
