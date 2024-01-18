@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Container } from "reactstrap";
 import Performance from "../../layouts/Performance";
-import PerformanceHeader from "../../components/Headers/PerformanceHeader";
-import AppraisalCycleTable from "../../components/AppraisalComponents/AppraisalList/appraisal-cycle-table";
-import AppraisalListTable from "../../components/AppraisalComponents/AppraisalList/appraisal-list-table";
+import AppraisalCycleHeader from "../../components/Headers/PerformanceHeader/AppraisalCycleHeader";
+import AppraisalListHeader from "../../components/Headers/PerformanceHeader/AppraisalListHeader";
+import AppraisalCycleTable from "../../components/Tables/AppraisalTables/appraisal-cycle-table";
+import AppraisalListTable from "../../components/Tables/AppraisalTables/appraisal-list-table";
 
 function AppraisalCycle() {
   const [admins, setAdmins] = useState([]);
@@ -45,14 +46,25 @@ function AppraisalCycle() {
 
   return (
     <>
-      <PerformanceHeader name="Ciclos de Avaliação" parentName="Desenvolvimento" />
-      <Container className="mt--6" fluid>
-        {
-          appraisalIdToBeShown 
-          ? (<AppraisalListTable/>) 
-          : (<AppraisalCycleTable handleShowAppraisalList={handleShowAppraisalList}/>)
-        }
-      </Container>
+      {
+        appraisalIdToBeShown 
+        ? (
+          <>
+            <AppraisalListHeader name="Lista de Avaliações" parentName="Desenvolvimento" />
+            <Container className="mt--6" fluid>
+              <AppraisalListTable/>
+            </Container>
+          </>
+          ) 
+        : (
+          <>
+            <AppraisalCycleHeader name="Ciclos de Avaliação" parentName="Desenvolvimento" />
+            <Container className="mt--6" fluid>
+                <AppraisalCycleTable handleShowAppraisalList={handleShowAppraisalList}/>
+            </Container>
+          </>
+          )
+      }
     </>
   );
 }

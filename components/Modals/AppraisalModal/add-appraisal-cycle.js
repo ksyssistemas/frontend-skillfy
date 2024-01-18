@@ -126,11 +126,10 @@ function AddAppraisalCycleModal({handleOpenAddAppraisalCycleModal, modalOpen}) {
         isOpen={modalOpen}
         size="xl"
         //fullscreen
-        scrollable
       >
         <div className=" modal-header">
           <h5 className=" modal-title" id="exampleModalLabel">
-            Detalhes do Ciclo de Avaliação
+            Adicionar Ciclo de Avaliação
           </h5>
           <button
             aria-label="Close"
@@ -142,9 +141,14 @@ function AddAppraisalCycleModal({handleOpenAddAppraisalCycleModal, modalOpen}) {
           </button>
         </div>
         <ModalBody>
+        <Card>
+              <CardBody>
+              <h6 className="heading-small text-muted mb-4">
+              Detalhes do Ciclo de Avaliação
+                  </h6>
           <Form className="needs-validation" noValidate>
             <div className="form-row">
-              <Col className="mb-6" md="6">
+              <Col className="mb-3" md="6">
                 <label
                   className="form-control-label"
                   htmlFor="validationCustom01"
@@ -169,7 +173,7 @@ function AddAppraisalCycleModal({handleOpenAddAppraisalCycleModal, modalOpen}) {
                 />
                 <div className="valid-feedback">Looks good!</div>
               </Col>
-              <Col className="mb-6" md="6">
+              <Col className="mb-3" md="6">
                 <label
                   className="form-control-label"
                   htmlFor="validationCustom02"
@@ -196,7 +200,7 @@ function AddAppraisalCycleModal({handleOpenAddAppraisalCycleModal, modalOpen}) {
               </Col>
             </div>
             <div className="form-row">
-              <Col className="mb-6" md="4">
+              <Col className="mb-3" md="4">
                 <label
                   className="form-control-label"
                   htmlFor="validationCustomUsername"
@@ -210,7 +214,7 @@ function AddAppraisalCycleModal({handleOpenAddAppraisalCycleModal, modalOpen}) {
                   timeFormat={false}
                 />
               </Col>
-              <Col className="mb-6" md="4">
+              <Col className="mb-3" md="4">
                 <label
                   className="form-control-label"
                   htmlFor="validationCustom03"
@@ -224,7 +228,7 @@ function AddAppraisalCycleModal({handleOpenAddAppraisalCycleModal, modalOpen}) {
                   timeFormat={false}
                 />
               </Col>
-              <Col className="mb-6" md="4">
+              <Col className="mb-3" md="4">
                 <label
                   className="form-control-label"
                   htmlFor="validationCustom04"
@@ -240,7 +244,7 @@ function AddAppraisalCycleModal({handleOpenAddAppraisalCycleModal, modalOpen}) {
               </Col>
             </div>
             <FormGroup>
-              <div className="custom-control custom-checkbox mb-6">
+              <div className="custom-control custom-checkbox mb-3">
                 <input
                   className="custom-control-input"
                   defaultValue=""
@@ -276,6 +280,8 @@ function AddAppraisalCycleModal({handleOpenAddAppraisalCycleModal, modalOpen}) {
                 Enviar formulário
               </Button> */}
             </Form>
+            </CardBody>
+            </Card>
           </ModalBody>
         <ModalFooter>
           <Button

@@ -15,6 +15,7 @@
 
 */
 import React from "react";
+import Link from "next/link";
 // nodejs library to set properties for components
 import PropTypes from "prop-types";
 // reactstrap components
@@ -25,10 +26,13 @@ import {
   Container,
   Row,
   Col,
+  Nav,
+  NavItem,
+  NavLink
 } from "reactstrap";
-import AddAppraisalCycleModal from "../AppraisalComponents/AppraisalModal/add-appraisal-cycle";
+import AddAppraisalCycleModal from "../../Modals/AppraisalModal/add-appraisal-cycle";
 
-function PerformanceHeader({ name, parentName }) {
+function AppraisalListHeader({ name, parentName }) {
 
   const [modalOpen, setModalOpen] = React.useState(false);
 
@@ -66,21 +70,34 @@ function PerformanceHeader({ name, parentName }) {
                 </Breadcrumb>
               </Col>
               <Col className="mt-3 mt-md-0 text-md-right" lg="6" xs="5">
-                <Button 
-                  className="btn-neutral" 
-                  color="default" 
-                  size="sm"
-                  onClick={handleOpenAddAppraisalCycleModal}
-                >
-                  Adicionar Ciclo  
-                </Button>
+                <Nav className="d-inline-flex">
+                  <Link href="../../../pages/performance/AddAppraisal/add-appraisal.js">
+                    <NavLink href="#pablo">
+                      <Button
+                        className="btn-neutral"
+                        color="default"
+                        size="sm"
+                      //onClick={handleOpenAddAppraisalCycleModal}
+                      >
+                        <span
+                        className="btn-inner--icon"
+                        >
+                          <i className="ni ni-ruler-pencil mr-2" />
+                        </span>
+                        <span
+                        className="nav-link-inner--text"
+                        >Adicionar Avaliação</span>
+                      </Button>
+                    </NavLink>
+                  </Link>
+                </Nav>
                 <Button className="btn-neutral" color="default" size="sm">
                   Filtros
                 </Button>
               </Col>
             </Row>
           </div>
-          <AddAppraisalCycleModal 
+          <AddAppraisalCycleModal
             handleOpenAddAppraisalCycleModal={handleOpenAddAppraisalCycleModal}
             modalOpen={modalOpen}
           />
@@ -90,9 +107,9 @@ function PerformanceHeader({ name, parentName }) {
   );
 }
 
-PerformanceHeader.propTypes = {
+AppraisalListHeader.propTypes = {
   name: PropTypes.string,
   parentName: PropTypes.string,
 };
 
-export default PerformanceHeader;
+export default AppraisalListHeader;
