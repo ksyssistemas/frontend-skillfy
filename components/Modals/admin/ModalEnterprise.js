@@ -42,7 +42,7 @@ function ModalEnterprise({ isOpen, toggle }) {
   };
 
   return (
-    <Modal toggle={toggle} isOpen={isOpen} size="lg">
+    <Modal toggle={toggle} isOpen={isOpen} size="xl">
       <div className=" modal-header">
         <h5 className=" modal-title" id="exampleModalLabel">
           Cadastrar Empresa

@@ -21,14 +21,14 @@ function ModalPlan({ isOpen, toggle }) {
     const updatedDataList = fakeDataList.filter((item) => item.id !== planId);
     setFakeDataList(updatedDataList);
   };
-  
+
 
   const [fakeDataList, setFakeDataList] = useState([
-    { id: 1, name: 'Básico', price: 'R$ 9,99' },
-    { id: 2, name: 'Intermediário', price: 'R$ 19,99' },
-    { id: 3, name: 'Avançado', price: 'R$ 29,99' },
+    { id: 1, name: 'Básico', price: 'R$ 119,90' },
+    { id: 2, name: 'Intermediário', price: 'R$ 219,90' },
+    { id: 3, name: 'Avançado', price: 'R$ 299,90' },
   ]);
-  
+
   const [planData, setPlanData] = useState({
     planName: '',
     description: '',
@@ -40,7 +40,7 @@ function ModalPlan({ isOpen, toggle }) {
   };
 
   return (
-    <Modal toggle={toggle} isOpen={isOpen} size="lg">
+    <Modal toggle={toggle} isOpen={isOpen} size="xl">
       <div className="modal-header">
         <h5 className="modal-title" id="exampleModalLabel">
           Plano
@@ -56,10 +56,10 @@ function ModalPlan({ isOpen, toggle }) {
       </div>
       <ModalBody>
 
-      <Card>
+        <Card>
           <CardBody>
             <Form>
-            <h6 className="heading-small text-muted mb-4">
+              <h6 className="heading-small text-muted mb-4">
                 Informações do Plano
               </h6>
               <div className="pl-lg-4">
@@ -79,27 +79,27 @@ function ModalPlan({ isOpen, toggle }) {
                         </ListGroupItem>
                         {fakeDataList.map((item) => (
                           <ListGroupItem key={item.id}>
-                          <Row>
-                            <Col className="text-center" lg="6">
-                              {item.name}
-                            </Col>
-                            <Col className="text-center" lg="4">
-                              {item.price}
-                            </Col>
-                            <Col className="text-center" lg="2">
-                            <a
-                              className="table-action table-action-delete"
-                              href="#pablo"
-                              //id={`delete${admin.id}`}
-                              //onClick={() => deleteAdmin(admin.id)}
-                            >
-            <i className="fas fa-trash" />
-          </a>
-                            
-                             
-                            </Col>
-                          </Row>
-                        </ListGroupItem>
+                            <Row>
+                              <Col className="text-center" lg="6">
+                                {item.name}
+                              </Col>
+                              <Col className="text-center" lg="4">
+                                {item.price}
+                              </Col>
+                              <Col className="text-center" lg="2">
+                                <a
+                                  className="table-action table-action-delete"
+                                  href="#pablo"
+                                //id={`delete${admin.id}`}
+                                //onClick={() => deleteAdmin(admin.id)}
+                                >
+                                  <i className="fas fa-trash" />
+                                </a>
+
+
+                              </Col>
+                            </Row>
+                          </ListGroupItem>
                         ))}
                       </ListGroup>
                     </FormGroup>
