@@ -18,7 +18,9 @@ import {
   Container,
   Row,
   Col,
-  Badge
+  Badge,
+  ListGroup,
+  ListGroupItem
 } from "reactstrap";
 import Performance from "../../layouts/Performance";
 import AddAppraisalHeader from "../../components/Headers/PerformanceHeader/AddAppraisalHeader"
@@ -30,8 +32,9 @@ function AddAppraisal() {
   const [startDate, setStartDate] = React.useState(null);
   const [endDate, setEndDate] = React.useState(null);
 
-  const [evaluatorsCardKey, setEvaluatorsCardKey] = useState(0);
   const [selectedSupervisorValue, setSelectedSupervisorValue] = useState([]);
+  const [selectedLeaderValue, setSelectedLeaderValue] = useState([]);
+  const [selectedPeersValue, setSelectedPeersValue] = useState([]);
 
   // useEffect(() => {
   //   async function fetchAdmins() {
@@ -129,32 +132,7 @@ function AddAppraisal() {
     return "";
   };
 
-  const handleSupervisorChange = (selectedOption) => {
-    const newValue = selectedOption.target.value;
-    console.error("selected option: " + newValue);
-    // Adiciona o supervisor selecionado ao estado
-    setSelectedSupervisorValue(prevState => [...prevState, newValue]);
-    //setEvaluatorsCardKey(evaluatorsCardKey + 1);
-  };
-
-  const handleBadgeClose = (index) => {
-    // Implemente a lógica para remover um supervisor do estado
-    const updatedSupervisors = [...selectedSupervisorValue];
-    updatedSupervisors.splice(index, 1);
-    setSelectedSupervisorValue(updatedSupervisors);
-  };
-
-  // useEffect(() => {
-  //   console.log('selectedSupervisors atualizado:', selectedSupervisors);
-  // }, [selectedSupervisors]);
-
-  function handleChange(e) {
-    const newValue = e.target.value;
-    setSelectedSupervisorValue([...selectedSupervisorValue, newValue]);
-    return null;
-  };
-
-  const data = [
+  const dataSupervisors = [
     { id: '1', text: 'João Paulo' },
     { id: '2', text: 'Pedro Alcantara' },
     { id: '3', text: 'Tiago Bernardes' },
@@ -162,6 +140,64 @@ function AddAppraisal() {
     { id: '5', text: 'Mateus Henrique' },
     { id: '6', text: 'André Santos' },
   ];
+
+  const handleSupervisorsBadgeClose = (index) => {
+    // Implemente a lógica para remover um supervisor do estado
+    const updatedSupervisors = [...selectedSupervisorValue];
+    updatedSupervisors.splice(index, 1);
+    setSelectedSupervisorValue(updatedSupervisors);
+  };
+
+  function handleChangeInSelectingSupervisor(e) {
+    const newValue = e.target.value;
+    setSelectedSupervisorValue([...selectedSupervisorValue, newValue]);
+    return null;
+  };
+
+  const dataLeaders = [
+    { id: '1', text: 'João Paulo' },
+    { id: '2', text: 'Pedro Alcantara' },
+    { id: '3', text: 'Tiago Bernardes' },
+    { id: '4', text: 'Felipe Santiago' },
+    { id: '5', text: 'Mateus Henrique' },
+    { id: '6', text: 'André Santos' },
+  ];
+
+  const handleLeadersBadgeClose = (index) => {
+    // Implemente a lógica para remover um supervisor do estado
+    const updatedLeaders = [...selectedLeaderValue];
+    updatedLeaders.splice(index, 1);
+    setSelectedLeaderValue(updatedLeaders);
+  };
+
+  function handleChangeInSelectingLeader(e) {
+    const newValue = e.target.value;
+    setSelectedLeaderValue([...selectedLeaderValue, newValue]);
+    return null;
+  };
+
+  const dataPeers = [
+    { id: '1', text: 'João Paulo' },
+    { id: '2', text: 'Pedro Alcantara' },
+    { id: '3', text: 'Tiago Bernardes' },
+    { id: '4', text: 'Felipe Santiago' },
+    { id: '5', text: 'Mateus Henrique' },
+    { id: '6', text: 'André Santos' },
+  ];
+
+  const handlePeersBadgeClose = (index) => {
+    // Implemente a lógica para remover um supervisor do estado
+    const updatedPeers = [...selectedPeersValue];
+    updatedPeers.splice(index, 1);
+    setSelectedPeersValue(updatedPeers);
+  };
+
+  function handleChangeInSelectingPeer(e) {
+    const newValue = e.target.value;
+    setSelectedPeersValue([...selectedPeersValue, newValue]);
+    return null;
+  };
+
 
   return (
     <>
@@ -511,7 +547,7 @@ function AddAppraisal() {
                   </CardBody>
                 </Card>
 
-                <Card key={evaluatorsCardKey}>
+                <Card>
                   <CardBody>
                     <h6 className="heading-small text-muted mb-4">
                       Seleção de Avaliadores e Avaliados
@@ -527,31 +563,35 @@ function AddAppraisal() {
                           options={{
                             placeholder: "Digite para obter dicas...",
                           }}
-                          data={data}
-                          value={selectedSupervisorValue} onSelect={handleChange}
+                          data={dataSupervisors}
+                          value={selectedSupervisorValue} onSelect={handleChangeInSelectingSupervisor}
                         />
                       </Col>
                       <Col className="mb-3" md="2" />
                       <Col className="mb-3" md="6">
-                        {selectedSupervisorValue.map((supervisor, index) => {
-                          const selectedData = data.find(item => item.id === supervisor);
-                          return (
-                            <Badge
-                              key={supervisor}
-                              color="secondary"
-                              className="mr-2 mb-2"
-                              style={{ fontSize: '0.75rem' }}
-                            >
-                              {selectedData ? selectedData.text : null}
-                              <span
-                                className="ml-2 badge-close"
-                                onClick={() => handleBadgeClose(index)}
+                        {
+                          selectedSupervisorValue.map((supervisor, index) => {
+                            const selectedData = dataSupervisors.find(item => item.id === supervisor);
+                            return (
+                              <Badge
+                                key={supervisor}
+                                color="secondary"
+                                className="mr-2 mb-2 bg-light"
+                                style={{ fontSize: '0.75rem' }}
                               >
-                                &times;
-                              </span>
-                            </Badge>
-                          );
-                        })}
+                                <span className="ml-2">
+                                  {selectedData ? selectedData.text : null}
+                                </span>
+                                <span
+                                  className="ml-2 mr-2 badge-close"
+                                  onClick={() => handleSupervisorsBadgeClose(index)}
+                                >
+                                  &times;
+                                </span>
+                              </Badge>
+                            );
+                          }
+                          )}
                       </Col>
                       <Col className="mb-3 mt-6" md="4">
                         <label className=" form-control-label">
@@ -559,44 +599,142 @@ function AddAppraisal() {
                         </label>
                         <Select2
                           className="form-control"
-                          defaultValue="0"
+                          //defaultValue="0"
                           options={{
-                            placeholder: "Selecione os líderes",
+                            placeholder: "Digite para obter dicas...",
                           }}
-                          data={[
-                            { id: "0", text: "Digite para obter dicas..." },
-                            { id: "1", text: "João Paulo" },
-                            { id: "2", text: "Pedro Alcantara" },
-                            { id: "3", text: "Tiago Bernardes" },
-                            { id: "4", text: "Felipe Santiago" },
-                            { id: "5", text: "Mateus Henrique" },
-                            { id: "6", text: "André Santos" },
-                          ]}
+                          data={dataLeaders}
+                          value={selectedLeaderValue} onSelect={handleChangeInSelectingLeader}
                         />
                       </Col>
-                      <Col className="mb-3" md="8" />
+                      <Col className="mb-3  mt-6" md="2" />
+                      <Col className="mb-3  mt-6" md="6">
+                        {
+                          selectedLeaderValue.map((leader, index) => {
+                            const selectedData = dataLeaders.find(item => item.id === leader);
+                            return (
+                              <Badge
+                                key={leader}
+                                color="secondary"
+                                className="mr-2 mb-2 bg-light"
+                                style={{ fontSize: '0.75rem' }}
+                              >
+                                <span className="ml-2">
+                                  {selectedData ? selectedData.text : null}
+                                </span>
+                                <span
+                                  className="ml-2 mr-2 badge-close"
+                                  onClick={() => handleLeadersBadgeClose(index)}
+                                >
+                                  &times;
+                                </span>
+                              </Badge>
+                            );
+                          }
+                          )}
+                      </Col>
                       <Col className="mb-6 mt-6" md="4">
                         <label className=" form-control-label">
                           Pares
                         </label>
                         <Select2
                           className="form-control"
-                          defaultValue="0"
+                          //defaultValue="0"
                           options={{
                             placeholder: "Selecione os pares",
                           }}
-                          data={[
-                            { id: "0", text: "Digite para obter dicas..." },
-                            { id: "1", text: "João Paulo" },
-                            { id: "2", text: "Pedro Alcantara" },
-                            { id: "3", text: "Tiago Bernardes" },
-                            { id: "4", text: "Felipe Santiago" },
-                            { id: "5", text: "Mateus Henrique" },
-                            { id: "6", text: "André Santos" },
-                          ]}
+                          data={dataPeers}
+                          value={selectedPeersValue} onSelect={handleChangeInSelectingPeer}
                         />
                       </Col>
-                      <Col className="mb-6" md="8" />
+                      <Col className="mb-3 mt-6" md="2" />
+                      <Col className="mb-3 mt-6" md="6">
+                        {
+                          selectedPeersValue.map((peer, index) => {
+                            const selectedData = dataPeers.find(item => item.id === peer);
+                            return (
+                              <Badge
+                                key={peer}
+                                color="secondary"
+                                className="mr-2 mb-2 bg-light"
+                                style={{ fontSize: '0.75rem' }}
+                              >
+                                <span className="ml-2">
+                                  {selectedData ? selectedData.text : null}
+                                </span>
+                                <span
+                                  className="ml-2 mr-2 badge-close"
+                                  onClick={() => handlePeersBadgeClose(index)}
+                                >
+                                  &times;
+                                </span>
+                              </Badge>
+                            );
+                          }
+                          )}
+                      </Col>
+                      <Col className="mb-3 mt-6" md="4">
+                        <Card>
+                          <CardBody>
+                            <Row className="align-items-center">
+                              <div className="col ml-2">
+                                <h3 className="mb-0">
+                                  <a href="#pablo" onClick={(e) => e.preventDefault()}>
+                                    Auto Avaliação
+                                  </a>
+                                </h3>
+
+                              </div>
+                              <Col className="col-auto">
+                                <div className="custom-control custom-radio">
+                                  <input
+                                    className="custom-control-input"
+                                    id="customRadio5"
+                                    name="custom-radio-1"
+                                    type="radio"
+                                  />
+                                  <label
+                                    className="custom-control-label"
+                                    htmlFor="customRadio5"
+                                  />
+                                </div>
+                              </Col>
+                            </Row>
+                          </CardBody>
+                        </Card>
+                      </Col>
+                      <Col className="mb-3 mt-6" md="4">
+                        <Card>
+                          <CardBody>
+                            <Row className="align-items-center">
+                              <div className="col ml-2">
+                                <h3 className="mb-0">
+                                  <a href="#pablo" onClick={(e) => e.preventDefault()}>
+                                    Avaliação de Liderado
+                                  </a>
+                                </h3>
+
+                              </div>
+                              <Col className="col-auto">
+                                <div className="custom-control custom-radio">
+                                  <input
+                                    className="custom-control-input"
+                                    id="customRadio5"
+                                    name="custom-radio-1"
+                                    type="radio"
+                                  />
+                                  <label
+                                    className="custom-control-label"
+                                    htmlFor="customRadio5"
+                                  />
+                                </div>
+                              </Col>
+                            </Row>
+                          </CardBody>
+                        </Card>
+                      </Col>
+                      <Col className="mb-3 mt-6" md="4" />s
+
                     </div>
                   </CardBody>
                 </Card>

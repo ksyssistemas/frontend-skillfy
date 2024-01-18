@@ -116,12 +116,12 @@ const routes = [
         miniName: "A",
         layout: "/performance",
       },
-      {
-        path: "/add-appraisal",
-        name: "Adicionar Avaliação",
-        miniName: "AD",
-        layout: "/performance",
-      },
+      // {
+      //   path: "/add-appraisal",
+      //   name: "Adicionar Avaliação",
+      //   miniName: "AD",
+      //   layout: "/performance",
+      // },
     ],
   },
   //{
