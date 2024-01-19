@@ -106,7 +106,7 @@ const routes = [
   },
   {
     collapse: true,
-    name: "Desenvolvimento",
+    name: "Desempenho",
     icon: "ni ni-paper-diploma text-orange",
     state: "appraisalsCollapse",
     views: [

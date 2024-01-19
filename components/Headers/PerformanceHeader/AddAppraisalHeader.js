@@ -66,14 +66,14 @@ function AddAppraisalHeader({ name, parentName }) {
                 </Breadcrumb>
               </Col>
               <Col className="mt-3 mt-md-0 text-md-right" lg="6" xs="5">
-                <Button 
+                {/* <Button 
                   className="btn-neutral" 
                   color="default" 
                   size="sm"
                   //onClick={handleOpenAddAppraisalCycleModal}
                 >
                   Adicionar Avaliação  
-                </Button>
+                </Button> */}
                 <Button className="btn-neutral" color="default" size="sm">
                   Filtros
                 </Button>

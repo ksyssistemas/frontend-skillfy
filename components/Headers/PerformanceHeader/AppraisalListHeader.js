@@ -71,22 +71,19 @@ function AppraisalListHeader({ name, parentName }) {
               </Col>
               <Col className="mt-3 mt-md-0 text-md-right" lg="6" xs="5">
                 <Nav className="d-inline-flex">
-                  <Link href="../../../pages/performance/AddAppraisal/add-appraisal.js">
+                  <Link href="/performance/add-appraisal">
                     <NavLink href="#pablo">
                       <Button
                         className="btn-neutral"
                         color="default"
                         size="sm"
-                      //onClick={handleOpenAddAppraisalCycleModal}
                       >
                         <span
                         className="btn-inner--icon"
                         >
                           <i className="ni ni-ruler-pencil mr-2" />
                         </span>
-                        <span
-                        className="nav-link-inner--text"
-                        >Adicionar Avaliação</span>
+                        <span className="nav-link-inner--text">Adicionar Avaliação</span>
                       </Button>
                     </NavLink>
                   </Link>

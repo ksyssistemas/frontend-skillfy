@@ -35,6 +35,7 @@ function AddAppraisal() {
   const [selectedSupervisorValue, setSelectedSupervisorValue] = useState([]);
   const [selectedLeaderValue, setSelectedLeaderValue] = useState([]);
   const [selectedPeersValue, setSelectedPeersValue] = useState([]);
+  const [selectedSubordinatesValue, setSelectedSubordinatesValue] = useState([]);
 
   // useEffect(() => {
   //   async function fetchAdmins() {
@@ -133,6 +134,7 @@ function AddAppraisal() {
   };
 
   const dataSupervisors = [
+    { id: 'all', text: 'Selecionar Todos' },
     { id: '1', text: 'João Paulo' },
     { id: '2', text: 'Pedro Alcantara' },
     { id: '3', text: 'Tiago Bernardes' },
@@ -142,7 +144,6 @@ function AddAppraisal() {
   ];
 
   const handleSupervisorsBadgeClose = (index) => {
-    // Implemente a lógica para remover um supervisor do estado
     const updatedSupervisors = [...selectedSupervisorValue];
     updatedSupervisors.splice(index, 1);
     setSelectedSupervisorValue(updatedSupervisors);
@@ -150,11 +151,18 @@ function AddAppraisal() {
 
   function handleChangeInSelectingSupervisor(e) {
     const newValue = e.target.value;
-    setSelectedSupervisorValue([...selectedSupervisorValue, newValue]);
-    return null;
+    if (newValue === 'all') {
+      const allSupervisorIds = dataSupervisors
+        .filter(item => item.id !== 'all')
+        .map(item => item.id);
+      setSelectedSupervisorValue(allSupervisorIds);
+    } else {
+      setSelectedSupervisorValue([...selectedSupervisorValue, newValue]);
+    }
   };
 
   const dataLeaders = [
+    { id: 'all', text: 'Selecionar Todos' },
     { id: '1', text: 'João Paulo' },
     { id: '2', text: 'Pedro Alcantara' },
     { id: '3', text: 'Tiago Bernardes' },
@@ -164,7 +172,6 @@ function AddAppraisal() {
   ];
 
   const handleLeadersBadgeClose = (index) => {
-    // Implemente a lógica para remover um supervisor do estado
     const updatedLeaders = [...selectedLeaderValue];
     updatedLeaders.splice(index, 1);
     setSelectedLeaderValue(updatedLeaders);
@@ -172,11 +179,18 @@ function AddAppraisal() {
 
   function handleChangeInSelectingLeader(e) {
     const newValue = e.target.value;
-    setSelectedLeaderValue([...selectedLeaderValue, newValue]);
-    return null;
+    if (newValue === 'all') {
+      const allLeaderIds = dataLeaders
+        .filter(item => item.id !== 'all')
+        .map(item => item.id);
+      setSelectedLeaderValue(allLeaderIds);
+    } else {
+      setSelectedLeaderValue([...selectedLeaderValue, newValue]);
+    }
   };
 
   const dataPeers = [
+    { id: 'all', text: 'Selecionar Todos' },
     { id: '1', text: 'João Paulo' },
     { id: '2', text: 'Pedro Alcantara' },
     { id: '3', text: 'Tiago Bernardes' },
@@ -186,7 +200,6 @@ function AddAppraisal() {
   ];
 
   const handlePeersBadgeClose = (index) => {
-    // Implemente a lógica para remover um supervisor do estado
     const updatedPeers = [...selectedPeersValue];
     updatedPeers.splice(index, 1);
     setSelectedPeersValue(updatedPeers);
@@ -194,10 +207,69 @@ function AddAppraisal() {
 
   function handleChangeInSelectingPeer(e) {
     const newValue = e.target.value;
-    setSelectedPeersValue([...selectedPeersValue, newValue]);
-    return null;
+    if (newValue === 'all') {
+      const allPeerIds = dataPeers
+        .filter(item => item.id !== 'all')
+        .map(item => item.id);
+      setSelectedPeersValue(allPeerIds);
+    } else {
+      setSelectedPeersValue([...selectedPeersValue, newValue]);
+    }
   };
 
+  const handleDrawLotsPeer = () => {
+    const peersToChooseFrom = dataPeers.filter(item => item.id !== 'all');
+
+    const randomPeers = [];
+    while (randomPeers.length < 2 && peersToChooseFrom.length > 0) {
+      const randomIndex = Math.floor(Math.random() * peersToChooseFrom.length);
+      const selectedPeer = peersToChooseFrom.splice(randomIndex, 1)[0];
+      randomPeers.push(selectedPeer.id);
+    }
+
+    setSelectedPeersValue([...selectedPeersValue, ...randomPeers]);
+  };
+
+  const dataSubordinates = [
+    { id: 'all', text: 'Selecionar Todos' },
+    { id: '1', text: 'João Paulo' },
+    { id: '2', text: 'Pedro Alcantara' },
+    { id: '3', text: 'Tiago Bernardes' },
+    { id: '4', text: 'Felipe Santiago' },
+    { id: '5', text: 'Mateus Henrique' },
+    { id: '6', text: 'André Santos' },
+  ];
+
+  const handleSubordinatesBadgeClose = (index) => {
+    const updatedSubordinates = [...selectedSubordinatesValue];
+    updatedSubordinates.splice(index, 1);
+    setSelectedSubordinatesValue(updatedSubordinates);
+  };
+
+  function handleChangeInSelectingSubordinate(e) {
+    const newValue = e.target.value;
+    if (newValue === 'all') {
+      const allSubordinateIds = dataSubordinates
+        .filter(item => item.id !== 'all')
+        .map(item => item.id);
+      setSelectedSubordinatesValue(allSubordinateIds);
+    } else {
+      setSelectedSubordinatesValue([...selectedSubordinatesValue, newValue]);
+    }
+  };
+
+  const handleDrawLotsSubordinate = () => {
+    const subordinatesToChooseFrom = dataSubordinates.filter(item => item.id !== 'all');
+
+    const randomSubordinates = [];
+    while (randomSubordinates.length < 2 && subordinatesToChooseFrom.length > 0) {
+      const randomIndex = Math.floor(Math.random() * subordinatesToChooseFrom.length);
+      const selectedSubordinate = subordinatesToChooseFrom.splice(randomIndex, 1)[0];
+      randomSubordinates.push(selectedSubordinate.id);
+    }
+
+    setSelectedSubordinatesValue([...selectedSubordinatesValue, ...randomSubordinates]);
+  };
 
   return (
     <>
@@ -241,13 +313,13 @@ function AddAppraisal() {
                                 <div className="custom-control custom-radio mb-3">
                                   <input
                                     className="custom-control-input"
-                                    id="customRadio5"
-                                    name="custom-radio-1"
+                                    id="customRadioAppraisal360degrees"
+                                    name="custom-radio-appraisal-360degrees"
                                     type="radio"
                                   />
                                   <label
                                     className="custom-control-label"
-                                    htmlFor="customRadio5"
+                                    htmlFor="customRadioAppraisal360degrees"
                                   />
                                 </div>
                               </Col>
@@ -276,13 +348,13 @@ function AddAppraisal() {
                                 <div className="custom-control custom-radio mb-3">
                                   <input
                                     className="custom-control-input"
-                                    id="customRadio5"
-                                    name="custom-radio-1"
+                                    id="customRadioAppraisal180degrees"
+                                    name="custom-radio-appraisal-180degrees"
                                     type="radio"
                                   />
                                   <label
                                     className="custom-control-label"
-                                    htmlFor="customRadio5"
+                                    htmlFor="customRadioAppraisal180degrees"
                                   />
                                 </div>
                               </Col>
@@ -311,13 +383,13 @@ function AddAppraisal() {
                                 <div className="custom-control custom-radio mb-3">
                                   <input
                                     className="custom-control-input"
-                                    id="customRadio5"
-                                    name="custom-radio-1"
+                                    id="customRadioAppraisal90degrees"
+                                    name="custom-radio--appraisal-90degrees"
                                     type="radio"
                                   />
                                   <label
                                     className="custom-control-label"
-                                    htmlFor="customRadio5"
+                                    htmlFor="customRadioAppraisal90degrees"
                                   />
                                 </div>
                               </Col>
@@ -550,10 +622,10 @@ function AddAppraisal() {
                 <Card>
                   <CardBody>
                     <h6 className="heading-small text-muted mb-4">
-                      Seleção de Avaliadores e Avaliados
+                      Seleção de Avaliadores
                     </h6>
                     <div className="form-row">
-                      <Col className="mb-3" md="4">
+                      <Col className="mb-3" md="4" name="select_supervisor">
                         <label className=" form-control-label">
                           Supervisores
                         </label>
@@ -568,7 +640,7 @@ function AddAppraisal() {
                         />
                       </Col>
                       <Col className="mb-3" md="2" />
-                      <Col className="mb-3" md="6">
+                      <Col className="mb-3" md="6" name="show_supervisor">
                         {
                           selectedSupervisorValue.map((supervisor, index) => {
                             const selectedData = dataSupervisors.find(item => item.id === supervisor);
@@ -593,7 +665,7 @@ function AddAppraisal() {
                           }
                           )}
                       </Col>
-                      <Col className="mb-3 mt-6" md="4">
+                      <Col className="mb-3 mt-6" md="4" name="select_leader">
                         <label className=" form-control-label">
                           Avaliador Líder
                         </label>
@@ -608,7 +680,7 @@ function AddAppraisal() {
                         />
                       </Col>
                       <Col className="mb-3  mt-6" md="2" />
-                      <Col className="mb-3  mt-6" md="6">
+                      <Col className="mb-3  mt-6" md="6" name="show_leader">
                         {
                           selectedLeaderValue.map((leader, index) => {
                             const selectedData = dataLeaders.find(item => item.id === leader);
@@ -633,7 +705,7 @@ function AddAppraisal() {
                           }
                           )}
                       </Col>
-                      <Col className="mb-6 mt-6" md="4">
+                      <Col className="mb-6 mt-6" md="4" name="select_peer">
                         <label className=" form-control-label">
                           Pares
                         </label>
@@ -641,14 +713,18 @@ function AddAppraisal() {
                           className="form-control"
                           //defaultValue="0"
                           options={{
-                            placeholder: "Selecione os pares",
+                            placeholder: "Digite para obter dicas...",
                           }}
                           data={dataPeers}
                           value={selectedPeersValue} onSelect={handleChangeInSelectingPeer}
                         />
                       </Col>
-                      <Col className="mb-3 mt-6" md="2" />
-                      <Col className="mb-3 mt-6" md="6">
+                      <Col className="d-flex align-items-center mb-3 mt-5" md="2" name="draw_lots_peer">
+                        <Button color="default" type="button" onClick={handleDrawLotsPeer}>
+                          Sorteio
+                        </Button>
+                      </Col>
+                      <Col className="mb-3 mt-6" md="6" name="show_peer">
                         {
                           selectedPeersValue.map((peer, index) => {
                             const selectedData = dataPeers.find(item => item.id === peer);
@@ -673,6 +749,50 @@ function AddAppraisal() {
                           }
                           )}
                       </Col>
+                      <Col className="mb-6 mt-6" md="4" name="select_subordinate">
+                        <label className=" form-control-label">
+                          Liderados
+                        </label>
+                        <Select2
+                          className="form-control"
+                          //defaultValue="0"
+                          options={{
+                            placeholder: "Digite para obter dicas...",
+                          }}
+                          data={dataSubordinates}
+                          value={selectedSubordinatesValue} onSelect={handleChangeInSelectingSubordinate}
+                        />
+                      </Col>
+                      <Col className="d-flex align-items-center mb-3 mt-5" md="2" name="draw_lots_subordinate">
+                        <Button color="default" type="button" onClick={handleDrawLotsSubordinate}>
+                          Sorteio
+                        </Button>
+                      </Col>
+                      <Col className="mb-3 mt-6" md="6" name="show_subordinate">
+                        {
+                          selectedSubordinatesValue.map((subordinate, index) => {
+                            const selectedData = dataSubordinates.find(item => item.id === subordinate);
+                            return (
+                              <Badge
+                                key={subordinate}
+                                color="secondary"
+                                className="mr-2 mb-2 bg-light"
+                                style={{ fontSize: '0.75rem' }}
+                              >
+                                <span className="ml-2">
+                                  {selectedData ? selectedData.text : null}
+                                </span>
+                                <span
+                                  className="ml-2 mr-2 badge-close"
+                                  onClick={() => handleSubordinatesBadgeClose(index)}
+                                >
+                                  &times;
+                                </span>
+                              </Badge>
+                            );
+                          }
+                          )}
+                      </Col>
                       <Col className="mb-3 mt-6" md="4">
                         <Card>
                           <CardBody>
@@ -683,19 +803,20 @@ function AddAppraisal() {
                                     Auto Avaliação
                                   </a>
                                 </h3>
-
                               </div>
                               <Col className="col-auto">
                                 <div className="custom-control custom-radio">
                                   <input
                                     className="custom-control-input"
-                                    id="customRadio5"
-                                    name="custom-radio-1"
+                                    defaultChecked
+                                    disabled
+                                    id="AutoAvaliação"
+                                    name="custom-radio-auto-avaliação"
                                     type="radio"
                                   />
                                   <label
                                     className="custom-control-label"
-                                    htmlFor="customRadio5"
+                                    htmlFor="AutoAvaliação"
                                   />
                                 </div>
                               </Col>
@@ -703,37 +824,7 @@ function AddAppraisal() {
                           </CardBody>
                         </Card>
                       </Col>
-                      <Col className="mb-3 mt-6" md="4">
-                        <Card>
-                          <CardBody>
-                            <Row className="align-items-center">
-                              <div className="col ml-2">
-                                <h3 className="mb-0">
-                                  <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                                    Avaliação de Liderado
-                                  </a>
-                                </h3>
-
-                              </div>
-                              <Col className="col-auto">
-                                <div className="custom-control custom-radio">
-                                  <input
-                                    className="custom-control-input"
-                                    id="customRadio5"
-                                    name="custom-radio-1"
-                                    type="radio"
-                                  />
-                                  <label
-                                    className="custom-control-label"
-                                    htmlFor="customRadio5"
-                                  />
-                                </div>
-                              </Col>
-                            </Row>
-                          </CardBody>
-                        </Card>
-                      </Col>
-                      <Col className="mb-3 mt-6" md="4" />s
+                      <Col className="mb-3 mt-6" md="4" />
 
                     </div>
                   </CardBody>
