@@ -25,8 +25,10 @@ import {
   Nav,
   Container,
   Row,
-  Col,
+  Col
 } from "reactstrap";
+
+import Link from "next/link";
 
 
 import ModalPlan from "../Modals/admin/ModalPlan";
@@ -156,6 +158,17 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
               </button>
             </Form>
 
+            <Nav className="mr-auto" navbar>
+              <NavItem>
+                <Link href="/register/novo">
+                  <NavLink href="#pablo">
+                    <span className="nav-link-inner--text">Cadastros</span>
+                  </NavLink>
+                </Link>
+              </NavItem>
+            </Nav>
+              
+
             <Nav className="align-items-center ml-md-auto" navbar>
               <NavItem className="d-xl-none">
                 <div
@@ -178,6 +191,17 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                   <i className="ni ni-zoom-split-in" />
                 </NavLink>
               </NavItem>
+
+
+              
+         
+
+
+
+
+
+
+
               <UncontrolledDropdown nav>
                 <DropdownToggle className="nav-link" color="" tag="a">
                   <i className="ni ni-bell-55" />
