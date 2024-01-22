@@ -127,6 +127,27 @@ function AdminNavbar() {
                   </NavLink>
                 </Link>
               </NavItem>
+              <NavItem>
+                <Link href="/performance/appraisal-cycle-list">
+                  <NavLink href="#pablo">
+                    <span className="nav-link-inner--text">Empresa</span>
+                  </NavLink>
+                </Link>
+              </NavItem>
+              <NavItem>
+                <Link href="/employee/profile">
+                  <NavLink href="#pablo">
+                    <span className="nav-link-inner--text">Colaborador</span>
+                  </NavLink>
+                </Link>
+              </NavItem>
+              <NavItem>
+                <Link href="/register/dashboard">
+                  <NavLink href="#pablo">
+                    <span className="nav-link-inner--text">Adm</span>
+                  </NavLink>
+                </Link>
+              </NavItem>
             </Nav>
             <hr className="d-lg-none" />
             <Nav className="align-items-lg-center ml-lg-auto" navbar>
