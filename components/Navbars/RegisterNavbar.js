@@ -160,6 +160,16 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
 
             <Nav className="mr-auto" navbar>
               <NavItem>
+                <Link href="/register/dashboard">
+                  <NavLink href="#pablo">
+                    <span className="nav-link-inner--text">Dashboard</span>
+                  </NavLink>
+                </Link>
+              </NavItem>
+            
+
+            
+              <NavItem>
                 <Link href="/register/novo">
                   <NavLink href="#pablo">
                     <span className="nav-link-inner--text">Cadastros</span>
