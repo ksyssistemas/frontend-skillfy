@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Button, Card, CardHeader, Container, Row, Table, UncontrolledTooltip, Col } from "reactstrap";
 import Register from "../../layouts/Register";
 import SimpleHeader from "../../components/Headers/SimpleHeader";
+import CardsHeader from "components/Headers/CardsHeaderAdmin.js";
+
+import EnterpriseList from "../../components/Forms/showEnterprise";
+import AdminListCard from "../../components/Forms/showAdm";
+import AdminRegistrationForm from "../../components/Forms/createAdm";
+import EnterpriseRegistrationForm from "../../components/Forms/createEnterprise";
+
+
+import { Container } from "reactstrap";
 
 function ReportAdmin() {
   const [admins, setAdmins] = useState([]);
@@ -37,100 +45,87 @@ function ReportAdmin() {
   };
 
   const fakeAdmins = [
-    { id: 1, name: 'John Doe', email: 'john.doe@example.com', phone: '123-456-7890' },
-    { id: 2, name: 'Jane Doe', email: 'jane.doe@example.com', phone: '987-654-3210' },
+    { id: 1, name: 'John Doe', email: 'john.doe@example.com', phone: '123-456-7890', privileges: 0 },
+    { id: 2, name: 'Jane Doe', email: 'jane.doe@example.com', phone: '987-654-3210', privileges: 1 },
   ];
-  
+
+
+  const [formData, setFormData] = useState({
+    name: '',
+    lastname: '',
+    birthdate: '',
+    email: '',
+    phone: '',
+    password: '',
+    confirmPassword: '',
+  });
+
+  const handleInputChange = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+
+  const [formDataEmployee, setFormDataEmployee] = useState({
+  });
+
+  const handleInputChangeEmployee = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  const toggleModal = () => {
+
+  };
+
+
+  const [viewMode, setViewMode] = useState('list')
+
+  const handleRegisterClick = () => {
+    console.log('Cadastrar clicado');
+    setViewMode('registration');
+  };
+
+  const handleBackToListClick = () => {
+    console.log('Voltar para a lista clicado');
+    setViewMode('list');
+  };
+
 
   return (
     <>
-      <SimpleHeader name="Admin" parentName="Ksys Sistemas" />
+      <CardsHeader name="Admin" parentName="Ksys Sistemas" />
+
       <Container className="mt--6" fluid>
-        <Card>
-          <CardHeader className="border-0">
-            <Row>
-              <Col xs="6">
-                <h3 className="mb-0">Conta Administrador</h3>
-              </Col>
-              <Col className="text-right" xs="6">
-                <Button
-                  className="btn-neutral btn-round btn-icon"
-                  color="default"
-                  href="#pablo"
-                  id="tooltip969372949"
-                  onClick={(e) => e.preventDefault()}
-                  size="sm"
-                >
-                  <span className="btn-inner--icon mr-1">
-                    <i className="fas fa-user-edit" />
-                  </span>
-                  <span className="btn-inner--text">Exportar</span>
-                </Button>
-                <UncontrolledTooltip delay={0} target="tooltip969372949">
-                  Editar
-                </UncontrolledTooltip>
-              </Col>
-            </Row>
-          </CardHeader>
-          <Table className="align-items-center table-flush" responsive>
-  <thead className="thead-light">
-    <tr>
-      <th>Nome</th>
-      <th>Email</th>
-      <th>Celular</th>
-      <th>Criado em</th>
-      <th>Previlégios</th>
-      <th />
-    </tr>
-  </thead>
-  <tbody className="text-center">
-    {fakeAdmins.map((admin) => (
-      <tr key={admin.id}>
-        <td className="table-user">
-          <img
-            alt="..."
-            className="avatar rounded-circle mr-3"
-            src={require(`../../assets/img/theme/team-${admin.id}.jpg`)}
-          />
-          <b>{admin.name}</b>
-        </td>
-        <td>
-          <span className="text-muted">{admin.email}</span>
-        </td>
-        <td>
-          <span className="text-muted">{admin.phone}</span>
-        </td>
-        <td>
-          <span className="text-muted">Data de criação fictícia</span>
-        </td>
-        <td>
-          <a
-            className="font-weight-bold"
-            href="#pablo"
-            onClick={(e) => e.preventDefault()}
-          >
-            {admin.privileges}
-          </a>
-        </td>
-        <td className="table-actions">
-          <a
-            className="table-action table-action-delete"
-            href="#pablo"
-            id={`delete${admin.id}`}
-            onClick={() => deleteAdmin(admin.id)}
-          >
-            <i className="fas fa-trash" />
-          </a>
-          <UncontrolledTooltip delay={0} target={`delete${admin.id}`}>
-            Excluir
-          </UncontrolledTooltip>
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</Table>
-        </Card>
+
+        <div>
+          {viewMode === 'registration' ? (
+            <AdminRegistrationForm onBackToListClick={handleBackToListClick} />
+          ) : (
+            <AdminListCard admins={fakeAdmins} deleteAdmin={deleteAdmin} onRegisterClick={handleRegisterClick} />
+          )}
+        </div>
+
+
+        {/*
+        <AdminListCard
+          admins={fakeAdmins}
+          deleteAdmin={deleteAdmin}
+        />
+
+          <AdminRegistrationForm /> */}
+
+        <EnterpriseList />
+
+        <EnterpriseRegistrationForm
+          formData={formDataEmployee}
+          handleInputChange={handleInputChangeEmployee}
+          toggle={toggleModal}
+        />
+
+
+
       </Container>
+
+
     </>
   );
 }

@@ -17,6 +17,8 @@
 /*eslint-disable*/
 import React from "react";
 import Link from "next/link";
+
+
 // reactstrap components
 import {
   Badge,
@@ -31,9 +33,10 @@ import {
 // core components
 import IndexNavbar from "components/Navbars/IndexNavbar.js";
 import IndexHeader from "components/Headers/IndexHeader.js";
-import AuthFooter from "components/Footers/AuthFooter.js";
+import AuthFooter from "components/Footers/RegisterFooter.js";
 
 function Index() {
+
   return (
     <>
       <IndexNavbar />
@@ -510,6 +513,7 @@ function Index() {
             </Row>
           </Container>
         </section>
+        
       </div>
       <AuthFooter />
     </>

@@ -6,6 +6,7 @@ import {
   Alert,
   Button,
   Card,
+  CardFooter,
   CardHeader,
   CardBody,
   FormGroup,
@@ -45,12 +46,12 @@ function Login() {
         },
         body: JSON.stringify(formData),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
-  
+
         let redirectUrl = 'http://localhost:3000';
-  
+
         switch (data.role) {
           case 'administrator':
             redirectUrl += '/register/dashboard';
@@ -64,9 +65,9 @@ function Login() {
           default:
             redirectUrl = 'http://localhost:3000/default';
         }
-  
+
         redirectUrl += `?id=${data.data.id}`;
-  
+
         window.location.href = redirectUrl;
       } else {
         if (response.status === 404) {
@@ -75,7 +76,7 @@ function Login() {
               <strong>Usuário não encontrado</strong>
             </Alert>
           );
-        } 
+        }
       }
     } catch (error) {
       setErro(
@@ -85,9 +86,9 @@ function Login() {
       );
     }
   };
-  
-  
-  
+
+
+
 
 
   const [focusedEmail, setfocusedEmail] = React.useState(false);
@@ -102,7 +103,8 @@ function Login() {
         <Row className="justify-content-center">
           <Col lg="5" md="7">
             <Card className="bg-secondary border-0 mb-0">
-              
+
+              {/** 
               <CardHeader className="bg-transparent pb-5">
                 <div className="text-muted text-center mt-2 mb-3">
                   <small>Entrar com</small>
@@ -125,16 +127,17 @@ function Login() {
                   </Button>
                 </div>
               </CardHeader>
-              
+               */}
               <CardBody className="px-lg-5 py-lg-5">
+                {/** 
                 <div className="text-center text-muted mb-4">
                   <small>Ou faça login com credenciais</small>
                 </div>
-
+               */}
                 {/** begin form */}
 
                 <Form role="form">
-                {erro && <p>{erro}</p>}
+                  {erro && <p>{erro}</p>}
                   <FormGroup
                     className={classnames("mb-3", {
                       focused: focusedEmail,
@@ -189,17 +192,31 @@ function Login() {
                     </label>
                   </div>
                   <div className="text-center">
-                  <Button className="my-4" color="info" type="button" onClick={handleSubmit}>
-                    Entrar
+                    <Button className="my-4" color="info" type="button" onClick={handleSubmit}>
+                      Entrar
                     </Button>
 
 
                   </div>
                 </Form>
-                  {/** End form */}
+                {/** End form */}
 
               </CardBody>
+              <CardFooter className="text-center">
+                <Row className="mt-3">
+                  <Col xs="12">
+                    <a
+                      className="text-muted"
+                      href="#pablo"
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      <small>Esqueceu sua senha?</small>
+                    </a>
+                  </Col>
+                </Row>
+              </CardFooter>
             </Card>
+            {/*
             <Row className="mt-3">
               <Col xs="6">
                 <a
@@ -210,8 +227,8 @@ function Login() {
                   <small>Esqueceu sua senha?</small>
                 </a>
               </Col>
-             
-            </Row>
+
+                  </Row> */}
           </Col>
         </Row>
       </Container>

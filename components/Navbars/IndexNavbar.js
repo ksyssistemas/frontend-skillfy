@@ -213,6 +213,7 @@ function AdminNavbar() {
                   Star us on Github
                 </UncontrolledTooltip>
               </NavItem>
+              {/*
               <NavItem className="d-none d-lg-block ml-lg-4">
                 <Button
                   className="btn-neutral btn-icon"
@@ -226,6 +227,7 @@ function AdminNavbar() {
                   <span className="nav-link-inner--text">Purchase now</span>
                 </Button>
               </NavItem>
+            */}
             </Nav>
           </UncontrolledCollapse>
         </Container>

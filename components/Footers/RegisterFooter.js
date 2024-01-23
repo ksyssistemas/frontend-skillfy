@@ -25,7 +25,7 @@ function RegisterFooter() {
                   href="#"
                   target="_blank"
                 >
-                  Ksys Systemas & Véli
+                  Twig | todos os direitos reservados
                 </a>
               </div>
             </Col>
