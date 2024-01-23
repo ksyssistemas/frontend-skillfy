@@ -46,7 +46,7 @@ function IndexHeader() {
                     <Button
                       className="my-2"
                       color="default"
-                      href="https://www.creative-tim.com/product/nextjs-argon-dashboard-pro?ref=njsadp-auth-navbar"
+                      href="/auth/pricing"
                     >
                       Contratar Plano
                     </Button>

@@ -254,7 +254,7 @@ function Index() {
                   <p>
                   Desfrute de um ambiente centralizado para gestão de recursos humanos. Com a nossa plataforma, você pode criar pesquisas, cadastrar funcionários e utilizar os recursos essenciais do Twig em um único lugar. Simplifique e otimize sua gestão de RH, garantindo eficiência e praticidade em cada etapa.
                   </p>
-                  <Link href="/admin/widgets">
+                  <Link href="/auth/pricing">
                     <a className="font-weight-bold text-info mt-5">
                       Contratar Plano
                     </a>
@@ -302,7 +302,7 @@ function Index() {
                   <Button
                     className="mt-3 mt-md-0"
                     color="default"
-                    href="https://nucleoapp.com/?ref=1712"
+                    href="/auth/pricing"
                     target="_blank"
                   >
                     Contratar Plano
@@ -373,7 +373,7 @@ function Index() {
                   <Button
                     className="btn-icon mb-3 mb-sm-0"
                     color="info"
-                    href="https://www.creative-tim.com/product/nextjs-argon-dashboard-pro?ref=njsadp-index-page"
+                    href="/auth/pricing"
                     target="_blank"
                   >
                     <span className="btn-inner--icon">
