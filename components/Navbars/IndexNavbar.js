@@ -92,6 +92,7 @@ function AdminNavbar() {
               </Row>
             </div>
             <Nav className="mr-auto" navbar>
+              {/*
               <NavItem>
                 <Link href="/admin/dashboard">
                   <NavLink href="#pablo">
@@ -99,13 +100,15 @@ function AdminNavbar() {
                   </NavLink>
                 </Link>
               </NavItem>
+              */}
               <NavItem>
                 <Link href="/auth/pricing">
                   <NavLink href="#pablo">
-                    <span className="nav-link-inner--text">Pricing</span>
+                    <span className="nav-link-inner--text">Planos</span>
                   </NavLink>
                 </Link>
               </NavItem>
+              {/** 
               <NavItem>
                 <Link href="/auth/login">
                   <NavLink href="#pablo">
@@ -113,6 +116,7 @@ function AdminNavbar() {
                   </NavLink>
                 </Link>
               </NavItem>
+              
               <NavItem>
                 <Link href="/auth/register">
                   <NavLink href="#pablo">
@@ -120,6 +124,8 @@ function AdminNavbar() {
                   </NavLink>
                 </Link>
               </NavItem>
+
+
               <NavItem>
                 <Link href="/auth/lock">
                   <NavLink href="#pablo">
@@ -127,6 +133,8 @@ function AdminNavbar() {
                   </NavLink>
                 </Link>
               </NavItem>
+
+              */}
               <NavItem>
                 <Link href="/performance/appraisal-cycle-list">
                   <NavLink href="#pablo">

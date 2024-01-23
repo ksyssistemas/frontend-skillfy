@@ -36,7 +36,7 @@ import AuthHeader from "components/Headers/AuthHeader.js";
 function Pricing() {
   return (
     <>
-      <AuthHeader title="Choose the best plan for your business" lead="" />
+      <AuthHeader title="Escolha o melhor plano para o seu negócio" lead="" />
       <Container className="mt--8 pb-5">
         <Row className="justify-content-center">
           <Col lg="10">
@@ -44,11 +44,11 @@ function Pricing() {
               <Card className="card-pricing border-0 text-center mb-4">
                 <CardHeader className="bg-transparent">
                   <h4 className="text-uppercase ls-1 text-info py-3 mb-0">
-                    Bravo pack
+                    Plano Básico
                   </h4>
                 </CardHeader>
                 <CardBody className="px-lg-7">
-                  <div className="display-2">$49</div>
+                  <div className="display-2">R$49</div>
                   <span className="text-muted">per application</span>
                   <ul className="list-unstyled my-4">
                     <li>
@@ -59,7 +59,7 @@ function Pricing() {
                           </div>
                         </div>
                         <div>
-                          <span className="pl-2">Complete documentation</span>
+                          <span className="pl-2">Pesquisas de Desempenho</span>
                         </div>
                       </div>
                     </li>
@@ -72,7 +72,7 @@ function Pricing() {
                         </div>
                         <div>
                           <span className="pl-2">
-                            Working materials in Sketch
+                          Avaliações de Competências
                           </span>
                         </div>
                       </div>
@@ -85,10 +85,23 @@ function Pricing() {
                           </div>
                         </div>
                         <div>
-                          <span className="pl-2">2GB cloud storage</span>
+                          <span className="pl-2">Feedback 360 Graus</span>
                         </div>
                       </div>
                     </li>
+                    <li>
+                      <div className="d-flex align-items-center">
+                        <div>
+                          <div className="icon icon-xs icon-shape bg-gradient-info shadow rounded-circle text-white">
+                            <i className="fas fa-hdd" />
+                          </div>
+                        </div>
+                        <div>
+                          <span className="pl-2">Enquetes de Engajamento</span>
+                        </div>
+                      </div>
+                    </li>
+                    
                   </ul>
                   <Button className="mb-3" color="info" type="button">
                     Start free trial
@@ -107,7 +120,7 @@ function Pricing() {
               <Card className="card-pricing bg-gradient-success zoom-in shadow-lg rounded border-0 text-center mb-4">
                 <CardHeader className="bg-transparent">
                   <h4 className="text-uppercase ls-1 text-white py-3 mb-0">
-                    Alpha pack
+                    Plano Intermediário
                   </h4>
                 </CardHeader>
                 <CardBody className="px-lg-7">
@@ -180,11 +193,9 @@ function Pricing() {
               <i className="ni ni-building text-primary" />
             </div>
           </div>
-          <Col lg="6">
-            <p className="text-white">
-              <strong>The Arctic Ocean</strong> freezes every winter and much of
-              the sea-ice then thaws every summer, and that process will
-              continue whatever.
+          <Col lg="10">
+            <p className="text-white text-justify">
+              <strong>A Twig</strong> oferece pesquisas direcionadas ao desempenho e aprendizado dos colaboradores, incluindo avaliações 360 graus, pesquisas de competências e enquetes de engajamento. Com funcionalidades de acompanhamento do aprendizado e autoavaliação de competências, promove o desenvolvimento contínuo. Integrando pesquisas de reconhecimento, bem-estar, diversidade e inclusão, proporciona uma abordagem completa para aprimorar a eficácia e satisfação no ambiente de trabalho.
             </p>
           </Col>
         </div>
@@ -194,19 +205,19 @@ function Pricing() {
               <thead>
                 <tr>
                   <th className="px-0 bg-transparent" scope="col">
-                    <span className="text-light font-weight-700">Features</span>
+                    <span className="text-light font-weight-700">Recursos</span>
                   </th>
                   <th className="text-center bg-transparent" scope="col">
-                    Bravo Pack
+                    Plano Intermediário
                   </th>
                   <th className="text-center bg-transparent" scope="col">
-                    Alpha Pack
+                    Plano Básico
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td className="px-0">IMAP/POP Support</td>
+                  <td className="px-0">Pesquisas de Desempenho Individual</td>
                   <td className="text-center">
                     <i className="fas fa-check text-success" />
                   </td>
@@ -215,7 +226,7 @@ function Pricing() {
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-0">Email Forwarding</td>
+                  <td className="px-0">Avaliações de Competências</td>
                   <td className="text-center">
                     <i className="fas fa-check text-success" />
                   </td>
@@ -224,27 +235,25 @@ function Pricing() {
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-0">Active Sync</td>
+                  <td className="px-0">Acompanhamento do Aprendizado</td>
                   <td className="text-center">
                     <i className="fas fa-check text-success" />
                   </td>
-                  <td className="text-center">
-                    <i className="fas fa-check text-success" />
-                  </td>
+                  <td className="text-center">-</td>
                 </tr>
                 <tr>
-                  <td className="px-0">Multiple domain hosting</td>
+                  <td className="px-0">Feedback 360 Graus</td>
                   <td className="text-center">
                     <i className="fas fa-check text-success" />
                   </td>
                   <td className="text-center">
                     <span className="text-sm text-light">
-                      Limited to 1 domain only
+                      Limitado a apenas 10 Colaboradores
                     </span>
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-0">Additional storage upgrade</td>
+                  <td className="px-0">Enquetes de Engajamento</td>
                   <td className="text-center">
                     <i className="fas fa-check text-success" />
                   </td>
@@ -253,21 +262,21 @@ function Pricing() {
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-0">30MB Attachment Limit</td>
+                  <td className="px-0">Pesquisas de Clima Organizacional</td>
                   <td className="text-center">
                     <i className="fas fa-check text-success" />
                   </td>
                   <td className="text-center">-</td>
                 </tr>
                 <tr>
-                  <td className="px-0">Password protected / Expiry links</td>
+                  <td className="px-0">Autoavaliação de Competências</td>
                   <td className="text-center">
                     <i className="fas fa-check text-success" />
                   </td>
                   <td className="text-center">-</td>
                 </tr>
                 <tr>
-                  <td className="px-0">Unlimited Custom Apps</td>
+                  <td className="px-0">Pesquisas de Diversidade e Inclusão</td>
                   <td className="text-center">
                     <i className="fas fa-check text-success" />
                   </td>
