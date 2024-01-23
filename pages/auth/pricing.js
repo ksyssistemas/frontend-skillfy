@@ -47,19 +47,19 @@ function Pricing() {
                     Plano Básico
                   </h4>
                 </CardHeader>
-                <CardBody className="px-lg-7">
-                  <div className="display-2">R$49</div>
-                  <span className="text-muted">per application</span>
+                <CardBody className="px-lg-5">
+                  <div className="display-2">R$99</div>
+                  <span className="text-muted">por empresa</span>
                   <ul className="list-unstyled my-4">
                     <li>
                       <div className="d-flex align-items-center">
                         <div>
                           <div className="icon icon-xs icon-shape bg-gradient-info shadow rounded-circle text-white">
-                            <i className="fas fa-terminal" />
+                          <i className="fas fa-chart-line" />
                           </div>
                         </div>
                         <div>
-                          <span className="pl-2">Pesquisas de Desempenho</span>
+                          <span className="pl-2">Pesquisas de Desempenho Individual</span>
                         </div>
                       </div>
                     </li>
@@ -67,7 +67,7 @@ function Pricing() {
                       <div className="d-flex align-items-center">
                         <div>
                           <div className="icon icon-xs icon-shape bg-gradient-info shadow rounded-circle text-white">
-                            <i className="fas fa-pen-fancy" />
+                          <i className="fas fa-trophy" />
                           </div>
                         </div>
                         <div>
@@ -81,7 +81,7 @@ function Pricing() {
                       <div className="d-flex align-items-center">
                         <div>
                           <div className="icon icon-xs icon-shape bg-gradient-info shadow rounded-circle text-white">
-                            <i className="fas fa-hdd" />
+                          <i className="fas fa-comments" />
                           </div>
                         </div>
                         <div>
@@ -93,7 +93,7 @@ function Pricing() {
                       <div className="d-flex align-items-center">
                         <div>
                           <div className="icon icon-xs icon-shape bg-gradient-info shadow rounded-circle text-white">
-                            <i className="fas fa-hdd" />
+                          <i className="fas fa-poll" />
                           </div>
                         </div>
                         <div>
@@ -104,7 +104,7 @@ function Pricing() {
                     
                   </ul>
                   <Button className="mb-3" color="info" type="button">
-                    Start free trial
+                    Contratar Plano
                   </Button>
                 </CardBody>
                 <CardFooter>
@@ -113,7 +113,7 @@ function Pricing() {
                     href="#pablo"
                     onClick={(e) => e.preventDefault()}
                   >
-                    Request a demo
+                    Falar com um consultor
                   </a>
                 </CardFooter>
               </Card>
@@ -123,20 +123,20 @@ function Pricing() {
                     Plano Intermediário
                   </h4>
                 </CardHeader>
-                <CardBody className="px-lg-7">
+                <CardBody className="px-lg-5">
                   <div className="display-1 text-white">$199</div>
-                  <span className="text-white">per application</span>
+                  <span className="text-white">por empresa</span>
                   <ul className="list-unstyled my-4">
                     <li>
                       <div className="d-flex align-items-center">
                         <div>
                           <div className="icon icon-xs icon-shape bg-white shadow rounded-circle text-muted">
-                            <i className="fas fa-terminal" />
+                          <i className="fas fa-chart-line" />
                           </div>
                         </div>
                         <div>
                           <span className="pl-2 text-white">
-                            Complete documentation
+                          Pesquisas de Desempenho Individual
                           </span>
                         </div>
                       </div>
@@ -145,12 +145,12 @@ function Pricing() {
                       <div className="d-flex align-items-center">
                         <div>
                           <div className="icon icon-xs icon-shape bg-white shadow rounded-circle text-muted">
-                            <i className="fas fa-pen-fancy" />
+                          <i className="fas fa-trophy" />
                           </div>
                         </div>
                         <div>
                           <span className="pl-2 text-white">
-                            Working materials in Sketch
+                          Avaliações de Competências
                           </span>
                         </div>
                       </div>
@@ -159,19 +159,89 @@ function Pricing() {
                       <div className="d-flex align-items-center">
                         <div>
                           <div className="icon icon-xs icon-shape bg-white shadow rounded-circle text-muted">
-                            <i className="fas fa-hdd" />
+                          <i className="fas fa-graduation-cap" />
                           </div>
                         </div>
                         <div>
                           <span className="pl-2 text-white">
-                            2GB cloud storage
+                          Acompanhamento do Aprendizado
+                          </span>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div className="d-flex align-items-center">
+                        <div>
+                          <div className="icon icon-xs icon-shape bg-white shadow rounded-circle text-muted">
+                          <i className="fas fa-comments" />
+                          </div>
+                        </div>
+                        <div>
+                          <span className="pl-2 text-white">
+                          Feedback 360 Graus
+                          </span>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div className="d-flex align-items-center">
+                        <div>
+                          <div className="icon icon-xs icon-shape bg-white shadow rounded-circle text-muted">
+                          <i className="fas fa-poll" />
+                          </div>
+                        </div>
+                        <div>
+                          <span className="pl-2 text-white">
+                          Enquetes de Engajamento
+                          </span>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div className="d-flex align-items-center">
+                        <div>
+                          <div className="icon icon-xs icon-shape bg-white shadow rounded-circle text-muted">
+                          <i className="fas fa-sun" />
+                          </div>
+                        </div>
+                        <div>
+                          <span className="pl-2 text-white">
+                          Pesquisas de Clima Organizacional
+                          </span>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div className="d-flex align-items-center">
+                        <div>
+                          <div className="icon icon-xs icon-shape bg-white shadow rounded-circle text-muted">
+                          <i className="fas fa-user-check" />
+                          </div>
+                        </div>
+                        <div>
+                          <span className="pl-2 text-white">
+                          Autoavaliação de Competências
+                          </span>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div className="d-flex align-items-center">
+                        <div>
+                          <div className="icon icon-xs icon-shape bg-white shadow rounded-circle text-muted">
+                          <i className="fas fa-users" />
+                          </div>
+                        </div>
+                        <div>
+                          <span className="pl-2 text-white">
+                          Pesquisas de Diversidade e Inclusão
                           </span>
                         </div>
                       </div>
                     </li>
                   </ul>
                   <Button className="mb-3" color="secondary" type="button">
-                    Start free trial
+                    Contratar Plano
                   </Button>
                 </CardBody>
                 <CardFooter className="bg-transparent">
@@ -180,7 +250,7 @@ function Pricing() {
                     href="#pablo"
                     onClick={(e) => e.preventDefault()}
                   >
-                    Contact sales
+                    Falar com um Consultor
                   </a>
                 </CardFooter>
               </Card>

@@ -29,21 +29,18 @@ function IndexHeader() {
               <Col lg="6">
                 <div className="pr-5">
                   <h1 className="display-2 text-white font-weight-bold mb-0">
-                    NextJS Argon Dashboard PRO
+                    Twig
                   </h1>
-                  <h2 className="display-4 text-white font-weight-light">
-                    A beautiful premium dashboard for NextJS, Bootstrap 4, React
-                    and Reactstrap.
-                  </h2>
+                  <h5 className="display-4 text-white font-weight-light">
+                  Conecte-se de forma verdadeira com as pessoas e desperte o seu maior potencial
+                  </h5>
                   <p className="text-white mt-4">
-                    Argon perfectly combines reusable HTML and modular CSS with
-                    a modern styling and beautiful markup throughout each HTML
-                    template in the pack.
+                  Visando eficiência na tomada de decisões de recursos humanos, integramos avaliações de desempenho, pesquisas de competências e enquetes de engajamento. Essa abordagem é implementada por meio de pesquisas 360 graus, proporcionando dados significativos para embasar estratégias eficazes de gestão de pessoas
                   </p>
                   <div className="mt-5">
                     <Link href="/admin/dashboard">
                       <Button className="btn-neutral my-2" color="default">
-                        Explore Dashboard
+                        Conhecer Twig
                       </Button>
                     </Link>
                     <Button
@@ -51,7 +48,7 @@ function IndexHeader() {
                       color="default"
                       href="https://www.creative-tim.com/product/nextjs-argon-dashboard-pro?ref=njsadp-auth-navbar"
                     >
-                      Purchase now
+                      Contratar Plano
                     </Button>
                   </div>
                 </div>
@@ -62,21 +59,20 @@ function IndexHeader() {
                     <Card>
                       <CardBody>
                         <div className="icon icon-shape bg-gradient-red text-white rounded-circle shadow mb-4">
-                          <i className="ni ni-active-40" />
+                        <i className="ni ni-chart-bar-32" />
                         </div>
-                        <h5 className="h3">Components</h5>
-                        <p>Argon comes with over 70 handcrafted components.</p>
+                        <h5 className="h3">Pesquisas de Desempenho Individual</h5>
+                        <p>Avaliação do desempenho de cada colaborador em diferentes áreas</p>
                       </CardBody>
                     </Card>
                     <Card>
                       <CardBody>
                         <div className="icon icon-shape bg-gradient-info text-white rounded-circle shadow mb-4">
-                          <i className="ni ni-active-40" />
+                        <i className="ni ni-chat-round" />
                         </div>
-                        <h5 className="h3">Plugins</h5>
+                        <h5 className="h3">Feedback 360 Graus</h5>
                         <p>
-                          Fully integrated and extendable third-party plugins
-                          that you will love.
+                        Coleta de feedback de colegas, subordinados e superiores para uma visão holística do desempenho
                         </p>
                       </CardBody>
                     </Card>
@@ -85,22 +81,21 @@ function IndexHeader() {
                     <Card className="mb-4">
                       <CardBody>
                         <div className="icon icon-shape bg-gradient-success text-white rounded-circle shadow mb-4">
-                          <i className="ni ni-active-40" />
+                        <i className="ni ni-satisfied" />
                         </div>
-                        <h5 className="h3">Pages</h5>
+                        <h5 className="h3">Enquetes de Engajamento</h5>
                         <p>
-                          From simple to complex, you get a beautiful set of 15+
-                          page examples.
+                        Pesquisas regulares para medir o nível de engajamento e satisfação dos colaboradores
                         </p>
                       </CardBody>
                     </Card>
                     <Card className="mb-4">
                       <CardBody>
                         <div className="icon icon-shape bg-gradient-warning text-white rounded-circle shadow mb-4">
-                          <i className="ni ni-active-40" />
+                        <i className="ni ni-building" />
                         </div>
-                        <h5 className="h3">Documentation</h5>
-                        <p>You will love how easy is to to work with Argon.</p>
+                        <h5 className="h3">Pesquisas de Clima Organizacional</h5>
+                        <p>Avaliação do ambiente de trabalho, identificando pontos fortes e áreas de melhoria</p>
                       </CardBody>
                     </Card>
                   </Col>

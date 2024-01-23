@@ -47,15 +47,10 @@ function Index() {
             <Row className="justify-content-center text-center">
               <Col md="6">
                 <h2 className="display-3 text-white">
-                  A complete React and NextJS solution
+                  Twig é mais do que uma solução
                 </h2>
                 <p className="lead text-white">
-                  Argon is a completly new product built on our newest re-built
-                  from scratch framework structure that is meant to make our
-                  products more intuitive, more adaptive and, needless to say,
-                  so much easier to customize. Let Argon amaze you with its cool
-                  features and build tools and get your project to a whole new
-                  level.
+                  Promova a colaboração e desenvolvimento contínuo com feedbacks abrangentes de colegas, subordinados e superiores. Na Twig, a interação entre as partes é valorizada para impulsionar o crescimento profissional
                 </p>
               </Col>
             </Row>
@@ -70,27 +65,24 @@ function Index() {
                     <Card className="card-lift--hover shadow border-0">
                       <CardBody className="py-5">
                         <div className="icon icon-shape bg-gradient-info text-white rounded-circle mb-4">
-                          <i className="ni ni-check-bold" />
+                          <i className="fas fa-chart-bar" />
                         </div>
                         <h4 className="h3 text-info text-uppercase">
-                          Based on React, NextJS and Reactstrap
+                          Avaliações de Competências
                         </h4>
                         <p className="description mt-3">
-                          Argon is built on top of the most popular open source
-                          toolkit for developing with HTML, CSS, and JS.
-                        </p>
-                        <div>
+                          Eleve o desempenho da equipe com avaliações personalizadas.</p><div>
                           <Badge color="info" pill>
-                            react
+                            Competência
                           </Badge>
                           <Badge color="info" pill>
-                            reactstrap
+                            Desempenho
                           </Badge>
                           <Badge color="info" pill>
-                            dashboard
+                            Habilidades
                           </Badge>
                           <Badge color="info" pill>
-                            template
+                            Avaliações
                           </Badge>
                         </div>
                       </CardBody>
@@ -100,21 +92,25 @@ function Index() {
                     <Card className="card-lift--hover shadow border-0">
                       <CardBody className="py-5">
                         <div className="icon icon-shape bg-gradient-success text-white rounded-circle mb-4">
-                          <i className="ni ni-istanbul" />
+                          <i className="fas fa-users" />
                         </div>
                         <h4 className="h3 text-success text-uppercase">
-                          Integrated build tools
+                          Pesquisas de Inclusão
                         </h4>
                         <p className="description mt-3">
-                          Use Argons's included npm scripts to compile source
-                          code, scss and more with just a few simple commands.
-                        </p>
+                          Promova uma cultura diversificada com pesquisas significativas.</p>
                         <div>
                           <Badge color="success" pill>
-                            npm
+                            Diversidade
                           </Badge>
                           <Badge color="success" pill>
-                            build tools
+                            Inclusão
+                          </Badge>
+                          <Badge color="success" pill>
+                            Cultura
+                          </Badge>
+                          <Badge color="success" pill>
+                            Pesquisas
                           </Badge>
                         </div>
                       </CardBody>
@@ -124,25 +120,26 @@ function Index() {
                     <Card className="card-lift--hover shadow border-0">
                       <CardBody className="py-5">
                         <div className="icon icon-shape bg-gradient-warning text-white rounded-circle mb-4">
-                          <i className="ni ni-planet" />
+                          <i className="fas fa-comments" />
                         </div>
                         <h4 className="h3 text-warning text-uppercase">
-                          Full Sass support
+                          Feedback 360 Graus
                         </h4>
                         <p className="description mt-3">
-                          Argon makes customization easier than ever before. You
-                          get all the tools to make your website building
-                          process a breeze.
+                          Fomente a colaboração e crescimento com feedback abrangente.
                         </p>
                         <div>
                           <Badge color="warning" pill>
-                            sass
+                            Feedback
                           </Badge>
                           <Badge color="warning" pill>
-                            design
+                            Colaboração
                           </Badge>
                           <Badge color="warning" pill>
-                            customize
+                            Crescimento
+                          </Badge>
+                          <Badge color="warning" pill>
+                            Desenvolvimento
                           </Badge>
                         </div>
                       </CardBody>
@@ -165,22 +162,20 @@ function Index() {
               </Col>
               <Col className="order-md-1" md="6">
                 <div className="pr-md-5">
-                  <h1>Awesome features</h1>
+                  <h1>Central de RH Unificada</h1>
                   <p>
-                    The kit comes with three pre-built pages to help you get
-                    started faster. You can change the text and images and
-                    you're good to go.
+                    Uma única plataforma para criar pesquisas, cadastrar funcionários e utilizar os recursos essenciais do Twig. Simplifique sua gestão de RH com eficiência e praticidade.
                   </p>
                   <ul className="list-unstyled mt-5">
                     <li className="py-2">
                       <div className="d-flex align-items-center">
                         <div>
                           <Badge className="badge-circle mr-3" color="success">
-                            <i className="ni ni-settings-gear-65" />
+                          <i className="fas fa-chart-line" />
                           </Badge>
                         </div>
                         <div>
-                          <h4 className="mb-0">Carefully crafted components</h4>
+                          <h4 className="mb-0">Avaliação de Desempenho 90°</h4>
                         </div>
                       </div>
                     </li>
@@ -188,11 +183,11 @@ function Index() {
                       <div className="d-flex align-items-center">
                         <div>
                           <Badge className="badge-circle mr-3" color="success">
-                            <i className="ni ni-html5" />
+                          <i className="fas fa-chart-bar" />
                           </Badge>
                         </div>
                         <div>
-                          <h4 className="mb-0">Amazing page examples</h4>
+                        <h4 className="mb-0">Avaliação de Desempenho 180&deg;</h4>
                         </div>
                       </div>
                     </li>
@@ -200,11 +195,11 @@ function Index() {
                       <div className="d-flex align-items-center">
                         <div>
                           <Badge className="badge-circle mr-3" color="success">
-                            <i className="ni ni-satisfied" />
+                          <i className="fas fa-users" />
                           </Badge>
                         </div>
                         <div>
-                          <h4 className="mb-0">Super friendly support team</h4>
+                        <h4 className="mb-0">Avaliação de Desempenho 360&deg;</h4>
                         </div>
                       </div>
                     </li>
@@ -226,15 +221,16 @@ function Index() {
               </Col>
               <Col md="6">
                 <div className="pr-md-5">
-                  <h1>Example pages</h1>
+                  <h1>Análise Métrica de Desempenho</h1>
                   <p>
-                    If you want to get inspiration or just show something
-                    directly to your clients, you can jump start your
-                    development with our pre-built example pages.
+                  Explore nossa plataforma para análise métrica de desempenho. 
+                  Obtenha insights precisos, avaliando cada métrica essencial. 
+                  Simplificamos o processo para que você possa tomar decisões 
+                  e aprimorar continuamente a sua excelência.
                   </p>
-                  <Link href="/admin/profile">
+                  <Link href="/auth/login">
                     <a className="font-weight-bold text-warning mt-5">
-                      Explore pages
+                      Conhecer Twig
                     </a>
                   </Link>
                 </div>
@@ -254,17 +250,13 @@ function Index() {
               </Col>
               <Col className="order-md-1" md="6">
                 <div className="pr-md-5">
-                  <h1>Lovable widgets and cards</h1>
+                  <h1>Ambiente Integrado de Recursos Humanos</h1>
                   <p>
-                    We love cards and everybody on the web seems to. We have
-                    gone above and beyond with options for you to organise your
-                    information. From cards designed for content, to pricing
-                    cards or user profiles, you will have many options to choose
-                    from.
+                  Desfrute de um ambiente centralizado para gestão de recursos humanos. Com a nossa plataforma, você pode criar pesquisas, cadastrar funcionários e utilizar os recursos essenciais do Twig em um único lugar. Simplifique e otimize sua gestão de RH, garantindo eficiência e praticidade em cada etapa.
                   </p>
                   <Link href="/admin/widgets">
                     <a className="font-weight-bold text-info mt-5">
-                      Explore widgets
+                      Contratar Plano
                     </a>
                   </Link>
                 </div>
@@ -276,20 +268,36 @@ function Index() {
           <Container>
             <Row className="justify-content-center">
               <Col className="text-center" lg="8">
-                <h2 className="display-3">Nucleo Icons</h2>
+                <h2 className="display-3">Desperte o Potencial do seu RH com a Twig <span> Uma Jornada para a Excelência</span></h2>
                 <p className="lead">
-                  The official package contains over 21.000 icons which are
-                  looking great in combination with Argon Design System. Make
-                  sure you check all of them and use those that you like the
-                  most.
+                Embarque conosco em uma jornada revolucionária para transformar 
+                sua gestão de recursos humanos. A Twig é muito mais do que uma 
+                plataforma; é a chave para desbloquear o potencial completo de sua equipe. 
+                Imagine um ambiente unificado, onde criar pesquisas, avaliar o desempenho 
+                individual, promover inclusão, e até mesmo medir o engajamento da sua equipe 
+                acontecem de maneira intuitiva e eficiente.
+                </p>
+                <p className="lead">
+                Com a Twig, você não apenas gerencia, você impulsiona. Nossa abordagem 
+                inovadora coloca você no comando, capacitando-o com ferramentas incríveis 
+                para moldar o futuro do seu departamento de RH. Visualize cada aspecto da 
+                performance individual, promova uma cultura inclusiva e meça o pulso da sua 
+                equipe com uma facilidade sem precedentes.
+                </p>
+                <p className="lead">
+                E a melhor parte? Você está a um passo de ter acesso a todas essas vantagens. 
+                Não apenas uma ferramenta, mas um aliado poderoso para elevar sua gestão 
+                de RH a novos patamares. Não perca a oportunidade de transformar sua abordagem 
+                de recursos humanos. Acesse a Twig hoje e descubra como a excelência em RH está 
+                ao seu alcance, pronta para ser desbravada
                 </p>
                 <div className="btn-wrapper">
                   <Button
                     color="info"
-                    href="https://www.creative-tim.com/learning-lab/nextjs/icons/argon-dashboard?ref=njsadp-index-page"
+                    href="#"
                     target="_blank"
                   >
-                    View demo icons
+                    Conhecer Twig
                   </Button>
                   <Button
                     className="mt-3 mt-md-0"
@@ -297,11 +305,12 @@ function Index() {
                     href="https://nucleoapp.com/?ref=1712"
                     target="_blank"
                   >
-                    View all icons
+                    Contratar Plano
                   </Button>
                 </div>
               </Col>
             </Row>
+            {/** 
             <div className="blur--hover">
               <a
                 href="https://www.creative-tim.com/learning-lab/nextjs/icons/argon-dashboard?ref=njsadp-index-page"
@@ -331,6 +340,7 @@ function Index() {
                 </span>
               </a>
             </div>
+            */}
           </Container>
         </section>
         <section className="py-7">
@@ -338,16 +348,18 @@ function Index() {
             <Row className="row-grid justify-content-center">
               <Col className="text-center" lg="8">
                 <h2 className="display-3">
-                  Do you love this awesome{" "}
+                Desperte o Potencial do seu RH com a Twig{" "}
                   <span className="text-success">
-                    Dashboard for NextJS, Bootstrap 4, React and Reactstrap?
+                    Uma Jornada para a Excelência
                   </span>
                 </h2>
                 <p className="lead">
-                  Cause if you do, it can be yours now. Hit the button below to
-                  navigate to get the free version or purchase a license for
-                  your next project. Build a new web app or give an old
-                  Bootstrap project a new look!
+                Embarque conosco em uma jornada revolucionária para transformar sua gestão
+                 de recursos humanos. A Twig é muito mais do que uma plataforma; é a chave 
+                 para desbloquear o potencial completo de sua equipe. Imagine um ambiente 
+                 unificado, onde criar pesquisas, avaliar o desempenho individual, promover 
+                 inclusão, e até mesmo medir o engajamento da sua equipe acontecem de maneira 
+                 intuitiva e eficiente.
                 </p>
                 <div className="btn-wrapper">
                   <Button
@@ -356,7 +368,7 @@ function Index() {
                     href="https://www.creative-tim.com/product/nextjs-argon-dashboard?ref=njsadp-index-page"
                     target="_blank"
                   >
-                    <span className="btn-inner--text">Get FREE version</span>
+                    <span className="btn-inner--text">Conhecer Twig</span>
                   </Button>
                   <Button
                     className="btn-icon mb-3 mb-sm-0"
@@ -365,11 +377,12 @@ function Index() {
                     target="_blank"
                   >
                     <span className="btn-inner--icon">
-                      <i className="ni ni-basket" />
+                    <i className="fas fa-dollar-sign" />
                     </span>
-                    <span className="btn-inner--text">Purchase now</span>
+                    <span className="btn-inner--text">Contratar Plano</span>
                   </Button>
                 </div>
+                {/**
                 <div className="text-center">
                   <h4 className="display-4 mb-5 mt-5">
                     Available on these technologies
@@ -509,11 +522,12 @@ function Index() {
                     </Col>
                   </Row>
                 </div>
+                 */}
               </Col>
             </Row>
           </Container>
         </section>
-        
+
       </div>
       <AuthFooter />
     </>
