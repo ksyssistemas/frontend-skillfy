@@ -54,19 +54,6 @@ function ModalAdm({ isOpen, toggle }) {
 
       </ModalBody>
 
-      <ModalFooter>
-        <Button
-          color="secondary"
-          type="button"
-          onClick={toggle}
-        >
-          Fechar
-        </Button>
-        <Button color="primary" type="button">
-          Salvar alterações
-        </Button>
-      </ModalFooter>
-
     </Modal>
 
   );

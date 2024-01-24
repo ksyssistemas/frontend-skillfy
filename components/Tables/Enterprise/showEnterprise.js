@@ -11,7 +11,7 @@ import {
 
 
 import ModalEnterprise from "../../Modals/admin/ModalEnterprise"
-import fakeCompanies from '../../../Mocks/mockEnterprise';
+import fakeCompanies from '../../../Mocks/mockEnterprises';
 
 
 const EnterpriseList = () => {

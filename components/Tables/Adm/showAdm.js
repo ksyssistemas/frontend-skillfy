@@ -10,7 +10,7 @@ import {
 } from 'reactstrap';
 
 import ModalAdm from "../../Modals/admin/ModalAdm"
-import mockAdmins from "../../../Mocks/mockAdmin"
+import mockAdmins from "../../../Mocks/mockAdmins"
 
 
 const AdminList = ({ admins, deleteAdmin }) => {
