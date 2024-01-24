@@ -12,6 +12,11 @@ import {
 } from 'reactstrap';
 
 const AdminRegistrationForm = ({ formData, handleInputChange }) => {
+
+  const handleClose = () => {
+    closeModal();
+  };
+
   return (
     <Card>
       <CardBody>
@@ -140,17 +145,6 @@ const AdminRegistrationForm = ({ formData, handleInputChange }) => {
             </Row>
           </div>
           <hr className="my-4" />
-
-          <ModalFooter>
-            <Button color="secondary" type="button">
-              Fechar
-            </Button>
-            <Button color="primary" type="button">
-              Salvar alterações
-            </Button>
-          </ModalFooter>
-
-
         </Form>
       </CardBody>
     </Card>
