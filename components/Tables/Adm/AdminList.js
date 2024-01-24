@@ -5,7 +5,7 @@ import {
   Table
 } from 'reactstrap';
 
-import mockFormData from "../../../Mocks/mockFormData"
+import mockFormData from "../../../mocks/mockFormData"
 
 const AdminList = () => {
 

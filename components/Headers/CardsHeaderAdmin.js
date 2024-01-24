@@ -15,7 +15,7 @@ import {
 } from "reactstrap";
 
 //import CreateAdm from "../Modals/admin/ModalAdm"
-import mockPlans from "../../Mocks/mockPlans"
+import mockPlans from "../../mocks/mockPlans"
 
 function CardsHeader({ name, parentName }) {
 
