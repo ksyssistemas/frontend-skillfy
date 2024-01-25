@@ -12,8 +12,7 @@ import {
   Button
 } from 'reactstrap';
 
-import AdminList from "../../components/Tables/Adm/AdminList"
-import useAdminData from "../../hooks/hookAdminData"
+import useAdminData from "../../hooks/useAdminRegistration"
 
 const AdminRegistration = () => {
   
@@ -24,7 +23,7 @@ const AdminRegistration = () => {
     handleFormSubmit 
   } = useAdminData();
 
-  
+
   return (
     <>
       <Card>
@@ -132,16 +131,13 @@ const AdminRegistration = () => {
 
               <ModalFooter>
                 <Button color="primary" type="button" onClick={handleFormSubmit}>
-                  Salvar (Mock)
+                  Salvar 
                 </Button>
               </ModalFooter>
             </div>
           </Form>
         </CardBody>
       </Card>
-
-
-      <AdminList />
     </>
   );
 };

@@ -15,17 +15,15 @@ import {
   Row
 } from "reactstrap";
 
+import {
+  estadosBrasileiros,
+  paises,
+  capitaisBrasileiras
+} from "../../../mocks/mockStateBr"
+
 function ModalEnterprise({ isOpen, toggle }) {
 
-  //const [administratorData, setAdministratorData] = useState({});
-
-  const estadosBrasileiros = [
-    "Acre", "Alagoas", "Amapá", "Amazonas", "Bahia", "Ceará", "Distrito Federal",
-    "Espírito Santo", "Goiás", "Maranhão", "Mato Grosso", "Mato Grosso do Sul",
-    "Minas Gerais", "Pará", "Paraíba", "Paraná", "Pernambuco", "Piauí",
-    "Rio de Janeiro", "Rio Grande do Norte", "Rio Grande do Sul", "Rondônia", 
-    "Roraima", "Santa Catarina", "São Paulo", "Sergipe", "Tocantins"
-  ];
+  const [administratorData, setAdministratorData] = useState({})
 
   const [formData, setFormData] = useState({
     name: '',
@@ -238,26 +236,26 @@ function ModalEnterprise({ isOpen, toggle }) {
                     </FormGroup>
                   </Col>
                   <Col lg="4">
-                   <FormGroup>
-                     <Label className="form-control-label bold-text" htmlFor="select-state">
-                       Estado
-                     </Label>
-                     <Input
-                       type="select"
-                       name="select"
-                       id="select-state"
-                       value={formData.state}
-                       onChange={(e) => handleInputChange('state', e.target.value)}
-                     >
-                       <option value="">Selecione o estado</option>
-                       {estadosBrasileiros.map((estado, index) => (
-                         <option key={index} value={estado}>
-                           {estado}
-                         </option>
-                       ))}
-                     </Input>
-                   </FormGroup>
-                 </Col>
+                    <FormGroup>
+                      <Label className="form-control-label bold-text" htmlFor="select-state">
+                        Estado
+                      </Label>
+                      <Input
+                        type="select"
+                        name="select"
+                        id="select-state"
+                        value={formData.state}
+                        onChange={(e) => handleInputChange('state', e.target.value)}
+                      >
+                        <option value="">Selecione o estado</option>
+                        {estadosBrasileiros.map((estado, index) => (
+                          <option key={index} value={estado}>
+                            {estado}
+                          </option>
+                        ))}
+                      </Input>
+                    </FormGroup>
+                  </Col>
 
                   <Col lg="5">
                     <FormGroup>
@@ -271,9 +269,16 @@ function ModalEnterprise({ isOpen, toggle }) {
                         defaultValue={formData.email}
                         id="input-email"
                         placeholder="Cidade"
-                        type="email"
+                        type="select"
                         onChange={(e) => handleInputChange('email', e.target.value)}
-                      />
+                      >
+                        <option value="">Selecione a cidade</option>
+                        {capitaisBrasileiras.map((cidade, index) => (
+                          <option key={index} value={cidade}>
+                            {cidade}
+                          </option>
+                        ))}
+                      </Input>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -284,15 +289,22 @@ function ModalEnterprise({ isOpen, toggle }) {
                         className="form-control-label"
                         htmlFor="input-email"
                       >
-                        Pais
+                        País
                       </label>
                       <Input
                         defaultValue={formData.email}
                         id="input-email"
                         placeholder="Pais"
-                        type="email"
+                        type="select"
                         onChange={(e) => handleInputChange('email', e.target.value)}
-                      />
+                      >
+                        <option value="">Selecione o país</option>
+                        {paises.map((pais, index) => (
+                          <option key={index} value={pais}>
+                            {pais}
+                          </option>
+                        ))}
+                      </Input>
                     </FormGroup>
                   </Col>
                   <Col lg="3">
