@@ -21,23 +21,43 @@ import {
   capitaisBrasileiras
 } from "../../../mocks/mockStateBr"
 
+import useCNPJ from "../../../hooks/useCNPJ"
+
 function ModalEnterprise({ isOpen, toggle }) {
 
-  const [administratorData, setAdministratorData] = useState({})
-
   const [formData, setFormData] = useState({
-    name: '',
-    lastname: '',
+    cnpj: '',
+    razao_social: '',
+    nome_fantasia: '',
     email: '',
-    password: '',
-    phone: ''
+    senha: '',
+    confirmar_senha: '',
+    web_site: '',
+    numero_contato: ''
   });
 
-  //const [parentName, setParentName] = useState('');
+  const { data: enterpriseData, loading, error } = useCNPJ(formData.cnpj);
+
+  useEffect(() => {
+    // Atualize o formData com os dados da empresa quando eles estiverem disponíveis
+    if (enterpriseData) {
+      setFormData({
+        cnpj: enterpriseData.cnpj,
+        razao_social: enterpriseData.razao_social,
+        nome_fantasia: enterpriseData.nome_fantasia,
+        email: enterpriseData.email,
+        senha: '',  // Não está claro se você deve preencher senhas aqui, considere como tratá-las
+        confirmar_senha: '',
+        web_site: enterpriseData.web_site,
+        numero_contato: enterpriseData.ddd_telefone_1
+      });
+    }
+  }, [enterpriseData]);
 
   const handleInputChange = (fieldName, value) => {
     setFormData({ ...formData, [fieldName]: value });
   };
+
 
   return (
     <Modal toggle={toggle} isOpen={isOpen} size="xl">
@@ -54,7 +74,13 @@ function ModalEnterprise({ isOpen, toggle }) {
           <span aria-hidden={true}>×</span>
         </button>
       </div>
+
+
+
+      {/** Modal Body */}
       <ModalBody>
+
+        {/** card enterprise info */}
         <Card>
           <CardBody>
             <Form>
@@ -72,11 +98,11 @@ function ModalEnterprise({ isOpen, toggle }) {
                         CNPJ
                       </label>
                       <Input
-                        defaultValue={formData.name}
+                        defaultValue={formData.cnpj}
                         id="input-first-name"
                         placeholder="CNPJ"
                         type="text"
-                        onChange={(e) => handleInputChange('name', e.target.value)}
+                        onChange={(e) => handleInputChange('cnpj', e.target.value)}
                       />
                     </FormGroup>
                   </Col>
@@ -89,11 +115,11 @@ function ModalEnterprise({ isOpen, toggle }) {
                         Razão social
                       </label>
                       <Input
-                        defaultValue={formData.lastname}
+                        defaultValue={formData.razao_social}
                         id="input-last-name"
                         placeholder="Razão Social"
                         type="text"
-                        onChange={(e) => handleInputChange('lastname', e.target.value)}
+                        onChange={(e) => handleInputChange('razao_social', e.target.value)}
                       />
                     </FormGroup>
                   </Col>
@@ -106,11 +132,11 @@ function ModalEnterprise({ isOpen, toggle }) {
                         Nome Fantasia
                       </label>
                       <Input
-                        defaultValue={formData.email}
+                        defaultValue={formData.nome_fantasia}
                         id="input-email"
                         placeholder="Nome Fantasia"
                         type="email"
-                        onChange={(e) => handleInputChange('email', e.target.value)}
+                        onChange={(e) => handleInputChange('nome_fantasia', e.target.value)}
                       />
                     </FormGroup>
                   </Col>
@@ -142,11 +168,11 @@ function ModalEnterprise({ isOpen, toggle }) {
                         Senha
                       </label>
                       <Input
-                        defaultValue={formData.name}
+                        defaultValue={formData.senha}
                         id="input-first-name"
                         placeholder="Senha"
                         type="password"
-                        onChange={(e) => handleInputChange('name', e.target.value)}
+                        onChange={(e) => handleInputChange('senha', e.target.value)}
                       />
                     </FormGroup>
                   </Col>
@@ -159,11 +185,11 @@ function ModalEnterprise({ isOpen, toggle }) {
                         Confirmar Senha
                       </label>
                       <Input
-                        defaultValue={formData.name}
+                        defaultValue={formData.confirmar_senha}
                         id="input-first-name"
                         placeholder="Confirmar Senha"
                         type="password"
-                        onChange={(e) => handleInputChange('name', e.target.value)}
+                        onChange={(e) => handleInputChange('confirmar_senha', e.target.value)}
                       />
                     </FormGroup>
                   </Col>
@@ -178,11 +204,11 @@ function ModalEnterprise({ isOpen, toggle }) {
                         Web Site
                       </label>
                       <Input
-                        defaultValue={formData.password}
+                        defaultValue={formData.web_site}
                         id="input-password"
                         placeholder="Web Site"
                         type="password"
-                        onChange={(e) => handleInputChange('password', e.target.value)}
+                        onChange={(e) => handleInputChange('web_site', e.target.value)}
                       />
                     </FormGroup>
                   </Col>
@@ -195,11 +221,11 @@ function ModalEnterprise({ isOpen, toggle }) {
                         Número de Contato
                       </label>
                       <Input
-                        defaultValue={formData.phone}
+                        defaultValue={formData.numero_contato}
                         id="input-phone"
                         placeholder="Número de Contato"
                         type="text"
-                        onChange={(e) => handleInputChange('phone', e.target.value)}
+                        onChange={(e) => handleInputChange('numero_contato', e.target.value)}
                       />
                     </FormGroup>
                   </Col>
@@ -210,6 +236,7 @@ function ModalEnterprise({ isOpen, toggle }) {
           </CardBody>
         </Card>
 
+        {/** card address info */}
         <Card>
           <CardBody>
             <Form>
@@ -347,7 +374,12 @@ function ModalEnterprise({ isOpen, toggle }) {
 
           </CardBody>
         </Card>
+
+
       </ModalBody>
+      {/** End:: MOdalBody */}
+
+
       <ModalFooter>
         <Button
           color="secondary"
@@ -360,6 +392,8 @@ function ModalEnterprise({ isOpen, toggle }) {
           Salvar alterações
         </Button>
       </ModalFooter>
+
+
     </Modal>
 
   );

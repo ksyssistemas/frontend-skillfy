@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   Card,
@@ -11,13 +11,26 @@ import {
 
 
 import ModalEnterprise from "../../Modals/admin/ModalEnterprise"
-import fakeCompanies from '../../../mocks/mockEnterprises';
+import fakeCompanies from '../../../mocks/mockEnterprises'
 
+import useCNPJ from "../../../hooks/useCNPJ"
 
 const EnterpriseList = () => {
-  const deleteCompany = (companyId) => {
 
+  const [cnpj, setCnpj] = useState('19131243000197');
+  const { data: enterpriseData, loading, error, setCnpj: setCnpjFromHook } = useCNPJ(cnpj);
+
+  const handleCnpjChange = (event) => {
+    // Atualiza o estado local do CNPJ e chama a função setCnpj do hook
+    setCnpj(event.target.value);
+    setCnpjFromHook(event.target.value);
   };
+
+  const deleteCompany = (companyId) => {
+    // Implemente a lógica para deletar a empresa
+  };
+
+
 
   {/** Modal  Enterprise*/ }
   const [modalEnterpriseOpen, setModalEnterpriseOpen] = React.useState(false);
@@ -39,7 +52,7 @@ const EnterpriseList = () => {
       <CardHeader className="border-0">
         <Row>
           <Col xs="6">
-            <h3 className="mb-0">Empresas Cadastradas</h3>
+            <h3 className="mb-0">Empresas </h3>
           </Col>
           <Col className="text-right" xs="6">
             <Button
@@ -124,7 +137,23 @@ const EnterpriseList = () => {
       />
 
 
+      <div>
+        {enterpriseData && (
+          <div>
+            <h2>Endereço da Empresa</h2>
+            <p>Logradouro: {enterpriseData.logradouro}</p>
+            <p>Bairro: {enterpriseData.bairro}</p>
+            <p>Município: {enterpriseData.municipio}</p>
+            <p>UF: {enterpriseData.uf}</p>
+            <p>CEP: {enterpriseData.cep}</p>
+            {/* Outros detalhes de endereço, se necessário */}
+          </div>
+        )}
+      </div>
+
     </Card>
+
+
   );
 };
 
