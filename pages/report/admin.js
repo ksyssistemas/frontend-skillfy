@@ -3,9 +3,9 @@ import Register from "../../layouts/Register";
 import SimpleHeader from "../../components/Headers/SimpleHeader";
 import CardsHeader from "components/Headers/CardsHeaderAdmin.js";
 
-import EnterpriseList from "../../components/Forms/showEnterprise";
-import AdminListCard from "../../components/Forms/showAdm";
-import AdminRegistrationForm from "../../components/Forms/createAdm";
+import EnterpriseList from "../../components/Tables/Enterprise/showEnterprise";
+import AdminList from "../../components/Tables/Adm/showAdm";
+//import AdminRegistrationForm from "../../components/Forms/createAdm";
 import EnterpriseRegistrationForm from "../../components/Forms/createEnterprise";
 
 
@@ -77,52 +77,23 @@ function ReportAdmin() {
   };
 
 
-  const [viewMode, setViewMode] = useState('list')
-
-  const handleRegisterClick = () => {
-    console.log('Cadastrar clicado');
-    setViewMode('registration');
-  };
-
-  const handleBackToListClick = () => {
-    console.log('Voltar para a lista clicado');
-    setViewMode('list');
-  };
-
-
   return (
     <>
       <CardsHeader name="Admin" parentName="Ksys Sistemas" />
 
       <Container className="mt--6" fluid>
 
-        <div>
-          {viewMode === 'registration' ? (
-            <AdminRegistrationForm onBackToListClick={handleBackToListClick} />
-          ) : (
-            <AdminListCard admins={fakeAdmins} deleteAdmin={deleteAdmin} onRegisterClick={handleRegisterClick} />
-          )}
-        </div>
-
-
-        {/*
-        <AdminListCard
+     
+        
+        <AdminList
           admins={fakeAdmins}
           deleteAdmin={deleteAdmin}
         />
 
-          <AdminRegistrationForm /> */}
 
         <EnterpriseList />
 
-        <EnterpriseRegistrationForm
-          formData={formDataEmployee}
-          handleInputChange={handleInputChangeEmployee}
-          toggle={toggleModal}
-        />
-
-
-
+       
       </Container>
 
 

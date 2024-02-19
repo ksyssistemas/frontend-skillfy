@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  Button,
   Card,
   CardBody,
   Col,
@@ -8,153 +7,139 @@ import {
   FormGroup,
   Input,
   Row,
-  ModalFooter
+  Table,
+  ModalFooter,
+  Button
 } from 'reactstrap';
 
-const AdminRegistrationForm = ({ formData, handleInputChange }) => {
+import useAdminData from "../../hooks/useAdminRegistration"
+
+const AdminRegistration = () => {
+  
+
+  const { 
+    formData, 
+    handleInputChange, 
+    handleFormSubmit 
+  } = useAdminData();
+
+
   return (
-    <Card>
-      <CardBody>
-        <Form>
-          <h6 className="heading-small text-muted mb-4">
-            Cadastrar Adm
-          </h6>
-          <div className="pl-lg-4">
-            <Row>
-              <Col lg="4">
-                <FormGroup>
-                  <label
-                    className="form-control-label"
-                    htmlFor="input-first-name"
-                  >
-                    Nome
-                  </label>
-                  <Input
-                    id="input-first-name"
-                    placeholder="Nome"
-                    type="text"
-                    onChange={(e) => handleInputChange('name', e.target.value)}
-                  />
-                </FormGroup>
-              </Col>
-              <Col lg="5">
-                <FormGroup>
-                  <label
-                    className="form-control-label"
-                    htmlFor="input-last-name"
-                  >
-                    Sobrenome
-                  </label>
-                  <Input
-                    id="input-last-name"
-                    placeholder="Sobrenome"
-                    type="text"
-                    onChange={(e) => handleInputChange('lastname', e.target.value)}
-                  />
-                </FormGroup>
-              </Col>
-              <Col lg="3">
-                <FormGroup>
-                  <label
-                    className="form-control-label"
-                    htmlFor="input-birthdate"
-                  >
-                    Data Admissão
-                  </label>
-                  <Input
-                    id="input-birthdate"
-                    placeholder="__/__/__"
-                    type="date"
-                    onChange={(e) => handleInputChange('birthdate', e.target.value)}
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
-            <Row>
-              <Col lg="8">
-                <FormGroup>
-                  <label
-                    className="form-control-label"
-                    htmlFor="input-email"
-                  >
-                    Email
-                  </label>
-                  <Input
-                    id="input-email"
-                    placeholder="Email"
-                    type="email"
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                  />
-                </FormGroup>
-              </Col>
-              <Col lg="4">
-                <FormGroup>
-                  <label
-                    className="form-control-label"
-                    htmlFor="input-phone"
-                  >
-                    Número de Contato
-                  </label>
-                  <Input
-                    id="input-phone"
-                    placeholder="Número de Contato"
-                    type="text"
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
-            <Row>
-              <Col lg="4">
-                <FormGroup>
-                  <label
-                    className="form-control-label"
-                    htmlFor="input-password"
-                  >
-                    Senha
-                  </label>
-                  <Input
-                    id="input-password"
-                    placeholder="Senha"
-                    type="password"
-                    onChange={(e) => handleInputChange('password', e.target.value)}
-                  />
-                </FormGroup>
-              </Col>
-              <Col lg="4">
-                <FormGroup>
-                  <label
-                    className="form-control-label"
-                    htmlFor="input-confirm-password"
-                  >
-                    Confirmar Senha
-                  </label>
-                  <Input
-                    id="input-confirm-password"
-                    placeholder="Confirmar Senha"
-                    type="password"
-                    onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
-          </div>
-          <hr className="my-4" />
+    <>
+      <Card>
+        <CardBody>
+          <Form>
+            <h6 className="heading-small text-muted mb-4">
+              Cadastrar Adm
+            </h6>
+            <div className="pl-lg-4">
+              <Row>
+                <Col lg="6">
+                  <FormGroup className="mb-3">
+                    <label className="form-control-label" htmlFor="input-name">
+                      Nome
+                    </label>
+                    <Input
+                      className="form-control-alternative"
+                      id="input-name"
+                      placeholder="Nome"
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => handleInputChange('name', e.target.value)}
+                    />
+                  </FormGroup>
+                </Col>
+                <Col lg="6">
+                  <FormGroup className="mb-3">
+                    <label className="form-control-label" htmlFor="input-lastName">
+                      Sobrenome
+                    </label>
+                    <Input
+                      className="form-control-alternative"
+                      id="input-lastName"
+                      placeholder="Sobrenome"
+                      type="text"
+                      value={formData.lastName}
+                      onChange={(e) => handleInputChange('lastName', e.target.value)}
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
 
-          <ModalFooter>
-            <Button color="secondary" type="button">
-              Fechar
-            </Button>
-            <Button color="primary" type="button">
-              Salvar alterações
-            </Button>
-          </ModalFooter>
+              <Row>
+                <Col lg="3">
+                  <FormGroup className="mb-3">
+                    <label className="form-control-label" htmlFor="input-birthDate">
+                      Data de Admissão
+                    </label>
+                    <Input
+                      className="form-control-alternative"
+                      id="input-birthDate"
+                      placeholder="__/__/____"
+                      type="date"
+                      value={formData.birthDate}
+                      onChange={(e) => handleInputChange('birthDate', e.target.value)}
+                    />
+                  </FormGroup>
+                </Col>
+                <Col lg="3">
+                  <FormGroup className="mb-3">
+                    <label className="form-control-label" htmlFor="input-email">
+                      Email
+                    </label>
+                    <Input
+                      className="form-control-alternative"
+                      id="input-email"
+                      placeholder="Email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                    />
+                  </FormGroup>
+                </Col>
+                <Col lg="3">
+                  <FormGroup className="mb-3">
+                    <label className="form-control-label" htmlFor="input-phone">
+                      Número de Contato
+                    </label>
+                    <Input
+                      className="form-control-alternative"
+                      id="input-phone"
+                      placeholder="Número de Contato"
+                      type="text"
+                      value={formData.phone}
+                      onChange={(e) => handleInputChange('phone', e.target.value)}
+                    />
+                  </FormGroup>
+                </Col>
+                <Col lg="3">
+                  <FormGroup className="mb-3">
+                    <label className="form-control-label" htmlFor="input-password">
+                      Senha
+                    </label>
+                    <Input
+                      className="form-control-alternative"
+                      id="input-password"
+                      placeholder="Senha"
+                      type="password"
+                      value={formData.password}
+                      onChange={(e) => handleInputChange('password', e.target.value)}
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
 
-
-        </Form>
-      </CardBody>
-    </Card>
+              <ModalFooter>
+                <Button color="primary" type="button" onClick={handleFormSubmit}>
+                  Salvar 
+                </Button>
+              </ModalFooter>
+            </div>
+          </Form>
+        </CardBody>
+      </Card>
+    </>
   );
 };
 
-export default AdminRegistrationForm;
+export default AdminRegistration;

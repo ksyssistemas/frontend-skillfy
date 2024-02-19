@@ -12,10 +12,6 @@ import {
     Label,
 } from 'reactstrap';
 
-const estadosBrasileiros = [
-    // Defina os estados brasileiros aqui
-];
-
 const EnterpriseRegistrationForm = ({ formData, handleInputChange }) => {
     return (
         <>
