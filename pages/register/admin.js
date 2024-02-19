@@ -17,7 +17,7 @@ function Dashboard() {
     phone: ''
   });
 
-  //const [parentName, setParentName] = useState('');
+  const [parentName, setParentName] = useState('');
 
   const handleInputChange = (fieldName, value) => {
     setFormData({ ...formData, [fieldName]: value });
@@ -26,7 +26,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:4008/administrator/email/adm1@gmail.com', {
+        const response = await fetch('http://localhost:6008/administrator/email/adm1@gmail.com', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ function Dashboard() {
   
   const handleSubmit = async () => {
     try {
-      const response = await fetch('http://localhost:4008/administrator', {
+      const response = await fetch('http://localhost:6008/administrator', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ function Dashboard() {
       <Container className="mt--6" fluid>
         <Card className="mb-4">
           <CardHeader>
-            <h3 className="mb-0">Cadastrar Admin</h3>
+            <h3 className="mb-0">Cadastrar Admin..</h3>
           </CardHeader>
           <CardBody>
             <Row>
