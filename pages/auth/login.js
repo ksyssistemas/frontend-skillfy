@@ -37,62 +37,69 @@ function Login() {
     setFormData({ ...formData, [fieldName]: value });
   };
 
+
   const handleSubmit = async () => {
+
     try {
-      const response = await fetch('http://localhost:3006/auth/signin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+      const response = await fetch('http://dlist.com.br:3009/auth/signin', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
       });
-
+  
       if (response.ok) {
-        const data = await response.json();
-
-        let redirectUrl = 'http://localhost:3000';
-
-        switch (data.role) {
-          case 'administrator':
-            redirectUrl += '/register/dashboard';
-            break;
-          case 'enterprise':
-            redirectUrl += 'enterprise';
-            break;
-          case 'employee':
-            redirectUrl += '/employee/profile';
-            break;
-          default:
-            redirectUrl = 'http://localhost:3000/default';
-        }
-
-        redirectUrl += `?id=${data.data.id}`;
-
-        window.location.href = redirectUrl;
+          const data = await response.json();
+  
+          let redirectUrl = 'http://dlist.com.br:9001';
+  
+          switch (data.role) {
+              case 'administrator':
+                  console.log('Redirecionando para o painel do administrador');
+                  redirectUrl += '/register/dashboard';
+                  break;
+              case 'enterprise':
+                  console.log('Redirecionando para o painel da empresa');
+                  redirectUrl += '/performance/appraisal-cycle-list';
+                  break;
+              case 'employee':
+                  console.log('Redirecionando para o perfil do funcionário');
+                  redirectUrl += '/employee/profile';
+                  break;
+              default:
+                  console.log('Redirecionando para a página padrão');
+                  redirectUrl = 'http://dlist.com.br:9001/default';
+          }
+  
+          redirectUrl += `?id=${data.data.id}`;
+          console.log('URL de redirecionamento:', redirectUrl);
+  
+          window.location.href = redirectUrl;
       } else {
-        if (response.status === 404) {
-          setErro(
-            <Alert color="warning" style={{ textAlign: 'center' }}>
-              <strong>Usuário não encontrado</strong>
-            </Alert>
-          );
-        }
+          if (response.status === 404) {
+              setErro(
+                  <Alert color="warning" style={{ textAlign: 'center' }}>
+                      <strong>Usuário não encontrado</strong>
+                  </Alert>
+              );
+          }
       }
-    } catch (error) {
+  } catch (error) {
+      console.error('Erro durante a requisição:', error);
       setErro(
-        <Alert color="danger" style={{ textAlign: 'center' }}>
-          <strong>Erro na requisição:</strong> Houve um problema ao processar sua solicitação.
-        </Alert>
+          <Alert color="danger" style={{ textAlign: 'center' }}>
+              <strong>Erro na requisição:</strong> Houve um problema ao processar sua solicitação.
+          </Alert>
       );
-    }
+  }
+  
   };
-
-
-
 
 
   const [focusedEmail, setfocusedEmail] = React.useState(false);
   const [focusedPassword, setfocusedPassword] = React.useState(false);
+
   return (
     <>
       <AuthHeader
@@ -104,38 +111,9 @@ function Login() {
           <Col lg="5" md="7">
             <Card className="bg-secondary border-0 mb-0">
 
-              {/** 
-              <CardHeader className="bg-transparent pb-5">
-                <div className="text-muted text-center mt-2 mb-3">
-                  <small>Entrar com</small>
-                </div>
-                <div className="btn-wrapper text-center">
-                  
-                  <Button
-                    className="btn-neutral btn-icon"
-                    color="default"
-                    href="#pablo"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    <span className="btn-inner--icon mr-1">
-                      <img
-                        alt="..."
-                        src={require("assets/img/icons/common/google.svg")}
-                      />
-                    </span>
-                    <span className="btn-inner--text">Google</span>
-                  </Button>
-                </div>
-              </CardHeader>
-               */}
+            
               <CardBody className="px-lg-5 py-lg-5">
-                {/** 
-                <div className="text-center text-muted mb-4">
-                  <small>Ou faça login com credenciais</small>
-                </div>
-               */}
-                {/** begin form */}
-
+               
                 <Form role="form">
                   {erro && <p>{erro}</p>}
                   <FormGroup
@@ -216,19 +194,7 @@ function Login() {
                 </Row>
               </CardFooter>
             </Card>
-            {/*
-            <Row className="mt-3">
-              <Col xs="6">
-                <a
-                  className="text-light"
-                  href="#pablo"
-                  onClick={(e) => e.preventDefault()}
-                >
-                  <small>Esqueceu sua senha?</small>
-                </a>
-              </Col>
-
-                  </Row> */}
+            
           </Col>
         </Row>
       </Container>
