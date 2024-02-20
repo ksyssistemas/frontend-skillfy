@@ -134,7 +134,7 @@ function AdminNavbar() {
                 </Link>
               </NavItem>
 
-              */}
+              
               <NavItem>
                 <Link href="/performance/appraisal-cycle-list">
                   <NavLink href="#pablo">
@@ -149,10 +149,11 @@ function AdminNavbar() {
                   </NavLink>
                 </Link>
               </NavItem>
+              */}
               <NavItem>
-                <Link href="/register/dashboard">
+                <Link href="/auth/login">
                   <NavLink href="#pablo">
-                    <span className="nav-link-inner--text">Adm</span>
+                    <span className="nav-link-inner--text">Login</span>
                   </NavLink>
                 </Link>
               </NavItem>
