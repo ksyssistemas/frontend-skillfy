@@ -17,11 +17,12 @@
 import React from "react";
 import { withRouter } from "next/router";
 // core components
-import AdminNavbar from "components/Navbars/AdminNavbar.js";
+// import AdminNavbar from "components/Navbars/AdminNavbar.js";
+import RegisterNavbar from "components/Navbars/RegisterNavbar.js";
 import AdminFooter from "components/Footers/AdminFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
-
-import routes from "routes.js";
+import routes from "../routes/admin.routes";
+// import routes from "routes.js";
 
 function Admin({ router, children }) {
   const [sidenavOpen, setSidenavOpen] = React.useState(true);
@@ -80,7 +81,7 @@ function Admin({ router, children }) {
         }}
       />
       <div className="main-content">
-        <AdminNavbar
+        <RegisterNavbar
           theme={getNavbarTheme()}
           toggleSidenav={toggleSidenav}
           sidenavOpen={sidenavOpen}

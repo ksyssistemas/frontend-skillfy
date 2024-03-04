@@ -1,15 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import {
+  Badge,
   Button,
   Card,
   CardHeader,
   Col,
+  DropdownMenu,
+  DropdownItem,
+  DropdownToggle,
+  UncontrolledDropdown,
+  Nav,
+  NavItem,
+  NavLink,
   Row,
   Table,
   UncontrolledTooltip,
 } from 'reactstrap';
 
-
+import ShowCustomerDetailsModal from "../../Modals/admin/show-customer-details";
 import ModalEnterprise from "../../Modals/admin/ModalEnterprise"
 import fakeCompanies from '../../../mocks/mockEnterprises'
 
@@ -47,14 +55,19 @@ const EnterpriseList = () => {
     setFormData({ ...formData, [fieldName]: value });
   };
 
+  const [modalOpen, setModalOpen] = React.useState(false);
+  function handleShowCustomerDetailsModal() {
+    setModalOpen(!modalOpen)
+  }
+
   return (
     <Card>
       <CardHeader className="border-0">
         <Row>
           <Col xs="6">
-            <h3 className="mb-0">Empresas </h3>
+            <h3 className="mb-0">Lista de Clientes</h3>
           </Col>
-          <Col className="text-right" xs="6">
+          {/* <Col className="text-right" xs="6">
             <Button
               className="btn-neutral btn-round btn-icon"
               color="default"
@@ -87,18 +100,20 @@ const EnterpriseList = () => {
             <UncontrolledTooltip delay={0} target="tooltipExport">
               Exportar Empresas
             </UncontrolledTooltip>
-          </Col>
+          </Col> */}
         </Row>
       </CardHeader>
       <Table className="align-items-center table-flush" responsive>
         <thead className="thead-light">
           <tr>
-            <th className="text-center">Nome da Empresa</th>
+            <th className="text-center">Nome</th>
             <th className="text-center">CNPJ</th>
+            <th className="text-center">E-mail Titular</th>
             <th className="text-center">Telefone</th>
-            <th className="text-center">Endereço</th>
-            <th className="text-center">Criado em</th>
-            <th className="text-center" />
+            <th className="text-center">Plano</th>
+            <th className="text-center">Estado</th>
+            <th className="text-center">Detalhes</th>
+            <th className="text-center"></th>
           </tr>
         </thead>
         <tbody>
@@ -106,21 +121,62 @@ const EnterpriseList = () => {
             <tr key={company.id}>
               <td className="text-center">{company.name}</td>
               <td className="text-center">{company.cnpj}</td>
+              <td className="text-center">{company.accountHolderEmail}</td>
               <td className="text-center">{company.phone}</td>
-              <td className="text-center">{company.address}</td>
-              <td className="text-center">Data de criação fictícia</td>
-              <td className="text-center table-actions">
-                <a
-                  className="table-action table-action-delete"
-                  href="#pablo"
-                  id={`deleteCompany${company.id}`}
-                  onClick={() => deleteCompany(company.id)}
-                >
-                  <i className="fas fa-trash" />
-                </a>
-                <UncontrolledTooltip delay={0} target={`deleteCompany${company.id}`}>
-                  Excluir Empresa
-                </UncontrolledTooltip>
+              <td className="text-center">{company.plan}</td>
+              <td className="text-center">
+                <Badge className="badge-lg" color="success">
+                  Active{company.status}
+                </Badge>
+              </td>
+              <td className="text-center text-muted ">
+                <Nav navbar>
+                  <NavItem>
+                    <NavLink target="_blank">
+                      <a href="#" className="text-underline">
+                        <span
+                          onClick={handleShowCustomerDetailsModal}
+                          className="name mb-0 text-sm"
+                        >
+                          Ver mais
+                        </span>
+                      </a>
+                    </NavLink>
+                  </NavItem>
+                </Nav>
+
+              </td>
+              <td className="text-right">
+                <UncontrolledDropdown>
+                  <DropdownToggle
+                    className="btn-icon-only text-light"
+                    color=""
+                    role="button"
+                    size="sm"
+                  >
+                    <i className="fas fa-ellipsis-v" />
+                  </DropdownToggle>
+                  <DropdownMenu className="dropdown-menu-arrow" right>
+                    <DropdownItem
+                      href="#pablo"
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      Action
+                    </DropdownItem>
+                    <DropdownItem
+                      href="#pablo"
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      Another action
+                    </DropdownItem>
+                    <DropdownItem
+                      href="#pablo"
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      Something else here
+                    </DropdownItem>
+                  </DropdownMenu>
+                </UncontrolledDropdown>
               </td>
             </tr>
           ))}
@@ -137,7 +193,7 @@ const EnterpriseList = () => {
       />
 
 
-      <div>
+      {/* <div>
         {enterpriseData && (
           <div>
             <h2>Endereço da Empresa</h2>
@@ -146,10 +202,15 @@ const EnterpriseList = () => {
             <p>Município: {enterpriseData.municipio}</p>
             <p>UF: {enterpriseData.uf}</p>
             <p>CEP: {enterpriseData.cep}</p>
-            {/* Outros detalhes de endereço, se necessário */}
+            {/* Outros detalhes de endereço, se necessário 
           </div>
         )}
-      </div>
+      </div> 
+    */}
+    <ShowCustomerDetailsModal 
+            handleShowCustomerDetailsModal={handleShowCustomerDetailsModal}
+            modalOpen={modalOpen}
+          />
 
     </Card>
 

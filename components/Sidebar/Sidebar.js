@@ -168,6 +168,7 @@ function Sidebar({
       );
     });
   };
+  
   const scrollBarInner = (
     <div className="scrollbar-inner">
       <div className="sidenav-header d-flex align-items-center">
@@ -212,11 +213,11 @@ function Sidebar({
         <Collapse navbar isOpen={true}>
           <Nav navbar>{createLinks(routes)}</Nav>
           <hr className="my-3" />
-          <h6 className="navbar-heading p-0 text-muted">
+          {/* <h6 className="navbar-heading p-0 text-muted">
             <span className="docs-normal">Documentation</span>
             <span className="docs-mini">D</span>
-          </h6>
-          <Nav className="mb-md-3" navbar>
+          </h6> */}
+          {/* <Nav className="mb-md-3" navbar>
             <NavItem>
               <NavLink
                 href="https://www.creative-tim.com/learning-lab/nextjs/overview/argon-dashboard?ref=njsadp-sidebar"
@@ -253,7 +254,7 @@ function Sidebar({
                 <span className="nav-link-text">Plugins</span>
               </NavLink>
             </NavItem>
-          </Nav>
+          </Nav> */}
         </Collapse>
       </div>
     </div>

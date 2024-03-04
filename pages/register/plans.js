@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+// react plugin used to create DropdownMenu for selecting items
+const Select2 = dynamic(() => import("react-select2-wrapper"));
 import { BrowserRouter } from 'react-router-dom';
 import { Button, Card, CardHeader, CardBody, FormGroup, Form, Input, Container, Row, Col } from "reactstrap";
 
@@ -6,7 +9,7 @@ import Enterprise from "../../layouts/Register";
 import SimpleHeader from "../../components/Headers/SimpleHeader"
 import AlternativeHeader from "../../components/Headers/AlternativeHeader"
 
-function Dashboard() {
+function Plans() {
 
   const [administratorData, setAdministratorData] = useState({});
 
@@ -81,11 +84,11 @@ function Dashboard() {
 
     <Form>
       {/* `<SimpleHeader name="Admin" parentName={administratorData.name || 'Ksys Sistemas'} />` */}
-      <AlternativeHeader name="Administrador" parentName={administratorData.name || 'Registros'} />
+      <AlternativeHeader name="Planos" parentName={administratorData.name || 'Registros'} />
       <Container className="mt--6" fluid>
         <Card className="mb-4">
           <CardHeader>
-            <h3 className="mb-0">Adicionar Administrador</h3>
+            <h3 className="mb-0">Adicionar Plano</h3>
           </CardHeader>
           <CardBody>
             <Row>
@@ -99,7 +102,7 @@ function Dashboard() {
                   </label>
                   <Input
                     id="example3cols1Input"
-                    placeholder="Nome do administrador"
+                    placeholder="Nome do plano"
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
                     type="text"
@@ -110,112 +113,92 @@ function Dashboard() {
                 <FormGroup>
                   <label
                     className="form-control-label"
-                    htmlFor="example3cols2Input"
-                  >
-                    Sobrenome
-                  </label>
-                  <Input
-                    id="example3cols2Input"
-                    placeholder="Sobrenome"
-                    value={formData.lastname}
-                    onChange={(e) => handleInputChange('lastname', e.target.value)}
-                    type="text"
-                  />
-                </FormGroup>
-              </Col>
-              <Col md="8">
-                <FormGroup>
-                  <label
-                    className="form-control-label"
                     htmlFor="example3cols3Input"
                   >
-                    E-mail
+                    Valor
                   </label>
                   <Input
                     id="example3cols3Input"
-                    placeholder="Seu melhor e-mail"
+                    placeholder="Valor do plano em R$"
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
                     type="text"
                   />
                 </FormGroup>
               </Col>
-              <Col md="4">
+            </Row>
+            <Row>
+              <Col md="12">
                 <FormGroup>
                   <label
                     className="form-control-label"
                     htmlFor="example3cols2Input"
                   >
-                    Data Aniversário
+                    Descrição Breve
                   </label>
                   <Input
                     id="example3cols2Input"
-                    placeholder="__/__/__"
-                    value={formData.birthdate}
-                    onChange={(e) => handleInputChange('birthdate', e.target.value)}
-                    type="date"
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
-            <Row>
-              <Col md="4" sm="6">
-                <FormGroup>
-                  <label
-                    className="form-control-label"
-                    htmlFor="example4cols1Input"
-                  >
-                    Senha
-                  </label>
-                  <Input
-                    id="example4cols1Input"
-                    placeholder="Senha do sistema"
-                    value={formData.password}
-                    onChange={(e) => handleInputChange('password', e.target.value)}
-                    type="password"
-                  />
-                </FormGroup>
-              </Col>
-              <Col md="4" sm="6">
-                <FormGroup>
-                  <label
-                    className="form-control-label"
-                    htmlFor="example4cols1Input"
-                  >
-                    Confirmar Senha
-                  </label>
-                  <Input
-                    id="example4cols1Input"
-                    placeholder="Confirme a senha digitada"
-                    value={formData.password}
-                    onChange={(e) => handleInputChange('password', e.target.value)}
-                    type="password"
-                  />
-                </FormGroup>
-              </Col>
-              <Col md="4" sm="6">
-                <FormGroup>
-                  <label
-                    className="form-control-label"
-                    htmlFor="example4cols2Input"
-                  >
-                    Contato
-                  </label>
-                  <Input
-                    id="example4cols2Input"
-                    placeholder="Número de contato"
-                    value={formData.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    placeholder="Descrição breve para vendas"
+                    value={formData.lastname}
+                    onChange={(e) => handleInputChange('lastname', e.target.value)}
                     type="text"
                   />
                 </FormGroup>
               </Col>
             </Row>
             <Row>
+              <Col md="12">
+                <FormGroup>
+                  <label
+                    className="form-control-label"
+                    htmlFor="example3cols2Input"
+                  >
+                    Descrição Detalhada
+                  </label>
+                  <Input
+                    id="example3cols2Input"
+                    placeholder="Descrição detalhada para informação"
+                    value={formData.lastname}
+                    onChange={(e) => handleInputChange('lastname', e.target.value)}
+                    type="text"
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row>
+              <Col md="12" sm="6">
+                <FormGroup>
+                  <label
+                    className="form-control-label"
+                    htmlFor="example3cols2Input"
+                  >
+                    Recursos
+                  </label>
+                  <Select2
+                    className="form-control"
+                    defaultValue="0"
+                    options={{
+                      placeholder: "Select",
+                    }}
+                    data={[
+                      { id: "0", text: "Clique para selecionar recursos ..." },
+                      { id: "1", text: "Alerts" },
+                      { id: "2", text: "Badges" },
+                      { id: "3", text: "Buttons" },
+                      { id: "4", text: "Cards" },
+                      { id: "5", text: "Forms" },
+                      { id: "6", text: "Modals" },
+                    ]}
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+
+            <Row>
               <Col md="8" />
               <Col className="d-flex justify-content-end align-items-center" md="4" >
                 <Button className="px-5" color="primary" size="lg" type="button" onClick={handleSubmit}>
-                  <span className="btn-inner--text">Salvar</span>
+                  <span className="btn-inner--text">Adicionar</span>
                 </Button>
               </Col>
             </Row>
@@ -229,6 +212,6 @@ function Dashboard() {
   );
 }
 
-Dashboard.layout = Enterprise;
+Plans.layout = Enterprise;
 
-export default Dashboard;
+export default Plans;

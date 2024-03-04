@@ -23,15 +23,15 @@ function CardsHeader({ name, parentName }) {
 
   return (
     <>
-      <div className="header bg-indigo pb-6">
+      <div className="header bg-lighter pb-6">
         <Container fluid>
           <div className="header-body">
             <Row className="align-items-center py-4">
               <Col lg="6" xs="7">
-                <h6 className="h2 text-white d-inline-block mb-0">{name}</h6>{" "}
+                <h6 className="h2 text-dark d-inline-block mb-0">{name}</h6>{" "}
                 <Breadcrumb
                   className="d-none d-md-inline-block ml-md-4"
-                  listClassName="breadcrumb-links breadcrumb-dark"
+                  listClassName="breadcrumb-links breadcrumb-light"
                 >
                   <BreadcrumbItem>
                     <a href="#pablo" onClick={(e) => e.preventDefault()}>

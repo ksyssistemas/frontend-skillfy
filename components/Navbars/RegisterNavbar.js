@@ -122,8 +122,9 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
       <Navbar
         className={classnames(
           "navbar-top navbar-expand border-bottom",
-          { "navbar-dark bg-indigo": theme === "dark" },
-          { "navbar-light bg-secondary": theme === "light" }
+          { "navbar-light bg-lighter": theme === "dark" },
+          //{ "navbar-light bg-secondary": theme === "light" },
+          //{ "navbar-light bg-white": theme === "white" },
         )}
       >
         <Container fluid>
@@ -401,9 +402,9 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                       tag="a"
                     >
                       <span className="shortcut-media avatar rounded-circle bg-gradient-red">
-                        <i className="ni ni-calendar-grid-58" />
+                        <i className="ni ni-building" />
                       </span>
-                      <small>Agenda</small>
+                      <small>Cliente</small>
                     </Col>
                     <Col
                       className="shortcut-item"
@@ -413,9 +414,9 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                       tag="a"
                     >
                       <span className="shortcut-media avatar rounded-circle bg-gradient-blue">
-                        <i className="ni ni-laptop" />                       
+                        <i className="ni ni-email-83" />                       
                       </span>
-                      <small>Adm</small>
+                      <small>Contatos</small>
                     </Col>
                                 
                     <ModalAdm isOpen={modalAdmOpen} toggle={toggleModalAdm} />
@@ -429,10 +430,10 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                       <span className="shortcut-media avatar rounded-circle bg-gradient-blue">
                         <i className="ni ni-credit-card" />                       
                       </span>
-                      <small>Empresas</small>
+                      <small>Planos</small>
                     </Col>
                                 
-                    <ModalEnterprise isOpen={modalEnterpriseOpen} toggle={toggleModalEnterprise} />
+                    {/* <ModalEnterprise isOpen={modalEnterpriseOpen} toggle={toggleModalEnterprise} />
                     <Col
                       className="shortcut-item"
                       href="#pablo"
@@ -472,7 +473,7 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                       <small>Planos</small>
                     </Col>
                                 
-                    <ModalPlan isOpen={modalPlanOpen} toggle={toggleModalPlan} />
+                    <ModalPlan isOpen={modalPlanOpen} toggle={toggleModalPlan} /> */}
  
                   </Row>
                 </DropdownMenu>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  Badge,
   Card,
   CardHeader,
   Col,
@@ -32,7 +33,7 @@ const AdminList = ({ admins, deleteAdmin }) => {
   };
 
   const handleSave = () => {
-    toggleModalAdm(); 
+    toggleModalAdm();
   };
 
   const handleInputChange = (fieldName, value) => {
@@ -48,9 +49,9 @@ const AdminList = ({ admins, deleteAdmin }) => {
       <CardHeader className="border-0">
         <Row className="align-items-center">
           <Col xs="6">
-            <h3 className="mb-0">Administradores</h3>
+            <h3 className="mb-0">Lista de Administradores</h3>
           </Col>
-          <Col xs="6" className="text-right">
+          {/* <Col xs="6" className="text-right">
             <div className="d-flex justify-content-end">
               <Button
                 className="btn-neutral btn-round btn-icon"
@@ -86,67 +87,69 @@ const AdminList = ({ admins, deleteAdmin }) => {
                 Exportar Adm
               </UncontrolledTooltip>
             </div>
-          </Col>
+          </Col> */}
         </Row>
       </CardHeader>
 
       <Table className="align-items-center table-flush" responsive>
-  <thead className="thead-light">
-    <tr>
-      <th className="text-left">Nome</th>
-      <th className="text-left">Email</th>
-      <th className="text-left">Celular</th>
-      <th className="text-left">Criado em</th>
-      <th className="text-center">Previlégios</th>
-      <th className="text-center" />
-    </tr>
-  </thead>
-  <tbody>
-    {mockAdmins.map((admin) => (
-      <tr key={admin.id}>
-        <td className="table-user">
-          <img
-            alt="..."
-            className="avatar rounded-circle mr-3"
-            src={require(`../../../assets/img/theme/team-${admin.id}.jpg`)}
-          />
-          <b className="text-left">{admin.name}</b>
-        </td>
-        <td className="text-left">
-          <span className="text-muted">{admin.email}</span>
-        </td>
-        <td className="text-left">
-          <span className="text-muted">{admin.phone}</span>
-        </td>
-        <td className="text-left">
-          <span className="text-muted">{admin.date}</span>
-        </td>
-        <td className="text-center">
-          <a
-            className="font-weight-bold"
-            href="#pablo"
-            onClick={(e) => e.preventDefault()}
-          >
-            {admin.privileges}
-          </a>
-        </td>
-        <td className="text-center table-actions">
-          <a
-            className="table-action table-action-delete"
-            href="#pablo"
-            id={`delete${admin.id}`}
-            onClick={() => deleteAdmin(admin.id)}
-          >
-            <i className="fas fa-trash" />
-          </a>
-          <UncontrolledTooltip delay={0} target={`delete${admin.id}`}>
-            Excluir
-          </UncontrolledTooltip>
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</Table>
+        <thead className="thead-light">
+          <tr>
+            <th className="text-left">Nome</th>
+            <th className="text-left">Email</th>
+            <th className="text-left">Celular</th>
+            <th className="text-left">Estado</th>
+            <th className="text-center">Previlégios</th>
+            <th className="text-center" />
+          </tr>
+        </thead>
+        <tbody>
+          {mockAdmins.map((admin) => (
+            <tr key={admin.id}>
+              <td className="table-user">
+                <img
+                  alt="..."
+                  className="avatar rounded-circle mr-3"
+                  src={require(`../../../assets/img/theme/team-${admin.id}.jpg`)}
+                />
+                <b className="text-left">{admin.name}</b>
+              </td>
+              <td className="text-left">
+                <span className="text-muted">{admin.email}</span>
+              </td>
+              <td className="text-left">
+                <span className="text-muted">{admin.phone}</span>
+              </td>
+              <td>
+                <Badge className="badge-lg" color="success">
+                  Active
+                </Badge>
+              </td>
+              <td className="text-center">
+                <a
+                  className="font-weight-bold"
+                  href="#pablo"
+                  onClick={(e) => e.preventDefault()}
+                >
+                  {admin.privileges}
+                </a>
+              </td>
+              <td className="text-center table-actions">
+                <a
+                  className="table-action table-action-delete"
+                  href="#pablo"
+                  id={`delete${admin.id}`}
+                  onClick={() => deleteAdmin(admin.id)}
+                >
+                  <i className="fas fa-trash" />
+                </a>
+                <UncontrolledTooltip delay={0} target={`delete${admin.id}`}>
+                  Excluir
+                </UncontrolledTooltip>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
 
 
 

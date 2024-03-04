@@ -5,9 +5,9 @@ import { withRouter } from "next/router";
 // core components
 import EnterpriseNavbar from "components/Navbars/RegisterNavbar.js";
 import RegisterFooter from "components/Footers/RegisterFooter.js";
-//import Sidebar from "components/Sidebar/Sidebar.js";
-
-import routes from "routes.js";
+import Sidebar from "components/Sidebar/Sidebar.js";
+import routes from "../routes/admin.routes";
+// import routes from "routes.js";
 
 function Register({ router, children }) {
   const [sidenavOpen, setSidenavOpen] = React.useState(true);
@@ -55,7 +55,6 @@ function Register({ router, children }) {
   };
   return (
     <>
-      {/*
       <Sidebar
         routes={routes}
         toggleSidenav={toggleSidenav}
@@ -65,7 +64,7 @@ function Register({ router, children }) {
           imgSrc: require("assets/img/brand/nextjs_argon_black.png"),
           imgAlt: "...",
         }}
-      /> */}
+      />
       <div className="main-content">
         <EnterpriseNavbar
           theme={getNavbarTheme()}

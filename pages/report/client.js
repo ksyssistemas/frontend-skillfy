@@ -80,15 +80,10 @@ function ReportAdmin() {
 
   return (
     <>
-      <AlternativeHeader name="Administrador" parentName="Registros" />
+      <AlternativeHeader name="Cliente" parentName="Registros" />
       <Container className="mt--6" fluid>
-        <AdminList
-          admins={fakeAdmins}
-          deleteAdmin={deleteAdmin}
-        />
+        <EnterpriseList />
       </Container>
-
-
     </>
   );
 }

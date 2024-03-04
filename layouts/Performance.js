@@ -20,8 +20,8 @@ import { withRouter } from "next/router";
 import PerformanceNavbar from "components/Navbars/PerformanceNavbar.js";
 import PerformanceFooter from "components/Footers/PerformanceFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
-
-import routes from "routes.js";
+import routes from "../routes/client.routes";
+// import routes from "routes.js";
 
 function Performance({ router, children }) {
   const [sidenavOpen, setSidenavOpen] = React.useState(true);

@@ -16,7 +16,7 @@ import {
 } from "reactstrap";
 
 // layout for this page
-import Register from "layouts/Register.js";
+import Admin from "layouts/Admin.js";
 // core components
 import CardsHeader from "components/Headers/CardsHeaderAdmin.js";
 
@@ -42,7 +42,7 @@ function Dashboard() {
 
   return (
     <>
-      <CardsHeader name="Admin"  parentName="Dashboard" />
+      <CardsHeader name="Administrador"  parentName="Dashboard" />
       <Container className="mt--6" fluid>
         <Row>
           <Col xl="0">
@@ -2278,6 +2278,6 @@ function Dashboard() {
   );
 }
 
-Dashboard.layout = Register;
+Dashboard.layout = Admin;
 
 export default Dashboard;

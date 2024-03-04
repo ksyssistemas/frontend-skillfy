@@ -15,7 +15,8 @@
 
 */
 import React from "react";
-
+// nodejs library to set properties for components
+import PropTypes from "prop-types";
 // reactstrap components
 import {
   Breadcrumb,
@@ -26,7 +27,7 @@ import {
   Col,
 } from "reactstrap";
 
-function AlternativeHeader() {
+function AlternativeHeader({ name, parentName }) {
   return (
     <>
       <div className="header pb-6">
@@ -34,7 +35,9 @@ function AlternativeHeader() {
           <div className="header-body">
             <Row className="align-items-center py-4">
               <Col lg="6" xs="7">
-                <h6 className="h2 d-inline-block mb-0">Alternative</h6>{" "}
+                <h6 className="h2 d-inline-block mb-0">
+                  {name}
+                  </h6>{" "}
                 <Breadcrumb
                   className="d-none d-md-inline-block ml-md-4"
                   listClassName="breadcrumb-links"
@@ -46,11 +49,11 @@ function AlternativeHeader() {
                   </BreadcrumbItem>
                   <BreadcrumbItem>
                     <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                      Dashboards
+                      {parentName}
                     </a>
                   </BreadcrumbItem>
                   <BreadcrumbItem aria-current="page" className="active">
-                    Alternative
+                    {name}
                   </BreadcrumbItem>
                 </Breadcrumb>
               </Col>
@@ -81,5 +84,10 @@ function AlternativeHeader() {
     </>
   );
 }
+
+AlternativeHeader.propTypes = {
+  name: PropTypes.string,
+  parentName: PropTypes.string,
+};
 
 export default AlternativeHeader;
