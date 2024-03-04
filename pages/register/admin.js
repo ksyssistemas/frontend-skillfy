@@ -6,75 +6,14 @@ import Enterprise from "../../layouts/Register";
 import SimpleHeader from "../../components/Headers/SimpleHeader"
 import AlternativeHeader from "../../components/Headers/AlternativeHeader"
 
+import useFetchAdminData from '../../hooks/useFetchAdminData';
+import useManageFormData from '../../hooks/useManageAdminForm';
+
 function Dashboard() {
 
-  const [administratorData, setAdministratorData] = useState({});
+  const administratorData = useFetchAdminData('adm2@twig.com');
 
-  const [formData, setFormData] = useState({
-    name: '',
-    lastname: '',
-    email: '',
-    password: '',
-    phone: ''
-  });
-
-  const [parentName, setParentName] = useState('');
-
-  const handleInputChange = (fieldName, value) => {
-    setFormData({ ...formData, [fieldName]: value });
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('http://localhost:6008/administrator/email/adm1@gmail.com', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setAdministratorData(data);
-        } else {
-          console.error('Error in response:', response.status);
-        }
-      } catch (error) {
-        console.error('Error in request:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const handleSubmit = async () => {
-    try {
-      const response = await fetch('http://localhost:6008/administrator', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        setFormData({
-          name: '',
-          lastname: '',
-          birthdate: '',
-          email: '',
-          password: '',
-          phone: ''
-        });
-        console.log('Data sent successfully!');
-      } else {
-        console.error('Error in response:', response.status);
-      }
-    } catch (error) {
-      console.error('Error in request:', error);
-    }
-  };
+  const { formData, handleInputChange, handleSubmit } = useManageFormData();
 
 
   return (

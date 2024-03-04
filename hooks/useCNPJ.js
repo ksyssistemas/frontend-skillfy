@@ -10,7 +10,7 @@ const useCNPJ = (initialCnpj) => {
   useEffect(() => {
     const fetchData = async (cnpj) => {
       try {
-        const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
+        const response = await fetch(`${process.env.URL_BRASILAPI}/api/cnpj/v1/${cnpj}`);
         const result = await response.json();
         setData(result);
       } catch (error) {
