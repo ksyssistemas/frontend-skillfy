@@ -20945,6 +20945,7 @@ button:focus, :focus {
     z-index: 9999;
     top: 0; }
   .body-page-transition .page-transition-icon-wrapper {
-    display: block; }
+    display: block;
+  }
 
 /*# sourceMappingURL=nextjs-argon-dashboard-pro.css.map */
