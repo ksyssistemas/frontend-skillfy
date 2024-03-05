@@ -1,15 +1,10 @@
 import React from 'react';
-import {
-  Card,
-  CardBody,
-  Table
-} from 'reactstrap';
-
-import mockFormData from "../../../mocks/mockFormData"
+import { Card, CardBody, Table } from 'reactstrap';
+import useFetchAdmins from '../../hooks/useFetchAdmins';
 
 const AdminList = () => {
-
-  const headers = Object.keys(mockFormData);
+  const admins = useFetchAdmins();
+  const headers = Object.keys(admins[0] || {});
 
   return (
     <Card>
@@ -24,11 +19,13 @@ const AdminList = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                {headers.map((label, index) => (
-                  <td key={index}>{mockFormData[label]}</td>
-                ))}
-              </tr>
+              {admins.map((admin, rowIndex) => (
+                <tr key={rowIndex}>
+                  {headers.map((label, colIndex) => (
+                    <td key={colIndex}>{admin[label]}</td>
+                  ))}
+                </tr>
+              ))}
             </tbody>
           </Table>
         </div>

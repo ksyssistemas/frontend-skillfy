@@ -5,16 +5,21 @@ import {
   CardHeader,
   Col,
   Row,
-  Button,
   Table,
   UncontrolledTooltip,
 } from 'reactstrap';
 
 import ModalAdm from "../../Modals/admin/ModalAdm"
-import mockAdmins from "../../../mocks/mockAdmins"
+import useFetchAdmins from "../../../hooks/useFindAllAdmin"
+import { useDeleteAdmin} from "../../../hooks/useDeleteAdmin"
 
 
-const AdminList = ({ admins, deleteAdmin }) => {
+const AdminList = () => {
+
+  const admins = useFetchAdmins();
+  const deleteAdmin = useDeleteAdmin();
+
+  console.log(admins)
 
   {/** Modal  Adm*/ }
   const [modalAdmOpen, setModalAdmOpen] = React.useState(false);
@@ -32,13 +37,23 @@ const AdminList = ({ admins, deleteAdmin }) => {
     setModalAdmOpen(!modalAdmOpen);
   };
 
-  const handleSave = () => {
-    toggleModalAdm();
-  };
+  //const handleSave = () => {
+  //  toggleModalAdm();
+  //};
 
-  const handleInputChange = (fieldName, value) => {
-    setFormData({ ...formData, [fieldName]: value });
+  //const handleInputChange = (fieldName, value) => {
+  //  setFormData({ ...formData, [fieldName]: value });
+  //};
+
+  const handleDeleteAdmin = async (id) => {
+    const deletedId = await deleteAdmin(id);
+    if (deletedId !== null) {
+      window.location.reload();
+    } else {
+      console.error('Failed to delete admin with ID:', id);
+    }
   };
+  
 
 
 
@@ -51,43 +66,6 @@ const AdminList = ({ admins, deleteAdmin }) => {
           <Col xs="6">
             <h3 className="mb-0">Lista de Administradores</h3>
           </Col>
-          {/* <Col xs="6" className="text-right">
-            <div className="d-flex justify-content-end">
-              <Button
-                className="btn-neutral btn-round btn-icon"
-                color="default"
-                href="#pablo"
-                id="tooltipCadastro"
-                onClick={toggleModalAdm}
-                size="sm"
-              >
-                <span className="btn-inner--icon mr-1">
-                  <i className="fas fa-user-plus" />
-                </span>
-                <span className="btn-inner--text">Cadastrar</span>
-              </Button>
-              <UncontrolledTooltip delay={0} target="tooltipCadastro">
-                Cadastrar Adm
-              </UncontrolledTooltip>
-
-              <Button
-                className="btn-neutral btn-round btn-icon"
-                color="default"
-                href="#pablo"
-                id="tooltipExport"
-                onClick={(e) => e.preventDefault()}
-                size="sm"
-              >
-                <span className="btn-inner--icon mr-1">
-                  <i className="fas fa-user-edit" />
-                </span>
-                <span className="btn-inner--text">Exportar</span>
-              </Button>
-              <UncontrolledTooltip delay={0} target="tooltipExport">
-                Exportar Adm
-              </UncontrolledTooltip>
-            </div>
-          </Col> */}
         </Row>
       </CardHeader>
 
@@ -103,13 +81,14 @@ const AdminList = ({ admins, deleteAdmin }) => {
           </tr>
         </thead>
         <tbody>
-          {mockAdmins.map((admin) => (
+          {admins.map((admin) => (
             <tr key={admin.id}>
               <td className="table-user">
                 <img
                   alt="..."
                   className="avatar rounded-circle mr-3"
-                  src={require(`../../../assets/img/theme/team-${admin.id}.jpg`)}
+                  //src={require(`../../../assets/img/theme/team-${admin.id}.jpg`)}
+                  src={require(`../../../assets/img/theme/team-1.jpg`)}
                 />
                 <b className="text-left">{admin.name}</b>
               </td>
@@ -138,7 +117,7 @@ const AdminList = ({ admins, deleteAdmin }) => {
                   className="table-action table-action-delete"
                   href="#pablo"
                   id={`delete${admin.id}`}
-                  onClick={() => deleteAdmin(admin.id)}
+                  onClick={() => handleDeleteAdmin(admin.id)}
                 >
                   <i className="fas fa-trash" />
                 </a>
@@ -150,15 +129,12 @@ const AdminList = ({ admins, deleteAdmin }) => {
           ))}
         </tbody>
       </Table>
-
-
-
       <ModalAdm
         isOpen={modalAdmOpen}
         toggle={toggleModalAdm}
-        handleSave={handleSave}
+        //handleSave={handleSave}
         formData={formData}
-        handleInputChange={handleInputChange}
+        //handleInputChange={handleInputChange}
       />
 
 

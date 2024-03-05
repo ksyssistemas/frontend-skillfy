@@ -7,13 +7,13 @@ import SimpleHeader from "../../components/Headers/SimpleHeader"
 import AlternativeHeader from "../../components/Headers/AlternativeHeader"
 
 import useFetchAdminData from '../../hooks/useFetchAdminData';
-import useManageFormData from '../../hooks/useManageAdminForm';
+import useCreateAdmin from '../../hooks/useCreateAdmin';
 
 function Dashboard() {
 
   const administratorData = useFetchAdminData('adm2@twig.com');
 
-  const { formData, handleInputChange, handleSubmit } = useManageFormData();
+  const { formData, handleInputChange, handleSubmit } = useCreateAdmin();
 
 
   return (

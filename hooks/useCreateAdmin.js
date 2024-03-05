@@ -1,7 +1,7 @@
  // Hook para gerenciar o formulário
 import { useState } from 'react';
 
-const useManageFormData = () => {
+const useCreateAdmin = () => {
   const [formData, setFormData] = useState({
     name: '',
     lastname: '',
@@ -16,7 +16,7 @@ const useManageFormData = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch(`${process.env.URL_ADMIN}/administrator`, {
+      const response = await fetch(`http://localhost:3008/administrator`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -45,4 +45,4 @@ const useManageFormData = () => {
   return { formData, handleInputChange, handleSubmit };
 };
 
-export default useManageFormData;
+export default useCreateAdmin;
