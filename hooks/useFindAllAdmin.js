@@ -6,7 +6,7 @@ const useFetchAdmins = () => {
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
-        const response = await fetch(`http://localhost:3008/administrator/findAll`);
+        const response = await fetch(`http://dlist.com.br:3008/administrator/findAll`);
         if (!response.ok) {
           throw new Error('Network response was not ok.');
         }

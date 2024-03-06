@@ -57,7 +57,7 @@ function Login() {
           switch (data.role) {
               case 'administrator':
                   console.log('Redirecionando para o painel do administrador');
-                  redirectUrl += '/register/dashboard';
+                  redirectUrl += '/dashboard/admin';
                   break;
               case 'enterprise':
                   console.log('Redirecionando para o painel da empresa');

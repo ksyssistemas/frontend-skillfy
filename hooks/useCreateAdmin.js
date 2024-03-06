@@ -16,7 +16,7 @@ const useCreateAdmin = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch(`http://localhost:3008/administrator`, {
+      const response = await fetch(`http://dlist.com.br:3008/administrator`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
