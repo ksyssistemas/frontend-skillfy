@@ -64,7 +64,7 @@ const routes = [
     },
     {
       collapse: true,
-      name: "Cadastro",
+      name: "Cadastros",
       icon: "ni ni-single-copy-04 text-blue",
       state: "dashboardsCollapse",
       views: [

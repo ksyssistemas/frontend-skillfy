@@ -15,6 +15,7 @@ import ShowFunctionsDescriptionsModal from "../../components/Modals/admin/show-f
 import AlternativeHeader from "../../components/Headers/AlternativeHeader"
 
 function Dashboard() {
+  
   const [formData, setFormData] = useState({
     companyName: '',
     brandName: '',
@@ -28,8 +29,6 @@ function Dashboard() {
   const handleInputChange = (fieldName, value) => {
     setFormData({ ...formData, [fieldName]: value });
   };
-
-
 
   const handleSubmit = async () => {
     try {
@@ -64,7 +63,7 @@ function Dashboard() {
   function handleShowJobDescriptionsModal() {
     setModalOpen(!modalOpen)
   }
-  
+
   const [functionsDescriptionsModalOpen, setfunctionsDescriptionsModalOpen] = React.useState(false);
   function handleShowFunctionsDescriptionsModal() {
     setfunctionsDescriptionsModalOpen(!functionsDescriptionsModalOpen)
@@ -76,9 +75,9 @@ function Dashboard() {
       <Container className="mt--6" fluid>
         <Row>
           <Col md="6">
-            <Card className="mb-4">
+            <Card className="mb-4 bg-white">
               <CardHeader>
-                <h3 className="mb-0">Cadastrar Cargos</h3>
+                <h3 className="mb-0">Cadastrar Cargo</h3>
               </CardHeader>
               <CardBody>
                 <Row>
@@ -114,7 +113,7 @@ function Dashboard() {
                           placeholder: "Selecione",
                         }}
                         data={[
-                          { id: "0", text: "Selecione um departamento" },
+                          { id: "0", text: "Selecione um cargo" },
                           { id: "1", text: "Financeiro" },
                           { id: "2", text: "Comercial" },
                           { id: "3", text: "Gestão de Pessoas" }
@@ -139,9 +138,10 @@ function Dashboard() {
                   </Col>
                 </Row>
                 <Row>
-                  <Col md="12">
-                    <Button color="info" size="lg" type="button" onClick={handleSubmit}>
-                      Salvar
+                  <Col md="6" />
+                  <Col className="d-flex justify-content-end align-items-center" md="6" >
+                    <Button className="px-5" color="primary" size="lg" type="button" onClick={handleSubmit}>
+                      <span className="btn-inner--text">Adicionar Cargo</span>
                     </Button>
                   </Col>
                 </Row>
@@ -149,9 +149,9 @@ function Dashboard() {
             </Card>
           </Col>
           <Col md="6">
-            <Card className="mb-4">
+            <Card className="mb-4 bg-lighter">
               <CardHeader>
-                <h3 className="mb-0">Cadastrar Funções</h3>
+                <h3 className="mb-0">Cadastrar Função</h3>
               </CardHeader>
               <CardBody>
                 <Row>
@@ -165,7 +165,7 @@ function Dashboard() {
                       </label>
                       <Input
                         id="example3cols1Input"
-                        placeholder="Ex.: Comercial"
+                        placeholder="Ex.: Assistente Comercial"
                         value={formData.companyName}
                         onChange={(e) => handleInputChange('companyName', e.target.value)}
                         type="text"
@@ -187,7 +187,7 @@ function Dashboard() {
                           placeholder: "Selecione",
                         }}
                         data={[
-                          { id: "0", text: "Selecione um departamento" },
+                          { id: "0", text: "Selecione um cargo" },
                           { id: "1", text: "Financeiro" },
                           { id: "2", text: "Comercial" },
                           { id: "3", text: "Gestão de Pessoas" }
@@ -212,9 +212,10 @@ function Dashboard() {
                   </Col>
                 </Row>
                 <Row>
-                  <Col md="12">
-                    <Button color="info" size="lg" type="button" onClick={handleSubmit}>
-                      Salvar
+                  <Col md="6" />
+                  <Col className="d-flex justify-content-end align-items-center" md="6" >
+                    <Button className="px-5" color="primary" size="lg" type="button" onClick={handleSubmit}>
+                      <span className="btn-inner--text">Adicionar Função</span>
                     </Button>
                   </Col>
                 </Row>
