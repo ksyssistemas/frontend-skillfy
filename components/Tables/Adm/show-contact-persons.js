@@ -11,10 +11,10 @@ import {
 
 import ModalAdm from "../../Modals/admin/ModalAdm"
 import useFetchAdmins from "../../../hooks/useFindAllAdmin"
-import { useDeleteAdmin} from "../../../hooks/useDeleteAdmin"
+import { useDeleteAdmin } from "../../../hooks/useDeleteAdmin"
 
 
-const AdminList = () => {
+const ContactPersonsList = () => {
 
   const admins = useFetchAdmins();
   const deleteAdmin = useDeleteAdmin();
@@ -53,7 +53,7 @@ const AdminList = () => {
       console.error('Failed to delete admin with ID:', id);
     }
   };
-  
+
 
 
 
@@ -64,7 +64,7 @@ const AdminList = () => {
       <CardHeader className="border-0">
         <Row className="align-items-center">
           <Col xs="6">
-            <h3 className="mb-0">Lista de Administradores</h3>
+            <h3 className="mb-0">Lista de Pessoas de Contato</h3>
           </Col>
         </Row>
       </CardHeader>
@@ -73,10 +73,10 @@ const AdminList = () => {
         <thead className="thead-light">
           <tr>
             <th className="text-left">Nome</th>
+            <th className="text-left">Telefone</th>
             <th className="text-left">Email</th>
-            <th className="text-left">Celular</th>
-            <th className="text-left">Estado</th>
-            <th className="text-center">Previlégios</th>
+            <th className="text-left">Cliente</th>
+            <th className="text-left">Ocupação</th>
             <th className="text-center" />
           </tr>
         </thead>
@@ -84,33 +84,25 @@ const AdminList = () => {
           {admins.map((admin) => (
             <tr key={admin.id}>
               <td className="table-user">
-                <img
-                  alt="..."
-                  className="avatar rounded-circle mr-3"
-                  //src={require(`../../../assets/img/theme/team-${admin.id}.jpg`)}
-                  src={require(`../../../assets/img/theme/team-1.jpg`)}
-                />
-                <b className="text-left">{admin.name}</b>
-              </td>
-              <td className="text-left">
-                <span className="text-muted">{admin.email}</span>
+                <b className="text-left">John Michael</b>
               </td>
               <td className="text-left">
                 <span className="text-muted">{admin.phone}</span>
               </td>
-              <td>
-                <Badge color="success" pill>
-                  Active
-                </Badge>
+              <td className="text-left">
+                <span className="text-muted">{admin.email}</span>
               </td>
-              <td className="text-center">
+              <td>
                 <a
                   className="font-weight-bold"
                   href="#pablo"
                   onClick={(e) => e.preventDefault()}
                 >
-                  {admin.privileges}
+                  Argon Dashboard PRO
                 </a>
+              </td>
+              <td className="text-left">
+                  Financeiro
               </td>
               <td className="text-center table-actions">
                 <a
@@ -134,7 +126,7 @@ const AdminList = () => {
         toggle={toggleModalAdm}
         //handleSave={handleSave}
         formData={formData}
-        //handleInputChange={handleInputChange}
+      //handleInputChange={handleInputChange}
       />
 
 
@@ -143,4 +135,4 @@ const AdminList = () => {
   );
 };
 
-export default AdminList;
+export default ContactPersonsList;

@@ -125,7 +125,7 @@ const EnterpriseList = () => {
               <td className="text-center">{company.phone}</td>
               <td className="text-center">{company.plan}</td>
               <td className="text-center">
-                <Badge className="badge-lg" color="success">
+                <Badge color="success" pill>
                   Active{company.status}
                 </Badge>
               </td>
@@ -138,7 +138,7 @@ const EnterpriseList = () => {
                           onClick={handleShowCustomerDetailsModal}
                           className="name mb-0 text-sm"
                         >
-                          Ver mais
+                          Mais
                         </span>
                       </a>
                     </NavLink>
@@ -161,13 +161,13 @@ const EnterpriseList = () => {
                       href="#pablo"
                       onClick={(e) => e.preventDefault()}
                     >
-                      Action
+                      Editar
                     </DropdownItem>
                     <DropdownItem
                       href="#pablo"
                       onClick={(e) => e.preventDefault()}
                     >
-                      Another action
+                      Desabilitar
                     </DropdownItem>
                     <DropdownItem
                       href="#pablo"

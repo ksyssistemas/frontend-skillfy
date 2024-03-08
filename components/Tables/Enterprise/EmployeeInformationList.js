@@ -154,7 +154,7 @@ const EmployeeInformationList = () => {
                 Active
               </Badge>
             </td>
-            <td className="text-center text-muted">
+            <td className="text-muted">
               <Nav navbar>
                 <NavItem>
                   <NavLink target="_blank">
@@ -236,7 +236,7 @@ const EmployeeInformationList = () => {
                 Active
               </Badge>
             </td>
-            <td className="text-center text-muted">
+            <td className="text-muted">
               <Nav navbar>
                 <NavItem>
                   <NavLink target="_blank">
@@ -318,7 +318,7 @@ const EmployeeInformationList = () => {
                 Active
               </Badge>
             </td>
-            <td className="text-center text-muted">
+            <td className="text-muted">
               <Nav navbar>
                 <NavItem>
                   <NavLink target="_blank">
@@ -400,7 +400,7 @@ const EmployeeInformationList = () => {
                 Active
               </Badge>
             </td>
-            <td className="text-center text-muted">
+            <td className="text-muted">
               <Nav navbar>
                 <NavItem>
                   <NavLink target="_blank">
@@ -482,7 +482,7 @@ const EmployeeInformationList = () => {
                 Active
               </Badge>
             </td>
-            <td className="text-center text-muted">
+            <td className="text-muted">
               <Nav navbar>
                 <NavItem>
                   <NavLink target="_blank">

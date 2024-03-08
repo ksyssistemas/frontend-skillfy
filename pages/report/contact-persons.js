@@ -5,7 +5,7 @@ import CardsHeader from "components/Headers/CardsHeaderAdmin.js";
 import AlternativeHeader from "components/Headers/AlternativeHeader.js";
 
 import EnterpriseList from "../../components/Tables/Enterprise/showEnterprise";
-import AdminList from "../../components/Tables/Adm/showAdm";
+import ContactPersonsList from "../../components/Tables/Adm/show-contact-persons";
 //import AdminRegistrationForm from "../../components/Forms/createAdm";
 import EnterpriseRegistrationForm from "../../components/Forms/createEnterprise";
 
@@ -80,9 +80,9 @@ function ReportAdmin() {
 
   return (
     <>
-      <AlternativeHeader name="Admin" parentName="Ksys Sistemas" />
+      <AlternativeHeader name="Contatos" parentName="Registros" />
       <Container className="mt--6" fluid>
-        <AdminList
+        <ContactPersonsList
           admins={fakeAdmins}
           deleteAdmin={deleteAdmin}
         />

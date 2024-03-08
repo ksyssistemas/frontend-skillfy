@@ -144,6 +144,9 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
         <Row>
           <div className="col">
             <div className="card-wrapper">
+            <h6 className="heading-small text-muted mb-4">
+                Informações Institucionais
+              </h6>
               <div className="form-row">
                 <Col className="mb-3" md="4">
                   <label
@@ -152,22 +155,11 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   >
                     Nome
                   </label>
-                  <Input
-                    defaultValue="Mark"
-                    id="validationCustom01"
-                    placeholder="CompanyName"
-                    type="text"
-                    valid={firstNameState === "valid"}
-                    invalid={firstNameState === "invalid"}
-                    onChange={(e) => {
-                      setfirstName(e.target.value);
-                      if (e.target.value === "") {
-                        setfirstNameState("invalid");
-                      } else {
-                        setfirstNameState("valid");
-                      }
-                    }}
-                  />
+                  <div className="mt-1 mb-3">
+                    <span className="name text-sm">
+                      Cargo Lorem ipsum dolor sit
+                    </span>
+                  </div>
                   <div className="valid-feedback">Looks good!</div>
                 </Col>
                 <Col className="mb-3" md="4">
@@ -177,21 +169,11 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   >
                     Nome Fantasia
                   </label>
-                  <Input
-                    id="validationCustom05"
-                    placeholder="BrandName"
-                    type="text"
-                    valid={zipState === "valid"}
-                    invalid={zipState === "invalid"}
-                    onChange={(e) => {
-                      setzip(e.target.value);
-                      if (e.target.value === "") {
-                        setzipState("invalid");
-                      } else {
-                        setzipState("valid");
-                      }
-                    }}
-                  />
+                  <div className="mt-1 mb-3">
+                    <span className="name text-sm">
+                      Cargo Lorem ipsum dolor sit
+                    </span>
+                  </div>
                   <div className="invalid-feedback">
                     Please provide a valid zip.
                   </div>
@@ -203,22 +185,11 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   >
                     CNPJ
                   </label>
-                  <Input
-                    defaultValue="Otto"
-                    id="validationCustom02"
-                    placeholder="IdentificationNumber"
-                    type="text"
-                    valid={lastNameState === "valid"}
-                    invalid={lastNameState === "invalid"}
-                    onChange={(e) => {
-                      setlastName(e.target.value);
-                      if (e.target.value === "") {
-                        setlastNameState("invalid");
-                      } else {
-                        setlastNameState("valid");
-                      }
-                    }}
-                  />
+                  <div className="mt-1 mb-3">
+                    <span className="name text-sm">
+                      Cargo Lorem ipsum dolor sit
+                    </span>
+                  </div>
                   <div className="valid-feedback">Looks good!</div>
                 </Col>
               </div>
@@ -230,22 +201,11 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   >
                     E-mail Titular
                   </label>
-                  <Input
-                    defaultValue="Mark"
-                    id="validationCustom01"
-                    placeholder="AccountHolder"
-                    type="text"
-                    valid={firstNameState === "valid"}
-                    invalid={firstNameState === "invalid"}
-                    onChange={(e) => {
-                      setfirstName(e.target.value);
-                      if (e.target.value === "") {
-                        setfirstNameState("invalid");
-                      } else {
-                        setfirstNameState("valid");
-                      }
-                    }}
-                  />
+                  <div className="mt-1 mb-3">
+                    <span className="name text-sm">
+                      Cargo Lorem ipsum dolor sit
+                    </span>
+                  </div>
                   <div className="valid-feedback">Looks good!</div>
                 </Col>
                 <Col className="mb-3" md="4">
@@ -255,21 +215,11 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   >
                     Telefone
                   </label>
-                  <Input
-                    id="validationCustom05"
-                    placeholder="Phone"
-                    type="text"
-                    valid={zipState === "valid"}
-                    invalid={zipState === "invalid"}
-                    onChange={(e) => {
-                      setzip(e.target.value);
-                      if (e.target.value === "") {
-                        setzipState("invalid");
-                      } else {
-                        setzipState("valid");
-                      }
-                    }}
-                  />
+                  <div className="mt-1 mb-3">
+                    <span className="name text-sm">
+                      Cargo Lorem ipsum dolor sit
+                    </span>
+                  </div>
                   <div className="invalid-feedback">
                     Please provide a valid zip.
                   </div>
@@ -281,28 +231,32 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   >
                     Classificação do Estabelecimento
                   </label>
-                  <Input
-                    defaultValue="Otto"
-                    id="validationCustom02"
-                    placeholder="isBranche"
-                    type="text"
-                    valid={lastNameState === "valid"}
-                    invalid={lastNameState === "invalid"}
-                    onChange={(e) => {
-                      setlastName(e.target.value);
-                      if (e.target.value === "") {
-                        setlastNameState("invalid");
-                      } else {
-                        setlastNameState("valid");
-                      }
-                    }}
-                  />
+                  <div className="mt-1 mb-3">
+                    <span className="name text-sm">
+                      Cargo Lorem ipsum dolor sit
+                    </span>
+                  </div>
                   <div className="valid-feedback">Looks good!</div>
                 </Col>
               </div>
-
               <hr />
+              <h6 className="heading-small text-muted mb-4">
+                Informações de Endereço
+              </h6>
               <div className="form-row">
+                <Col className="mb-3" md="4">
+                  <label
+                    className="form-control-label"
+                    htmlFor="validationCustomUsername"
+                  >
+                    CEP
+                  </label>
+                  <div className="mt-1 mb-3">
+                    <span className="name text-sm">
+                      Cargo Lorem ipsum dolor sit
+                    </span>
+                  </div>
+                </Col>
                 <Col className="mb-3" md="8">
                   <label
                     className="form-control-label"
@@ -310,24 +264,25 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   >
                     Logradouro
                   </label>
-                  <Input
-                    aria-describedby="inputGroupPrepend"
-                    id="validationCustomUsername"
-                    placeholder="Logradouro"
-                    type="text"
-                    valid={usernameState === "valid"}
-                    invalid={usernameState === "invalid"}
-                    onChange={(e) => {
-                      setusername(e.target.value);
-                      if (e.target.value === "") {
-                        setusernameState("invalid");
-                      } else {
-                        setusernameState("valid");
-                      }
-                    }}
-                  />
-                  <div className="invalid-feedback">
-                    Please choose a username.
+                  <div className="mt-1 mb-3">
+                    <span className="name text-sm">
+                      Cargo Lorem ipsum dolor sit
+                    </span>
+                  </div>
+                </Col>
+              </div>
+              <div className="form-row">
+                <Col className="mb-3" md="8">
+                  <label
+                    className="form-control-label"
+                    htmlFor="validationCustom03"
+                  >
+                    Complemento
+                  </label>
+                  <div className="mt-1 mb-3">
+                    <span className="name text-sm">
+                      Cargo Lorem ipsum dolor sit
+                    </span>
                   </div>
                 </Col>
                 <Col className="mb-3" md="4">
@@ -337,108 +292,25 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   >
                     Número
                   </label>
-                  <Input
-                    aria-describedby="inputGroupPrepend"
-                    id="validationCustomUsername"
-                    placeholder="Número"
-                    type="text"
-                    valid={usernameState === "valid"}
-                    invalid={usernameState === "invalid"}
-                    onChange={(e) => {
-                      setusername(e.target.value);
-                      if (e.target.value === "") {
-                        setusernameState("invalid");
-                      } else {
-                        setusernameState("valid");
-                      }
-                    }}
-                  />
-                  <div className="invalid-feedback">
-                    Please choose a username.
+                  <div className="mt-1 mb-3">
+                    <span className="name text-sm">
+                      Cargo Lorem ipsum dolor sit
+                    </span>
                   </div>
                 </Col>
               </div>
-              <div className="form-row">
-                <Col className="mb-3" md="6">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationCustomUsername"
-                  >
-                    Complemento
-                  </label>
-                  <Input
-                    aria-describedby="inputGroupPrepend"
-                    id="validationCustomUsername"
-                    placeholder="Complemento"
-                    type="text"
-                    valid={usernameState === "valid"}
-                    invalid={usernameState === "invalid"}
-                    onChange={(e) => {
-                      setusername(e.target.value);
-                      if (e.target.value === "") {
-                        setusernameState("invalid");
-                      } else {
-                        setusernameState("valid");
-                      }
-                    }}
-                  />
-                  <div className="invalid-feedback">
-                    Please choose a username.
-                  </div>
-                </Col>
-                <Col className="mb-3" md="6">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationCustom03"
-                  >
-                    Bairro
-                  </label>
-                  <Input
-                    id="validationCustom03"
-                    placeholder="Bairro"
-                    type="text"
-                    valid={cityState === "valid"}
-                    invalid={cityState === "invalid"}
-                    onChange={(e) => {
-                      setcity(e.target.value);
-                      if (e.target.value === "") {
-                        setcityState("invalid");
-                      } else {
-                        setcityState("valid");
-                      }
-                    }}
-                  />
-                  <div className="invalid-feedback">
-                    Please provide a valid city.
-                  </div>
-                </Col>
-              </div>
-              <hr />
               <div className="form-row">
                 <Col className="mb-3" md="4">
                   <label
                     className="form-control-label"
                     htmlFor="validationCustom04"
                   >
-                    Município
+                    Bairro
                   </label>
-                  <Input
-                    id="validationCustom04"
-                    placeholder="Município"
-                    type="text"
-                    valid={stateState === "valid"}
-                    invalid={stateState === "invalid"}
-                    onChange={(e) => {
-                      setstate(e.target.value);
-                      if (e.target.value === "") {
-                        setstateState("invalid");
-                      } else {
-                        setstateState("valid");
-                      }
-                    }}
-                  />
-                  <div className="invalid-feedback">
-                    Please provide a valid state.
+                  <div className="mt-1 mb-3">
+                    <span className="name text-sm">
+                      Cargo Lorem ipsum dolor sit
+                    </span>
                   </div>
                 </Col>
                 <Col className="mb-3" md="4">
@@ -446,25 +318,12 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                     className="form-control-label"
                     htmlFor="validationCustom05"
                   >
-                    UF
+                    Cidade
                   </label>
-                  <Input
-                    id="validationCustom05"
-                    placeholder="Estado"
-                    type="text"
-                    valid={zipState === "valid"}
-                    invalid={zipState === "invalid"}
-                    onChange={(e) => {
-                      setzip(e.target.value);
-                      if (e.target.value === "") {
-                        setzipState("invalid");
-                      } else {
-                        setzipState("valid");
-                      }
-                    }}
-                  />
-                  <div className="invalid-feedback">
-                    Please provide a valid zip.
+                  <div className="mt-1 mb-3">
+                    <span className="name text-sm">
+                      Cargo Lorem ipsum dolor sit
+                    </span>
                   </div>
                 </Col>
                 <Col className="mb-3" md="4">
@@ -472,103 +331,74 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                     className="form-control-label"
                     htmlFor="validationCustom05"
                   >
-                    CEP
+                    Estado
                   </label>
-                  <Input
-                    id="validationCustom05"
-                    placeholder="CEP"
-                    type="text"
-                    valid={zipState === "valid"}
-                    invalid={zipState === "invalid"}
-                    onChange={(e) => {
-                      setzip(e.target.value);
-                      if (e.target.value === "") {
-                        setzipState("invalid");
-                      } else {
-                        setzipState("valid");
-                      }
-                    }}
-                  />
-                  <div className="invalid-feedback">
-                    Please provide a valid zip.
+                  <div className="mt-1 mb-3">
+                    <span className="name text-sm">
+                      Cargo Lorem ipsum dolor sit
+                    </span>
                   </div>
                 </Col>
               </div>
               <hr />
+              <h6 className="heading-small text-muted mb-4">
+                Informações do Plano Aderido
+              </h6>
               <div className="form-row">
-                <Col className="mb-3" md="4">
+                <Col className="mb-3" md="6">
                   <label
                     className="form-control-label"
                     htmlFor="validationCustom02"
                   >
                     Plano
                   </label>
-                  <Input
-                    defaultValue="Otto"
-                    id="validationCustom02"
-                    placeholder="Plan"
-                    type="text"
-                    valid={lastNameState === "valid"}
-                    invalid={lastNameState === "invalid"}
-                    onChange={(e) => {
-                      setlastName(e.target.value);
-                      if (e.target.value === "") {
-                        setlastNameState("invalid");
-                      } else {
-                        setlastNameState("valid");
-                      }
-                    }}
-                  />
+                  <div className="mt-1 mb-3">
+                    <span className="name text-sm">
+                      Cargo Lorem ipsum dolor sit
+                    </span>
+                  </div>
                   <div className="valid-feedback">Looks good!</div>
                 </Col>
-                <Col className="mb-3" md="4">
+                <Col className="mb-3" md="6">
                   <label
                     className="form-control-label"
                     htmlFor="validationCustom02"
                   >
                     Data de Adesão
                   </label>
-                  <Input
-                    defaultValue="Otto"
-                    id="validationCustom02"
-                    placeholder="CreatedAt"
-                    type="text"
-                    valid={lastNameState === "valid"}
-                    invalid={lastNameState === "invalid"}
-                    onChange={(e) => {
-                      setlastName(e.target.value);
-                      if (e.target.value === "") {
-                        setlastNameState("invalid");
-                      } else {
-                        setlastNameState("valid");
-                      }
-                    }}
-                  />
+                  <div className="mt-1 mb-3">
+                    <span className="name text-sm">
+                      Cargo Lorem ipsum dolor sit
+                    </span>
+                  </div>
                   <div className="valid-feedback">Looks good!</div>
                 </Col>
-                <Col className="mb-3" md="4">
+                <Col className="mb-3" md="6">
+                  <label
+                    className="form-control-label"
+                    htmlFor="validationCustom02"
+                  >
+                    Número de Colaboradores
+                  </label>
+                  <div className="mt-1 mb-3">
+                    <span className="name text-sm">
+                      Cargo Lorem ipsum dolor sit
+                    </span>
+                  </div>
+                  <div className="valid-feedback">Looks good!</div>
+                </Col>
+                <Col className="mb-3" md="6">
                   <label
                     className="form-control-label"
                     htmlFor="validationCustom02"
                   >
                     Estado
                   </label>
-                  <Input
-                    defaultValue="Otto"
-                    id="validationCustom02"
-                    placeholder="Ativo"
-                    type="text"
-                    valid={lastNameState === "valid"}
-                    invalid={lastNameState === "invalid"}
-                    onChange={(e) => {
-                      setlastName(e.target.value);
-                      if (e.target.value === "") {
-                        setlastNameState("invalid");
-                      } else {
-                        setlastNameState("valid");
-                      }
-                    }}
-                  />
+                  <div className="mt-1 mb-3">
+                    <span className="name text-sm">
+                      Cargo Lorem ipsum dolor sit
+                    </span>
+                  </div>
                   <div className="valid-feedback">Looks good!</div>
                 </Col>
               </div>
@@ -576,7 +406,8 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
           </div>
         </Row>
       </ModalBody>
-      <ModalFooter>
+      <ModalFooter/>
+      {/* <ModalFooter>
         <Button
           color="secondary"
           type="button"
@@ -587,7 +418,7 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
         <Button color="primary" type="button">
           Editar
         </Button>
-      </ModalFooter>
+      </ModalFooter> */}
     </Modal >
   );
 }
