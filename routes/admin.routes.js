@@ -55,6 +55,12 @@ const routes = [
           layout: "/report",
         },
         {
+          path: "/employees",
+          name: "Colaboradores",
+          miniName: "C",
+          layout: "/report",
+        },
+        {
           path: "/plans",
           name: "Planos",
           miniName: "A",
