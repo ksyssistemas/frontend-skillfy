@@ -1,58 +1,20 @@
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
+
 // react plugin used to create DropdownMenu for selecting items
 const Select2 = dynamic(() => import("react-select2-wrapper"));
 import { Button, Card, CardHeader, CardBody, FormGroup, Form, Input, Container, Row, Col, Table } from "reactstrap";
 
 import Enterprise from "../../layouts/Register";
-
 import AlternativeHeader from "../../components/Headers/AlternativeHeader"
 
+import useDepartmentSelect from "../../hooks/department/useDepartmentSelect";
+
 function Dashboard() {
-  const [formData, setFormData] = useState({
-    companyName: '',
-    brandName: '',
-    email: '',
-    password: '',
-    phoneNumber: '',
-    webSite: '',
-    avatar: '',
-  });
 
-  const handleInputChange = (fieldName, value) => {
-    setFormData({ ...formData, [fieldName]: value });
-  };
+  /** back a list of departments*/
+  const departments = useDepartmentSelect();
 
-
-
-  const handleSubmit = async () => {
-    try {
-      const response = await fetch('http://localhost:4008/enterprise', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        setFormData({
-          companyName: '',
-          brandName: '',
-          email: '',
-          password: '',
-          phoneNumber: '',
-          webSite: '',
-          avatar: '',
-        });
-        console.log('Data sent successfully!');
-      } else {
-        console.error('Error in response:', response.status);
-      }
-    } catch (error) {
-      console.error('Error in request:', error);
-    }
-  };
 
 
   return (
@@ -76,7 +38,7 @@ function Dashboard() {
                   <Input
                     id="example3cols1Input"
                     placeholder="Ex.: Comercial"
-                    value={formData.companyName}
+                    value=""
                     onChange={(e) => handleInputChange('companyName', e.target.value)}
                     type="text"
                   />
@@ -84,27 +46,21 @@ function Dashboard() {
               </Col>
               <Col md="6">
                 <FormGroup>
-                  <label
-                    className="form-control-label"
-                    htmlFor="example3cols2Input"
-                  >
+                  <label className="form-control-label" htmlFor="example3cols2Input">
                     Reporta ao Departamento
                   </label>
                   <Select2
                     className="form-control"
                     defaultValue="0"
-                    options={{
-                      placeholder: "Selecione",
-                    }}
+                    options={{ placeholder: "Selecione um departamento:" }}
                     data={[
-                      { id: "0", text: "Selecione um departamento" },
-                      { id: "1", text: "Financeiro" },
-                      { id: "2", text: "Comercial" },
-                      { id: "3", text: "Gestão de Pessoas" }
+                      ...departments.map(department => ({ id: department.ID_Department, text: department.DepartamentName }))
                     ]}
                   />
                 </FormGroup>
               </Col>
+
+
               <Col md="12">
                 <FormGroup>
                   <label
@@ -123,13 +79,14 @@ function Dashboard() {
             </Row>
             <Row>
               <Col md="8">
-                <Button color="info" size="lg" type="button" onClick={handleSubmit}>
+                <Button color="info" size="lg" type="button" >
                   Salvar
                 </Button>
               </Col>
             </Row>
           </CardBody>
         </Card>
+
 
         <Card className="bg-transparent">
           <CardHeader className="bg-transparent border-0">
@@ -158,14 +115,14 @@ function Dashboard() {
                 </td>
                 <td>
                   <span className="name mb-0 text-sm">
-                    
+
                   </span>
                 </td>
                 <td>
                   <a
                     className="font-weight-bold"
                     href="#pablo"
-                    onClick={(e) => e.preventDefault()}
+                  // onClick={(e) => e.preventDefault()}
                   >
                     Ver
                   </a>
@@ -199,7 +156,7 @@ function Dashboard() {
                   <a
                     className="font-weight-bold"
                     href="#pablo"
-                    onClick={(e) => e.preventDefault()}
+                  //onClick={(e) => e.preventDefault()}
                   >
                     Ver
                   </a>
@@ -226,14 +183,14 @@ function Dashboard() {
                 </td>
                 <td>
                   <span className="name mb-0 text-sm">
-                    
+
                   </span>
                 </td>
                 <td>
                   <a
                     className="font-weight-bold"
                     href="#pablo"
-                    onClick={(e) => e.preventDefault()}
+                  //onClick={(e) => e.preventDefault()}
                   >
                     Ver
                   </a>
@@ -252,6 +209,8 @@ function Dashboard() {
             </tbody>
           </Table>
         </Card>
+
+
       </Container>
     </Form>
   );
