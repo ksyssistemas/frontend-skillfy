@@ -19,7 +19,7 @@ const routes = [
     {
       collapse: true,
       name: "Dashboard",
-      icon: "ni ni-tv-2 text-black",
+      icon: "ni ni-tv-2",
       state: "examplesCollapse",
       views: [
         {
@@ -33,7 +33,7 @@ const routes = [
     {
       collapse: true,
       name: "Registros",
-      icon: "ni ni-archive-2 text-orange",
+      icon: "ni ni-archive-2",
       state: "examplesCollapse",
       views: [
         {
@@ -71,7 +71,7 @@ const routes = [
     {
       collapse: true,
       name: "Cadastros",
-      icon: "ni ni-single-copy-04 text-blue",
+      icon: "ni ni-single-copy-04",
       state: "dashboardsCollapse",
       views: [
         {

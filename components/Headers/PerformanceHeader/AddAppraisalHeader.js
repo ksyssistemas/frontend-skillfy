@@ -66,14 +66,24 @@ function AddAppraisalHeader({ name, parentName }) {
                 </Breadcrumb>
               </Col>
               <Col className="mt-3 mt-md-0 text-md-right" lg="6" xs="5">
-                {/* <Button 
-                  className="btn-neutral" 
-                  color="default" 
-                  size="sm"
-                  //onClick={handleOpenAddAppraisalCycleModal}
-                >
-                  Adicionar Avaliação  
-                </Button> */}
+                {/* <Nav className="d-inline-flex">
+                  <Link href="/performance/add-appraisal">
+                    <NavLink href="#pablo">
+                      <Button
+                        className="btn-neutral"
+                        color="default"
+                        size="sm"
+                      >
+                        <span
+                        className="btn-inner--icon"
+                        >
+                          <i className="ni ni-ruler-pencil mr-2" />
+                        </span>
+                        <span className="nav-link-inner--text">Definir Configurações da Avalização</span>
+                      </Button>
+                    </NavLink>
+                  </Link>
+                </Nav> */}
                 <Button className="btn-neutral" color="default" size="sm">
                   Filtros
                 </Button>

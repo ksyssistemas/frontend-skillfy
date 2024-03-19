@@ -33,7 +33,7 @@ import {
   Nav,
 } from "reactstrap";
 
-function Sidebar({
+function SidebarClient({
   toggleSidenav,
   sidenavOpen,
   routes,
@@ -127,13 +127,13 @@ function Sidebar({
             >
               {prop.icon ? (
                 <>
-                  <i style={{ color: "#FF623F" }} className={prop.icon} />
-                  <span style={{ color: "#FF623F" }}className="nav-link-text">{prop.name}</span>
+                  <i style={{ color: "#FFFFFF" }} className={prop.icon} />
+                  <span style={{ color: "#FFFFFF" }} className="nav-link-text">{prop.name}</span>
                 </>
               ) : prop.miniName ? (
                 <>
-                  <span style={{ color: "#FF623F" }}className="sidenav-mini-icon"> {prop.miniName} </span>
-                  <span style={{ color: "#FF623F" }}className="sidenav-normal"> {prop.name} </span>
+                  <span style={{ color: "#FFFFFF" }} className="sidenav-mini-icon"> {prop.miniName} </span>
+                  <span style={{ color: "#FFFFFF" }} className="sidenav-normal"> {prop.name} </span>
                 </>
               ) : null}
             </NavLink>
@@ -151,13 +151,13 @@ function Sidebar({
             <NavLink href="#pablo" onClick={closeSidenav}>
               {prop.icon !== undefined ? (
                 <>
-                  <i style={{ color: "#FF623F" }} className={prop.icon} />
-                  <span style={{ color: "#FF623F" }}className="nav-link-text">{prop.name}</span>
+                  <i style={{ color: "#FFFFFF" }} className={prop.icon} />
+                  <span style={{ color: "#FFFFFF" }} className="nav-link-text">{prop.name}</span>
                 </>
               ) : prop.miniName !== undefined ? (
                 <>
-                  <span style={{ color: "#FF623F" }}className="sidenav-mini-icon"> {prop.miniName} </span>
-                  <span style={{ color: "#FF623F" }}className="sidenav-normal"> {prop.name} </span>
+                  <span style={{ color: "#FFFFFF" }} className="sidenav-mini-icon"> {prop.miniName} </span>
+                  <span style={{ color: "#FFFFFF" }} className="sidenav-normal"> {prop.name} </span>
                 </>
               ) : (
                 prop.name
@@ -170,7 +170,7 @@ function Sidebar({
   };
   
   const scrollBarInner = (
-    <div className="scrollbar-inner">
+    <div style={{ backgroundColor: "#562f9f" }} className="scrollbar-inner">
       <div className="sidenav-header d-flex align-items-center">
         {logo && logo.innerLink ? (
           <Link href={logo.innerLink}>
@@ -196,7 +196,7 @@ function Sidebar({
         ) : null}
         <div className="ml-auto">
           <div
-            className={classnames("sidenav-toggler d-none d-xl-block", {
+            className={classnames("sidenav-toggler sidenav-toggler-dark d-none d-xl-block", {
               active: sidenavOpen,
             })}
             onClick={toggleSidenav}
@@ -262,6 +262,7 @@ function Sidebar({
   
   return (
     <Navbar
+      //style={{ backgroundColor: "#e6ebfa" }}
       className={
         "sidenav navbar-vertical navbar-expand-xs navbar-light bg-white " +
         (rtlActive ? "" : "fixed-left")
@@ -278,14 +279,14 @@ function Sidebar({
   );
 }
 
-Sidebar.defaultProps = {
+SidebarClient.defaultProps = {
   routes: [{}],
   toggleSidenav: () => {},
   sidenavOpen: false,
   rtlActive: false,
 };
 
-Sidebar.propTypes = {
+SidebarClient.propTypes = {
   // function used to make sidenav mini or normal
   toggleSidenav: PropTypes.func,
   // prop to know if the sidenav is mini or normal
@@ -309,4 +310,4 @@ Sidebar.propTypes = {
   rtlActive: PropTypes.bool,
 };
 
-export default withRouter(Sidebar);
+export default withRouter(SidebarClient);

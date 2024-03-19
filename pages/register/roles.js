@@ -212,8 +212,8 @@ function Dashboard() {
                   </Col>
                 </Row>
                 <Row>
-                  <Col md="6" />
-                  <Col className="d-flex justify-content-end align-items-center" md="6" >
+                  <Col md="4" />
+                  <Col className="d-flex justify-content-end align-items-center" md="8" >
                     <Button className="px-5" color="primary" size="lg" type="button" onClick={handleSubmit}>
                       <span className="btn-inner--text">Adicionar Função</span>
                     </Button>

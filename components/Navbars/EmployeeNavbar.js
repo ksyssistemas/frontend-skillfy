@@ -85,9 +85,10 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
   return (
     <>
       <Navbar
+        style={{ backgroundColor: "#ff623f" }}
         className={classnames(
           "navbar-top navbar-expand border-bottom",
-          { "navbar-dark bg-dark": theme === "dark" },
+          { "navbar-dark": theme === "dark" },
           { "navbar-light bg-secondary": theme === "light" }
         )}
       >

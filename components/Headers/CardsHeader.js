@@ -33,7 +33,7 @@ import {
 function CardsHeader({ name, parentName }) {
   return (
     <>
-      <div className="header bg-dark pb-6">
+      <div style={{ backgroundColor: "#562f9f"}} className="header pb-6">
         <Container fluid>
           <div className="header-body">
             <Row className="align-items-center py-4">

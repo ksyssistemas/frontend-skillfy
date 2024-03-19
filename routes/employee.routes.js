@@ -89,15 +89,15 @@ const routes = [
     {
         collapse: true,
         name: "Desempenho",
-        icon: "ni ni-paper-diploma text-orange",
+        icon: "ni ni-paper-diploma text-white",
         state: "appraisalsCollapse",
         views: [
-        //   {
-        //     path: "/appraisal-cycle-list",
-        //     name: "Avaliações",
-        //     miniName: "A",
-        //     layout: "/performance",
-        //   },
+          {
+            path: "/appraisal-cycle-list",
+            name: "Avaliações",
+            miniName: "A",
+            layout: "/performance",
+          },
           // {
           //   path: "/add-appraisal",
           //   name: "Adicionar Avaliação",

@@ -142,7 +142,7 @@ function Dashboard() {
                       className="form-control-label"
                       htmlFor="validationDefault01"
                     >
-                      Número de Identificação do Colaborador (opcional)
+                      Número de Identificação do Colaborador
                     </label>
                     <Input
                       defaultValue="Mark"

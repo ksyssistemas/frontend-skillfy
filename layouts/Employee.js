@@ -5,9 +5,9 @@ import { withRouter } from "next/router";
 // core components
 import EnterpriseNavbar from "components/Navbars/EmployeeNavbar.js";
 import RegisterFooter from "components/Footers/RegisterFooter.js";
-//import Sidebar from "components/Sidebar/Sidebar.js";
+import Sidebar from "components/Sidebar/SidebarEmployee.js";
 
-import routes from "routes.js";
+import routes from "../routes/employee.routes";
 
 function Employee({ router, children }) {
   const [sidenavOpen, setSidenavOpen] = React.useState(true);
@@ -55,8 +55,7 @@ function Employee({ router, children }) {
   };
   return (
     <>
-        {/**
-         *   <Sidebar
+      <Sidebar
         routes={routes}
         toggleSidenav={toggleSidenav}
         sidenavOpen={sidenavOpen}
@@ -66,10 +65,7 @@ function Employee({ router, children }) {
           imgAlt: "...",
         }}
       />
-         * 
-         * 
-         */}
-    
+
       <div className="main-content">
         <EnterpriseNavbar
           theme={getNavbarTheme()}

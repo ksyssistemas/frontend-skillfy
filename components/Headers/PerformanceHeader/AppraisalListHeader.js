@@ -42,7 +42,7 @@ function AppraisalListHeader({ name, parentName }) {
 
   return (
     <>
-      <div className="header header-dark bg-indigo pb-6 content__title content__title--calendar">
+      <div style={{ backgroundColor: "#562f9f" }} className="header header-dark pb-6 content__title content__title--calendar">
         <Container fluid>
           <div className="header-body">
             <Row className="align-items-center py-4">
@@ -83,7 +83,25 @@ function AppraisalListHeader({ name, parentName }) {
                         >
                           <i className="ni ni-ruler-pencil mr-2" />
                         </span>
-                        <span className="nav-link-inner--text">Adicionar Avaliação</span>
+                        <span className="nav-link-inner--text">Adicionar Onboarding</span>
+                      </Button>
+                    </NavLink>
+                  </Link>
+                </Nav>
+                <Nav className="d-inline-flex">
+                  <Link href="/performance/add-appraisal">
+                    <NavLink href="#pablo">
+                      <Button
+                        className="btn-neutral"
+                        color="default"
+                        size="sm"
+                      >
+                        <span
+                        className="btn-inner--icon"
+                        >
+                          <i className="ni ni-ruler-pencil mr-2" />
+                        </span>
+                        <span className="nav-link-inner--text">Adicionar Avaliação de Competências</span>
                       </Button>
                     </NavLink>
                   </Link>

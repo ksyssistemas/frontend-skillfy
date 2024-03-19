@@ -38,7 +38,7 @@ function AppraisalCycleHeader({ name, parentName }) {
 
   return (
     <>
-      <div className="header header-dark bg-indigo pb-6 content__title content__title--calendar">
+      <div style={{ backgroundColor: "#562f9f" }} className="header header-dark pb-6 content__title content__title--calendar">
         <Container fluid>
           <div className="header-body">
             <Row className="align-items-center py-4">

@@ -75,10 +75,12 @@ function PerformanceNavbar({ theme, sidenavOpen, toggleSidenav }) {
   return (
     <>
       <Navbar
+        style={{ backgroundColor: "#562f9f" }}
         className={classnames(
           "navbar-top navbar-expand border-bottom",
-          { "navbar-dark bg-indigo": theme === "dark" },
-          { "navbar-light bg-secondary": theme === "light" }
+          { "navbar-dark": theme === "dark" }
+          //{ "navbar-dark bg-indigo": theme === "dark" },
+          //{ "navbar-light bg-secondary": theme === "light" }
         )}
       >
         <Container fluid>

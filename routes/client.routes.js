@@ -16,42 +16,38 @@
 // */
 
 const routes = [
+  {
+    collapse: true,
+    name: "Dashboard",
+    icon: "ni ni-tv-2 text-white",
+    state: "examplesCollapse",
+    views: [
+      {
+        path: "/client",
+        name: "Nome Cliente",
+        miniName: "A",
+        layout: "/dashboard",
+      }
+    ],
+  },
     {
       collapse: true,
       name: "Registros",
-      icon: "ni ni-archive-2 text-orange",
+      icon: "ni ni-archive-2 text-white",
       state: "examplesCollapse",
       views: [
-        // {
-        //   path: "/admin",
-        //   name: "Administradores",
-        //   miniName: "A",
-        //   layout: "/report",
-        // },
-        // {
-        //   path: "/client",
-        //   name: "Cliente",
-        //   miniName: "C",
-        //   layout: "/report",
-        // },
-        // {
-        //   path: "/contact-persons",
-        //   name: "Contatos",
-        //   miniName: "A",
-        //   layout: "/report",
-        // },
-        // {
-        //   path: "/plans",
-        //   name: "Planos",
-        //   miniName: "A",
-        //   layout: "/report",
-        // },
+        {
+          path: "/employees",
+          name: "Colaboradores",
+          miniName: "C",
+          layout: "/report",
+        },
       ],
     },
     {
       collapse: true,
       name: "Cadastro",
-      icon: "ni ni-single-copy-04 text-blue",
+      icon: "ni ni-single-copy-04 text-white",
       state: "dashboardsCollapse",
       views: [
         // {
@@ -89,7 +85,7 @@ const routes = [
     {
         collapse: true,
         name: "Desempenho",
-        icon: "ni ni-paper-diploma text-orange",
+        icon: "ni ni-paper-diploma text-white",
         state: "appraisalsCollapse",
         views: [
           {

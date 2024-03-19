@@ -19,7 +19,7 @@ import { withRouter } from "next/router";
 // core components
 import PerformanceNavbar from "components/Navbars/PerformanceNavbar.js";
 import PerformanceFooter from "components/Footers/PerformanceFooter.js";
-import Sidebar from "components/Sidebar/Sidebar.js";
+import SidebarClient from "components/Sidebar/SidebarClient.js";
 import routes from "../routes/client.routes";
 // import routes from "routes.js";
 
@@ -69,7 +69,7 @@ function Performance({ router, children }) {
   };
   return (
     <>
-      <Sidebar
+      <SidebarClient
         routes={routes}
         toggleSidenav={toggleSidenav}
         sidenavOpen={sidenavOpen}

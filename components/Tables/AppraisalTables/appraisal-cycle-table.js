@@ -43,7 +43,7 @@ function AppraisalCycleTable({handleShowAppraisalList}) {
                                 Localização
                                 </th>
                                 <th className="sort" data-sort="status" scope="col">
-                                Status
+                                Estado
                                 </th>
                                 <th scope="col" />
                             </tr>

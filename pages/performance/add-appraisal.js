@@ -282,7 +282,27 @@ function AddAppraisal() {
                 <Card>
 
                   <CardHeader>
-                    <h3 className="mb-0 ">Criar Avaliação de Desempenho</h3>
+                    <Row className="align-items-center">
+                      <Col xs="8">
+                        <h3 className="mb-0 ">Criar Avaliação de Desempenho</h3>
+                      </Col>
+                      <Col className="text-right" xs="4">
+                        <Button
+                          className="btn-outline-primary"
+                          color=""
+                          href="#pablo"
+                          onClick={(e) => e.preventDefault()}
+                          size="lg"
+                        >
+                          <span
+                            className="btn-inner--icon"
+                          >
+                            <i className="ni ni-settings-gear-65 mr-2" />
+                          </span>
+                          <span>Definir Configurações de Avaliação</span>
+                        </Button>
+                      </Col>
+                    </Row>
                   </CardHeader>
 
                   <CardBody>
@@ -372,7 +392,7 @@ function AddAppraisal() {
                               <div className="col ml--2">
                                 <h4 className="mb-0">
                                   <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                                    Avaliação 90°
+                                    Avaliação Líder/Liderado
                                   </a>
                                 </h4>
                                 <p className="text-sm text-muted mb-0">
@@ -409,7 +429,7 @@ function AddAppraisal() {
                       Detalhes da Avaliação
                     </h6>
                     <div className="form-row">
-                      <Col className="mb-3" md="4">
+                      <Col className="mb-3" md="6">
                         <FormGroup
                         // className="has-success"
                         >
@@ -430,69 +450,7 @@ function AddAppraisal() {
                           {/* <div className="valid-feedback">Looks good!</div> */}
                         </FormGroup>
                       </Col>
-                      <Col className="mb-3" md="4">
-                        <FormGroup
-                        // className="has-success"
-                        >
-                          <label
-                            className="form-control-label"
-                            htmlFor="validationServer02"
-                          >
-                            Nome do Autor
-                          </label>
-                          <Input
-                            //className="is-valid"
-                            //defaultValue="Otto"
-                            id="validationServer02"
-                            placeholder="Seu nome"
-                            required
-                            type="text"
-                          />
-                          {/* <div className="valid-feedback">Looks good!</div> */}
-                        </FormGroup>
-                      </Col>
-                      <Col className="mb-3" md="4">
-                        <FormGroup
-                        // className="has-danger"
-                        >
-                          <label
-                            className="form-control-label"
-                            htmlFor="validationServerUsername"
-                          >
-                            Sobrenome do Autor
-                          </label>
-                          <Input
-                            aria-describedby="inputGroupPrepend3"
-                            //className="is-invalid"
-                            id="validationServerUsername"
-                            placeholder="Seu sobrenome"
-                            required
-                            type="text"
-                          />
-                        </FormGroup>
-                      </Col>
-                    </div>
-                    <div className="form-row">
-                      <Col className="mb-3" md="8">
-                        <FormGroup className="has-danger">
-                          <label
-                            className="form-control-label"
-                            htmlFor="validationServer03"
-                          >
-                            Objetivo da avaliação
-                          </label>
-                          <div
-                            data-quill-placeholder="Lorem Ipsum is simply dummy text..."
-                            data-toggle="quill"
-                            className="is-invalid"
-                            id="validationServer03"
-                          />
-                          {/* <div className="invalid-feedback">
-                              Please provide a valid city.
-                            </div> */}
-                        </FormGroup>
-                      </Col>
-                      <Col className="mb-3" md="4">
+                      <Col className="mb-3" md="6">
                         <FormGroup
                         // className="has-danger"
                         >
@@ -511,6 +469,27 @@ function AddAppraisal() {
                           />
                           {/* <div className="invalid-feedback">
                               Please provide a valid state.
+                            </div> */}
+                        </FormGroup>
+                      </Col>
+                    </div>
+                    <div className="form-row">
+                      <Col className="mb-3" md="12">
+                        <FormGroup className="has-danger">
+                          <label
+                            className="form-control-label"
+                            htmlFor="validationServer03"
+                          >
+                            Objetivo da avaliação
+                          </label>
+                          <div
+                            data-quill-placeholder="Lorem Ipsum is simply dummy text..."
+                            data-toggle="quill"
+                            className="is-invalid"
+                            id="validationServer03"
+                          />
+                          {/* <div className="invalid-feedback">
+                              Please provide a valid city.
                             </div> */}
                         </FormGroup>
                       </Col>
@@ -599,12 +578,11 @@ function AddAppraisal() {
                           </label>
                           <Select2
                             className="form-control"
-                            defaultValue="1"
+                            defaultValue="2"
                             options={{
                               placeholder: "Select",
                             }}
                             data={[
-                              { id: "1", text: "Semanal" },
                               { id: "2", text: "Quinzenal" },
                               { id: "3", text: "Mensal" },
                               { id: "4", text: "Trimestral" },
@@ -627,7 +605,7 @@ function AddAppraisal() {
                     <div className="form-row">
                       <Col className="mb-3" md="4" name="select_supervisor">
                         <label className=" form-control-label">
-                          Supervisores
+                          Responsável
                         </label>
                         <Select2
                           className="form-control"

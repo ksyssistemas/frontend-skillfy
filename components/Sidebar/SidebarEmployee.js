@@ -127,13 +127,13 @@ function Sidebar({
             >
               {prop.icon ? (
                 <>
-                  <i style={{ color: "#FF623F" }} className={prop.icon} />
-                  <span style={{ color: "#FF623F" }}className="nav-link-text">{prop.name}</span>
+                  <i className={prop.icon} />
+                  <span lassName="nav-link-text text-white">{prop.name}</span>
                 </>
               ) : prop.miniName ? (
                 <>
-                  <span style={{ color: "#FF623F" }}className="sidenav-mini-icon"> {prop.miniName} </span>
-                  <span style={{ color: "#FF623F" }}className="sidenav-normal"> {prop.name} </span>
+                  <span lassName="sidenav-mini-icon text-white"> {prop.miniName} </span>
+                  <span lassName="sidenav-normal text-white"> {prop.name} </span>
                 </>
               ) : null}
             </NavLink>
@@ -151,13 +151,13 @@ function Sidebar({
             <NavLink href="#pablo" onClick={closeSidenav}>
               {prop.icon !== undefined ? (
                 <>
-                  <i style={{ color: "#FF623F" }} className={prop.icon} />
-                  <span style={{ color: "#FF623F" }}className="nav-link-text">{prop.name}</span>
+                  <i className={prop.icon} />
+                  <span lassName="nav-link-text text-white">{prop.name}</span>
                 </>
               ) : prop.miniName !== undefined ? (
                 <>
-                  <span style={{ color: "#FF623F" }}className="sidenav-mini-icon"> {prop.miniName} </span>
-                  <span style={{ color: "#FF623F" }}className="sidenav-normal"> {prop.name} </span>
+                  <span lassName="sidenav-mini-icon text-white"> {prop.miniName} </span>
+                  <span lassName="sidenav-normal text-white"> {prop.name} </span>
                 </>
               ) : (
                 prop.name
@@ -170,7 +170,7 @@ function Sidebar({
   };
   
   const scrollBarInner = (
-    <div className="scrollbar-inner">
+    <div style={{ backgroundColor: "#ff623f" }} className="scrollbar-inner">
       <div className="sidenav-header d-flex align-items-center">
         {logo && logo.innerLink ? (
           <Link href={logo.innerLink}>
@@ -196,7 +196,7 @@ function Sidebar({
         ) : null}
         <div className="ml-auto">
           <div
-            className={classnames("sidenav-toggler d-none d-xl-block", {
+            className={classnames("sidenav-toggler sidenav-toggler-dark d-none d-xl-block", {
               active: sidenavOpen,
             })}
             onClick={toggleSidenav}
@@ -263,7 +263,7 @@ function Sidebar({
   return (
     <Navbar
       className={
-        "sidenav navbar-vertical navbar-expand-xs navbar-light bg-white " +
+        "sidenav navbar-vertical navbar-expand-xs navbar-light bg-orange " +
         (rtlActive ? "" : "fixed-left")
       }
       onMouseEnter={onMouseEnterSidenav}
