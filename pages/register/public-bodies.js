@@ -1,23 +1,34 @@
-import React, { useState } from "react";
 import dynamic from "next/dynamic";
+import React from "react";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Container,
+  Form,
+  FormGroup,
+  Input,
+  Row,
+  Table,
+} from "reactstrap";
+import AdminHeader from "../../components/Headers/AdminHeader";
+import useDepartmentSelect from "../../hooks/department/useDepartmentSelect";
+import Admin from "../../layouts/Admin";
 // react plugin used to create DropdownMenu for selecting items
 const Select2 = dynamic(() => import("react-select2-wrapper"));
-import { Button, Card, CardHeader, CardBody, FormGroup, Form, Input, Container, Row, Col, Table } from "reactstrap";
-import Admin from "../../layouts/Admin";
-import AdminHeader from "../../components/Headers/AdminHeader"
-import useDepartmentSelect from "../../hooks/department/useDepartmentSelect";
 function DepartmentsRegister() {
-
   /** back a list of departments*/
   const departments = useDepartmentSelect();
 
   return (
     <Form>
-      <AdminHeader name="Departamentos" parentName="Cadastros" />
+      <AdminHeader name="Órgãos Públicos" parentName="Cadastros" />
       <Container className="mt--6" fluid>
         <Card className="mb-4">
           <CardHeader>
-            <h3 className="mb-0">Cadastrar Departamentos</h3>
+            <h3 className="mb-0">Cadastrar Órgãos</h3>
           </CardHeader>
           <CardBody>
             <Row>
@@ -33,27 +44,34 @@ function DepartmentsRegister() {
                     id="example3cols1Input"
                     placeholder="Ex.: Comercial"
                     value=""
-                    onChange={(e) => handleInputChange('companyName', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("companyName", e.target.value)
+                    }
                     type="text"
                   />
                 </FormGroup>
               </Col>
               <Col md="6">
                 <FormGroup>
-                  <label className="form-control-label" htmlFor="example3cols2Input">
-                    Reporta ao Departamento
+                  <label
+                    className="form-control-label"
+                    htmlFor="example3cols2Input"
+                  >
+                    Reporta ao Órgão
                   </label>
                   <Select2
                     className="form-control"
                     defaultValue="0"
                     options={{ placeholder: "Selecione um departamento:" }}
                     data={[
-                      ...departments.map(department => ({ id: department.ID_Department, text: department.DepartamentName }))
+                      ...departments.map((department) => ({
+                        id: department.ID_Department,
+                        text: department.DepartamentName,
+                      })),
                     ]}
                   />
                 </FormGroup>
               </Col>
-
 
               <Col md="12">
                 <FormGroup>
@@ -73,14 +91,13 @@ function DepartmentsRegister() {
             </Row>
             <Row>
               <Col md="8">
-                <Button color="info" size="lg" type="button" >
+                <Button color="info" size="lg" type="button">
                   Salvar
                 </Button>
               </Col>
             </Row>
           </CardBody>
         </Card>
-
 
         <Card className="bg-transparent">
           <CardHeader className="bg-transparent border-0">
@@ -108,15 +125,13 @@ function DepartmentsRegister() {
                   </span>
                 </td>
                 <td>
-                  <span className="name mb-0 text-sm">
-
-                  </span>
+                  <span className="name mb-0 text-sm"></span>
                 </td>
                 <td>
                   <a
                     className="font-weight-bold"
                     href="#pablo"
-                  // onClick={(e) => e.preventDefault()}
+                    // onClick={(e) => e.preventDefault()}
                   >
                     Ver
                   </a>
@@ -142,15 +157,13 @@ function DepartmentsRegister() {
                   </span>
                 </td>
                 <td>
-                  <span className="name mb-0 text-sm">
-                    Financeiro
-                  </span>
+                  <span className="name mb-0 text-sm">Financeiro</span>
                 </td>
                 <td>
                   <a
                     className="font-weight-bold"
                     href="#pablo"
-                  //onClick={(e) => e.preventDefault()}
+                    //onClick={(e) => e.preventDefault()}
                   >
                     Ver
                   </a>
@@ -176,15 +189,13 @@ function DepartmentsRegister() {
                   </span>
                 </td>
                 <td>
-                  <span className="name mb-0 text-sm">
-
-                  </span>
+                  <span className="name mb-0 text-sm"></span>
                 </td>
                 <td>
                   <a
                     className="font-weight-bold"
                     href="#pablo"
-                  //onClick={(e) => e.preventDefault()}
+                    //onClick={(e) => e.preventDefault()}
                   >
                     Ver
                   </a>
@@ -203,8 +214,6 @@ function DepartmentsRegister() {
             </tbody>
           </Table>
         </Card>
-
-
       </Container>
     </Form>
   );

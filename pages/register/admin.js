@@ -1,20 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { BrowserRouter } from 'react-router-dom';
+import React from "react";
 import { Button, Card, CardHeader, CardBody, FormGroup, Form, Input, Container, Row, Col } from "reactstrap";
-
-import Enterprise from "../../layouts/Register";
-import SimpleHeader from "../../components/Headers/SimpleHeader"
+import Admin from "../../layouts/Admin";
 import AlternativeHeader from "../../components/Headers/AlternativeHeader"
-
 import useFetchAdminData from '../../hooks/useFetchAdminData';
 import useCreateAdmin from '../../hooks/useCreateAdmin';
 
-function Dashboard() {
+function AdminRegister() {
 
   const administratorData = useFetchAdminData('adm2@twig.com');
-
   const { formData, handleInputChange, handleSubmit } = useCreateAdmin();
-
 
   return (
 
@@ -162,12 +156,9 @@ function Dashboard() {
         </Card>
       </Container>
     </Form>
-
-
-
   );
 }
 
-Dashboard.layout = Enterprise;
+AdminRegister.layout = Admin;
 
-export default Dashboard;
+export default AdminRegister;

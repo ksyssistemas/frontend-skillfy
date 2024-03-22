@@ -1,28 +1,27 @@
-import React, { useState } from "react";
 import dynamic from "next/dynamic";
+import React, { useState } from "react";
 // nodejs library that concatenates classes
 import classnames from "classnames";
 // react plugin used to create datetimepicker
 import ReactDatetime from "react-datetime";
-// react plugin used to create DropdownMenu for selecting items
-const Select2 = dynamic(() => import("react-select2-wrapper"));
 import {
   Button,
   Card,
-  CardHeader,
   CardBody,
-  Container,
+  CardHeader,
   Col,
-  FormGroup,
+  Container,
   Form,
+  FormGroup,
   Input,
   Row,
 } from "reactstrap";
+import AdminHeader from "../../components/Headers/AdminHeader";
 import Admin from "../../layouts/Admin";
-import AdminHeader from "../../components/Headers/AdminHeader"
+// react plugin used to create DropdownMenu for selecting items
+const Select2 = dynamic(() => import("react-select2-wrapper"));
 
-function EmployeeRegister() {
-
+function PublicAgentsRegister() {
   const [isEmployeeLeader, setIsEmployeeLeader] = React.useState(false);
   const [hasEmployeeLeader, setHasEmployeeLeader] = React.useState(false);
 
@@ -80,12 +79,12 @@ function EmployeeRegister() {
   };
 
   const [formData, setFormData] = useState({
-    name: '',
-    lastName: '',
-    birthdate: '',
-    email: '',
-    password: '',
-    phoneNumber: ''
+    name: "",
+    lastName: "",
+    birthdate: "",
+    email: "",
+    password: "",
+    phoneNumber: "",
   });
 
   const handleInputChange = (fieldName, value) => {
@@ -94,29 +93,29 @@ function EmployeeRegister() {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch('http://localhost:4008/employee', {
-        method: 'POST',
+      const response = await fetch("http://localhost:4008/employee", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
 
       if (response.ok) {
         setFormData({
-          name: '',
-          lastName: '',
-          birthdate: '',
-          email: '',
-          password: '',
-          phoneNumber: ''
+          name: "",
+          lastName: "",
+          birthdate: "",
+          email: "",
+          password: "",
+          phoneNumber: "",
         });
-        console.log('Data sent successfully!');
+        console.log("Data sent successfully!");
       } else {
-        console.error('Error in response:', response.status);
+        console.error("Error in response:", response.status);
       }
     } catch (error) {
-      console.error('Error in request:', error);
+      console.error("Error in request:", error);
     }
   };
 
@@ -132,11 +131,11 @@ function EmployeeRegister() {
 
   return (
     <Form>
-      <AdminHeader name="Colaboradores" parentName="Cadastros" />
+      <AdminHeader name="Agentes Públicos" parentName="Cadastros" />
       <Container className="mt--6" fluid>
         <Card className="mb-4">
           <CardHeader>
-            <h3 className="mb-0">Cadastrar Colaborador</h3>
+            <h3 className="mb-0">Cadastrar Agentes</h3>
           </CardHeader>
           <CardBody>
             <Form>
@@ -513,7 +512,7 @@ function EmployeeRegister() {
                     </Row>
                   </FormGroup>
                 </Col>
-                {hasEmployeeLeader &&
+                {hasEmployeeLeader && (
                   <Col className="mb-3" md="6">
                     <FormGroup>
                       <label
@@ -542,7 +541,7 @@ function EmployeeRegister() {
                       </Form>
                     </FormGroup>
                   </Col>
-                }
+                )}
               </div>
               <div className="form-row">
                 <Col className="mb-3" md="4">
@@ -684,9 +683,20 @@ function EmployeeRegister() {
               </div>
               <Row>
                 <Col md="8" />
-                <Col className="d-flex justify-content-end align-items-center" md="4" >
-                  <Button className="px-5" color="primary" size="lg" type="button" onClick={handleSubmit}>
-                    <span className="btn-inner--text">Adicionar Colaborador</span>
+                <Col
+                  className="d-flex justify-content-end align-items-center"
+                  md="4"
+                >
+                  <Button
+                    className="px-5"
+                    color="primary"
+                    size="lg"
+                    type="button"
+                    onClick={handleSubmit}
+                  >
+                    <span className="btn-inner--text">
+                      Adicionar Colaborador
+                    </span>
                   </Button>
                 </Col>
               </Row>
@@ -698,6 +708,6 @@ function EmployeeRegister() {
   );
 }
 
-EmployeeRegister.layout = Admin;
+PublicAgentsRegister.layout = Admin;
 
-export default EmployeeRegister;
+export default PublicAgentsRegister;

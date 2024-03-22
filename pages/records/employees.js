@@ -1,18 +1,10 @@
 import React, { useState, useEffect } from "react";
-import Register from "../../layouts/Register";
-import SimpleHeader from "../../components/Headers/SimpleHeader";
-import CardsHeader from "components/Headers/CardsHeaderAdmin.js";
-import AlternativeHeader from "components/Headers/AlternativeHeader.js";
-
-import EnterpriseList from "../../components/Tables/Enterprise/showEnterprise";
-import ContactPersonsList from "../../components/Tables/Adm/show-contact-persons";
-//import AdminRegistrationForm from "../../components/Forms/createAdm";
-import EnterpriseRegistrationForm from "../../components/Forms/createEnterprise";
-
-
+import Admin from "../../layouts/Admin";
+import AdminHeader from "components/Headers/AdminHeader.js";
+import EmployeeUserList from "../../components/Tables/Customer/EmployeeUserList";
 import { Container } from "reactstrap";
 
-function ReportAdmin() {
+function EmployeeRecords() {
   const [admins, setAdmins] = useState([]);
 
   useEffect(() => {
@@ -80,17 +72,14 @@ function ReportAdmin() {
 
   return (
     <>
-      <AlternativeHeader name="Contatos" parentName="Registros" />
+      <AdminHeader name="Colaboradores" parentName="Registros" />
       <Container className="mt--6" fluid>
-        <ContactPersonsList
-          admins={fakeAdmins}
-          deleteAdmin={deleteAdmin}
-        />
+        <EmployeeUserList />
       </Container>
     </>
   );
 }
 
-ReportAdmin.layout = Register;
+EmployeeRecords.layout = Admin;
 
-export default ReportAdmin;
+export default EmployeeRecords;

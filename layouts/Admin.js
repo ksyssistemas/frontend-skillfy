@@ -1,25 +1,10 @@
-/*!
 
-=========================================================
-* NextJS Argon Dashboard PRO - v1.1.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/nextjs-argon-dashboard-pro
-* Copyright 2021 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
 import { withRouter } from "next/router";
+
 // core components
-// import AdminNavbar from "components/Navbars/AdminNavbar.js";
-import RegisterNavbar from "components/Navbars/RegisterNavbar.js";
-import AdminFooter from "components/Footers/AdminFooter.js";
+import EnterpriseNavbar from "components/Navbars/RegisterNavbar.js";
+import RegisterFooter from "components/Footers/RegisterFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 import routes from "../routes/admin.routes";
 // import routes from "routes.js";
@@ -31,7 +16,7 @@ function Admin({ router, children }) {
       if (prop.collapse) {
         return getRoutes(prop.views);
       }
-      if (prop.layout === "/admin") {
+      if (prop.layout === "/register") {
         return (
           <Route
             path={prop.layout + prop.path}
@@ -81,14 +66,14 @@ function Admin({ router, children }) {
         }}
       />
       <div className="main-content">
-        <RegisterNavbar
+        <EnterpriseNavbar
           theme={getNavbarTheme()}
           toggleSidenav={toggleSidenav}
           sidenavOpen={sidenavOpen}
           brandText={getBrandText(router.pathname)}
         />
         {children}
-        <AdminFooter />
+        <RegisterFooter />
       </div>
       {sidenavOpen ? (
         <div className="backdrop d-xl-none" onClick={toggleSidenav} />

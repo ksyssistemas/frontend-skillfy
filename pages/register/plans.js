@@ -2,14 +2,11 @@ import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 // react plugin used to create DropdownMenu for selecting items
 const Select2 = dynamic(() => import("react-select2-wrapper"));
-import { BrowserRouter } from 'react-router-dom';
 import { Button, Card, CardHeader, CardBody, FormGroup, Form, Input, Container, Row, Col } from "reactstrap";
+import Admin from "../../layouts/Admin";
+import AdminHeader from "../../components/Headers/AdminHeader"
 
-import Enterprise from "../../layouts/Register";
-import SimpleHeader from "../../components/Headers/SimpleHeader"
-import AlternativeHeader from "../../components/Headers/AlternativeHeader"
-
-function Plans() {
+function PlansRegister() {
 
   const [administratorData, setAdministratorData] = useState({});
 
@@ -84,7 +81,7 @@ function Plans() {
 
     <Form>
       {/* `<SimpleHeader name="Admin" parentName={administratorData.name || 'Ksys Sistemas'} />` */}
-      <AlternativeHeader name="Planos" parentName={administratorData.name || 'Registros'} />
+      <AdminHeader name="Planos" parentName={administratorData.name || 'Registros'} />
       <Container className="mt--6" fluid>
         <Card className="mb-4">
           <CardHeader>
@@ -212,6 +209,6 @@ function Plans() {
   );
 }
 
-Plans.layout = Enterprise;
+PlansRegister.layout = Admin;
 
-export default Plans;
+export default PlansRegister;

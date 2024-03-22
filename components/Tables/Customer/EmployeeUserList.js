@@ -5,10 +5,6 @@ import {
   Card,
   CardHeader,
   Col,
-  DropdownMenu,
-  DropdownItem,
-  DropdownToggle,
-  UncontrolledDropdown,
   Nav,
   NavItem,
   NavLink,
@@ -16,14 +12,10 @@ import {
   Table,
   UncontrolledTooltip,
 } from 'reactstrap';
-
 import ShowEmployeeDetailsModal from "../../Modals/admin/show-employee-details";
-import ModalEnterprise from "../../Modals/admin/ModalEnterprise"
-import fakeCompanies from '../../../mocks/mockEnterprises'
-
 import useCNPJ from "../../../hooks/useCNPJ"
 
-const EmployeeInformationList = () => {
+const EmployeeUserList = () => {
 
   const [cnpj, setCnpj] = useState('19131243000197');
   const { data: enterpriseData, loading, error, setCnpj: setCnpjFromHook } = useCNPJ(cnpj);
@@ -535,4 +527,4 @@ const EmployeeInformationList = () => {
   );
 };
 
-export default EmployeeInformationList;
+export default EmployeeUserList;

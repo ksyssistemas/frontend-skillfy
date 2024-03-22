@@ -3,18 +3,27 @@ import dynamic from "next/dynamic";
 // react plugin used to create DropdownMenu for selecting items
 const Select2 = dynamic(() => import("react-select2-wrapper"));
 import {
-  Button, Card, CardHeader, CardBody, FormGroup, Form, Input, Container, Row, Col, Table, Nav,
+  Button, 
+  Card, 
+  CardHeader, 
+  CardBody, 
+  Col, 
+  Container, 
+  FormGroup, 
+  Form, 
+  Input, 
+  Row, 
+  Table, 
+  Nav,
   NavItem,
   NavLink,
 } from "reactstrap";
-
-import Enterprise from "../../layouts/Register";
+import Admin from "../../layouts/Admin";
+import AdminHeader from "../../components/Headers/AdminHeader"
 import ShowJobDescriptionsModal from "../../components/Modals/admin/show-job-descriptions";
 import ShowFunctionsDescriptionsModal from "../../components/Modals/admin/show-functions-descriptions";
 
-import AlternativeHeader from "../../components/Headers/AlternativeHeader"
-
-function Dashboard() {
+function RolesRegister() {
   
   const [formData, setFormData] = useState({
     companyName: '',
@@ -71,7 +80,7 @@ function Dashboard() {
 
   return (
     <Form>
-      <AlternativeHeader name="Cargos" parentName="Cadastros" />
+      <AdminHeader name="Cargos" parentName="Cadastros" />
       <Container className="mt--6" fluid>
         <Row>
           <Col md="6">
@@ -564,6 +573,6 @@ function Dashboard() {
   );
 }
 
-Dashboard.layout = Enterprise;
+RolesRegister.layout = Admin;
 
-export default Dashboard;
+export default RolesRegister;

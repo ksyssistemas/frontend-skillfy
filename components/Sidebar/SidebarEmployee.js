@@ -14,9 +14,9 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React from "react";
 import Link from "next/link";
 import { withRouter } from "next/router";
+import React from "react";
 // nodejs library that concatenates classes
 import classnames from "classnames";
 // nodejs library to set properties for components
@@ -26,14 +26,14 @@ import PerfectScrollbar from "react-perfect-scrollbar";
 // reactstrap components
 import {
   Collapse,
-  NavbarBrand,
+  Nav,
   Navbar,
+  NavbarBrand,
   NavItem,
   NavLink,
-  Nav,
 } from "reactstrap";
 
-function Sidebar({
+function SidebarEmployee({
   toggleSidenav,
   sidenavOpen,
   routes,
@@ -127,13 +127,24 @@ function Sidebar({
             >
               {prop.icon ? (
                 <>
-                  <i className={prop.icon} />
-                  <span lassName="nav-link-text text-white">{prop.name}</span>
+                  <i style={{ color: "#FFFFFF" }} className={prop.icon} />
+                  <span style={{ color: "#FFFFFF" }} className="nav-link-text">
+                    {prop.name}
+                  </span>
                 </>
               ) : prop.miniName ? (
                 <>
-                  <span lassName="sidenav-mini-icon text-white"> {prop.miniName} </span>
-                  <span lassName="sidenav-normal text-white"> {prop.name} </span>
+                  <span
+                    style={{ color: "#FFFFFF" }}
+                    className="sidenav-mini-icon"
+                  >
+                    {" "}
+                    {prop.miniName}{" "}
+                  </span>
+                  <span style={{ color: "#FFFFFF" }} className="sidenav-normal">
+                    {" "}
+                    {prop.name}{" "}
+                  </span>
                 </>
               ) : null}
             </NavLink>
@@ -151,13 +162,24 @@ function Sidebar({
             <NavLink href="#pablo" onClick={closeSidenav}>
               {prop.icon !== undefined ? (
                 <>
-                  <i className={prop.icon} />
-                  <span lassName="nav-link-text text-white">{prop.name}</span>
+                  <i style={{ color: "#FFFFFF" }} className={prop.icon} />
+                  <span style={{ color: "#FFFFFF" }} className="nav-link-text">
+                    {prop.name}
+                  </span>
                 </>
               ) : prop.miniName !== undefined ? (
                 <>
-                  <span lassName="sidenav-mini-icon text-white"> {prop.miniName} </span>
-                  <span lassName="sidenav-normal text-white"> {prop.name} </span>
+                  <span
+                    style={{ color: "#FFFFFF" }}
+                    className="sidenav-mini-icon"
+                  >
+                    {" "}
+                    {prop.miniName}{" "}
+                  </span>
+                  <span style={{ color: "#FFFFFF" }} className="sidenav-normal">
+                    {" "}
+                    {prop.name}{" "}
+                  </span>
                 </>
               ) : (
                 prop.name
@@ -168,7 +190,7 @@ function Sidebar({
       );
     });
   };
-  
+
   const scrollBarInner = (
     <div style={{ backgroundColor: "#ff623f" }} className="scrollbar-inner">
       <div className="sidenav-header d-flex align-items-center">
@@ -196,9 +218,12 @@ function Sidebar({
         ) : null}
         <div className="ml-auto">
           <div
-            className={classnames("sidenav-toggler sidenav-toggler-dark d-none d-xl-block", {
-              active: sidenavOpen,
-            })}
+            className={classnames(
+              "sidenav-toggler sidenav-toggler-dark d-none d-xl-block",
+              {
+                active: sidenavOpen,
+              }
+            )}
             onClick={toggleSidenav}
           >
             <div className="sidenav-toggler-inner">
@@ -259,7 +284,7 @@ function Sidebar({
       </div>
     </div>
   );
-  
+
   return (
     <Navbar
       className={
@@ -278,14 +303,14 @@ function Sidebar({
   );
 }
 
-Sidebar.defaultProps = {
+SidebarEmployee.defaultProps = {
   routes: [{}],
   toggleSidenav: () => {},
   sidenavOpen: false,
   rtlActive: false,
 };
 
-Sidebar.propTypes = {
+SidebarEmployee.propTypes = {
   // function used to make sidenav mini or normal
   toggleSidenav: PropTypes.func,
   // prop to know if the sidenav is mini or normal
@@ -309,4 +334,4 @@ Sidebar.propTypes = {
   rtlActive: PropTypes.bool,
 };
 
-export default withRouter(Sidebar);
+export default withRouter(SidebarEmployee);
