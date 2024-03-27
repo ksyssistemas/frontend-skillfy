@@ -3,12 +3,17 @@ import { useState, useEffect } from 'react';
 const useDepartmentSelect = () => {
   const [departments, setDepartments] = useState([]);
 
+  const URL_BASE = process.env.URL_BASE || 'http://localhost';
+  const PORT_STRUCTURE = process.env.PORT_STRUCTURE || '3010';
+
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const response = await fetch('http://localhost:3010/department');
+        const apiUrl = `${URL_BASE}:${PORT_STRUCTURE}/department`;
+        const response = await fetch(apiUrl);
         if (!response.ok) {
-          throw new Error('Erro ao obter os dados do departamento');
+          const errorMessage = await response.text();
+          throw new Error(`Erro ao obter os dados do departamento: ${errorMessage}`);
         }
         const data = await response.json();
         setDepartments(data);
@@ -22,5 +27,6 @@ const useDepartmentSelect = () => {
 
   return departments;
 };
+
 
 export default useDepartmentSelect;

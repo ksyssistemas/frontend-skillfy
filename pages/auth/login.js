@@ -41,13 +41,15 @@ function Login() {
   const handleSubmit = async () => {
 
     try {
-      const response = await fetch('http://dlist.com.br:3009/auth/signin', {
+      const response = await fetch('http://localhost:3009/auth/signin', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
           },
           body: JSON.stringify(formData),
       });
+
+      console.log('Resposta da requisição:', response);
   
       if (response.ok) {
           const data = await response.json();
