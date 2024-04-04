@@ -6,7 +6,7 @@ const useDepartmentSelect = () => {
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const response = await fetch('http://localhost:3010/department');
+        const response = await fetch(process.env.DEPARTMENT);
         if (!response.ok) {
           throw new Error('Erro ao obter os dados do departamento');
         }

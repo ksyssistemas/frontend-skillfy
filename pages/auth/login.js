@@ -59,7 +59,7 @@ function Login() {
                   console.log('Redirecionando para o painel do administrador');
                   redirectUrl += '/dashboard/admin';
                   break;
-              case 'enterprise':
+              case 'customer':
                   console.log('Redirecionando para o painel da empresa');
                   redirectUrl += '/performance/appraisal-cycle-list';
                   break;
