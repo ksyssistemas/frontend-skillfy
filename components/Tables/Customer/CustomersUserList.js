@@ -23,7 +23,7 @@ import fakeCompanies from '../../../mocks/mockEnterprises'
 
 import useCNPJ from "../../../hooks/useCNPJ"
 
-const EnterpriseList = () => {
+const CustomersUserList = () => {
 
   const [cnpj, setCnpj] = useState('19131243000197');
   const { data: enterpriseData, loading, error, setCnpj: setCnpjFromHook } = useCNPJ(cnpj);
@@ -218,4 +218,4 @@ const EnterpriseList = () => {
   );
 };
 
-export default EnterpriseList;
+export default CustomersUserList;

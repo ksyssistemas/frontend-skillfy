@@ -1,40 +1,34 @@
-import React, { useState, useEffect } from 'react';
-
 import dynamic from "next/dynamic";
+import React from "react";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Container,
+  Form,
+  FormGroup,
+  Input,
+  Row,
+  Table,
+} from "reactstrap";
+import AdminHeader from "../../components/Headers/AdminHeader";
+import useDepartmentSelect from "../../hooks/department/useDepartmentSelect";
+import Admin from "../../layouts/Admin";
 // react plugin used to create DropdownMenu for selecting items
 const Select2 = dynamic(() => import("react-select2-wrapper"));
-import { Button, Card, CardHeader, CardBody, FormGroup, Form, Input, Container, Row, Col, Table } from "reactstrap";
-import Admin from "../../layouts/Admin";
-import AdminHeader from "../../components/Headers/AdminHeader"
-
-import useDepartmentSelect from "../../hooks/department/useDepartmentSelect";
-import useDepartmentForm from "../../hooks/department/useDepartmentForm";
-
 function DepartmentsRegister() {
-
-  const [selectedDepartment, setSelectedDepartment] = useState(null);
-
-  useEffect(() => {
-    if (selectedDepartment) {
-      console.log("Selected Department updated:", selectedDepartment);
-      // Você pode adicionar lógica adicional aqui, se necessário
-    }
-  }, [selectedDepartment]);
-
-
   /** back a list of departments*/
   const departments = useDepartmentSelect();
 
-
-  const { formData, handleDepartmentChange, onSubmit } = useDepartmentForm();
-
   return (
     <Form>
-      <AdminHeader name="Departamentos" parentName="Cadastros" />
+      <AdminHeader name="Órgãos Públicos" parentName="Cadastros" />
       <Container className="mt--6" fluid>
         <Card className="mb-4">
           <CardHeader>
-            <h3 className="mb-0">Cadastrar Departamentos</h3>
+            <h3 className="mb-0">Cadastrar Órgãos</h3>
           </CardHeader>
           <CardBody>
             <Row>
@@ -42,68 +36,68 @@ function DepartmentsRegister() {
                 <FormGroup>
                   <label
                     className="form-control-label"
-                    htmlFor="DepartmentNameInput"
+                    htmlFor="example3cols1Input"
                   >
                     Nome
                   </label>
                   <Input
-                    id="DepartmentNameInput"
+                    id="example3cols1Input"
                     placeholder="Ex.: Comercial"
-                    value={formData.DepartmentName}
-                    onChange={(e) => handleDepartmentChange('DepartmentName', e.target.value)}
+                    value=""
+                    onChange={(e) =>
+                      handleInputChange("companyName", e.target.value)
+                    }
                     type="text"
                   />
                 </FormGroup>
               </Col>
               <Col md="6">
                 <FormGroup>
-                  <label className="form-control-label" htmlFor="reportToDepartmentInput">
-                    Reporta ao Departamento
+                  <label
+                    className="form-control-label"
+                    htmlFor="example3cols2Input"
+                  >
+                    Reporta ao Órgão
                   </label>
                   <Select2
-                    id="reportToDepartmentInput"
                     className="form-control"
                     defaultValue="0"
                     options={{ placeholder: "Selecione um departamento:" }}
                     data={[
-                      ...departments.map(department => ({ id: department.ID_Department, text: department.DepartmentName }))
+                      ...departments.map((department) => ({
+                        id: department.ID_Department,
+                        text: department.DepartamentName,
+                      })),
                     ]}
-                    onChange={(value, text, e) => {
-                      const selectedDepartment = departments.find(department => department.ID_Department === value);
-                      setSelectedDepartment(selectedDepartment);
-                    }}
                   />
                 </FormGroup>
-
               </Col>
+
               <Col md="12">
                 <FormGroup>
                   <label
                     className="form-control-label"
-                    htmlFor="DescriptionTextarea"
+                    htmlFor="exampleFormControlTextarea1"
                   >
                     Descrição
                   </label>
                   <Input
-                    id="DescriptionTextarea"
+                    id="exampleFormControlTextarea1"
                     rows="3"
                     type="textarea"
-                    value={formData.description}
-                    onChange={(e) => handleDepartmentChange('description', e.target.value)}
                   />
                 </FormGroup>
               </Col>
             </Row>
             <Row>
               <Col md="8">
-                <Button color="info" size="lg" type="button" onClick={() => onSubmit(selectedDepartment)}>
+                <Button color="info" size="lg" type="button">
                   Salvar
                 </Button>
               </Col>
             </Row>
           </CardBody>
         </Card>
-
 
         <Card className="bg-transparent">
           <CardHeader className="bg-transparent border-0">
@@ -131,15 +125,13 @@ function DepartmentsRegister() {
                   </span>
                 </td>
                 <td>
-                  <span className="name mb-0 text-sm">
-
-                  </span>
+                  <span className="name mb-0 text-sm"></span>
                 </td>
                 <td>
                   <a
                     className="font-weight-bold"
                     href="#pablo"
-                  // onClick={(e) => e.preventDefault()}
+                    // onClick={(e) => e.preventDefault()}
                   >
                     Ver
                   </a>
@@ -165,15 +157,13 @@ function DepartmentsRegister() {
                   </span>
                 </td>
                 <td>
-                  <span className="name mb-0 text-sm">
-                    Financeiro
-                  </span>
+                  <span className="name mb-0 text-sm">Financeiro</span>
                 </td>
                 <td>
                   <a
                     className="font-weight-bold"
                     href="#pablo"
-                  //onClick={(e) => e.preventDefault()}
+                    //onClick={(e) => e.preventDefault()}
                   >
                     Ver
                   </a>
@@ -199,15 +189,13 @@ function DepartmentsRegister() {
                   </span>
                 </td>
                 <td>
-                  <span className="name mb-0 text-sm">
-
-                  </span>
+                  <span className="name mb-0 text-sm"></span>
                 </td>
                 <td>
                   <a
                     className="font-weight-bold"
                     href="#pablo"
-                  //onClick={(e) => e.preventDefault()}
+                    //onClick={(e) => e.preventDefault()}
                   >
                     Ver
                   </a>
@@ -226,8 +214,6 @@ function DepartmentsRegister() {
             </tbody>
           </Table>
         </Card>
-
-
       </Container>
     </Form>
   );

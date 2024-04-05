@@ -16,96 +16,102 @@
 // */
 
 const routes = [
-    // {
-    //   collapse: true,
-    //   name: "Registros",
-    //   icon: "ni ni-archive-2 text-orange",
-    //   state: "examplesCollapse",
-    //   views: [
-    //     // {
-    //     //   path: "/admin",
-    //     //   name: "Administradores",
-    //     //   miniName: "A",
-    //     //   layout: "/report",
-    //     // },
-    //     // {
-    //     //   path: "/client",
-    //     //   name: "Cliente",
-    //     //   miniName: "C",
-    //     //   layout: "/report",
-    //     // },
-    //     // {
-    //     //   path: "/contact-persons",
-    //     //   name: "Contatos",
-    //     //   miniName: "A",
-    //     //   layout: "/report",
-    //     // },
-    //     // {
-    //     //   path: "/plans",
-    //     //   name: "Planos",
-    //     //   miniName: "A",
-    //     //   layout: "/report",
-    //     // },
-    //   ],
-    // },
-    // {
-    //   collapse: true,
-    //   name: "Cadastro",
-    //   icon: "ni ni-single-copy-04 text-blue",
-    //   state: "dashboardsCollapse",
-    //   views: [
-    //     // {
-    //     //   path: "/admin",
-    //     //   name: "Administrador",
-    //     //   miniName: "A",
-    //     //   layout: "/register",
-    //     // },
-    //     // {
-    //     //   path: "/plans",
-    //     //   name: "Plano",
-    //     //   miniName: "P",
-    //     //   layout: "/register",
-    //     // },
-    //     {
-    //       path: "/departments",
-    //       name: "Departamentos",
-    //       miniName: "D",
-    //       layout: "/register",
-    //     },
-    //     {
-    //       path: "/roles",
-    //       name: "Cargos",
-    //       miniName: "C",
-    //       layout: "/register",
-    //     },
-    //     {
-    //       path: "/employees",
-    //       name: "Colaboradores",
-    //       miniName: "C",
-    //       layout: "/register",
-    //     },
-    //   ],
-    // },
-    {
+  {
+    collapse: true,
+    name: "Você",
+    icon: "ni ni-archive-2",
+    state: "examplesCollapse",
+    views: [
+      {
+        path: "/user-profile",
+        name: "Perfil",
+        miniName: "P",
+        layout: "/profile",
+      },
+      {
+        path: "/feed",
+        name: "Rede",
+        miniName: "R",
+        layout: "/social-network ",
+      },
+      {
+        path: "/absence-record",
+        name: "Ausências",
+        miniName: "A",
+        layout: "/records",
+      },
+      {
+        path: "/user-tasks",
+        name: "Tarefas",
+        miniName: "T",
+        layout: "/tasks",
+      },
+    ],
+  },
+  // {
+  //   collapse: true,
+  //   name: "Cadastro",
+  //   icon: "ni ni-single-copy-04 text-blue",
+  //   state: "dashboardsCollapse",
+  //   views: [
+  //     // {
+  //     //   path: "/admin",
+  //     //   name: "Administrador",
+  //     //   miniName: "A",
+  //     //   layout: "/register",
+  //     // },
+  //     // {
+  //     //   path: "/plans",
+  //     //   name: "Plano",
+  //     //   miniName: "P",
+  //     //   layout: "/register",
+  //     // },
+  //     {
+  //       path: "/departments",
+  //       name: "Departamentos",
+  //       miniName: "D",
+  //       layout: "/register",
+  //     },
+  //     {
+  //       path: "/roles",
+  //       name: "Cargos",
+  //       miniName: "C",
+  //       layout: "/register",
+  //     },
+  //     {
+  //       path: "/employees",
+  //       name: "Colaboradores",
+  //       miniName: "C",
+  //       layout: "/register",
+  //     },
+  //   ],
+  // },
+  {
+    collapse: true,
+    name: "Desempenho",
+    icon: "ni ni-paper-diploma",
+    state: "appraisalsCollapse",
+    views: [
+      {
         collapse: true,
-        name: "Desempenho",
-        icon: "ni ni-paper-diploma text-white",
-        state: "appraisalsCollapse",
+        name: "Avaliações",
+        miniName: "A",
+        state: "appraisalCollapse",
         views: [
           {
             path: "/appraisal-cycle-list",
-            name: "Avaliações",
-            miniName: "A",
-            layout: "/performance",
+            name: "Realizar",
+            layout: "/",
           },
-          // {
-          //   path: "/add-appraisal",
-          //   name: "Adicionar Avaliação",
-          //   miniName: "AD",
-          //   layout: "/performance",
-          // },
+          {
+            path: "/appraisal-result",
+            name: "Resultados",
+            layout: "/",
+          },
         ],
       },
-]
+    ],
+  },
+];
 
 export default routes;

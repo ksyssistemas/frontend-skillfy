@@ -262,7 +262,6 @@ function SidebarClient({
   
   return (
     <Navbar
-      //style={{ backgroundColor: "#e6ebfa" }}
       className={
         "sidenav navbar-vertical navbar-expand-xs navbar-light bg-white " +
         (rtlActive ? "" : "fixed-left")

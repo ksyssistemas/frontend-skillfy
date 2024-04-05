@@ -1,18 +1,11 @@
 import React, { useState, useEffect } from "react";
-import Register from "../../layouts/Register";
-import SimpleHeader from "../../components/Headers/SimpleHeader";
-import CardsHeader from "components/Headers/CardsHeaderAdmin.js";
-import AlternativeHeader from "components/Headers/AlternativeHeader.js";
-
-import EnterpriseList from "../../components/Tables/Enterprise/showEnterprise";
-import AdminList from "../../components/Tables/Adm/showAdm";
-//import AdminRegistrationForm from "../../components/Forms/createAdm";
-import EnterpriseRegistrationForm from "../../components/Forms/createEnterprise";
-
+import Admin from "../../layouts/Admin";
+import AdminHeader from "components/Headers/AdminHeader.js";
+import CustomersUserList from "../../components/Tables/Customer/CustomersUserList";
 
 import { Container } from "reactstrap";
 
-function ReportAdmin() {
+function CustomerRecords () {
   const [admins, setAdmins] = useState([]);
 
   useEffect(() => {
@@ -80,14 +73,14 @@ function ReportAdmin() {
 
   return (
     <>
-      <AlternativeHeader name="Cliente" parentName="Registros" />
+      <AdminHeader name="Cliente" parentName="Registros" />
       <Container className="mt--6" fluid>
-        <EnterpriseList />
+        <CustomersUserList />
       </Container>
     </>
   );
 }
 
-ReportAdmin.layout = Register;
+CustomerRecords.layout = Admin;
 
-export default ReportAdmin;
+export default CustomerRecords;

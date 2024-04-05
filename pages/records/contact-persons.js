@@ -1,18 +1,10 @@
 import React, { useState, useEffect } from "react";
-import Register from "../../layouts/Register";
-import SimpleHeader from "../../components/Headers/SimpleHeader";
-import CardsHeader from "components/Headers/CardsHeaderAdmin.js";
-import AlternativeHeader from "components/Headers/AlternativeHeader.js";
-
-import EnterpriseList from "../../components/Tables/Enterprise/showEnterprise";
-import AdminList from "../../components/Tables/Adm/showAdm";
-//import AdminRegistrationForm from "../../components/Forms/createAdm";
-import EnterpriseRegistrationForm from "../../components/Forms/createEnterprise";
-
-
+import Admin from "../../layouts/Admin";
+import AdminHeader from "components/Headers/AdminHeader.js";
+import ContactPersonsList from "../../components/Tables/Admin/ContactPersonsList";
 import { Container } from "reactstrap";
 
-function ReportAdmin() {
+function ContactPersonsRecords() {
   const [admins, setAdmins] = useState([]);
 
   useEffect(() => {
@@ -80,9 +72,9 @@ function ReportAdmin() {
 
   return (
     <>
-      <AlternativeHeader name="Admin" parentName="Ksys Sistemas" />
+      <AdminHeader name="Contatos" parentName="Registros" />
       <Container className="mt--6" fluid>
-        <AdminList
+        <ContactPersonsList
           admins={fakeAdmins}
           deleteAdmin={deleteAdmin}
         />
@@ -91,6 +83,6 @@ function ReportAdmin() {
   );
 }
 
-ReportAdmin.layout = Register;
+ContactPersonsRecords.layout = Admin;
 
-export default ReportAdmin;
+export default ContactPersonsRecords;
