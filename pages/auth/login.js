@@ -41,7 +41,7 @@ function Login() {
   const handleSubmit = async () => {
 
     try {
-      const response = await fetch('http://localhost:3009/auth/signin', {
+      const response = await fetch('http://dlist.com.br:3009/auth/signin', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ function Login() {
                   break;
               case 'customer':
                   console.log('Redirecionando para o painel da empresa');
-                  redirectUrl += '/performance/appraisal-cycle-list';
+                  redirectUrl += '/dashborad/customer';
                   break;
               case 'employee':
                   console.log('Redirecionando para o perfil do funcionário');
