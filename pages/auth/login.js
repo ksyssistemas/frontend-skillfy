@@ -63,7 +63,7 @@ function Login() {
                   break;
               case 'customer':
                   console.log('Redirecionando para o painel da empresa');
-                  redirectUrl += '/dashborad/customer';
+                  redirectUrl += '/dashboard/customer';
                   break;
               case 'employee':
                   console.log('Redirecionando para o perfil do funcionário');
