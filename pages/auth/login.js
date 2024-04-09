@@ -41,20 +41,18 @@ function Login() {
   const handleSubmit = async () => {
 
     try {
-      const response = await fetch('http://dlist.com.br:3009/auth/signin', {
+      const response = await fetch('http://localhost:3009/auth/signin', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
           },
           body: JSON.stringify(formData),
       });
-
-      console.log('Resposta da requisição:', response);
   
       if (response.ok) {
           const data = await response.json();
   
-          let redirectUrl = 'http://dlist.com.br:9001';
+          let redirectUrl = 'http://localhost:9001';
   
           switch (data.role) {
               case 'administrator':
@@ -73,8 +71,8 @@ function Login() {
                   console.log('Redirecionando para a página padrão');
                   redirectUrl = 'http://dlist.com.br:9001/default';
           }
-  
-          redirectUrl += `?id=${data.data.id}`;
+
+          redirectUrl += `?id=${data.data.id}&sector=${encodeURIComponent(data.data.sector)}`;
           console.log('URL de redirecionamento:', redirectUrl);
   
           window.location.href = redirectUrl;

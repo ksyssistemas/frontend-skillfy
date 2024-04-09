@@ -39,6 +39,31 @@ function Dashboard() {
     parseOptions(Chart, chartOptions());
   }
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:4008/administrator/email/adm1@gmail.com', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setAdministratorData(data);
+        } else {
+          console.error('Error in response:', response.status);
+        }
+      } catch (error) {
+        console.error('Error in request:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+
 
   return (
     <>
