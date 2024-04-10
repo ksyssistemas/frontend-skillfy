@@ -3,9 +3,16 @@ import Admin from "../../layouts/Admin";
 import AdminHeader from "components/Headers/AdminHeader.js";
 import EmployeeUserList from "../../components/Tables/Customer/EmployeeUserList";
 import { Container } from "reactstrap";
+import EmployeeUserRegister from "../../components/Forms/EmployeeUserRegister";
 
 function EmployeeRecords() {
   const [admins, setAdmins] = useState([]);
+
+  const [isShouldSubmitEmployeeRegistration, setIsShouldSubmitEmployeeRegistration] = useState(false);
+
+  function handleShowEmployeeUserRegister() {
+    setIsShouldSubmitEmployeeRegistration(!isShouldSubmitEmployeeRegistration);
+  }
 
   useEffect(() => {
     async function fetchAdmins() {
@@ -72,10 +79,25 @@ function EmployeeRecords() {
 
   return (
     <>
-      <AdminHeader name="Colaboradores" parentName="Registros" />
-      <Container className="mt--6" fluid>
-        <EmployeeUserList />
-      </Container>
+      {
+        !isShouldSubmitEmployeeRegistration
+          ? (
+            <>
+              <AdminHeader name="Colaboradores" parentName="Registros" newRegistrationButtonText="Adicionar Colaborador" handleShowEmployeeUserRegister={handleShowEmployeeUserRegister} />
+              <Container className="mt--6" fluid>
+                <EmployeeUserList />
+              </Container>
+            </>
+          )
+          : (
+            <>
+              <AdminHeader name="Colaboradores" parentName="Registros" />
+              <Container className="mt--6" fluid>
+                <EmployeeUserRegister />
+              </Container>
+            </>
+          )
+      }
     </>
   );
 }

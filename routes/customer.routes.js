@@ -32,37 +32,23 @@ const routes = [
   },
     {
       collapse: true,
-      name: "Registros",
+      name: "Registros e Cadastros",
       icon: "ni ni-archive-2 text-white",
       state: "examplesCollapse",
       views: [
         {
-          path: "/employees",
-          name: "Colaboradores",
-          miniName: "C",
-          layout: "/report",
-        },
-      ],
-    },
-    {
-      collapse: true,
-      name: "Cadastro",
-      icon: "ni ni-single-copy-04 text-white",
-      state: "dashboardsCollapse",
-      views: [
-        // {
-        //   path: "/admin",
-        //   name: "Administrador",
-        //   miniName: "A",
-        //   layout: "/register",
-        // },
-        // {
-        //   path: "/plans",
-        //   name: "Plano",
-        //   miniName: "P",
-        //   layout: "/register",
-        // },
-        {
+        path: "/public-bodies",
+        name: "Órgãos Públicos",
+        miniName: "O",
+        layout: "/register",
+      },
+      {
+        path: "/public-agents",
+        name: "Agentes Públicos",
+        miniName: "A",
+        layout: "/register",
+      },
+      {
           path: "/departments",
           name: "Departamentos",
           miniName: "D",
@@ -80,8 +66,52 @@ const routes = [
           miniName: "C",
           layout: "/register",
         },
+        {
+          path: "/employees",
+          name: "Colaboradores",
+          miniName: "C",
+          layout: "/report",
+        },
       ],
     },
+    // {
+    //   collapse: true,
+    //   name: "Cadastro",
+    //   icon: "ni ni-single-copy-04 text-white",
+    //   state: "dashboardsCollapse",
+    //   views: [
+    //     // {
+    //     //   path: "/admin",
+    //     //   name: "Administrador",
+    //     //   miniName: "A",
+    //     //   layout: "/register",
+    //     // },
+    //     // {
+    //     //   path: "/plans",
+    //     //   name: "Plano",
+    //     //   miniName: "P",
+    //     //   layout: "/register",
+    //     // },
+    //     {
+    //       path: "/departments",
+    //       name: "Departamentos",
+    //       miniName: "D",
+    //       layout: "/register",
+    //     },
+    //     {
+    //       path: "/roles",
+    //       name: "Cargos",
+    //       miniName: "C",
+    //       layout: "/register",
+    //     },
+    //     {
+    //       path: "/employees",
+    //       name: "Colaboradores",
+    //       miniName: "C",
+    //       layout: "/register",
+    //     },
+    //   ],
+    // },
     {
         collapse: true,
         name: "Desempenho",

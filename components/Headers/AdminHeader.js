@@ -27,7 +27,18 @@ import {
   Col,
 } from "reactstrap";
 
-function AdminHeader({ name, parentName }) {
+function AdminHeader(
+  { name,
+    parentName,
+    newRegistrationButtonText,
+    handleShowAdminUserRegister,
+    handleShowCustomerUserRegister,
+    handleShowEmployeeUserRegister,
+    handleShowPlansUserRegister,
+    handleShowDepartmentsUserRegister,
+    handleShowRolesUserRegister,
+    handleShowContactPersonsUserRegister
+  }) {
   return (
     <>
       <div className="header pb-6">
@@ -37,7 +48,7 @@ function AdminHeader({ name, parentName }) {
               <Col lg="6" xs="7">
                 <h6 className="h2 d-inline-block mb-0">
                   {name}
-                  </h6>{" "}
+                </h6>{" "}
                 <Breadcrumb
                   className="d-none d-md-inline-block ml-md-4"
                   listClassName="breadcrumb-links"
@@ -58,6 +69,42 @@ function AdminHeader({ name, parentName }) {
                 </Breadcrumb>
               </Col>
               <Col className="text-right" lg="6" xs="5">
+
+                {
+                  newRegistrationButtonText && (
+                    <Button
+                      className="btn-neutral"
+                      color=""
+                      href="#pablo"
+                      onClick={
+                        handleShowAdminUserRegister ?
+                          handleShowAdminUserRegister :
+                          (handleShowCustomerUserRegister ?
+                            handleShowCustomerUserRegister :
+                            (handleShowEmployeeUserRegister ?
+                              handleShowEmployeeUserRegister :
+                              (handleShowPlansUserRegister ?
+                                handleShowPlansUserRegister :
+                                (handleShowDepartmentsUserRegister ?
+                                  handleShowDepartmentsUserRegister :
+                                  (handleShowRolesUserRegister ?
+                                    handleShowRolesUserRegister :
+                                    (handleShowContactPersonsUserRegister ?
+                                      handleShowContactPersonsUserRegister :
+                                      null)
+                                  )
+                                )
+                              )
+                            )
+                          )
+                      }
+                      size="sm"
+                    >
+                      {newRegistrationButtonText}
+                    </Button>
+                  )
+                }
+
                 <Button
                   className="btn-neutral"
                   color=""
@@ -65,16 +112,7 @@ function AdminHeader({ name, parentName }) {
                   onClick={(e) => e.preventDefault()}
                   size="sm"
                 >
-                  New
-                </Button>
-                <Button
-                  className="btn-neutral"
-                  color=""
-                  href="#pablo"
-                  onClick={(e) => e.preventDefault()}
-                  size="sm"
-                >
-                  Filters
+                  Filtros
                 </Button>
               </Col>
             </Row>
@@ -86,8 +124,26 @@ function AdminHeader({ name, parentName }) {
 }
 
 AdminHeader.propTypes = {
+  handleShowAdminUserRegister: () => { },
+  handleShowCustomerUserRegister: () => { },
+  handleShowEmployeeUserRegister: () => { },
+  handleShowPlansUserRegister: () => { },
+  handleShowDepartmentsUserRegister: () => { },
+  handleShowRolesUserRegister: () => { },
+  handleShowContactPersonsUserRegister: () => { },
+};
+
+AdminHeader.propTypes = {
   name: PropTypes.string,
   parentName: PropTypes.string,
+  newRegistrationButtonText: PropTypes.string,
+  handleShowAdminUserRegister: PropTypes.func,
+  handleShowCustomerUserRegister: PropTypes.func,
+  handleShowEmployeeUserRegister: PropTypes.func,
+  handleShowPlansUserRegister: PropTypes.func,
+  handleShowDepartmentsUserRegister: PropTypes.func,
+  handleShowRolesUserRegister: PropTypes.func,
+  handleShowContactPersonsUserRegister: PropTypes.func,
 };
 
 export default AdminHeader;

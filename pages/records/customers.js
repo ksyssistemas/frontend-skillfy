@@ -4,9 +4,16 @@ import AdminHeader from "components/Headers/AdminHeader.js";
 import CustomersUserList from "../../components/Tables/Customer/CustomersUserList";
 
 import { Container } from "reactstrap";
+import CustomerUserRegister from "../../components/Forms/CustomerUserRegister";
 
-function CustomerRecords () {
+function CustomerRecords() {
   const [admins, setAdmins] = useState([]);
+
+  const [isShouldSubmitCustomerRegistration, setIsShouldSubmitCustomerRegistration] = useState(false);
+
+  function handleShowCustomerUserRegister() {
+    setIsShouldSubmitCustomerRegistration(!isShouldSubmitCustomerRegistration);
+  }
 
   useEffect(() => {
     async function fetchAdmins() {
@@ -73,10 +80,25 @@ function CustomerRecords () {
 
   return (
     <>
-      <AdminHeader name="Cliente" parentName="Registros" />
-      <Container className="mt--6" fluid>
-        <CustomersUserList />
-      </Container>
+      {
+        !isShouldSubmitCustomerRegistration
+          ? (
+            <>
+              <AdminHeader name="Cliente" parentName="Registros" newRegistrationButtonText="Adicionar Cliente" handleShowCustomerUserRegister={handleShowCustomerUserRegister} />
+              <Container className="mt--6" fluid>
+                <CustomersUserList />
+              </Container>
+            </>
+          )
+          : (
+            <>
+              <AdminHeader name="Cliente" parentName="Cadastros" />
+              <Container className="mt--6" fluid>
+                <CustomerUserRegister />
+              </Container>
+            </>
+          )
+      }
     </>
   );
 }

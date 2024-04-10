@@ -3,6 +3,7 @@ import Admin from "../../layouts/Admin";
 import AdminHeader from "components/Headers/AdminHeader.js";
 import ContactPersonsList from "../../components/Tables/Admin/ContactPersonsList";
 import { Container } from "reactstrap";
+import ContactPersonsRegister from "../../components/Forms/ContactPersonsRegister";
 
 function ContactPersonsRecords() {
   const [admins, setAdmins] = useState([]);
@@ -69,16 +70,36 @@ function ContactPersonsRecords() {
 
   };
 
+  const [isShouldSubmitContactPersonsRegistration, setIsShouldSubmitContactPersonsRegistration] = useState(false);
+
+  function handleShowContactPersonsUserRegister() {
+    setIsShouldSubmitContactPersonsRegistration(!isShouldSubmitContactPersonsRegistration);
+  }
 
   return (
     <>
-      <AdminHeader name="Contatos" parentName="Registros" />
-      <Container className="mt--6" fluid>
-        <ContactPersonsList
-          admins={fakeAdmins}
-          deleteAdmin={deleteAdmin}
-        />
-      </Container>
+      {
+        !isShouldSubmitContactPersonsRegistration
+          ? (
+            <>
+              <AdminHeader name="Contatos" parentName="Registros" newRegistrationButtonText="Adicionar Pessoa de Contato" handleShowContactPersonsUserRegister={handleShowContactPersonsUserRegister} />
+              <Container className="mt--6" fluid>
+                <ContactPersonsList
+                  admins={fakeAdmins}
+                  deleteAdmin={deleteAdmin}
+                />
+              </Container>
+            </>
+          )
+          : (
+            <>
+              <AdminHeader name="Contatos" parentName="Cadastros" />
+              <Container className="mt--6" fluid>
+                <ContactPersonsRegister />
+              </Container>
+            </>
+          )
+      }
     </>
   );
 }
