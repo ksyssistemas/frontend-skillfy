@@ -44,8 +44,11 @@ function SidebarClient({
   const [state, setState] = React.useState({});
   const [windowWidth, setWindowWidth] = React.useState(0);
   const [navigatorPlatform, setNavigatorPlatform] = React.useState("");
+
+  const routesCustomer = routes();
+
   React.useEffect(() => {
-    setState(getCollapseStates(routes));
+    setState(getCollapseStates(routesCustomer));
     setWindowWidth(window.innerWidth);
     setNavigatorPlatform(navigator.platform);
     // eslint-disable-next-line
@@ -66,11 +69,11 @@ function SidebarClient({
       document.body.classList.remove("g-sidenav-show");
     }
   };
-  // this creates the intial state of this component based on the collapse routes
-  // that it gets through props.routes
-  const getCollapseStates = (routes) => {
+  // this creates the intial state of this component based on the collapse routesCustomer
+  // that it gets through props.routesCustomer
+  const getCollapseStates = (routesCustomer) => {
     let initialState = {};
-    routes.map((prop, key) => {
+    routesCustomer.map((prop, key) => {
       if (prop.collapse) {
         initialState = {
           [prop.state]: getCollapseInitialState(prop.views),
@@ -85,11 +88,11 @@ function SidebarClient({
   // this verifies if any of the collapses should be default opened on a rerender of this component
   // for example, on the refresh of the page,
   // while on the src/views/forms/RegularForms.js - route /admin/regular-forms
-  const getCollapseInitialState = (routes) => {
-    for (let i = 0; i < routes.length; i++) {
-      if (routes[i].collapse && getCollapseInitialState(routes[i].views)) {
+  const getCollapseInitialState = (routesCustomer) => {
+    for (let i = 0; i < routesCustomer.length; i++) {
+      if (routesCustomer[i].collapse && getCollapseInitialState(routesCustomer[i].views)) {
         return true;
-      } else if (router.pathname.indexOf(routes[i].path) !== -1) {
+      } else if (router.pathname.indexOf(routesCustomer[i].path) !== -1) {
         return true;
       }
     }
@@ -103,8 +106,8 @@ function SidebarClient({
     }
   };
   // this function creates the links and collapses that appear in the sidebar (left menu)
-  const createLinks = (routes) => {
-    return routes.map((prop, key) => {
+  const createLinks = (routesCustomer) => {
+    return routesCustomer.map((prop, key) => {
       if (prop.redirect) {
         return null;
       }
@@ -168,7 +171,7 @@ function SidebarClient({
       );
     });
   };
-  
+
   const scrollBarInner = (
     <div style={{ backgroundColor: "#562f9f" }} className="scrollbar-inner">
       <div className="sidenav-header d-flex align-items-center">
@@ -211,7 +214,7 @@ function SidebarClient({
       </div>
       <div className="navbar-inner">
         <Collapse navbar isOpen={true}>
-          <Nav navbar>{createLinks(routes)}</Nav>
+          <Nav navbar>{createLinks(routesCustomer)}</Nav>
           <hr className="my-3" />
           {/* <h6 className="navbar-heading p-0 text-muted">
             <span className="docs-normal">Documentation</span>
@@ -259,7 +262,7 @@ function SidebarClient({
       </div>
     </div>
   );
-  
+
   return (
     <Navbar
       className={
@@ -279,8 +282,8 @@ function SidebarClient({
 }
 
 SidebarClient.defaultProps = {
-  routes: [{}],
-  toggleSidenav: () => {},
+  routesCustomer: [{}],
+  toggleSidenav: () => { },
   sidenavOpen: false,
   rtlActive: false,
 };
@@ -291,7 +294,7 @@ SidebarClient.propTypes = {
   // prop to know if the sidenav is mini or normal
   sidenavOpen: PropTypes.bool,
   // links that will be displayed inside the component
-  routes: PropTypes.arrayOf(PropTypes.object),
+  routesCustomer: PropTypes.arrayOf(PropTypes.object),
   // logo
   logo: PropTypes.shape({
     // innerLink is for links that will direct the user within the app

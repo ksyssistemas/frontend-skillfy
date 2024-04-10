@@ -15,21 +15,54 @@
 
 // */
 
-const routes = [
-  {
-    collapse: true,
-    name: "Dashboard",
-    icon: "ni ni-tv-2 text-white",
-    state: "examplesCollapse",
-    views: [
-      {
-        path: "/client",
-        name: "Nome Cliente",
-        miniName: "A",
-        layout: "/dashboard",
-      }
-    ],
-  },
+import { useAuth } from '../hooks/useAuth';
+
+const routes = () => {
+  const { authenticationDataLoggedInUser } = useAuth();
+
+  // Defina os valores padrão para 'name' e 'path'
+  let departmentsName = authenticationDataLoggedInUser &&
+    authenticationDataLoggedInUser.sector === "Público" ?
+    "Órgãos Públicos" : "Departamentos";
+  let employeesName = authenticationDataLoggedInUser &&
+    authenticationDataLoggedInUser.sector === "Público" ?
+    "Agentes Públicos" : "Colaboradores";
+  let departmentsPath = "/departments";
+  let employeesPath = "/employees";
+
+  // Se authenticationDataLoggedInUser não está disponível ou se o setor não está definido, mantenha os valores padrão
+  if (!authenticationDataLoggedInUser || !authenticationDataLoggedInUser.sector) {
+    departmentsName = "Departamentos";
+    employeesName = "Colaboradores";
+  }
+
+  // Defina os valores padrão para 'miniName'
+  let departmentsMiniName = authenticationDataLoggedInUser &&
+    authenticationDataLoggedInUser.sector === "Público" ? "O" : "D";
+  let employeesMiniName = authenticationDataLoggedInUser &&
+    authenticationDataLoggedInUser.sector === "Público" ? "A" : "C";
+
+  // Se authenticationDataLoggedInUser não está disponível ou se o setor não está definido, mantenha os valores padrão
+  if (!authenticationDataLoggedInUser || !authenticationDataLoggedInUser.sector) {
+    departmentsMiniName = "D";
+    employeesMiniName = "C";
+  }
+
+  return [
+    {
+      collapse: true,
+      name: "Dashboard",
+      icon: "ni ni-tv-2 text-white",
+      state: "examplesCollapse",
+      views: [
+        {
+          path: "/client",
+          name: "Nome Cliente",
+          miniName: "A",
+          layout: "/dashboard",
+        }
+      ],
+    },
     {
       collapse: true,
       name: "Registros e Cadastros",
@@ -37,101 +70,46 @@ const routes = [
       state: "examplesCollapse",
       views: [
         {
-        path: "/public-bodies",
-        name: "Órgãos Públicos",
-        miniName: "O",
-        layout: "/register",
-      },
-      {
-        path: "/public-agents",
-        name: "Agentes Públicos",
-        miniName: "A",
-        layout: "/register",
-      },
-      {
-          path: "/departments",
-          name: "Departamentos",
-          miniName: "D",
-          layout: "/register",
+          path: departmentsPath,
+          name: departmentsName,
+          miniName: departmentsMiniName,
+          layout: "/records",
+        },
+        {
+          path: employeesPath,
+          name: employeesName,
+          miniName: employeesMiniName,
+          layout: "/records",
         },
         {
           path: "/roles",
           name: "Cargos",
           miniName: "C",
-          layout: "/register",
-        },
-        {
-          path: "/employees",
-          name: "Colaboradores",
-          miniName: "C",
-          layout: "/register",
-        },
-        {
-          path: "/employees",
-          name: "Colaboradores",
-          miniName: "C",
-          layout: "/report",
+          layout: "/records",
         },
       ],
     },
-    // {
-    //   collapse: true,
-    //   name: "Cadastro",
-    //   icon: "ni ni-single-copy-04 text-white",
-    //   state: "dashboardsCollapse",
-    //   views: [
-    //     // {
-    //     //   path: "/admin",
-    //     //   name: "Administrador",
-    //     //   miniName: "A",
-    //     //   layout: "/register",
-    //     // },
-    //     // {
-    //     //   path: "/plans",
-    //     //   name: "Plano",
-    //     //   miniName: "P",
-    //     //   layout: "/register",
-    //     // },
-    //     {
-    //       path: "/departments",
-    //       name: "Departamentos",
-    //       miniName: "D",
-    //       layout: "/register",
-    //     },
-    //     {
-    //       path: "/roles",
-    //       name: "Cargos",
-    //       miniName: "C",
-    //       layout: "/register",
-    //     },
-    //     {
-    //       path: "/employees",
-    //       name: "Colaboradores",
-    //       miniName: "C",
-    //       layout: "/register",
-    //     },
-    //   ],
-    // },
     {
-        collapse: true,
-        name: "Desempenho",
-        icon: "ni ni-paper-diploma text-white",
-        state: "appraisalsCollapse",
-        views: [
-          {
-            path: "/appraisal-cycle-list",
-            name: "Avaliações",
-            miniName: "A",
-            layout: "/performance",
-          },
-          // {
-          //   path: "/add-appraisal",
-          //   name: "Adicionar Avaliação",
-          //   miniName: "AD",
-          //   layout: "/performance",
-          // },
-        ],
-      },
-]
+      collapse: true,
+      name: "Desempenho",
+      icon: "ni ni-paper-diploma text-white",
+      state: "appraisalsCollapse",
+      views: [
+        {
+          path: "/appraisal-cycle-list",
+          name: "Avaliações",
+          miniName: "A",
+          layout: "/performance",
+        },
+        // {
+        //   path: "/add-appraisal",
+        //   name: "Adicionar Avaliação",
+        //   miniName: "AD",
+        //   layout: "/performance",
+        // },
+      ],
+    },
+  ]
+}
 
 export default routes;

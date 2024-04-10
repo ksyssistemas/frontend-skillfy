@@ -23,6 +23,7 @@ import {
 import Auth from "layouts/Auth.js";
 // core components
 import AuthHeader from "components/Headers/AuthHeader.js";
+import { useAuth } from '../../hooks/useAuth';
 
 function Login() {
 
@@ -33,6 +34,8 @@ function Login() {
 
   const [erro, setErro] = useState('');
 
+  const { handleSaveAuthenticationDataLoggedInUser } = useAuth();
+
   const handleInputChange = (fieldName, value) => {
     setFormData({ ...formData, [fieldName]: value });
   };
@@ -41,60 +44,62 @@ function Login() {
   const handleSubmit = async () => {
 
     try {
-      const response = await fetch('http://dlist.com.br:3009/auth/signin', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
+      const response = await fetch('http://localhost:3009/auth/signin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
-  
-      if (response.ok) {
-          const data = await response.json();
-          console.log('Data from API:', data); // Adicione esta linha
-  
-          let redirectUrl = 'http://dlist.com.br:9001';
-  
-          switch (data.role) {
-              case 'administrator':
-                  console.log('Redirecionando para o painel do administrador');
-                  redirectUrl += '/dashboard/admin';
-                  break;
-              case 'customer':
-                  console.log('Redirecionando para o painel da empresa');
-                  redirectUrl += '/dashboard/customer';
-                  break;
-              case 'employee':
-                  console.log('Redirecionando para o perfil do funcionário');
-                  redirectUrl += '/employee/profile';
-                  break;
-              default:
-                  console.log('Redirecionando para a página padrão');
-                  redirectUrl = 'http://dlist.com.br:9001/default';
-          }
 
-          redirectUrl += `?id=${data.data.id}&sector=${encodeURIComponent(data.data.sector)}`;
-          console.log('URL de redirecionamento:', redirectUrl);
-  
-          window.location.href = redirectUrl;
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Data from API:', data); // Adicione esta linha
+
+        let redirectUrl = 'http://localhost:9001';
+
+        switch (data.role) {
+          case 'administrator':
+            console.log('Redirecionando para o painel do administrador');
+            redirectUrl += '/dashboard/admin';
+            break;
+          case 'customer':
+            console.log('Redirecionando para o painel da empresa');
+            redirectUrl += '/dashboard/customer';
+            break;
+          case 'employee':
+            console.log('Redirecionando para o perfil do funcionário');
+            redirectUrl += '/employee/profile';
+            break;
+          default:
+            console.log('Redirecionando para a página padrão');
+            redirectUrl = 'http://localhost:9001/default';
+        }
+
+        handleSaveAuthenticationDataLoggedInUser(data.data.sector);
+
+        redirectUrl += `?id=${data.data.id}&sector=${encodeURIComponent(data.data.sector)}`;
+        console.log('URL de redirecionamento:', redirectUrl);
+
+        window.location.href = redirectUrl;
       } else {
-          if (response.status === 404) {
-              setErro(
-                  <Alert color="warning" style={{ textAlign: 'center' }}>
-                      <strong>Usuário não encontrado</strong>
-                  </Alert>
-              );
-          }
+        if (response.status === 404) {
+          setErro(
+            <Alert color="warning" style={{ textAlign: 'center' }}>
+              <strong>Usuário não encontrado</strong>
+            </Alert>
+          );
+        }
       }
-  } catch (error) {
+    } catch (error) {
       console.error('Erro durante a requisição:', error);
       setErro(
-          <Alert color="danger" style={{ textAlign: 'center' }}>
-              <strong>Erro na requisição:</strong> Houve um problema ao processar sua solicitação.
-          </Alert>
+        <Alert color="danger" style={{ textAlign: 'center' }}>
+          <strong>Erro na requisição:</strong> Houve um problema ao processar sua solicitação.
+        </Alert>
       );
-  }
-  
+    }
+
   };
 
 
@@ -112,9 +117,9 @@ function Login() {
           <Col lg="5" md="7">
             <Card className="bg-secondary border-0 mb-0">
 
-            
+
               <CardBody className="px-lg-5 py-lg-5">
-               
+
                 <Form role="form">
                   {erro && <p>{erro}</p>}
                   <FormGroup
@@ -195,7 +200,7 @@ function Login() {
                 </Row>
               </CardFooter>
             </Card>
-            
+
           </Col>
         </Row>
       </Container>
