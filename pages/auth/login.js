@@ -54,8 +54,7 @@ function Login() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Data from API:', data); // Adicione esta linha
-
+        
         let redirectUrl = 'http://dlist.com.br:9001';
 
         switch (data.role) {
@@ -78,8 +77,10 @@ function Login() {
 
         handleSaveAuthenticationDataLoggedInUser(data);
 
+       
+
         redirectUrl += `?id=${data.data.id}&sector=${encodeURIComponent(data.data.sector)}`;
-        console.log('URL de redirecionamento:', redirectUrl);
+        
 
         window.location.href = redirectUrl;
       } else {

@@ -22,28 +22,28 @@ const routes = () => {
 
   // Defina os valores padrão para 'name' e 'path'
   let departmentsName = authenticationDataLoggedInUser &&
-    authenticationDataLoggedInUser.sector === "Público" ?
+    authenticationDataLoggedInUser.data.sector === "publico" ?
     "Órgãos Públicos" : "Departamentos";
   let employeesName = authenticationDataLoggedInUser &&
-    authenticationDataLoggedInUser.sector === "Público" ?
+    authenticationDataLoggedInUser.data.sector === "publico" ?
     "Agentes Públicos" : "Colaboradores";
   let departmentsPath = "/departments";
   let employeesPath = "/employees";
 
   // Se authenticationDataLoggedInUser não está disponível ou se o setor não está definido, mantenha os valores padrão
-  if (!authenticationDataLoggedInUser || !authenticationDataLoggedInUser.sector) {
+  if (!authenticationDataLoggedInUser || !authenticationDataLoggedInUser.data.sector) {
     departmentsName = "Departamentos";
     employeesName = "Colaboradores";
   }
 
   // Defina os valores padrão para 'miniName'
   let departmentsMiniName = authenticationDataLoggedInUser &&
-    authenticationDataLoggedInUser.sector === "Público" ? "O" : "D";
+    authenticationDataLoggedInUser.data.sector === "publico" ? "O" : "D";
   let employeesMiniName = authenticationDataLoggedInUser &&
-    authenticationDataLoggedInUser.sector === "Público" ? "A" : "C";
+    authenticationDataLoggedInUser.data.sector === "publico" ? "A" : "C";
 
   // Se authenticationDataLoggedInUser não está disponível ou se o setor não está definido, mantenha os valores padrão
-  if (!authenticationDataLoggedInUser || !authenticationDataLoggedInUser.sector) {
+  if (!authenticationDataLoggedInUser || !authenticationDataLoggedInUser.data.sector) {
     departmentsMiniName = "D";
     employeesMiniName = "C";
   }
