@@ -44,7 +44,7 @@ function Login() {
   const handleSubmit = async () => {
 
     try {
-      const response = await fetch('http://localhost:3009/auth/signin', {
+      const response = await fetch('http://dlist.com.br:3009/auth/signin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -56,7 +56,7 @@ function Login() {
         const data = await response.json();
         console.log('Data from API:', data); // Adicione esta linha
 
-        let redirectUrl = 'http://localhost:9001';
+        let redirectUrl = 'http://dlist.com.br:9001';
 
         switch (data.role) {
           case 'administrator':
@@ -73,10 +73,10 @@ function Login() {
             break;
           default:
             console.log('Redirecionando para a página padrão');
-            redirectUrl = 'http://localhost:9001/default';
+            redirectUrl = 'http://dlist.com.br:9001/default';
         }
 
-        handleSaveAuthenticationDataLoggedInUser(data.data.sector);
+        handleSaveAuthenticationDataLoggedInUser(data);
 
         redirectUrl += `?id=${data.data.id}&sector=${encodeURIComponent(data.data.sector)}`;
         console.log('URL de redirecionamento:', redirectUrl);
