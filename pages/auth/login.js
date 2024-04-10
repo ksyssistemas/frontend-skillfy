@@ -41,7 +41,7 @@ function Login() {
   const handleSubmit = async () => {
 
     try {
-      const response = await fetch('http://localhost:3009/auth/signin', {
+      const response = await fetch('http://dlist.com.br:3009/auth/signin', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -51,8 +51,9 @@ function Login() {
   
       if (response.ok) {
           const data = await response.json();
+          console.log('Data from API:', data); // Adicione esta linha
   
-          let redirectUrl = 'http://localhost:9001';
+          let redirectUrl = 'http://dlist.com.br:9001';
   
           switch (data.role) {
               case 'administrator':
