@@ -31,7 +31,7 @@ const routes = () => {
   let employeesPath = "/employees";
 
   // Se authenticationDataLoggedInUser não está disponível ou se o setor não está definido, mantenha os valores padrão
-  if (!authenticationDataLoggedInUser || !authenticationDataLoggedInUser.sector) {
+  if (!authenticationDataLoggedInUser || !authenticationDataLoggedInUser.data.sector) {
     departmentsName = "Departamentos";
     employeesName = "Colaboradores";
   }
@@ -43,7 +43,7 @@ const routes = () => {
     authenticationDataLoggedInUser.sector === "publico" ? "A" : "C";
 
   // Se authenticationDataLoggedInUser não está disponível ou se o setor não está definido, mantenha os valores padrão
-  if (!authenticationDataLoggedInUser || !authenticationDataLoggedInUser.sector) {
+  if (!authenticationDataLoggedInUser || !authenticationDataLoggedInUser.data.sector) {
     departmentsMiniName = "D";
     employeesMiniName = "C";
   }

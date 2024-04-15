@@ -77,9 +77,10 @@ function Login() {
             redirectUrl = 'http://dlist.com.br:9001/default';
         }
 
+        handleSaveAuthenticationDataLoggedInUser(data);
 
         redirectUrl += `?id=${data.data.id}&sector=${encodeURIComponent(data.data.sector)}`;
-        console.log('URL de redirecionamento:', redirectUrl);
+
 
         window.location.href = redirectUrl;
       } else {
