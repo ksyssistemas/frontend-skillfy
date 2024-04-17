@@ -5,7 +5,7 @@ export const AuthContext = createContext({});
 
 function AuthProvider({ children }) {
 
-    const [authenticationDataLoggedInUser, setauthenticationDataLoggedInUser] = useState(null);
+    const [authenticationDataLoggedInUser, setauthenticationDataLoggedInUser] = useState("publico");
 
     function handleSaveAuthenticationDataLoggedInUser(userAuthenticationData) {
         setauthenticationDataLoggedInUser(userAuthenticationData);

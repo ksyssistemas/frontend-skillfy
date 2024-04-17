@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import Admin from "../../layouts/Admin";
+import Performance from "../../layouts/Performance";
 import AdminHeader from "components/Headers/AdminHeader.js";
 import { Container } from "reactstrap";
 import DepartmentsRegister from "../../components/Forms/DepartmentsRegister";
 import DepartmentsList from "../../components/Tables/Customer/DepartmentsList";
 import CustomerHeader from "../../components/Headers/CustomerHeader";
 import { useAuth } from '../../hooks/useAuth';
+
+const authenticationDataLoggedInUser = 'customer';
 
 function DepartmentsRecords() {
 
@@ -15,7 +18,7 @@ function DepartmentsRecords() {
         setIsShouldSubmitDepartmentsRegistration(!isShouldSubmitDepartmentsRegistration);
     }
 
-    const { authenticationDataLoggedInUser } = useAuth();
+    // const { authenticationDataLoggedInUser } = useAuth();
 
     return (
         <>
@@ -23,7 +26,7 @@ function DepartmentsRecords() {
                 !isShouldSubmitDepartmentsRegistration
                     ? (
                         authenticationDataLoggedInUser &&
-                            authenticationDataLoggedInUser.role === 'administrator' ?
+                            authenticationDataLoggedInUser === 'administrator' ?
                             (
                                 <>
                                     <AdminHeader name="Departamentos" parentName="Registros" newRegistrationButtonText="Adicionar Departamento" handleShowDepartmentsUserRegister={handleShowDepartmentsUserRegister} />
@@ -33,7 +36,7 @@ function DepartmentsRecords() {
                                 </>
                             ) : (
                                 authenticationDataLoggedInUser &&
-                                    authenticationDataLoggedInUser.role === 'customer' ?
+                                    authenticationDataLoggedInUser === 'customer' ?
                                     (
                                         <>
                                             <CustomerHeader name="Departamentos" parentName="Registros" newRegistrationButtonText="Adicionar Departamento" handleShowDepartmentsUserRegister={handleShowDepartmentsUserRegister} />
@@ -47,7 +50,7 @@ function DepartmentsRecords() {
                     )
                     : (
                         authenticationDataLoggedInUser &&
-                            authenticationDataLoggedInUser.role === 'administrator' ?
+                            authenticationDataLoggedInUser === 'administrator' ?
                             (
                                 <>
                                     <AdminHeader name="Departamentos" parentName="Cadastros" />
@@ -57,7 +60,7 @@ function DepartmentsRecords() {
                                 </>
                             ) : (
                                 authenticationDataLoggedInUser &&
-                                    authenticationDataLoggedInUser.role === 'customer' ?
+                                    authenticationDataLoggedInUser === 'customer' ?
                                     (
                                         <>
                                             <CustomerHeader name="Departamentos" parentName="Cadastros" />
@@ -74,6 +77,6 @@ function DepartmentsRecords() {
     );
 }
 
-DepartmentsRecords.layout = Admin;
+authenticationDataLoggedInUser === 'administrator' ? DepartmentsRecords.layout = Admin : (authenticationDataLoggedInUser === 'customer' ? DepartmentsRecords.layout = Performance : DepartmentsRecords.layout = Admin);
 
 export default DepartmentsRecords;

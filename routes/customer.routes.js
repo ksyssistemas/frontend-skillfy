@@ -22,28 +22,28 @@ const routes = () => {
 
   // Defina os valores padrão para 'name' e 'path'
   let departmentsName = authenticationDataLoggedInUser &&
-    authenticationDataLoggedInUser.sector === "publico" ?
+    authenticationDataLoggedInUser === "publico" ?
     "Órgãos Públicos" : "Departamentos";
   let employeesName = authenticationDataLoggedInUser &&
-    authenticationDataLoggedInUser.sector === "publico" ?
+    authenticationDataLoggedInUser === "publico" ?
     "Agentes Públicos" : "Colaboradores";
   let departmentsPath = "/departments";
   let employeesPath = "/employees";
 
   // Se authenticationDataLoggedInUser não está disponível ou se o setor não está definido, mantenha os valores padrão
-  if (!authenticationDataLoggedInUser || !authenticationDataLoggedInUser.data.sector) {
+  if (!authenticationDataLoggedInUser || !authenticationDataLoggedInUser) {
     departmentsName = "Departamentos";
     employeesName = "Colaboradores";
   }
 
   // Defina os valores padrão para 'miniName'
   let departmentsMiniName = authenticationDataLoggedInUser &&
-    authenticationDataLoggedInUser.sector === "publico" ? "O" : "D";
+    authenticationDataLoggedInUser === "publico" ? "O" : "D";
   let employeesMiniName = authenticationDataLoggedInUser &&
-    authenticationDataLoggedInUser.sector === "publico" ? "A" : "C";
+    authenticationDataLoggedInUser === "publico" ? "A" : "C";
 
   // Se authenticationDataLoggedInUser não está disponível ou se o setor não está definido, mantenha os valores padrão
-  if (!authenticationDataLoggedInUser || !authenticationDataLoggedInUser.data.sector) {
+  if (!authenticationDataLoggedInUser || !authenticationDataLoggedInUser) {
     departmentsMiniName = "D";
     employeesMiniName = "C";
   }
@@ -52,7 +52,7 @@ const routes = () => {
     {
       collapse: true,
       name: "Dashboard",
-      icon: "ni ni-tv-2 text-white",
+      icon: "ni ni-tv-2",
       state: "examplesCollapse",
       views: [
         {
@@ -66,8 +66,8 @@ const routes = () => {
     {
       collapse: true,
       name: "Registros e Cadastros",
-      icon: "ni ni-archive-2 text-white",
-      state: "examplesCollapse",
+      icon: "ni ni-archive-2",
+      state: "records&RegisterCollapse",
       views: [
         {
           path: departmentsPath,
@@ -92,7 +92,7 @@ const routes = () => {
     {
       collapse: true,
       name: "Desempenho",
-      icon: "ni ni-paper-diploma text-white",
+      icon: "ni ni-paper-diploma",
       state: "appraisalsCollapse",
       views: [
         {

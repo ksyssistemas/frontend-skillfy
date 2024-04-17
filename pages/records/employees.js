@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Admin from "../../layouts/Admin";
+import Performance from "../../layouts/Performance";
 import AdminHeader from "components/Headers/AdminHeader.js";
+import CustomerHeader from "../../components/Headers/CustomerHeader";
 import EmployeeUserList from "../../components/Tables/Customer/EmployeeUserList";
-import { Container } from "reactstrap";
 import EmployeeUserRegister from "../../components/Forms/EmployeeUserRegister";
+import { Container } from "reactstrap";
+
+const authenticationDataLoggedInUser = 'customer';
 
 function EmployeeRecords() {
   const [admins, setAdmins] = useState([]);
@@ -82,26 +86,59 @@ function EmployeeRecords() {
       {
         !isShouldSubmitEmployeeRegistration
           ? (
-            <>
-              <AdminHeader name="Colaboradores" parentName="Registros" newRegistrationButtonText="Adicionar Colaborador" handleShowEmployeeUserRegister={handleShowEmployeeUserRegister} />
-              <Container className="mt--6" fluid>
-                <EmployeeUserList />
-              </Container>
-            </>
+            authenticationDataLoggedInUser &&
+              authenticationDataLoggedInUser === 'administrator' ?
+              (
+                <>
+                  <AdminHeader name="Colaboradores" parentName="Registros" newRegistrationButtonText="Adicionar Colaborador" handleShowEmployeeUserRegister={handleShowEmployeeUserRegister} />
+                  <Container className="mt--6" fluid>
+                    <EmployeeUserList />
+                  </Container>
+                </>
+              ) : (
+                authenticationDataLoggedInUser &&
+                  authenticationDataLoggedInUser === 'customer' ?
+                  (
+                    <>
+                      <CustomerHeader name="Colaboradores" parentName="Registros" newRegistrationButtonText="Adicionar Colaborador" handleShowEmployeeUserRegister={handleShowEmployeeUserRegister} />
+                      <Container className="mt--6" fluid>
+                        <EmployeeUserList />
+                      </Container>
+                    </>
+                  ) : null
+
+              )
           )
           : (
-            <>
-              <AdminHeader name="Colaboradores" parentName="Registros" />
-              <Container className="mt--6" fluid>
-                <EmployeeUserRegister />
-              </Container>
-            </>
+            authenticationDataLoggedInUser &&
+              authenticationDataLoggedInUser === 'administrator' ?
+              (
+                <>
+                  <AdminHeader name="Colaboradores" parentName="Cadastros" />
+                  <Container className="mt--6" fluid>
+                    <EmployeeUserRegister />
+                  </Container>
+                </>
+              ) : (
+                authenticationDataLoggedInUser &&
+                  authenticationDataLoggedInUser === 'customer' ?
+                  (
+                    <>
+                      <CustomerHeader name="Colaboradores" parentName="Cadastros" />
+                      <Container className="mt--6" fluid>
+                        <EmployeeUserRegister />
+                      </Container>
+                    </>
+
+                  ) : null
+              )
           )
       }
     </>
   );
 }
 
-EmployeeRecords.layout = Admin;
+
+authenticationDataLoggedInUser === 'administrator' ? EmployeeRecords.layout = Admin : (authenticationDataLoggedInUser === 'customer' ? EmployeeRecords.layout = Performance : EmployeeRecords.layout = Admin);
 
 export default EmployeeRecords;

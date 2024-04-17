@@ -33,7 +33,7 @@ import {
   Nav,
 } from "reactstrap";
 
-function SidebarClient({
+function SidebarCustomer({
   toggleSidenav,
   sidenavOpen,
   routes,
@@ -130,13 +130,13 @@ function SidebarClient({
             >
               {prop.icon ? (
                 <>
-                  <i style={{ color: "#FFFFFF" }} className={prop.icon} />
-                  <span style={{ color: "#FFFFFF" }} className="nav-link-text">{prop.name}</span>
+                  <i style={{ color: getCollapseInitialState(prop.views) ? '#562f9f' : '#FFFFFF' }} className={prop.icon} />
+                  <span style={{ color: getCollapseInitialState(prop.views) ? '#562f9f' : '#FFFFFF' }} className="nav-link-text">{prop.name}</span>
                 </>
               ) : prop.miniName ? (
                 <>
-                  <span style={{ color: "#FFFFFF" }} className="sidenav-mini-icon"> {prop.miniName} </span>
-                  <span style={{ color: "#FFFFFF" }} className="sidenav-normal"> {prop.name} </span>
+                  <span style={{ color: getCollapseInitialState(prop.views) ? '#562f9f' : '#FFFFFF' }} className="sidenav-mini-icon"> {prop.miniName} </span>
+                  <span style={{ color: getCollapseInitialState(prop.views) ? '#562f9f' : '#FFFFFF' }} className="sidenav-normal"> {prop.name} </span>
                 </>
               ) : null}
             </NavLink>
@@ -281,14 +281,14 @@ function SidebarClient({
   );
 }
 
-SidebarClient.defaultProps = {
+SidebarCustomer.defaultProps = {
   routesCustomer: [{}],
   toggleSidenav: () => { },
   sidenavOpen: false,
   rtlActive: false,
 };
 
-SidebarClient.propTypes = {
+SidebarCustomer.propTypes = {
   // function used to make sidenav mini or normal
   toggleSidenav: PropTypes.func,
   // prop to know if the sidenav is mini or normal
@@ -312,4 +312,4 @@ SidebarClient.propTypes = {
   rtlActive: PropTypes.bool,
 };
 
-export default withRouter(SidebarClient);
+export default withRouter(SidebarCustomer);

@@ -26,9 +26,9 @@ import {
     Row,
     Col,
 } from "reactstrap";
-import AddAppraisalCycleModal from "../Modals/AppraisalModal/add-appraisal-cycle";
 
-function CustomerHeader({ name, parentName }) {
+function CustomerHeader({ name, parentName, newRegistrationButtonText, handleShowDepartmentsUserRegister,
+    handleShowRolesUserRegister, handleShowEmployeeUserRegister }) {
 
     const [modalOpen, setModalOpen] = React.useState(false);
 
@@ -65,28 +65,43 @@ function CustomerHeader({ name, parentName }) {
                                     </BreadcrumbItem>
                                 </Breadcrumb>
                             </Col>
-                            <Col className="mt-3 mt-md-0 text-md-right" lg="6" xs="5">
+                            <Col className="text-right" lg="6" xs="5">
+
+                                {
+                                    newRegistrationButtonText && (
+                                        <Button
+                                            className="btn-neutral"
+                                            color=""
+                                            href="#pablo"
+                                            onClick={
+                                                handleShowEmployeeUserRegister ?
+                                                    handleShowEmployeeUserRegister :
+                                                    (handleShowDepartmentsUserRegister ?
+                                                        handleShowDepartmentsUserRegister :
+                                                        (handleShowRolesUserRegister ?
+                                                            handleShowRolesUserRegister :
+                                                            null)
+                                                    )
+                                            }
+                                            size="sm"
+                                        >
+                                            {newRegistrationButtonText}
+                                        </Button>
+                                    )
+                                }
+
                                 <Button
                                     className="btn-neutral"
-                                    color="default"
+                                    color=""
+                                    href="#pablo"
+                                    onClick={(e) => e.preventDefault()}
                                     size="sm"
-                                    onClick={handleOpenAddAppraisalCycleModal}
                                 >
-                                    <span className="btn-inner--icon">
-                                        <i className="ni ni-fat-add mr-2" />
-                                    </span>
-                                    <span className="nav-link-inner--text">Adicionar Ciclo</span>
-                                </Button>
-                                <Button className="btn-neutral" color="default" size="sm">
                                     Filtros
                                 </Button>
                             </Col>
                         </Row>
                     </div>
-                    <AddAppraisalCycleModal
-                        handleOpenAddAppraisalCycleModal={handleOpenAddAppraisalCycleModal}
-                        modalOpen={modalOpen}
-                    />
                 </Container>
             </div>
         </>
@@ -94,8 +109,18 @@ function CustomerHeader({ name, parentName }) {
 }
 
 CustomerHeader.propTypes = {
+    handleShowDepartmentsUserRegister: () => { },
+    handleShowRolesUserRegister: () => { },
+    handleShowEmployeeUserRegister: () => { },
+};
+
+CustomerHeader.propTypes = {
     name: PropTypes.string,
     parentName: PropTypes.string,
+    newRegistrationButtonText: PropTypes.string,
+    handleShowDepartmentsUserRegister: PropTypes.func,
+    handleShowRolesUserRegister: PropTypes.func,
+    handleShowEmployeeUserRegister: PropTypes.func,
 };
 
 export default CustomerHeader;

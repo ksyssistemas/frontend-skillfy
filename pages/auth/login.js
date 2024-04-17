@@ -54,7 +54,7 @@ function Login() {
 
       if (response.ok) {
         const data = await response.json();
-        handleSaveAuthenticationDataLoggedInUser(data);
+        // handleSaveAuthenticationDataLoggedInUser(data);
         // console.log('Data from API:', data); // Adicione esta linha
 
         let redirectUrl = 'http://dlist.com.br:9001';
@@ -77,10 +77,7 @@ function Login() {
             redirectUrl = 'http://dlist.com.br:9001/default';
         }
 
-        handleSaveAuthenticationDataLoggedInUser(data);
-
         redirectUrl += `?id=${data.data.id}&sector=${encodeURIComponent(data.data.sector)}`;
-
 
         window.location.href = redirectUrl;
       } else {

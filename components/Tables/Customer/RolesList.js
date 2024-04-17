@@ -69,7 +69,7 @@ function RolesList() {
 
   return (
     <Form>
-      <Card className="bg-transparent">
+      <Card>
         <CardHeader className="bg-transparent border-0">
           <h3 className="mb-0">Cargos Registrados</h3>
         </CardHeader>
@@ -212,7 +212,7 @@ function RolesList() {
         </Table>
       </Card>
 
-      <Card className="bg-transparent">
+      <Card>
         <CardHeader className="bg-transparent border-0">
           <h3 className="mb-0">Funções Registradas</h3>
         </CardHeader>
