@@ -25,6 +25,9 @@ import routes from "../routes/customer.routes";
 
 function Performance({ router, children }) {
   const [sidenavOpen, setSidenavOpen] = React.useState(true);
+
+  const routesCustomer = routes();
+
   const getRoutes = (routes) => {
     return routes.map((prop, key) => {
       if (prop.collapse) {
@@ -43,14 +46,16 @@ function Performance({ router, children }) {
       }
     });
   };
+
   const getBrandText = (path) => {
-    for (let i = 0; i < routes.length; i++) {
-      if (router.pathname.indexOf(routes[i].layout + routes[i].path) !== -1) {
-        return routes[i].name;
+    for (let i = 0; i < routesCustomer.length; i++) {
+      if (router.pathname.indexOf(routesCustomer[i].layout + routesCustomer[i].path) !== -1) {
+        return routesCustomer[i].name;
       }
     }
     return "Brand";
   };
+
   // toggles collapse between mini sidenav and normal
   const toggleSidenav = (e) => {
     if (document.body.classList.contains("g-sidenav-pinned")) {
@@ -62,15 +67,17 @@ function Performance({ router, children }) {
     }
     setSidenavOpen(!sidenavOpen);
   };
+
   const getNavbarTheme = () => {
     return router.pathname.indexOf("Performance/alternative-dashboard") === -1
       ? "dark"
       : "light";
   };
+
   return (
     <>
       <SidebarCustomer
-        routes={routes}
+        routes={routesCustomer}
         toggleSidenav={toggleSidenav}
         sidenavOpen={sidenavOpen}
         logo={{

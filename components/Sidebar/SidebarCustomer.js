@@ -45,7 +45,7 @@ function SidebarCustomer({
   const [windowWidth, setWindowWidth] = React.useState(0);
   const [navigatorPlatform, setNavigatorPlatform] = React.useState("");
 
-  const routesCustomer = routes();
+  const routesCustomer = routes;
 
   React.useEffect(() => {
     setState(getCollapseStates(routesCustomer));

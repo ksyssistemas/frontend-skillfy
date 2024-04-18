@@ -44,6 +44,7 @@ function Sidebar({
   const [state, setState] = React.useState({});
   const [windowWidth, setWindowWidth] = React.useState(0);
   const [navigatorPlatform, setNavigatorPlatform] = React.useState("");
+
   React.useEffect(() => {
     setState(getCollapseStates(routes));
     setWindowWidth(window.innerWidth);
@@ -128,12 +129,12 @@ function Sidebar({
               {prop.icon ? (
                 <>
                   <i style={{ color: "#FF623F" }} className={prop.icon} />
-                  <span style={{ color: "#FF623F" }}className="nav-link-text">{prop.name}</span>
+                  <span style={{ color: "#FF623F" }} className="nav-link-text">{prop.name}</span>
                 </>
               ) : prop.miniName ? (
                 <>
-                  <span style={{ color: "#FF623F" }}className="sidenav-mini-icon"> {prop.miniName} </span>
-                  <span style={{ color: "#FF623F" }}className="sidenav-normal"> {prop.name} </span>
+                  <span style={{ color: "#FF623F" }} className="sidenav-mini-icon"> {prop.miniName} </span>
+                  <span style={{ color: "#FF623F" }} className="sidenav-normal"> {prop.name} </span>
                 </>
               ) : null}
             </NavLink>
@@ -152,12 +153,12 @@ function Sidebar({
               {prop.icon !== undefined ? (
                 <>
                   <i style={{ color: "#FF623F" }} className={prop.icon} />
-                  <span style={{ color: "#FF623F" }}className="nav-link-text">{prop.name}</span>
+                  <span style={{ color: "#FF623F" }} className="nav-link-text">{prop.name}</span>
                 </>
               ) : prop.miniName !== undefined ? (
                 <>
-                  <span style={{ color: "#FF623F" }}className="sidenav-mini-icon"> {prop.miniName} </span>
-                  <span style={{ color: "#FF623F" }}className="sidenav-normal"> {prop.name} </span>
+                  <span style={{ color: "#FF623F" }} className="sidenav-mini-icon"> {prop.miniName} </span>
+                  <span style={{ color: "#FF623F" }} className="sidenav-normal"> {prop.name} </span>
                 </>
               ) : (
                 prop.name
@@ -168,7 +169,7 @@ function Sidebar({
       );
     });
   };
-  
+
   const scrollBarInner = (
     <div className="scrollbar-inner">
       <div className="sidenav-header d-flex align-items-center">
@@ -259,7 +260,7 @@ function Sidebar({
       </div>
     </div>
   );
-  
+
   return (
     <Navbar
       className={
@@ -280,7 +281,7 @@ function Sidebar({
 
 Sidebar.defaultProps = {
   routes: [{}],
-  toggleSidenav: () => {},
+  toggleSidenav: () => { },
   sidenavOpen: false,
   rtlActive: false,
 };

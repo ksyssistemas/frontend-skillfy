@@ -20,30 +20,33 @@ import { useAuth } from '../hooks/useAuth';
 const routes = () => {
   const { authenticationDataLoggedInUser } = useAuth();
 
+  let companyName = authenticationDataLoggedInUser ?
+    authenticationDataLoggedInUser.data.companyName : "Seu Dashboard";
+
   // Defina os valores padrão para 'name' e 'path'
   let departmentsName = authenticationDataLoggedInUser &&
-    authenticationDataLoggedInUser === "publico" ?
+    authenticationDataLoggedInUser.data.sector === "publico" ?
     "Órgãos Públicos" : "Departamentos";
   let employeesName = authenticationDataLoggedInUser &&
-    authenticationDataLoggedInUser === "publico" ?
+    authenticationDataLoggedInUser.data.sector === "publico" ?
     "Agentes Públicos" : "Colaboradores";
   let departmentsPath = "/departments";
   let employeesPath = "/employees";
 
   // Se authenticationDataLoggedInUser não está disponível ou se o setor não está definido, mantenha os valores padrão
-  if (!authenticationDataLoggedInUser || !authenticationDataLoggedInUser) {
+  if (!authenticationDataLoggedInUser || !authenticationDataLoggedInUser.data.sector) {
     departmentsName = "Departamentos";
     employeesName = "Colaboradores";
   }
 
   // Defina os valores padrão para 'miniName'
   let departmentsMiniName = authenticationDataLoggedInUser &&
-    authenticationDataLoggedInUser === "publico" ? "O" : "D";
+    authenticationDataLoggedInUser.data.sector === "publico" ? "O" : "D";
   let employeesMiniName = authenticationDataLoggedInUser &&
-    authenticationDataLoggedInUser === "publico" ? "A" : "C";
+    authenticationDataLoggedInUser.data.sector === "publico" ? "A" : "C";
 
   // Se authenticationDataLoggedInUser não está disponível ou se o setor não está definido, mantenha os valores padrão
-  if (!authenticationDataLoggedInUser || !authenticationDataLoggedInUser) {
+  if (!authenticationDataLoggedInUser || !authenticationDataLoggedInUser.data.sector) {
     departmentsMiniName = "D";
     employeesMiniName = "C";
   }
@@ -53,11 +56,11 @@ const routes = () => {
       collapse: true,
       name: "Dashboard",
       icon: "ni ni-tv-2",
-      state: "examplesCollapse",
+      state: "dashboardCollapse",
       views: [
         {
-          path: "/client",
-          name: "Nome Cliente",
+          path: "/customer",
+          name: companyName,
           miniName: "A",
           layout: "/dashboard",
         }

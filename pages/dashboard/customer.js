@@ -20,6 +20,8 @@ import Performance from "layouts/Performance.js";
 // core components
 import CardsHeader from "components/Headers/CardsHeader.js";
 
+import { useAuth } from '../../hooks/useAuth';
+
 import {
   chartOptions,
   parseOptions,
@@ -39,10 +41,11 @@ function Dashboard() {
     parseOptions(Chart, chartOptions());
   }
 
+  const { authenticationDataLoggedInUser } = useAuth();
 
   return (
     <>
-      <CardsHeader name="Nome Cliente"  parentName="Dashboard" />
+      <CardsHeader name={authenticationDataLoggedInUser.data.companyName} parentName="Dashboard" />
       <Container className="mt--6" fluid>
         <Row>
           <Col xl="0">
@@ -1992,7 +1995,7 @@ function Dashboard() {
 
               </div>
             </Row>
-                {/**Begin::Card-Deck 
+            {/**Begin::Card-Deck 
                 <div className="card-deck">
               <Card className="bg-gradient-default">
                 <CardBody>
