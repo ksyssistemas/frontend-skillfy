@@ -12,17 +12,7 @@ import {
   Button
 } from 'reactstrap';
 
-import useAdminData from "../../hooks/useAdminRegistration"
-
 const AdminRegistration = () => {
-  
-
-  const { 
-    formData, 
-    handleInputChange, 
-    handleFormSubmit 
-  } = useAdminData();
-
 
   return (
     <>
@@ -44,7 +34,6 @@ const AdminRegistration = () => {
                       id="input-name"
                       placeholder="Nome"
                       type="text"
-                      value={formData.name}
                       onChange={(e) => handleInputChange('name', e.target.value)}
                     />
                   </FormGroup>
@@ -59,7 +48,6 @@ const AdminRegistration = () => {
                       id="input-lastName"
                       placeholder="Sobrenome"
                       type="text"
-                      value={formData.lastName}
                       onChange={(e) => handleInputChange('lastName', e.target.value)}
                     />
                   </FormGroup>
@@ -77,7 +65,6 @@ const AdminRegistration = () => {
                       id="input-birthDate"
                       placeholder="__/__/____"
                       type="date"
-                      value={formData.birthDate}
                       onChange={(e) => handleInputChange('birthDate', e.target.value)}
                     />
                   </FormGroup>
@@ -92,7 +79,6 @@ const AdminRegistration = () => {
                       id="input-email"
                       placeholder="Email"
                       type="email"
-                      value={formData.email}
                       onChange={(e) => handleInputChange('email', e.target.value)}
                     />
                   </FormGroup>
@@ -107,7 +93,6 @@ const AdminRegistration = () => {
                       id="input-phone"
                       placeholder="Número de Contato"
                       type="text"
-                      value={formData.phone}
                       onChange={(e) => handleInputChange('phone', e.target.value)}
                     />
                   </FormGroup>
@@ -122,7 +107,6 @@ const AdminRegistration = () => {
                       id="input-password"
                       placeholder="Senha"
                       type="password"
-                      value={formData.password}
                       onChange={(e) => handleInputChange('password', e.target.value)}
                     />
                   </FormGroup>
@@ -130,8 +114,8 @@ const AdminRegistration = () => {
               </Row>
 
               <ModalFooter>
-                <Button color="primary" type="button" onClick={handleFormSubmit}>
-                  Salvar 
+                <Button color="primary" type="button" >
+                  Salvar
                 </Button>
               </ModalFooter>
             </div>

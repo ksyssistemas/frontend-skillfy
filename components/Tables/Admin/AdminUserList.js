@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Badge,
   Card,
@@ -10,38 +10,22 @@ import {
 } from 'reactstrap';
 
 import ModalAdm from "../../Modals/admin/ModalAdm"
-import useFetchAdmins from "../../../hooks/useFindAllAdmin"
-import { useDeleteAdmin} from "../../../hooks/useDeleteAdmin"
+import { useFindAllAdmin } from "../../../hooks/admin/useFindAllAdmin"
+import { useDeleteAdmin } from "../../../hooks/admin/useDeleteAdmin"
 
 
-const AdminList = () => {
+function AdminList() {
 
-  const admins = useFetchAdmins();
+  const [userAdministratorAccountData, setUserAdministratorAccountData] = useState([]);
+
+
   const deleteAdmin = useDeleteAdmin();
 
-  {/** Modal  Adm*/ }
   const [modalAdmOpen, setModalAdmOpen] = React.useState(false);
-
-  const [formData, setFormData] = useState({
-    name: '',
-    lastname: '',
-    email: '',
-    password: '',
-    phone: '',
-  });
-
 
   const toggleModalAdm = () => {
     setModalAdmOpen(!modalAdmOpen);
   };
-
-  //const handleSave = () => {
-  //  toggleModalAdm();
-  //};
-
-  //const handleInputChange = (fieldName, value) => {
-  //  setFormData({ ...formData, [fieldName]: value });
-  //};
 
   const handleDeleteAdmin = async (id) => {
     const deletedId = await deleteAdmin(id);
@@ -51,6 +35,13 @@ const AdminList = () => {
       console.error('Failed to delete admin with ID:', id);
     }
   };
+
+  useEffect(async () => {
+    if (userAdministratorAccountData.length == 0) {
+      const foundAdministrators = await useFindAllAdmin();
+      setUserAdministratorAccountData(foundAdministrators);
+    }
+  }, [userAdministratorAccountData])
 
   return (
     <Card>
@@ -75,7 +66,7 @@ const AdminList = () => {
           </tr>
         </thead>
         <tbody>
-          {admins.map((admin) => (
+          {userAdministratorAccountData.map((admin) => (
             <tr key={admin.id}>
               <td className="table-user">
                 <img
@@ -127,8 +118,8 @@ const AdminList = () => {
         isOpen={modalAdmOpen}
         toggle={toggleModalAdm}
         //handleSave={handleSave}
-        formData={formData}
-        //handleInputChange={handleInputChange}
+        formData={userAdministratorAccountData}
+      //handleInputChange={handleInputChange}
       />
 
 

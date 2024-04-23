@@ -3,10 +3,10 @@ import React from "react";
 import { withRouter } from "next/router";
 
 // core components
-import EnterpriseNavbar from "components/Navbars/RegisterNavbar.js";
 import RegisterFooter from "components/Footers/RegisterFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 import routes from "../routes/admin.routes";
+import AdminNavbar from "../components/Navbars/AdminNavbar";
 // import routes from "routes.js";
 
 function Admin({ router, children }) {
@@ -66,7 +66,7 @@ function Admin({ router, children }) {
         }}
       />
       <div className="main-content">
-        <EnterpriseNavbar
+        <AdminNavbar
           theme={getNavbarTheme()}
           toggleSidenav={toggleSidenav}
           sidenavOpen={sidenavOpen}

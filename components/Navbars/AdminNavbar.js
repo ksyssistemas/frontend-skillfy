@@ -77,8 +77,9 @@ function AdminNavbar({ theme, sidenavOpen, toggleSidenav }) {
       <Navbar
         className={classnames(
           "navbar-top navbar-expand border-bottom",
-          { "navbar-dark bg-dark": theme === "dark" },
-          { "navbar-light bg-secondary": theme === "light" }
+          { "navbar-light bg-light": theme === "dark" },
+          // { "navbar-dark bg-dark": theme === "dark" },
+          // { "navbar-light bg-secondary": theme === "lighter" }
         )}
       >
         <Container fluid>
@@ -87,7 +88,7 @@ function AdminNavbar({ theme, sidenavOpen, toggleSidenav }) {
               className={classnames(
                 "navbar-search form-inline mr-sm-3",
                 { "navbar-search-light": theme === "dark" },
-                { "navbar-search-dark": theme === "light" }
+                { "navbar-search-dark": theme === "lighter" }
               )}
             >
               <FormGroup className="mb-0">
@@ -460,7 +461,7 @@ function AdminNavbar({ theme, sidenavOpen, toggleSidenav }) {
 }
 
 AdminNavbar.defaultProps = {
-  toggleSidenav: () => {},
+  toggleSidenav: () => { },
   sidenavOpen: false,
   theme: "dark",
 };

@@ -25,7 +25,7 @@ function PlansRegister() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('http://localhost:6008/administrator/email/adm1@gmail.com', {
+                const response = await fetch('http://localhost:3008/administrator/email/admin@twig.com', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

@@ -21,7 +21,7 @@ const routes = [
     collapse: true,
     name: "Dashboard",
     icon: "ni ni-tv-2",
-    state: "examplesCollapse",
+    state: "dashboardCollapse",
     views: [
       {
         path: "/admin",
@@ -35,7 +35,7 @@ const routes = [
     collapse: true,
     name: "Registros e Cadastros",
     icon: "ni ni-archive-2",
-    state: "examplesCollapse",
+    state: "recordsCollapse",
     views: [
       {
         path: "/admin",

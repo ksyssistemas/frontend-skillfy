@@ -1,4 +1,5 @@
 export const useDeleteAdmin = () => {
+
   const deleteAdmin = async (id) => {
     try {
       const response = await fetch(`http://dlist.com.br:3008/administrator/${id}`, {

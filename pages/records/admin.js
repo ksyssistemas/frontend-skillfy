@@ -29,7 +29,7 @@ function AdminRecords() {
             <>
               <AdminHeader name="Administrador" parentName="Cadastros" />
               <Container className="mt--6" fluid>
-                <AdminUserRegister />
+                <AdminUserRegister handleShowAdminUserRegister={handleShowAdminUserRegister} />
               </Container>
             </>
           )

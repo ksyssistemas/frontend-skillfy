@@ -39,29 +39,29 @@ import ModalAdm from "../Modals/admin/ModalAdm"
 function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
 
 
-  {/** Modal  Plan*/}
+  {/** Modal  Plan*/ }
   const [modalPlanOpen, setModalPlanOpen] = React.useState(false);
   const toggleModalPlan = () => {
     setModalPlanOpen(!modalPlanOpen);
   };
 
-   {/** Modal  Company*/}
-   const [modalEnterpriseOpen, setModalEnterpriseOpen] = React.useState(false);
-   const toggleModalEnterprise = () => {
-     setModalEnterpriseOpen(!modalEnterpriseOpen);
-   };
+  {/** Modal  Company*/ }
+  const [modalEnterpriseOpen, setModalEnterpriseOpen] = React.useState(false);
+  const toggleModalEnterprise = () => {
+    setModalEnterpriseOpen(!modalEnterpriseOpen);
+  };
 
-   {/** Modal  Employee*/}
-   const [modalEmployeeOpen, setModalEmployeeOpen] = React.useState(false);
-   const toggleModalEmployee = () => {
-     setModalEmployeeOpen(!modalEmployeeOpen);
-   };
+  {/** Modal  Employee*/ }
+  const [modalEmployeeOpen, setModalEmployeeOpen] = React.useState(false);
+  const toggleModalEmployee = () => {
+    setModalEmployeeOpen(!modalEmployeeOpen);
+  };
 
-   {/** Modal  Adm*/}
-   const [modalAdmOpen, setModalAdmOpen] = React.useState(false);
-   const toggleModalAdm = () => {
-     setModalAdmOpen(!modalAdmOpen);
-   };
+  {/** Modal  Adm*/ }
+  const [modalAdmOpen, setModalAdmOpen] = React.useState(false);
+  const toggleModalAdm = () => {
+    setModalAdmOpen(!modalAdmOpen);
+  };
 
 
   // function that on mobile devices makes the search open
@@ -96,7 +96,7 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:4008/administrator/email/adm1@gmail.com', {
+        const response = await fetch('http://localhost:3008/administrator/email/admin@twig.com', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -138,14 +138,14 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
             >
               <FormGroup className="mb-0">
                 <InputGroup className="input-group-alternative input-group-merge">
-                  
-                   <InputGroupAddon addonType="prepend">
+
+                  <InputGroupAddon addonType="prepend">
                     <InputGroupText>
                       <i className="fas fa-search" />
                     </InputGroupText>
                   </InputGroupAddon>
-                  
-                
+
+
                   <Input placeholder="Search" type="text" />
                 </InputGroup>
               </FormGroup>
@@ -167,9 +167,9 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                   </NavLink>
                 </Link>
               </NavItem>
-            
 
-            
+
+
               <NavItem>
                 <Link href="/register/novo">
                   <NavLink href="#pablo">
@@ -178,7 +178,7 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                 </Link>
               </NavItem>
             </Nav>
-              
+
 
             <Nav className="align-items-center ml-md-auto" navbar>
               <NavItem className="d-xl-none">
@@ -204,8 +204,8 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
               </NavItem>
 
 
-              
-         
+
+
 
 
 
@@ -414,11 +414,11 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                       tag="a"
                     >
                       <span className="shortcut-media avatar rounded-circle bg-gradient-blue">
-                        <i className="ni ni-email-83" />                       
+                        <i className="ni ni-email-83" />
                       </span>
                       <small>Contatos</small>
                     </Col>
-                                
+
                     <ModalAdm isOpen={modalAdmOpen} toggle={toggleModalAdm} />
                     <Col
                       className="shortcut-item"
@@ -428,11 +428,11 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                       tag="a"
                     >
                       <span className="shortcut-media avatar rounded-circle bg-gradient-blue">
-                        <i className="ni ni-credit-card" />                       
+                        <i className="ni ni-credit-card" />
                       </span>
                       <small>Planos</small>
                     </Col>
-                                
+
                     {/* <ModalEnterprise isOpen={modalEnterpriseOpen} toggle={toggleModalEnterprise} />
                     <Col
                       className="shortcut-item"
@@ -474,7 +474,7 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                     </Col>
                                 
                     <ModalPlan isOpen={modalPlanOpen} toggle={toggleModalPlan} /> */}
- 
+
                   </Row>
                 </DropdownMenu>
               </UncontrolledDropdown>
@@ -491,7 +491,7 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                     </span>
                     <Media className="ml-2 d-none d-lg-block">
                       <span className="mb-0 text-sm font-weight-bold">
-                      {administratorData.name} 
+                        {administratorData.name}
                       </span>
                     </Media>
                   </Media>
@@ -547,7 +547,7 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
 }
 
 RegisterNavbar.defaultProps = {
-  toggleSidenav: () => {},
+  toggleSidenav: () => { },
   sidenavOpen: false,
   theme: "dark",
 };

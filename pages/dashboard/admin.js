@@ -39,35 +39,36 @@ function Dashboard() {
     parseOptions(Chart, chartOptions());
   }
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('http://localhost:4008/administrator/email/adm1@gmail.com', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       console.log("Antes do fetch");
+  //       const response = await fetch('http://dlist.com.br:3008/administrator/email/admin@twig.com', {
+  //         method: 'GET',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //       });
 
-        if (response.ok) {
-          const data = await response.json();
-          setAdministratorData(data);
-        } else {
-          console.error('Error in response:', response.status);
-        }
-      } catch (error) {
-        console.error('Error in request:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         console.log("Data admin: ", data);
+  //         setAdministratorData(data);
+  //       } else {
+  //         console.error('Error in response:', response.status);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error in request:', error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
 
 
 
   return (
     <>
-      <CardsHeader name="Administrador"  parentName="Dashboard" />
+      <CardsHeader name="Administrador" parentName="Dashboard" />
       <Container className="mt--6" fluid>
         <Row>
           <Col xl="0">
@@ -2017,7 +2018,7 @@ function Dashboard() {
 
               </div>
             </Row>
-                {/**Begin::Card-Deck 
+            {/**Begin::Card-Deck 
                 <div className="card-deck">
               <Card className="bg-gradient-default">
                 <CardBody>

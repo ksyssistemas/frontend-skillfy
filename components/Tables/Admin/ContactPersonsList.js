@@ -9,12 +9,12 @@ import {
   UncontrolledTooltip,
 } from 'reactstrap';
 
-import useFetchAdmins from "../../../hooks/useFindAllAdmin"
+import { useFindAllAdmin } from "../../../hooks/useFindAllAdmin"
 import { useDeleteAdmin } from "../../../hooks/useDeleteAdmin"
 
 const ContactPersonsList = () => {
 
-  const admins = useFetchAdmins();
+  const admins = useFindAllAdmin();
   const deleteAdmin = useDeleteAdmin();
 
   console.log(admins)
@@ -96,7 +96,7 @@ const ContactPersonsList = () => {
                 </a>
               </td>
               <td className="text-left">
-                  Financeiro
+                Financeiro
               </td>
               <td className="text-center table-actions">
                 <a
