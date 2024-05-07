@@ -7,7 +7,7 @@ const useCreateAdmin = (handleShowAdminUserRegister) => {
     const [firstNameState, setFirstNameState] = React.useState(null);
     const [lastName, setLastName] = React.useState("");
     const [lastNameState, setLastNameState] = React.useState(null);
-    const [emailAddress, setEmailAddress] = React.useState("");
+    const [emailAddress, setEmailAddress] = React.useState(""),
     const [emailAddressState, setEmailAddressState] = React.useState(null);
     const [birthdate, setBirthdate] = React.useState("");
     const [birthdateState, setBirthdateState] = React.useState(null);

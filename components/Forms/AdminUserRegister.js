@@ -48,12 +48,12 @@ function AdminUserRegister({ handleShowAdminUserRegister }) {
                         <Col className="mb-3" md="6">
                             <label
                                 className="form-control-label"
-                                htmlFor="validationCustomFirstName"
+                                htmlFor="validationFirstName"
                             >
                                 Nome
                             </label>
                             <Input
-                                id="validationCustomFirstName"
+                                id="validationFirstName"
                                 placeholder="Nome"
                                 type="text"
                                 valid={firstNameState === "valid"}
@@ -102,13 +102,13 @@ function AdminUserRegister({ handleShowAdminUserRegister }) {
                         <Col className="mb-3" md="8">
                             <label
                                 className="form-control-label"
-                                htmlFor="validationCustomEmailAddress"
+                                htmlFor="validationEmailAddress"
                             >
                                 Email
                             </label>
                             <Input
                                 aria-describedby="inputGroupPrepend"
-                                id="validationCustomEmailAddress"
+                                id="validationEmailAddress"
                                 placeholder="Endereço de e-mail"
                                 type="email"
                                 valid={emailAddressState === "valid"}
@@ -131,7 +131,7 @@ function AdminUserRegister({ handleShowAdminUserRegister }) {
                             <FormGroup>
                                 <label
                                     className="form-control-label"
-                                    htmlFor="validationCustomEmailAddress"
+                                    htmlFor="validationBirthdate"
                                 >
                                     Data de Nascimento
                                 </label>
@@ -212,6 +212,7 @@ function AdminUserRegister({ handleShowAdminUserRegister }) {
                                 Número de Telefone
                             </label>
                             <InputMask
+                                placeholder="+55 (99) 9 9999-9999"
                                 mask="+55 (99) 9 9999-9999"
                                 maskChar=" "
                                 value={phoneNumber}

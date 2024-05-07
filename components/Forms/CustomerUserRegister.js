@@ -14,10 +14,18 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import dynamic from "next/dynamic";
 // nodejs library that concatenates classes
 import classnames from "classnames";
-
+// react plugin used to create DropdownMenu for selecting items
+const Select2 = dynamic(() => import("react-select2-wrapper"));
+// react plugin used to create datetimepicker
+import ReactDatetime from "react-datetime";
+import InputMask from 'react-input-mask';
+import useCreateCustomerAccountHolder from '../../hooks/customer/useCreateCustomerAccountHolder';
+import useCreateClientCompany from '../../hooks/customer/useCreateClientCompany';
+import useCNPJ from '../../hooks/useCNPJ';
 // reactstrap components
 import {
     Button,
@@ -39,58 +47,122 @@ import {
 } from "reactstrap";
 
 function CustomerUserRegister() {
-    const [focused, setFocused] = React.useState(false);
-    const [firstName, setfirstName] = React.useState("Mark");
-    const [firstNameState, setfirstNameState] = React.useState(null);
-    const [lastName, setlastName] = React.useState("Otto");
-    const [lastNameState, setlastNameState] = React.useState(null);
-    const [username, setusername] = React.useState("");
-    const [usernameState, setusernameState] = React.useState(null);
-    const [city, setcity] = React.useState("");
-    const [cityState, setcityState] = React.useState(null);
-    const [state, setstate] = React.useState("");
-    const [stateState, setstateState] = React.useState(null);
-    const [zip, setzip] = React.useState("");
-    const [zipState, setzipState] = React.useState(null);
-    const [checkbox, setcheckbox] = React.useState(false);
-    const [checkboxState, setcheckboxState] = React.useState(null);
-    const validateCustomStylesForm = () => {
-        if (firstName === "") {
-            setfirstNameState("invalid");
-        } else {
-            setfirstNameState("valid");
-        }
-        if (lastName === "") {
-            setlastNameState("invalid");
-        } else {
-            setlastNameState("valid");
-        }
-        if (username === "") {
-            setusernameState("invalid");
-        } else {
-            setusernameState("valid");
-        }
-        if (city === "") {
-            setcityState("invalid");
-        } else {
-            setcityState("valid");
-        }
-        if (state === "") {
-            setstateState("invalid");
-        } else {
-            setstateState("valid");
-        }
-        if (zip === "") {
-            setzipState("invalid");
-        } else {
-            setzipState("valid");
-        }
-        if (checkbox === false) {
-            setcheckboxState("invalid");
-        } else {
-            setcheckboxState("valid");
-        }
-    };
+
+    const {
+        firstNameState,
+        lastNameState,
+        taxIdentificationNumber,
+        taxIdentificationNumberState,
+        emailAddressState,
+        birthdateState,
+        password,
+        passwordState,
+        confirmPasswordState,
+        phoneNumber,
+        phoneNumberState,
+        checkbox,
+        checkboxState,
+        setCheckbox,
+        setCheckboxState,
+        setFirstName,
+        setFirstNameState,
+        setLastName,
+        setLastNameState,
+        setTaxIdentificationNumber,
+        setTaxIdentificationNumberState,
+        setEmailAddress,
+        setEmailAddressState,
+        setPassword,
+        setPasswordState,
+        setConfirmPassword,
+        setConfirmPasswordState,
+        setPhoneNumber,
+        setPhoneNumberState,
+        handleValidateAddCustomerAccountHolderForm,
+        handleBirthdateChange,
+        validateEmail,
+        handleChangeCPF,
+        validateCheckboxIsChecked,
+    } = useCreateCustomerAccountHolder();
+
+    const {
+        companyName,
+        setCompanyName,
+        companyNameState,
+        setCompanyNameState,
+        registrationName,
+        setRegistrationName,
+        registrationNameState,
+        setRegistrationNameState,
+        companyTypes,
+        setCompanyTypes,
+        companyTypesState,
+        setCompanyTypesState,
+        customerBusinessPhoneNumber,
+        setCustomerBusinessPhoneNumber,
+        customerBusinessPhoneNumberState,
+        setCustomerBusinessPhoneNumberState,
+        customerPhoneNumber,
+        setCustomerPhoneNumber,
+        customerPhoneNumberState,
+        setCustomerPhoneNumberState,
+        customerBusinessSector,
+        setCustomerBusinessSector,
+        customerBusinessSectorState,
+        setCustomerBusinessSectorState,
+        customerWebSite,
+        setCustomerWebSite,
+        customerWebSiteState,
+        setCustomerWebSiteState,
+        idHeadOfficeBranch,
+        setIdHeadOfficeBranch,
+        idHeadOfficeBranchState,
+        setIdHeadOfficeBranchState,
+        customerZipCode,
+        setCustomerZipCode,
+        customerZipCodeState,
+        setCustomerZipCodeState,
+        federatedUnit,
+        setFederatedUnit,
+        federatedUnitState,
+        setFederatedUnitState,
+        companyCity,
+        setCompanyCity,
+        companyCityState,
+        setCompanyCityState,
+        companyAddress,
+        setCompanyAddress,
+        companyAddressState,
+        setCompanyAddressState,
+        companyAddressNumber,
+        setCompanyAddressNumber,
+        companyAddressNumberState,
+        setCompanyAddressNumberState,
+        companyAddressComplement,
+        setCompanyAddressComplement,
+        companyAddressComplementState,
+        setCompanyAddressComplementState,
+        companyDistrict,
+        setCompanyDistrict,
+        companyDistrictState,
+        setCompanyDistrictState,
+        handleFormFieldsAutocomplete,
+        hasValuesChangedWithAPIData,
+        handleValuesChangedWithAPIData,
+        validateAddClientCompanyForm
+    } = useCreateClientCompany();
+
+    const {
+        brasilAPICNPJData,
+        loadingCNPJValidation,
+        errorCNPJValidation,
+        handleCPNJValidationLoading,
+        individualEmployerIdNumber,
+        handleSaveCNPJ,
+        individualEmployerIdNumberState,
+        setIndividualEmployerIdNumberState
+    } = useCNPJ();
+
     const [step, setStep] = useState(1);
 
     const [nameOnCard, setnameOnCard] = React.useState(false);
@@ -99,50 +171,81 @@ function CustomerUserRegister() {
     const [ccv, setccv] = React.useState(false);
 
     const handleNextStep = () => {
-        setStep(step + 1);
+        if (step === 1) {
+            if (checkbox === null) {
+                setCheckbox(false);
+            }
+            handleValidateAddCustomerAccountHolderForm();
+        }
+        if (checkboxState === "valid") {
+            setStep(step + 1);
+        }
     };
 
     const handlePrevStep = () => {
         setStep(step - 1);
     };
 
+    useEffect(() => {
+        if (checkbox != null) {
+            validateCheckboxIsChecked();
+        }
+    }, [checkbox])
+
+    useEffect(() => {
+        if (brasilAPICNPJData !== null) {
+            handleCPNJValidationLoading();
+            handleFormFieldsAutocomplete(brasilAPICNPJData);
+        }
+    }, [brasilAPICNPJData])
+
+    useEffect(() => {
+        console.log(
+            loadingCNPJValidation,
+            errorCNPJValidation,
+            brasilAPICNPJData.cnpj,
+            !brasilAPICNPJData.cnpj
+        )
+        if (hasValuesChangedWithAPIData) {
+            handleValuesChangedWithAPIData(!hasValuesChangedWithAPIData);
+            validateAddClientCompanyForm();
+            console.log("Validou!!")
+        }
+    }, [hasValuesChangedWithAPIData, validateAddClientCompanyForm]);
+
     return (
         <Row>
             <div className="col">
                 <div className="card-wrapper">
                     <Card>
-                        <CardHeader>
-                            {/* <h3 className="mb-0">Custom styles</h3> position-relative w-25 rounded-circle bg-gray d-flex flex-column align-items-center justify-content-center*/}
-                            {/* Elementos circulares com números e títulos */}
-                            <div className="d-flex justify-content-between align-items-center mx-5 px-8 pt-3 pb-4">
-                                <div className="d-flex flex-column align-items-center justify-content-center">
-                                    <span style={{ width: 40, height: 40 }} className={`position-relative rounded-circle d-flex flex-column align-items-center justify-content-center text-lg font-weight-bold ${step >= 1 ? 'badge-success' : 'badge-dark'}`}>1</span>
-                                    <span className={`text-center font-weight-bold ${step >= 1 ? 'text-success' : 'text-muted'}`}>Criar sua Conta</span>
-                                </div>
-                                <div className="col">
-                                    <Progress
-                                        color={`${step > 1 ? 'success' : 'light'}`}
-                                        className="progress-xs mb-0"
-                                        max="100"
-                                        value="100"
-                                    />
-                                </div>
-                                <div className="d-flex flex-column align-items-center justify-content-center">
-                                    <span style={{ width: 40, height: 40 }} className={`position-relative rounded-circle d-flex flex-column align-items-center justify-content-center text-lg font-weight-bold ${step >= 2 ? 'badge-success' : 'badge-dark'}`}>2</span>
-                                    <span className={`text-center font-weight-bold ${step >= 2 ? 'text-success' : 'text-muted'}`}>Sua Empresa</span>
-                                </div>
-                                <div className="col">
-                                    <Progress
-                                        color={`${step > 2 ? 'success' : 'light'}`}
-                                        className="progress-xs mb-0"
-                                        max="100"
-                                        value="100"
-                                    />
-                                </div>
-                                <div className="d-flex flex-column align-items-center justify-content-center">
-                                    <span style={{ width: 40, height: 40 }} className={`position-relative rounded-circle d-flex flex-column align-items-center justify-content-center text-lg font-weight-bold ${step >= 3 ? 'badge-success' : 'badge-dark'}`}>3</span>
-                                    <span className={`text-center font-weight-bold ${step >= 3 ? 'text-success' : 'text-muted'}`}>Pagamento</span>
-                                </div>
+                        <CardHeader className="d-md-flex flex-column flex-md-row align-items-center justify-content-center px-8 pt-5 pb-5 bg-default">
+                            <div className="d-md-flex flex-column align-items-center justify-content-center mb-3 mb-md-0">
+                                <span style={{ width: 40, height: 40 }} className={`position-relative rounded-circle d-flex flex-column align-items-center justify-content-center text-lg font-weight-bold ${step >= 1 ? 'badge-success' : 'badge-default'}`}>1</span>
+                                <span className={`text-center font-weight-bold ${step >= 1 ? 'text-success' : 'text-primary'}`}>Criar sua Conta</span>
+                            </div>
+                            <div className="col">
+                                <Progress
+                                    color={`${step > 1 ? 'success' : 'light'}`}
+                                    className={`progress-xs mb-3 mb-md-0`}
+                                    max="100"
+                                    value="100"
+                                />
+                            </div>
+                            <div className="d-md-flex flex-column align-items-center justify-content-center mb-3 mb-md-0">
+                                <span style={{ width: 40, height: 40 }} className={`position-relative rounded-circle d-flex flex-column align-items-center justify-content-center text-lg font-weight-bold ${step >= 2 ? 'badge-success' : 'badge-default'}`}>2</span>
+                                <span className={`text-center font-weight-bold ${step >= 2 ? 'text-success' : 'text-primary'}`}>Sua Empresa</span>
+                            </div>
+                            <div className="col">
+                                <Progress
+                                    color={`${step > 2 ? 'success' : 'light'}`}
+                                    className={`progress-xs mb-3 mb-md-0`}
+                                    max="100"
+                                    value="100"
+                                />
+                            </div>
+                            <div className="d-md-flex flex-column align-items-center justify-content-center mb-3 mb-md-0">
+                                <span style={{ width: 40, height: 40 }} className={`position-relative rounded-circle d-flex flex-column align-items-center justify-content-center text-lg font-weight-bold ${step >= 3 ? 'badge-success' : 'badge-default'}`}>3</span>
+                                <span className={`text-center font-weight-bold ${step >= 3 ? 'text-success' : 'text-primary'}`}>Pagamento</span>
                             </div>
                         </CardHeader>
                         <CardBody>
@@ -160,237 +263,178 @@ function CustomerUserRegister() {
                                                                 <Col className="mb-3" md="6">
                                                                     <label
                                                                         className="form-control-label"
-                                                                        htmlFor="validationCustom01"
+                                                                        htmlFor="validationCustomerFirstName"
                                                                     >
                                                                         Nome
                                                                     </label>
                                                                     <Input
-                                                                        defaultValue="Mark"
-                                                                        id="validationCustom01"
-                                                                        placeholder="First name"
+                                                                        id="validationCustomerFirstName"
+                                                                        placeholder="Nome"
                                                                         type="text"
                                                                         valid={firstNameState === "valid"}
                                                                         invalid={firstNameState === "invalid"}
                                                                         onChange={(e) => {
-                                                                            setfirstName(e.target.value);
+                                                                            setFirstName(e.target.value);
                                                                             if (e.target.value === "") {
-                                                                                setfirstNameState("invalid");
+                                                                                setFirstNameState("invalid");
                                                                             } else {
-                                                                                setfirstNameState("valid");
+                                                                                setFirstNameState("valid");
                                                                             }
                                                                         }}
                                                                     />
-                                                                    <div className="valid-feedback">Looks good!</div>
+                                                                    <div className="invalid-feedback">
+                                                                        É necessário preencher este campo.
+                                                                    </div>
                                                                 </Col>
                                                                 <Col className="mb-3" md="6">
                                                                     <label
                                                                         className="form-control-label"
-                                                                        htmlFor="validationCustom01"
+                                                                        htmlFor="validationCustomerLastName"
                                                                     >
                                                                         Sobrenome
                                                                     </label>
                                                                     <Input
-                                                                        defaultValue="Mark"
-                                                                        id="validationCustom01"
-                                                                        placeholder="First name"
+                                                                        id="validationCustomerLastName"
+                                                                        placeholder="Sobrenome"
                                                                         type="text"
-                                                                        valid={firstNameState === "valid"}
-                                                                        invalid={firstNameState === "invalid"}
+                                                                        valid={lastNameState === "valid"}
+                                                                        invalid={lastNameState === "invalid"}
                                                                         onChange={(e) => {
-                                                                            setfirstName(e.target.value);
+                                                                            setLastName(e.target.value);
                                                                             if (e.target.value === "") {
-                                                                                setfirstNameState("invalid");
+                                                                                setLastNameState("invalid");
                                                                             } else {
-                                                                                setfirstNameState("valid");
+                                                                                setLastNameState("valid");
                                                                             }
                                                                         }}
                                                                     />
-                                                                    <div className="valid-feedback">Looks good!</div>
+                                                                    <div className="invalid-feedback">
+                                                                        É necessário preencher este campo.
+                                                                    </div>
                                                                 </Col>
                                                             </div>
                                                             <div className="form-row">
                                                                 <Col className="mb-3" md="6">
                                                                     <label
                                                                         className="form-control-label"
-                                                                        htmlFor="validationCustom01"
+                                                                        htmlFor="validationCustomerTaxIdNumber"
                                                                     >
                                                                         CPF
                                                                     </label>
-                                                                    <Input
-                                                                        defaultValue="Mark"
-                                                                        id="validationCustom01"
-                                                                        placeholder="First name"
-                                                                        type="text"
-                                                                        valid={firstNameState === "valid"}
-                                                                        invalid={firstNameState === "invalid"}
-                                                                        onChange={(e) => {
-                                                                            setfirstName(e.target.value);
-                                                                            if (e.target.value === "") {
-                                                                                setfirstNameState("invalid");
-                                                                            } else {
-                                                                                setfirstNameState("valid");
-                                                                            }
-                                                                        }}
-                                                                    />
-                                                                    <div className="valid-feedback">Looks good!</div>
+                                                                    <InputMask
+                                                                        placeholder='999.999.999-99'
+                                                                        mask="999.999.999-99"
+                                                                        maskChar="_"
+                                                                        value={taxIdentificationNumber}
+                                                                        onChange={(e) => handleChangeCPF(e.target.value)}
+                                                                    >
+                                                                        {(inputProps) => <Input {...inputProps} id="validationCustomerTaxIdNumber" invalid={taxIdentificationNumberState === "invalid"} />}
+                                                                    </InputMask>
+                                                                    <div className="invalid-feedback">
+                                                                        {taxIdentificationNumberState === "invalid" && "Forneça um número de CPF válido."}
+                                                                    </div>
                                                                 </Col>
                                                                 <Col className="mb-3" md="6">
-                                                                    <label
-                                                                        className="form-control-label"
-                                                                        htmlFor="validationCustom01"
-                                                                    >
-                                                                        Data de Nascimento
-                                                                    </label>
-                                                                    <Input
-                                                                        defaultValue="Mark"
-                                                                        id="validationCustom01"
-                                                                        placeholder="First name"
-                                                                        type="text"
-                                                                        valid={firstNameState === "valid"}
-                                                                        invalid={firstNameState === "invalid"}
-                                                                        onChange={(e) => {
-                                                                            setfirstName(e.target.value);
-                                                                            if (e.target.value === "") {
-                                                                                setfirstNameState("invalid");
-                                                                            } else {
-                                                                                setfirstNameState("valid");
-                                                                            }
-                                                                        }}
-                                                                    />
-                                                                    <div className="valid-feedback">Looks good!</div>
+                                                                    <FormGroup>
+                                                                        <label
+                                                                            className="form-control-label"
+                                                                            htmlFor="validationCustomerBirthdate"
+                                                                        >
+                                                                            Data de Nascimento
+                                                                        </label>
+                                                                        <ReactDatetime
+                                                                            inputProps={{
+                                                                                placeholder: "__/__/__",
+                                                                            }}
+                                                                            timeFormat={false}
+                                                                            onChange={handleBirthdateChange}
+
+                                                                        />
+                                                                        {/* <div className="invalid-feedback">
+                                                                            É necessário selecionar uma data.
+                                                                        </div> */}
+                                                                    </FormGroup>
                                                                 </Col>
                                                             </div>
                                                             <div className="form-row">
                                                                 <Col className="mb-3" md="6">
                                                                     <label
                                                                         className="form-control-label"
-                                                                        htmlFor="validationCustom01"
+                                                                        htmlFor="validationCustomerPhoneNumber"
                                                                     >
-                                                                        Telefone
+                                                                        Número de Telefone
                                                                     </label>
-                                                                    <Input
-                                                                        defaultValue="Mark"
-                                                                        id="validationCustom01"
-                                                                        placeholder="First name"
-                                                                        type="text"
-                                                                        valid={firstNameState === "valid"}
-                                                                        invalid={firstNameState === "invalid"}
+                                                                    <InputMask
+                                                                        placeholder='+55 (99) 9 9999-9999'
+                                                                        mask="+55 (99) 9 9999-9999"
+                                                                        maskChar=" "
+                                                                        value={phoneNumber}
                                                                         onChange={(e) => {
-                                                                            setfirstName(e.target.value);
+                                                                            setPhoneNumber(e.target.value);
                                                                             if (e.target.value === "") {
-                                                                                setfirstNameState("invalid");
+                                                                                setPhoneNumberState("invalid");
                                                                             } else {
-                                                                                setfirstNameState("valid");
+                                                                                setPhoneNumberState("valid");
                                                                             }
                                                                         }}
-                                                                    />
-                                                                    <div className="valid-feedback">Looks good!</div>
+                                                                    >
+                                                                        {(inputProps) => <Input {...inputProps} id="validationCustomerPhoneNumber" type="text" valid={phoneNumberState === "valid"} invalid={phoneNumberState === "invalid"} />}
+                                                                    </InputMask>
+                                                                    <div className="invalid-feedback">
+                                                                        É necessário preencher este campo.
+                                                                    </div>
                                                                 </Col>
-                                                                <Col className="mb-3" md="6">
+                                                                <Col className="mb-4" md="6">
                                                                     <label
                                                                         className="form-control-label"
-                                                                        htmlFor="validationCustom01"
+                                                                        htmlFor="validationCustomerEmailAddress"
                                                                     >
-                                                                        E-mail (será usado como login)
+                                                                        E-mail (utilizará como login)
                                                                     </label>
                                                                     <Input
-                                                                        defaultValue="Mark"
-                                                                        id="validationCustom01"
-                                                                        placeholder="First name"
-                                                                        type="text"
-                                                                        valid={firstNameState === "valid"}
-                                                                        invalid={firstNameState === "invalid"}
+                                                                        aria-describedby="inputGroupPrepend"
+                                                                        id="validationCustomerEmailAddress"
+                                                                        placeholder="Endereço de e-mail"
+                                                                        type="email"
+                                                                        valid={emailAddressState === "valid"}
+                                                                        invalid={emailAddressState === "invalid"}
                                                                         onChange={(e) => {
-                                                                            setfirstName(e.target.value);
-                                                                            if (e.target.value === "") {
-                                                                                setfirstNameState("invalid");
+                                                                            const email = e.target.value;
+                                                                            setEmailAddress(email);
+                                                                            if (validateEmail(email)) {
+                                                                                setEmailAddressState("valid");
                                                                             } else {
-                                                                                setfirstNameState("valid");
+                                                                                setEmailAddressState("invalid");
                                                                             }
                                                                         }}
                                                                     />
-                                                                    <div className="valid-feedback">Looks good!</div>
-                                                                </Col>
-                                                            </div>
-                                                            <div className="form-row">
-                                                                <Col className="mb-3" md="6">
-                                                                    <label
-                                                                        className="form-control-label"
-                                                                        htmlFor="validationCustom01"
-                                                                    >
-                                                                        Senha
-                                                                    </label>
-                                                                    <Input
-                                                                        defaultValue="Mark"
-                                                                        id="validationCustom01"
-                                                                        placeholder="First name"
-                                                                        type="text"
-                                                                        valid={firstNameState === "valid"}
-                                                                        invalid={firstNameState === "invalid"}
-                                                                        onChange={(e) => {
-                                                                            setfirstName(e.target.value);
-                                                                            if (e.target.value === "") {
-                                                                                setfirstNameState("invalid");
-                                                                            } else {
-                                                                                setfirstNameState("valid");
-                                                                            }
-                                                                        }}
-                                                                    />
-                                                                    <div className="valid-feedback">Looks good!</div>
-                                                                </Col>
-                                                                <Col className="mb-3" md="6">
-                                                                    <label
-                                                                        className="form-control-label"
-                                                                        htmlFor="validationCustom01"
-                                                                    >
-                                                                        Confirmar Senha
-                                                                    </label>
-                                                                    <Input
-                                                                        defaultValue="Mark"
-                                                                        id="validationCustom01"
-                                                                        placeholder="First name"
-                                                                        type="text"
-                                                                        valid={firstNameState === "valid"}
-                                                                        invalid={firstNameState === "invalid"}
-                                                                        onChange={(e) => {
-                                                                            setfirstName(e.target.value);
-                                                                            if (e.target.value === "") {
-                                                                                setfirstNameState("invalid");
-                                                                            } else {
-                                                                                setfirstNameState("valid");
-                                                                            }
-                                                                        }}
-                                                                    />
-                                                                    <div className="valid-feedback">Looks good!</div>
+                                                                    <div className="invalid-feedback">
+                                                                        {emailAddressState === "invalid" && "Forneça um endereço de e-mail válido."}
+                                                                    </div>
                                                                 </Col>
                                                             </div>
 
                                                             <FormGroup>
                                                                 <div className="custom-control custom-checkbox mb-3">
                                                                     <input
-                                                                        className="custom-control-input"
+                                                                        className={`custom-control-input ${checkboxState === "invalid" && "is-invalid"}`}
                                                                         defaultValue=""
-                                                                        id="invalidCheck"
+                                                                        id="checkUseTerms"
                                                                         type="checkbox"
-                                                                        valid={(checkboxState === "valid").toString()}
-                                                                        invalid={(checkboxState === "invalid").toString()}
+                                                                        // valid={(checkboxState === "valid").toString()}
+                                                                        // invalid={(checkboxState === "invalid").toString()}
                                                                         onChange={(e) => {
-                                                                            setcheckbox(e.target.value);
-                                                                            if (e.target.value === "") {
-                                                                                setcheckboxState("invalid");
-                                                                            } else {
-                                                                                setcheckboxState("valid");
-                                                                            }
+                                                                            setCheckbox(e.target.value);
                                                                         }}
                                                                     />
                                                                     <label
                                                                         className="custom-control-label"
-                                                                        htmlFor="invalidCheck"
+                                                                        htmlFor="checkUseTerms"
                                                                     >
-                                                                        Declaro que estou ciente e de acordo com os termos de uso: Twig
+                                                                        Declaro que estou ciente e de acordo com os termos de uso: [Name]
                                                                     </label>
-                                                                    <div className="invalid-feedback">
-                                                                        You must agree before submitting.
+                                                                    <div className={`invalid-feedback mt-3 mt-sm-4 mt-md-4 mt-lg-3 mt-xl-2 mt-xxl-2`}>
+                                                                        Você deve concordar antes de enviar.
                                                                     </div>
                                                                 </div>
                                                             </FormGroup>
@@ -408,364 +452,433 @@ function CustomerUserRegister() {
                                                                 <Col className="mb-3" md="6">
                                                                     <label
                                                                         className="form-control-label"
-                                                                        htmlFor="validationCustom01"
+                                                                        htmlFor="validationCustomerIndividualEmployerIdnNumber"
                                                                     >
                                                                         CNPJ
                                                                     </label>
-                                                                    <Input
-                                                                        defaultValue="999.888.777/0001-22"
-                                                                        id="validationCustom01"
-                                                                        placeholder="999.888.777/0001-22"
-                                                                        type="text"
-                                                                        valid={firstNameState === "valid"}
-                                                                        invalid={firstNameState === "invalid"}
-                                                                        onChange={(e) => {
-                                                                            setfirstName(e.target.value);
-                                                                            if (e.target.value === "") {
-                                                                                setfirstNameState("invalid");
-                                                                            } else {
-                                                                                setfirstNameState("valid");
-                                                                            }
-                                                                        }}
-                                                                    />
-                                                                    <div className="valid-feedback">Looks good!</div>
+                                                                    <InputMask
+                                                                        placeholder="99.999.999/9999-99"
+                                                                        mask="99.999.999/9999-99"
+                                                                        maskChar="_"
+                                                                        value={individualEmployerIdNumber}
+                                                                        onChange={(e) => handleSaveCNPJ(e.target.value)}
+                                                                    >
+                                                                        {(inputProps) => <Input {...inputProps} id="validationCustomerIndividualEmployerIdnNumber" invalid={individualEmployerIdNumberState === "invalid"} />}
+                                                                    </InputMask>
+                                                                    {loadingCNPJValidation && <div style={{ display: 'none', width: '100%', marginTop: '0.25rem', fontSize: '80%', color: '#5e72e4' }}>Validando CNPJ...</div>}
+                                                                    {errorCNPJValidation !== null && <div className="invalid-feedback">Ocorreu um erro ao validar o CNPJ.</div>}
+                                                                    {brasilAPICNPJData.cnpj && brasilAPICNPJData.cnpj !== null ? <div className="valid-feedback">CNPJ válido!</div> : <div className="invalid-feedback">CNPJ inválido!</div>}
                                                                 </Col>
                                                                 <Col className="mb-3" md="6">
                                                                     <label
                                                                         className="form-control-label"
-                                                                        htmlFor="validationCustom01"
+                                                                        htmlFor="validationCustomerCompanyName"
                                                                     >
                                                                         Nome da Empresa
                                                                     </label>
                                                                     <Input
-                                                                        defaultValue="Nome popular de título de estabelecimento"
-                                                                        id="validationCustom01"
+                                                                        id="validationCustomerCompanyName"
                                                                         placeholder="Nome popular de título de estabelecimento"
+                                                                        value={companyName}
                                                                         type="text"
-                                                                        valid={firstNameState === "valid"}
-                                                                        invalid={firstNameState === "invalid"}
+                                                                        valid={companyNameState === "valid"}
+                                                                        invalid={companyNameState === "invalid"}
                                                                         onChange={(e) => {
-                                                                            setfirstName(e.target.value);
+                                                                            setCompanyName(e.target.value);
                                                                             if (e.target.value === "") {
-                                                                                setfirstNameState("invalid");
+                                                                                setCompanyNameState("invalid");
                                                                             } else {
-                                                                                setfirstNameState("valid");
+                                                                                setCompanyNameState("valid");
                                                                             }
                                                                         }}
                                                                     />
-                                                                    <div className="valid-feedback">Looks good!</div>
+                                                                    <div className="invalid-feedback">
+                                                                        É necessário preencher este campo.
+                                                                    </div>
                                                                 </Col>
                                                             </div>
                                                             <div className="form-row">
                                                                 <Col className="mb-3" md="6">
                                                                     <label
                                                                         className="form-control-label"
-                                                                        htmlFor="validationCustom01"
+                                                                        htmlFor="validationCustomerRegistrationName"
                                                                     >
                                                                         Razão Social
                                                                     </label>
                                                                     <Input
                                                                         defaultValue="Nome ou termo de registro"
-                                                                        id="validationCustom01"
+                                                                        id="validationCustomerRegistrationName"
                                                                         placeholder="Nome ou termo de registro"
+                                                                        value={registrationName}
                                                                         type="text"
-                                                                        valid={firstNameState === "valid"}
-                                                                        invalid={firstNameState === "invalid"}
+                                                                        valid={registrationNameState === "valid"}
+                                                                        invalid={registrationNameState === "invalid"}
                                                                         onChange={(e) => {
-                                                                            setfirstName(e.target.value);
+                                                                            setRegistrationName(e.target.value);
                                                                             if (e.target.value === "") {
-                                                                                setfirstNameState("invalid");
+                                                                                setRegistrationNameState("invalid");
                                                                             } else {
-                                                                                setfirstNameState("valid");
+                                                                                setRegistrationNameState("valid");
                                                                             }
                                                                         }}
                                                                     />
-                                                                    <div className="valid-feedback">Looks good!</div>
+                                                                    <div className="invalid-feedback">
+                                                                        É necessário preencher este campo.
+                                                                    </div>
                                                                 </Col>
                                                                 <Col className="mb-3" md="6">
                                                                     <label
                                                                         className="form-control-label"
-                                                                        htmlFor="validationCustom01"
+                                                                        htmlFor="validationCustomerCompanyTypes"
                                                                     >
-                                                                        Segmento
+                                                                        Tipo de Empresa
                                                                     </label>
-                                                                    <Input
-                                                                        defaultValue="MEI, EI, LTDA, SA, ..."
-                                                                        id="validationCustom01"
-                                                                        placeholder="MEI, EI, LTDA, SA, ..."
-                                                                        type="text"
-                                                                        valid={firstNameState === "valid"}
-                                                                        invalid={firstNameState === "invalid"}
-                                                                        onChange={(e) => {
-                                                                            setfirstName(e.target.value);
-                                                                            if (e.target.value === "") {
-                                                                                setfirstNameState("invalid");
-                                                                            } else {
-                                                                                setfirstNameState("valid");
-                                                                            }
+                                                                    <Select2
+                                                                        className="form-control"
+                                                                        data-minimum-results-for-search="Infinity"
+                                                                        options={{
+                                                                            placeholder: "Selecione o tipo",
                                                                         }}
+                                                                        data={[
+                                                                            { id: "0", text: "EI" },
+                                                                            { id: "1", text: "MEI" },
+                                                                            { id: "2", text: "Ltda" },
+                                                                            { id: "3", text: "SLU" },
+                                                                            { id: "4", text: "SS" },
+                                                                            { id: "5", text: "S/A" },
+                                                                        ]}
                                                                     />
-                                                                    <div className="valid-feedback">Looks good!</div>
                                                                 </Col>
                                                             </div>
                                                             <div className="form-row">
                                                                 <Col className="mb-3" md="6">
                                                                     <label
                                                                         className="form-control-label"
-                                                                        htmlFor="validationCustom01"
+                                                                        htmlFor="validationCustomerBusinessPhoneNumber"
                                                                     >
-                                                                        Telefone
+                                                                        Número de Telefone
                                                                     </label>
-                                                                    <Input
-                                                                        defaultValue="+55 (47) 3322-4455"
-                                                                        id="validationCustom01"
-                                                                        placeholder="+55 (47) 3322-4455"
-                                                                        type="text"
-                                                                        valid={firstNameState === "valid"}
-                                                                        invalid={firstNameState === "invalid"}
+                                                                    <InputMask
+                                                                        placeholder="+55 (99) 9 9999-9999"
+                                                                        mask="+55 (99) 9 9999-9999"
+                                                                        maskChar=" "
+                                                                        value={customerBusinessPhoneNumber}
                                                                         onChange={(e) => {
-                                                                            setfirstName(e.target.value);
+                                                                            setCustomerBusinessPhoneNumber(e.target.value);
                                                                             if (e.target.value === "") {
-                                                                                setfirstNameState("invalid");
+                                                                                setCustomerBusinessPhoneNumberState("invalid");
                                                                             } else {
-                                                                                setfirstNameState("valid");
+                                                                                setCustomerBusinessPhoneNumberState("valid");
                                                                             }
                                                                         }}
-                                                                    />
-                                                                    <div className="valid-feedback">Looks good!</div>
+                                                                    >
+                                                                        {(inputProps) => <Input {...inputProps} id="validationCustomerBusinessPhoneNumber" type="text" valid={customerBusinessPhoneNumberState === "valid"} invalid={customerBusinessPhoneNumberState === "invalid"} />}
+                                                                    </InputMask>
+                                                                    <div className="invalid-feedback">
+                                                                        É necessário preencher este campo.
+                                                                    </div>
                                                                 </Col>
                                                                 <Col className="mb-3" md="6">
                                                                     <label
                                                                         className="form-control-label"
-                                                                        htmlFor="validationCustom01"
+                                                                        htmlFor="validationCustomerPhoneNumber"
                                                                     >
                                                                         Celular
                                                                     </label>
-                                                                    <Input
-                                                                        defaultValue="+55 (47) 9 9988-7766"
-                                                                        id="validationCustom01"
-                                                                        placeholder="+55 (47) 9 9988-7766"
-                                                                        type="text"
-                                                                        valid={firstNameState === "valid"}
-                                                                        invalid={firstNameState === "invalid"}
+                                                                    <InputMask
+                                                                        placeholder="+55 (99) 9 9999-9999"
+                                                                        mask="+55 (99) 9 9999-9999"
+                                                                        maskChar=" "
+                                                                        value={customerPhoneNumber}
                                                                         onChange={(e) => {
-                                                                            setfirstName(e.target.value);
-                                                                            if (e.target.value === "") {
-                                                                                setfirstNameState("invalid");
-                                                                            } else {
-                                                                                setfirstNameState("valid");
-                                                                            }
+                                                                            setCustomerPhoneNumber(e.target.value);
+                                                                            // if (e.target.value === "") {
+                                                                            //     setCustomerPhoneNumberState("invalid");
+                                                                            // } else {
+                                                                            //     setCustomerPhoneNumberState("valid");
+                                                                            // }
                                                                         }}
-                                                                    />
-                                                                    <div className="valid-feedback">Looks good!</div>
+                                                                    >
+                                                                        {(inputProps) => <Input {...inputProps}
+                                                                            id="validationCustomerPhoneNumber"
+                                                                            type="text"
+                                                                        // valid={customerPhoneNumberState === "valid"} 
+                                                                        // invalid={customerPhoneNumberState === "invalid"} 
+                                                                        />}
+                                                                    </InputMask>
+                                                                    {/* <div className="invalid-feedback">
+                                                                        É necessário preencher este campo.
+                                                                    </div> */}
                                                                 </Col>
                                                             </div>
                                                             <div className="form-row">
                                                                 <Col className="mb-3" md="6">
                                                                     <label
                                                                         className="form-control-label"
-                                                                        htmlFor="validationCustom01"
+                                                                        htmlFor="validationCustomerWebSite"
+                                                                    >
+                                                                        Web Site
+                                                                    </label>
+                                                                    <Input
+                                                                        id="validationCustomerWebSite"
+                                                                        placeholder="www.site.com.br"
+                                                                        value={customerWebSite}
+                                                                        type="text"
+                                                                        valid={customerWebSiteState === "valid"}
+                                                                        invalid={customerWebSiteState === "invalid"}
+                                                                        onChange={(e) => {
+                                                                            setCustomerWebSite(e.target.value);
+                                                                        }}
+                                                                    />
+                                                                </Col>
+                                                                <Col className="mb-3" md="6">
+                                                                    <label
+                                                                        className="form-control-label"
+                                                                        htmlFor="validationCustomerIdHeadOfficeBranch"
+                                                                    >
+                                                                        Matriz
+                                                                    </label>
+                                                                    <Input
+                                                                        defaultValue=""
+                                                                        id="validationCustomerIdHeadOfficeBranch"
+                                                                        placeholder=""
+                                                                        value={idHeadOfficeBranch}
+                                                                        type="text"
+                                                                        valid={idHeadOfficeBranchState === "valid"}
+                                                                        invalid={idHeadOfficeBranchState === "invalid"}
+                                                                        onChange={(e) => {
+                                                                            setIdHeadOfficeBranch(e.target.value);
+                                                                            if (e.target.value === "") {
+                                                                                setIdHeadOfficeBranchState("invalid");
+                                                                            } else {
+                                                                                setIdHeadOfficeBranchState("valid");
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                    <div className="invalid-feedback">
+                                                                        É necessário preencher este campo.
+                                                                    </div>
+                                                                </Col>
+                                                            </div>
+                                                            <div className="form-row">
+                                                                <Col className="mb-3" md="6">
+                                                                    <label
+                                                                        className="form-control-label"
+                                                                        htmlFor="validationCustomerBusinessSector"
                                                                     >
                                                                         Setor
                                                                     </label>
-                                                                    <Input
-                                                                        defaultValue="00000-000"
-                                                                        id="validationCustom01"
-                                                                        placeholder="00000-000"
-                                                                        type="text"
-                                                                        valid={firstNameState === "valid"}
-                                                                        invalid={firstNameState === "invalid"}
-                                                                        onChange={(e) => {
-                                                                            setfirstName(e.target.value);
-                                                                            if (e.target.value === "") {
-                                                                                setfirstNameState("invalid");
-                                                                            } else {
-                                                                                setfirstNameState("valid");
-                                                                            }
+                                                                    <Select2
+                                                                        className="form-control"
+                                                                        data-minimum-results-for-search="Infinity"
+                                                                        options={{
+                                                                            placeholder: "Selecione o setor",
                                                                         }}
+                                                                        data={[
+                                                                            { id: "0", text: "Privado" },
+                                                                            { id: "1", text: "Público" },
+                                                                        ]}
                                                                     />
-                                                                    <div className="valid-feedback">Looks good!</div>
                                                                 </Col>
                                                                 <Col className="mb-3" md="6">
                                                                     <label
                                                                         className="form-control-label"
-                                                                        htmlFor="validationCustom01"
+                                                                        htmlFor="validationCustomerZipCode"
                                                                     >
                                                                         CEP
                                                                     </label>
-                                                                    <Input
-                                                                        defaultValue="00000-000"
-                                                                        id="validationCustom01"
-                                                                        placeholder="00000-000"
-                                                                        type="text"
-                                                                        valid={firstNameState === "valid"}
-                                                                        invalid={firstNameState === "invalid"}
+                                                                    <InputMask
+                                                                        placeholder="99999-999"
+                                                                        mask="99999-999"
+                                                                        maskChar=" "
+                                                                        value={customerZipCode}
                                                                         onChange={(e) => {
-                                                                            setfirstName(e.target.value);
+                                                                            setCustomerZipCode(e.target.value);
                                                                             if (e.target.value === "") {
-                                                                                setfirstNameState("invalid");
+                                                                                setCustomerZipCodeState("invalid");
                                                                             } else {
-                                                                                setfirstNameState("valid");
+                                                                                setCustomerZipCodeState("valid");
                                                                             }
                                                                         }}
-                                                                    />
-                                                                    <div className="valid-feedback">Looks good!</div>
+                                                                    >
+                                                                        {(inputProps) => <Input {...inputProps} id="validationCustomerZipCode" type="text" valid={customerZipCodeState === "valid"} invalid={customerZipCodeState === "invalid"} />}
+                                                                    </InputMask>
+                                                                    <div className="invalid-feedback">
+                                                                        É necessário selecionar uma opção.
+                                                                    </div>
                                                                 </Col>
                                                             </div>
                                                             <div className="form-row">
                                                                 <Col className="mb-3" md="6">
                                                                     <label
                                                                         className="form-control-label"
-                                                                        htmlFor="validationCustom01"
+                                                                        htmlFor="validationCustomerFederatedUnit"
                                                                     >
                                                                         Estado
                                                                     </label>
                                                                     <Input
                                                                         defaultValue=""
-                                                                        id="validationCustom01"
+                                                                        id="validationCustomerFederatedUnit"
                                                                         placeholder=""
+                                                                        value={federatedUnit}
                                                                         type="text"
-                                                                        valid={firstNameState === "valid"}
-                                                                        invalid={firstNameState === "invalid"}
+                                                                        valid={federatedUnitState === "valid"}
+                                                                        invalid={federatedUnitState === "invalid"}
                                                                         onChange={(e) => {
-                                                                            setfirstName(e.target.value);
+                                                                            setFederatedUnit(e.target.value);
                                                                             if (e.target.value === "") {
-                                                                                setfirstNameState("invalid");
+                                                                                setFederatedUnitState("invalid");
                                                                             } else {
-                                                                                setfirstNameState("valid");
+                                                                                setFederatedUnitState("valid");
                                                                             }
                                                                         }}
                                                                     />
-                                                                    <div className="valid-feedback">Looks good!</div>
+                                                                    <div className="invalid-feedback">
+                                                                        É necessário selecionar uma opção.
+                                                                    </div>
                                                                 </Col>
                                                                 <Col className="mb-3" md="6">
                                                                     <label
                                                                         className="form-control-label"
-                                                                        htmlFor="validationCustom01"
+                                                                        htmlFor="validationCustomerCompanyCity"
                                                                     >
                                                                         Cidade
                                                                     </label>
                                                                     <Input
                                                                         defaultValue=""
-                                                                        id="validationCustom01"
+                                                                        id="validationCustomerCompanyCity"
                                                                         placeholder=""
+                                                                        value={companyCity}
                                                                         type="text"
-                                                                        valid={firstNameState === "valid"}
-                                                                        invalid={firstNameState === "invalid"}
+                                                                        valid={companyCityState === "valid"}
+                                                                        invalid={companyCityState === "invalid"}
                                                                         onChange={(e) => {
-                                                                            setfirstName(e.target.value);
+                                                                            setCompanyCity(e.target.value);
                                                                             if (e.target.value === "") {
-                                                                                setfirstNameState("invalid");
+                                                                                setCompanyCityState("invalid");
                                                                             } else {
-                                                                                setfirstNameState("valid");
+                                                                                setCompanyCityState("valid");
                                                                             }
                                                                         }}
                                                                     />
-                                                                    <div className="valid-feedback">Looks good!</div>
+                                                                    <div className="invalid-feedback">
+                                                                        É necessário preencher este campo.
+                                                                    </div>
                                                                 </Col>
                                                             </div>
                                                             <div className="form-row">
                                                                 <Col className="mb-3" md="10">
                                                                     <label
                                                                         className="form-control-label"
-                                                                        htmlFor="validationCustom01"
+                                                                        htmlFor="validationCustomerCompanyAddress"
                                                                     >
                                                                         Endereço
                                                                     </label>
                                                                     <Input
                                                                         defaultValue=""
-                                                                        id="validationCustom01"
+                                                                        id="validationCustomerCompanyAddress"
                                                                         placeholder=""
+                                                                        value={companyAddress}
                                                                         type="text"
-                                                                        valid={firstNameState === "valid"}
-                                                                        invalid={firstNameState === "invalid"}
+                                                                        valid={companyAddressState === "valid"}
+                                                                        invalid={companyAddressState === "invalid"}
                                                                         onChange={(e) => {
-                                                                            setfirstName(e.target.value);
+                                                                            setCompanyAddress(e.target.value);
                                                                             if (e.target.value === "") {
-                                                                                setfirstNameState("invalid");
+                                                                                setCompanyAddressState("invalid");
                                                                             } else {
-                                                                                setfirstNameState("valid");
+                                                                                setCompanyAddressState("valid");
                                                                             }
                                                                         }}
                                                                     />
-                                                                    <div className="valid-feedback">Looks good!</div>
+                                                                    <div className="invalid-feedback">
+                                                                        É necessário preencher este campo.
+                                                                    </div>
                                                                 </Col>
                                                                 <Col className="mb-3" md="2">
                                                                     <label
                                                                         className="form-control-label"
-                                                                        htmlFor="validationCustom01"
+                                                                        htmlFor="validationCustomerCompanyAddressNumber"
                                                                     >
                                                                         Número
                                                                     </label>
                                                                     <Input
                                                                         defaultValue="0000"
-                                                                        id="validationCustom01"
+                                                                        id="validationCustomerCompanyAddressNumber"
                                                                         placeholder="0000"
+                                                                        value={companyAddressNumber}
                                                                         type="text"
-                                                                        valid={firstNameState === "valid"}
-                                                                        invalid={firstNameState === "invalid"}
+                                                                        valid={companyAddressNumberState === "valid"}
+                                                                        invalid={companyAddressNumberState === "invalid"}
                                                                         onChange={(e) => {
-                                                                            setfirstName(e.target.value);
+                                                                            setCompanyAddressNumber(e.target.value);
                                                                             if (e.target.value === "") {
-                                                                                setfirstNameState("invalid");
+                                                                                setCompanyAddressNumberState("invalid");
                                                                             } else {
-                                                                                setfirstNameState("valid");
+                                                                                setCompanyAddressNumberState("valid");
                                                                             }
                                                                         }}
                                                                     />
-                                                                    <div className="valid-feedback">Looks good!</div>
+                                                                    <div className="invalid-feedback">
+                                                                        É necessário preencher este campo.
+                                                                    </div>
                                                                 </Col>
                                                             </div>
                                                             <div className="form-row">
                                                                 <Col className="mb-3" md="8">
                                                                     <label
                                                                         className="form-control-label"
-                                                                        htmlFor="validationCustom01"
+                                                                        htmlFor="validationCustomerCompanyAddressComplement"
                                                                     >
                                                                         Complemento (opcional)
                                                                     </label>
                                                                     <Input
-                                                                        defaultValue=""
-                                                                        id="validationCustom01"
+                                                                        id="validationCustomerCompanyAddressComplement"
                                                                         placeholder=""
+                                                                        value={companyAddressComplement}
                                                                         type="text"
-                                                                        valid={firstNameState === "valid"}
-                                                                        invalid={firstNameState === "invalid"}
+                                                                        // valid={companyAddressComplementState === "valid"}
+                                                                        // invalid={companyAddressComplementState === "invalid"}
                                                                         onChange={(e) => {
-                                                                            setfirstName(e.target.value);
-                                                                            if (e.target.value === "") {
-                                                                                setfirstNameState("invalid");
-                                                                            } else {
-                                                                                setfirstNameState("valid");
-                                                                            }
+                                                                            setCompanyAddressComplement(e.target.value);
+                                                                            // if (e.target.value === "") {
+                                                                            //     setCompanyAddressComplementState("invalid");
+                                                                            // } else {
+                                                                            //     setCompanyAddressComplementState("valid");
+                                                                            // }
                                                                         }}
                                                                     />
-                                                                    <div className="valid-feedback">Looks good!</div>
+                                                                    {/* <div className="invalid-feedback">
+                                                                        É necessário preencher este campo.
+                                                                    </div> */}
                                                                 </Col>
                                                                 <Col className="mb-3" md="4">
                                                                     <label
                                                                         className="form-control-label"
-                                                                        htmlFor="validationCustom01"
+                                                                        htmlFor="validationCustomerCompanyDistrict"
                                                                     >
                                                                         Bairro
                                                                     </label>
                                                                     <Input
                                                                         defaultValue=""
-                                                                        id="validationCustom01"
+                                                                        id="validationCustomerCompanyDistrict"
                                                                         placeholder=""
+                                                                        value={companyDistrict}
                                                                         type="text"
-                                                                        valid={firstNameState === "valid"}
-                                                                        invalid={firstNameState === "invalid"}
+                                                                        valid={companyDistrictState === "valid"}
+                                                                        invalid={companyDistrictState === "invalid"}
                                                                         onChange={(e) => {
-                                                                            setfirstName(e.target.value);
+                                                                            setCompanyDistrict(e.target.value);
                                                                             if (e.target.value === "") {
-                                                                                setfirstNameState("invalid");
+                                                                                setCompanyDistrictState("invalid");
                                                                             } else {
-                                                                                setfirstNameState("valid");
+                                                                                setCompanyDistrictState("valid");
                                                                             }
                                                                         }}
                                                                     />
-                                                                    <div className="valid-feedback">Looks good!</div>
+                                                                    <div className="invalid-feedback">
+                                                                        É necessário preencher este campo.
+                                                                    </div>
                                                                 </Col>
 
                                                             </div>
