@@ -9,24 +9,24 @@ import {
   Col,
 } from "reactstrap";
 
-function ShowFunctionsDescriptionsModal({ handleShowFunctionsDescriptionsModal, functionsDescriptionsModalOpen, employeeFunctionDescription, employeeFunctionName }) {
+function ShowDepartmentDescriptionsModal({ handleShowDepartmentDescriptionsModal, modalOpen, departmentDescription, departmentName }) {
 
   return (
     <Modal
-      toggle={handleShowFunctionsDescriptionsModal}
-      isOpen={functionsDescriptionsModalOpen}
+      toggle={handleShowDepartmentDescriptionsModal}
+      isOpen={modalOpen}
       size="md"
     //fullscreen
     >
       <div className=" modal-header">
         <h5 className=" modal-title" id="exampleModalLabel">
-          Descrição de {employeeFunctionName}
+          Descrição de {departmentName}
         </h5>
         <button
           aria-label="Close"
           className=" close"
           type="button"
-          onClick={handleShowFunctionsDescriptionsModal}
+          onClick={handleShowDepartmentDescriptionsModal}
         >
           <span aria-hidden={true}>×</span>
         </button>
@@ -39,7 +39,7 @@ function ShowFunctionsDescriptionsModal({ handleShowFunctionsDescriptionsModal, 
                 <Col className="mb-3" md="12">
                   <div>
                     <span className="name mb-0 text-sm">
-                      {employeeFunctionDescription}
+                      {departmentDescription}
                     </span>
                   </div>
                 </Col>
@@ -53,18 +53,18 @@ function ShowFunctionsDescriptionsModal({ handleShowFunctionsDescriptionsModal, 
   );
 }
 
-ShowFunctionsDescriptionsModal.defaultProps = {
-  handleShowFunctionsDescriptionsModal: () => { },
-  functionsDescriptionsModalOpen: false,
-  employeeFunctionDescription: "",
-  employeeFunctionName: "",
+ShowDepartmentDescriptionsModal.defaultProps = {
+  handleShowDepartmentDescriptionsModal: () => { },
+  modalOpen: false,
+  departmentDescription: "",
+  departmentName: "",
 };
 
-ShowFunctionsDescriptionsModal.propTypes = {
-  handleShowFunctionsDescriptionsModal: PropTypes.func,
-  functionsDescriptionsModalOpen: PropTypes.bool,
-  employeeFunctionDescription: PropTypes.string,
-  employeeFunctionName: PropTypes.string,
+ShowDepartmentDescriptionsModal.propTypes = {
+  handleShowDepartmentDescriptionsModal: PropTypes.func,
+  modalOpen: PropTypes.bool,
+  departmentDescription: PropTypes.string,
+  departmentName: PropTypes.string,
 };
 
-export default ShowFunctionsDescriptionsModal;
+export default ShowDepartmentDescriptionsModal;

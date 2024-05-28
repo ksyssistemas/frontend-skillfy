@@ -7,10 +7,10 @@ import DepartmentsRegister from "../../components/Forms/DepartmentsRegister";
 import DepartmentsList from "../../components/Tables/Customer/DepartmentsList";
 import CustomerHeader from "../../components/Headers/CustomerHeader";
 import { useAuth } from '../../hooks/useAuth';
-
-const authenticationDataLoggedInUser = 'customer';
+import { TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT } from '../../contexts/AuthContext';
 
 function DepartmentsRecords() {
+    const { authenticationDataLoggedInUser } = useAuth();
 
     const [isShouldSubmitDepartmentsRegistration, setIsShouldSubmitDepartmentsRegistration] = useState(false);
 
@@ -18,15 +18,13 @@ function DepartmentsRecords() {
         setIsShouldSubmitDepartmentsRegistration(!isShouldSubmitDepartmentsRegistration);
     }
 
-    // const { authenticationDataLoggedInUser } = useAuth();
-
     return (
         <>
             {
                 !isShouldSubmitDepartmentsRegistration
                     ? (
                         authenticationDataLoggedInUser &&
-                            authenticationDataLoggedInUser === 'administrator' ?
+                            authenticationDataLoggedInUser.role === 'administrator' ?
                             (
                                 <>
                                     <AdminHeader name="Departamentos" parentName="Registros" newRegistrationButtonText="Adicionar Departamento" handleShowDepartmentsUserRegister={handleShowDepartmentsUserRegister} />
@@ -36,7 +34,7 @@ function DepartmentsRecords() {
                                 </>
                             ) : (
                                 authenticationDataLoggedInUser &&
-                                    authenticationDataLoggedInUser === 'customer' ?
+                                    authenticationDataLoggedInUser.role === 'customer' ?
                                     (
                                         <>
                                             <CustomerHeader name="Departamentos" parentName="Registros" newRegistrationButtonText="Adicionar Departamento" handleShowDepartmentsUserRegister={handleShowDepartmentsUserRegister} />
@@ -50,22 +48,22 @@ function DepartmentsRecords() {
                     )
                     : (
                         authenticationDataLoggedInUser &&
-                            authenticationDataLoggedInUser === 'administrator' ?
+                            authenticationDataLoggedInUser.role === 'administrator' ?
                             (
                                 <>
                                     <AdminHeader name="Departamentos" parentName="Cadastros" />
                                     <Container className="mt--6" fluid>
-                                        <DepartmentsRegister />
+                                        <DepartmentsRegister handleShowDepartmentsUserRegister={handleShowDepartmentsUserRegister} />
                                     </Container>
                                 </>
                             ) : (
                                 authenticationDataLoggedInUser &&
-                                    authenticationDataLoggedInUser === 'customer' ?
+                                    authenticationDataLoggedInUser.role === 'customer' ?
                                     (
                                         <>
                                             <CustomerHeader name="Departamentos" parentName="Cadastros" />
                                             <Container className="mt--6" fluid>
-                                                <DepartmentsRegister />
+                                                <DepartmentsRegister handleShowDepartmentsUserRegister={handleShowDepartmentsUserRegister} />
                                             </Container>
                                         </>
 
@@ -77,6 +75,10 @@ function DepartmentsRecords() {
     );
 }
 
-authenticationDataLoggedInUser === 'administrator' ? DepartmentsRecords.layout = Admin : (authenticationDataLoggedInUser === 'customer' ? DepartmentsRecords.layout = Performance : DepartmentsRecords.layout = Admin);
+TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'administrator'
+    ? DepartmentsRecords.layout = Admin
+    : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'customer'
+        ? DepartmentsRecords.layout = Performance
+        : DepartmentsRecords.layout = Admin);
 
 export default DepartmentsRecords;

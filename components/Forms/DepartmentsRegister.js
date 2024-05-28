@@ -4,25 +4,35 @@ import dynamic from "next/dynamic";
 // react plugin used to create DropdownMenu for selecting items
 const Select2 = dynamic(() => import("react-select2-wrapper"));
 import { Button, Card, CardHeader, CardBody, FormGroup, Form, Input, Container, Row, Col, Table } from "reactstrap";
-import useDepartmentSelect from "../../hooks/department/useDepartmentSelect";
-import useDepartmentForm from "../../hooks/department/useDepartmentForm";
+import useCreateDepartment from "../../hooks/department/useCreateDepartment";
 
-function DepartmentsRegister() {
+function DepartmentsRegister({ handleShowDepartmentsUserRegister }) {
 
-    const [selectedDepartment, setSelectedDepartment] = useState(null);
+    const {
+        departmentName,
+        setDepartmentName,
+        departmentNameState,
+        setDepartmentNameState,
+        departmentDataList,
+        setDepartmentDataList,
+        departmentReportsToDepartment,
+        setDepartmentReportsToDepartment,
+        departmentReportsToDepartmentState,
+        setDepartmentReportsToDepartmentState,
+        departmentDescription,
+        setDepartmentDescription,
+        departmentDescriptionState,
+        setDepartmentDescriptionState,
+        handleValidateAddDepartmentForm,
+        getDepartmentDataList,
+        handleChooseDepartment
+    } = useCreateDepartment(handleShowDepartmentsUserRegister);
 
     useEffect(() => {
-        if (selectedDepartment) {
-            console.log("Selected Department updated:", selectedDepartment);
-            // Você pode adicionar lógica adicional aqui, se necessário
+        if (departmentDataList.length === 0) {
+            getDepartmentDataList();
         }
-    }, [selectedDepartment]);
-
-
-    /** back a list of departments*/
-    const departments = useDepartmentSelect();
-
-    const { formData, handleDepartmentChange, onSubmit } = useDepartmentForm();
+    }, [departmentDataList]);
 
     return (
         <Form>
@@ -33,65 +43,76 @@ function DepartmentsRegister() {
                 <CardBody>
                     <Row>
                         <Col md="6">
-                            <FormGroup>
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="DepartmentNameInput"
-                                >
-                                    Nome
-                                </label>
-                                <Input
-                                    id="DepartmentNameInput"
-                                    placeholder="Ex.: Comercial"
-                                    value={formData.DepartmentName}
-                                    onChange={(e) => handleDepartmentChange('DepartmentName', e.target.value)}
-                                    type="text"
-                                />
-                            </FormGroup>
+                            <label
+                                className="form-control-label"
+                                htmlFor="validationDepartmentName"
+                            >
+                                Nome
+                            </label>
+                            <Input
+                                id="validationDepartmentName"
+                                placeholder="Nome"
+                                type="text"
+                                valid={departmentNameState === "valid"}
+                                invalid={departmentNameState === "invalid"}
+                                onChange={(e) => {
+                                    setDepartmentName(e.target.value);
+                                    if (e.target.value === "") {
+                                        setDepartmentNameState("invalid");
+                                    } else {
+                                        setDepartmentNameState("valid");
+                                    }
+                                }}
+                            />
+                            <div className="invalid-feedback">
+                                É necessário preencher este campo.
+                            </div>
                         </Col>
                         <Col md="6">
-                            <FormGroup>
-                                <label className="form-control-label" htmlFor="reportToDepartmentInput">
-                                    Reporta ao Departamento
-                                </label>
-                                <Select2
-                                    id="reportToDepartmentInput"
-                                    className="form-control"
-                                    defaultValue="0"
-                                    options={{ placeholder: "Selecione um departamento:" }}
-                                    data={[
-                                        ...departments.map(department => ({ id: department.ID_Department, text: department.DepartmentName }))
-                                    ]}
-                                    onChange={(value, text, e) => {
-                                        const selectedDepartment = departments.find(department => department.ID_Department === value);
-                                        setSelectedDepartment(selectedDepartment);
-                                    }}
-                                />
-                            </FormGroup>
-
+                            <label
+                                className="form-control-label"
+                                htmlFor="validationReportToDepartment"
+                            >
+                                Reporta ao Departamento
+                            </label>
+                            <Select2
+                                id="validationReportToDepartment"
+                                className="form-control"
+                                data-minimum-results-for-search="Infinity"
+                                options={{ placeholder: "Selecione um departamento:" }}
+                                data={departmentDataList}
+                                onSelect={handleChooseDepartment}
+                            />
                         </Col>
-                        <Col md="12">
-                            <FormGroup>
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="DescriptionTextarea"
-                                >
-                                    Descrição
-                                </label>
-                                <Input
-                                    id="DescriptionTextarea"
-                                    rows="3"
-                                    type="textarea"
-                                    value={formData.description}
-                                    onChange={(e) => handleDepartmentChange('description', e.target.value)}
-                                />
-                            </FormGroup>
+                        <Col className="mb-3" md="12">
+                            <label
+                                className="form-control-label"
+                                htmlFor="validationDepartmentDescription"
+                            >
+                                Descrição
+                            </label>
+                            <Input
+                                id="validationDepartmentDescription"
+                                rows="3"
+                                type="textarea"
+                                valid={departmentDescriptionState === "valid"}
+                                invalid={departmentDescriptionState === "invalid"}
+                                onChange={(e) => {
+                                    setDepartmentDescription(e.target.value);
+                                    if (e.target.value === "") {
+                                        setDepartmentDescriptionState("invalid");
+                                    } else {
+                                        setDepartmentDescriptionState("valid");
+                                    }
+                                }}
+                            />
                         </Col>
                     </Row>
                     <Row>
-                        <Col md="8">
-                            <Button color="info" size="lg" type="button" onClick={() => onSubmit(selectedDepartment)}>
-                                Salvar
+                        <Col md="8" />
+                        <Col className="d-flex justify-content-end align-items-center" md="4" >
+                            <Button className="px-5" color="primary" size="lg" type="button" onClick={handleValidateAddDepartmentForm}>
+                                Adicionar Departamento
                             </Button>
                         </Col>
                     </Row>

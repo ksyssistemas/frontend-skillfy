@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 // react plugin used to create DropdownMenu for selecting items
 const Select2 = dynamic(() => import("react-select2-wrapper"));
@@ -13,61 +13,62 @@ import {
     Input,
     Row
 } from "reactstrap";
+import useCreateRole from "../../hooks/role/useCreateRole";
+import useCreateEmployeeFunction from "../../hooks/employeeFunction/useCreateEmployeeFunction";
 
-function RolesRegister() {
+function RolesRegister({ handleShowRolesUserRegister }) {
 
-    const [formData, setFormData] = useState({
-        companyName: '',
-        brandName: '',
-        email: '',
-        password: '',
-        phoneNumber: '',
-        webSite: '',
-        avatar: '',
-    });
+    const {
+        employeeRoleName,
+        setEmployeeRoleName,
+        employeeRoleNameState,
+        setEmployeeRoleNameState,
+        employeeRoleDataList,
+        setEmployeeRoleDataList,
+        roleReportsToRole,
+        setRoleReportsToRole,
+        roleReportsToRoleState,
+        setRoleReportsToRoleState,
+        employeeRoleDescription,
+        setEmployeeRoleDescription,
+        employeeRoleDescriptionState,
+        setEmployeeRoleDescriptionState,
+        getEmployeeRoleDataList,
+        handleChooseEmployeeRole,
+        handleValidateAddEmployeeRoleForm
+    } = useCreateRole(handleShowRolesUserRegister);
 
-    const handleInputChange = (fieldName, value) => {
-        setFormData({ ...formData, [fieldName]: value });
-    };
+    const {
+        employeeFunctionName,
+        setEmployeeFunctionName,
+        employeeFunctionNameState,
+        setEmployeeFunctionNameState,
+        employeeFunctionDataList,
+        setEmployeeFunctionDataList,
+        funtionReportsToFuntion,
+        setFuntionReportsToFuntion,
+        funtionReportsToFuntionState,
+        setFuntionReportsToFuntionState,
+        employeeFunctiontDescription,
+        setEmployeeFunctiontDescription,
+        employeeFunctiontDescriptionState,
+        setEmployeeFunctiontDescriptionState,
+        getEmployeeFunctionDataList,
+        handleChooseEmployeeFunction,
+        handleValidateAddEmployeeFunctionForm
+    } = useCreateEmployeeFunction(handleShowRolesUserRegister);
 
-    const handleSubmit = async () => {
-        try {
-            const response = await fetch('http://localhost:4008/enterprise', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-
-            if (response.ok) {
-                setFormData({
-                    companyName: '',
-                    brandName: '',
-                    email: '',
-                    password: '',
-                    phoneNumber: '',
-                    webSite: '',
-                    avatar: '',
-                });
-                console.log('Data sent successfully!');
-            } else {
-                console.error('Error in response:', response.status);
-            }
-        } catch (error) {
-            console.error('Error in request:', error);
+    useEffect(() => {
+        if (employeeRoleDataList.length === 0) {
+            getEmployeeRoleDataList();
         }
-    };
+    }, [employeeRoleDataList]);
 
-    const [modalOpen, setModalOpen] = React.useState(false);
-    function handleShowJobDescriptionsModal() {
-        setModalOpen(!modalOpen)
-    }
-
-    const [functionsDescriptionsModalOpen, setfunctionsDescriptionsModalOpen] = React.useState(false);
-    function handleShowFunctionsDescriptionsModal() {
-        setfunctionsDescriptionsModalOpen(!functionsDescriptionsModalOpen)
-    }
+    useEffect(() => {
+        if (employeeFunctionDataList.length === 0) {
+            getEmployeeFunctionDataList();
+        }
+    }, [employeeFunctionDataList]);
 
     return (
         <Form>
@@ -78,57 +79,71 @@ function RolesRegister() {
                 <CardBody>
                     <Row>
                         <Col md="12">
-                            <FormGroup>
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="example3cols1Input"
-                                >
-                                    Nome
-                                </label>
-                                <Input
-                                    id="example3cols1Input"
-                                    placeholder="Ex.: Comercial"
-                                    value={formData.companyName}
-                                    onChange={(e) => handleInputChange('companyName', e.target.value)}
-                                    type="text"
-                                />
-                            </FormGroup>
+                            <label
+                                className="form-control-label"
+                                htmlFor="validationEmployeeRoleName"
+                            >
+                                Nome
+                            </label>
+                            <Input
+                                id="validationEmployeeRoleName"
+                                placeholder="Nome"
+                                type="text"
+                                valid={employeeRoleNameState === "valid"}
+                                invalid={employeeRoleNameState === "invalid"}
+                                onChange={(e) => {
+                                    setEmployeeRoleName(e.target.value);
+                                    if (e.target.value === "") {
+                                        setEmployeeRoleNameState("invalid");
+                                    } else {
+                                        setEmployeeRoleNameState("valid");
+                                    }
+                                }}
+                            />
+                            <div className="invalid-feedback">
+                                É necessário preencher este campo.
+                            </div>
                         </Col>
                         <Col md="12">
                             <FormGroup>
                                 <label
                                     className="form-control-label"
-                                    htmlFor="example3cols2Input"
+                                    htmlFor="validationReportToRole"
                                 >
                                     Reporta ao Cargo
                                 </label>
                                 <Select2
+                                    id="validationReportToRole"
                                     className="form-control"
-                                    defaultValue="0"
-                                    options={{
-                                        placeholder: "Selecione",
-                                    }}
-                                    data={[
-                                        { id: "0", text: "Selecione um cargo" },
-                                        { id: "1", text: "Financeiro" },
-                                        { id: "2", text: "Comercial" },
-                                        { id: "3", text: "Gestão de Pessoas" }
-                                    ]}
+                                    data-minimum-results-for-search="Infinity"
+                                    options={{ placeholder: "Selecione um cargo:" }}
+                                    data={employeeRoleDataList}
+                                    onSelect={handleChooseEmployeeRole}
                                 />
                             </FormGroup>
                         </Col>
-                        <Col md="12">
+                        <Col className="mb-3" md="12">
                             <FormGroup>
                                 <label
                                     className="form-control-label"
-                                    htmlFor="exampleFormControlTextarea1"
+                                    htmlFor="validationEmployeeRoleDescription"
                                 >
                                     Descrição
                                 </label>
                                 <Input
-                                    id="exampleFormControlTextarea1"
+                                    id="validationEmployeeRoleDescription"
                                     rows="3"
                                     type="textarea"
+                                    valid={employeeRoleDescriptionState === "valid"}
+                                    invalid={employeeRoleDescriptionState === "invalid"}
+                                    onChange={(e) => {
+                                        setEmployeeRoleDescription(e.target.value);
+                                        if (e.target.value === "") {
+                                            setEmployeeRoleDescriptionState("invalid");
+                                        } else {
+                                            setEmployeeRoleDescriptionState("valid");
+                                        }
+                                    }}
                                 />
                             </FormGroup>
                         </Col>
@@ -136,7 +151,7 @@ function RolesRegister() {
                     <Row>
                         <Col md="4" />
                         <Col className="d-flex justify-content-end align-items-center" md="8" >
-                            <Button className="px-5" color="primary" size="lg" type="button" onClick={handleSubmit}>
+                            <Button className="px-5" color="primary" size="lg" type="button" onClick={handleValidateAddEmployeeRoleForm}>
                                 <span className="btn-inner--text">Adicionar Cargo</span>
                             </Button>
                         </Col>
@@ -151,65 +166,75 @@ function RolesRegister() {
                 <CardBody>
                     <Row>
                         <Col md="12">
-                            <FormGroup>
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="example3cols1Input"
-                                >
-                                    Nome
-                                </label>
-                                <Input
-                                    id="example3cols1Input"
-                                    placeholder="Ex.: Assistente Comercial"
-                                    value={formData.companyName}
-                                    onChange={(e) => handleInputChange('companyName', e.target.value)}
-                                    type="text"
-                                />
-                            </FormGroup>
+                            <label
+                                className="form-control-label"
+                                htmlFor="validationEmployeeFunctionName"
+                            >
+                                Nome
+                            </label>
+                            <Input
+                                id="validationEmployeeFunctionName"
+                                placeholder="Nome"
+                                type="text"
+                                valid={employeeFunctionNameState === "valid"}
+                                invalid={employeeFunctionNameState === "invalid"}
+                                onChange={(e) => {
+                                    setEmployeeFunctionName(e.target.value);
+                                    if (e.target.value === "") {
+                                        setEmployeeFunctionNameState("invalid");
+                                    } else {
+                                        setEmployeeFunctionNameState("valid");
+                                    }
+                                }}
+                            />
+                            <div className="invalid-feedback">
+                                É necessário preencher este campo.
+                            </div>
                         </Col>
                         <Col md="12">
-                            <FormGroup>
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="example3cols2Input"
-                                >
-                                    Reporta ao Cargo
-                                </label>
-                                <Select2
-                                    className="form-control"
-                                    defaultValue="0"
-                                    options={{
-                                        placeholder: "Selecione",
-                                    }}
-                                    data={[
-                                        { id: "0", text: "Selecione um cargo" },
-                                        { id: "1", text: "Financeiro" },
-                                        { id: "2", text: "Comercial" },
-                                        { id: "3", text: "Gestão de Pessoas" }
-                                    ]}
-                                />
-                            </FormGroup>
+                            <label
+                                className="form-control-label"
+                                htmlFor="validationReportToFunction"
+                            >
+                                Reporta ao Cargo
+                            </label>
+                            <Select2
+                                id="validationReportToFunction"
+                                className="form-control"
+                                data-minimum-results-for-search="Infinity"
+                                options={{ placeholder: "Selecione uma função:" }}
+                                data={employeeFunctionDataList}
+                                onSelect={handleChooseEmployeeFunction}
+                            />
                         </Col>
-                        <Col md="12">
-                            <FormGroup>
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="exampleFormControlTextarea1"
-                                >
-                                    Descrição
-                                </label>
-                                <Input
-                                    id="exampleFormControlTextarea1"
-                                    rows="3"
-                                    type="textarea"
-                                />
-                            </FormGroup>
+                        <Col className="mb-3" md="12">
+                            <label
+                                className="form-control-label"
+                                htmlFor="validationEmployeeFunctionDescription"
+                            >
+                                Descrição
+                            </label>
+                            <Input
+                                id="validationEmployeeFunctionDescription"
+                                rows="3"
+                                type="textarea"
+                                valid={employeeFunctiontDescriptionState === "valid"}
+                                invalid={employeeFunctiontDescriptionState === "invalid"}
+                                onChange={(e) => {
+                                    setEmployeeFunctiontDescription(e.target.value);
+                                    if (e.target.value === "") {
+                                        setEmployeeFunctiontDescriptionState("invalid");
+                                    } else {
+                                        setEmployeeFunctiontDescriptionState("valid");
+                                    }
+                                }}
+                            />
                         </Col>
                     </Row>
                     <Row>
                         <Col md="4" />
                         <Col className="d-flex justify-content-end align-items-center" md="8" >
-                            <Button className="px-5" color="primary" size="lg" type="button" onClick={handleSubmit}>
+                            <Button className="px-5" color="primary" size="lg" type="button" onClick={handleValidateAddEmployeeFunctionForm}>
                                 <span className="btn-inner--text">Adicionar Função</span>
                             </Button>
                         </Col>

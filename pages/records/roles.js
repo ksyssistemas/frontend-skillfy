@@ -6,10 +6,12 @@ import CustomerHeader from "../../components/Headers/CustomerHeader";
 import { Container } from "reactstrap";
 import RolesRegister from "../../components/Forms/RolesRegister";
 import RolesList from "../../components/Tables/Customer/RolesList";
-
-const authenticationDataLoggedInUser = 'customer';
+import { useAuth } from '../../hooks/useAuth';
+import { TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT } from '../../contexts/AuthContext';
 
 function RolesRecords() {
+
+    const { authenticationDataLoggedInUser } = useAuth();
 
     const [isShouldSubmitRolesRegistration, setIsShouldSubmitRolesRegistration] = useState(false);
 
@@ -23,7 +25,7 @@ function RolesRecords() {
                 !isShouldSubmitRolesRegistration
                     ? (
                         authenticationDataLoggedInUser &&
-                            authenticationDataLoggedInUser === 'administrator' ?
+                            authenticationDataLoggedInUser.role === 'administrator' ?
                             (
                                 <>
                                     <AdminHeader name="Cargos e Funçôes" parentName="Registros" newRegistrationButtonText="Adicionar Cargo ou Funçâo" handleShowRolesUserRegister={handleShowRolesUserRegister} />
@@ -33,7 +35,7 @@ function RolesRecords() {
                                 </>
                             ) : (
                                 authenticationDataLoggedInUser &&
-                                    authenticationDataLoggedInUser === 'customer' ?
+                                    authenticationDataLoggedInUser.role === 'customer' ?
                                     (
                                         <>
                                             <CustomerHeader name="Cargos e Funçôes" parentName="Registros" newRegistrationButtonText="Adicionar Cargo ou Funçâo" handleShowRolesUserRegister={handleShowRolesUserRegister} />
@@ -47,22 +49,22 @@ function RolesRecords() {
                     )
                     : (
                         authenticationDataLoggedInUser &&
-                            authenticationDataLoggedInUser === 'administrator' ?
+                            authenticationDataLoggedInUser.role === 'administrator' ?
                             (
                                 <>
                                     <AdminHeader name="Cargos e Funçôes" parentName="Cadastros" />
                                     <Container className="mt--6" fluid>
-                                        <RolesRegister />
+                                        <RolesRegister handleShowRolesUserRegister={handleShowRolesUserRegister} />
                                     </Container>
                                 </>
                             ) : (
                                 authenticationDataLoggedInUser &&
-                                    authenticationDataLoggedInUser === 'customer' ?
+                                    authenticationDataLoggedInUser.role === 'customer' ?
                                     (
                                         <>
                                             <CustomerHeader name="Cargos e Funçôes" parentName="Cadastros" />
                                             <Container className="mt--6" fluid>
-                                                <RolesRegister />
+                                                <RolesRegister handleShowRolesUserRegister={handleShowRolesUserRegister} />
                                             </Container>
                                         </>
 
@@ -74,6 +76,6 @@ function RolesRecords() {
     );
 }
 
-authenticationDataLoggedInUser === 'administrator' ? RolesRecords.layout = Admin : (authenticationDataLoggedInUser === 'customer' ? RolesRecords.layout = Performance : RolesRecords.layout = Admin);
+TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'administrator' ? RolesRecords.layout = Admin : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'customer' ? RolesRecords.layout = Performance : RolesRecords.layout = Admin);
 
 export default RolesRecords;

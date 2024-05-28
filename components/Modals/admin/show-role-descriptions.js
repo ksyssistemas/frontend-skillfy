@@ -9,24 +9,24 @@ import {
   Col,
 } from "reactstrap";
 
-function ShowFunctionsDescriptionsModal({ handleShowFunctionsDescriptionsModal, functionsDescriptionsModalOpen, employeeFunctionDescription, employeeFunctionName }) {
+function ShowRoleDescriptionsModal({ handleShowRoleDescriptionsModal, modalOpen, roleDescription, roleName }) {
 
   return (
     <Modal
-      toggle={handleShowFunctionsDescriptionsModal}
-      isOpen={functionsDescriptionsModalOpen}
+      toggle={handleShowRoleDescriptionsModal}
+      isOpen={modalOpen}
       size="md"
     //fullscreen
     >
       <div className=" modal-header">
         <h5 className=" modal-title" id="exampleModalLabel">
-          Descrição de {employeeFunctionName}
+          Descrição de {roleName}
         </h5>
         <button
           aria-label="Close"
           className=" close"
           type="button"
-          onClick={handleShowFunctionsDescriptionsModal}
+          onClick={handleShowRoleDescriptionsModal}
         >
           <span aria-hidden={true}>×</span>
         </button>
@@ -39,7 +39,7 @@ function ShowFunctionsDescriptionsModal({ handleShowFunctionsDescriptionsModal, 
                 <Col className="mb-3" md="12">
                   <div>
                     <span className="name mb-0 text-sm">
-                      {employeeFunctionDescription}
+                      {roleDescription}
                     </span>
                   </div>
                 </Col>
@@ -53,18 +53,18 @@ function ShowFunctionsDescriptionsModal({ handleShowFunctionsDescriptionsModal, 
   );
 }
 
-ShowFunctionsDescriptionsModal.defaultProps = {
-  handleShowFunctionsDescriptionsModal: () => { },
-  functionsDescriptionsModalOpen: false,
-  employeeFunctionDescription: "",
-  employeeFunctionName: "",
+ShowRoleDescriptionsModal.defaultProps = {
+  handleShowRoleDescriptionsModal: () => { },
+  modalOpen: false,
+  roleDescription: "",
+  roleName: "",
 };
 
-ShowFunctionsDescriptionsModal.propTypes = {
-  handleShowFunctionsDescriptionsModal: PropTypes.func,
-  functionsDescriptionsModalOpen: PropTypes.bool,
-  employeeFunctionDescription: PropTypes.string,
-  employeeFunctionName: PropTypes.string,
+ShowRoleDescriptionsModal.propTypes = {
+  handleShowRoleDescriptionsModal: PropTypes.func,
+  modalOpen: PropTypes.bool,
+  roleDescription: PropTypes.string,
+  roleName: PropTypes.string,
 };
 
-export default ShowFunctionsDescriptionsModal;
+export default ShowRoleDescriptionsModal;

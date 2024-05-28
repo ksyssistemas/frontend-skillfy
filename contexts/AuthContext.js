@@ -3,20 +3,23 @@ import React, { createContext, useState } from 'react';
 
 export const AuthContext = createContext({});
 
+export let TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT = "";
+
 function AuthProvider({ children }) {
 
-    const [authenticationDataLoggedInUser, setauthenticationDataLoggedInUser] = useState("");
+    const [authenticationDataLoggedInUser, setAuthenticationDataLoggedInUser] = useState("");
 
     function handleSaveAuthenticationDataLoggedInUser(userAuthenticationData) {
-        setauthenticationDataLoggedInUser(userAuthenticationData);
-        console.log("userAuthenticationData", userAuthenticationData);
+        setAuthenticationDataLoggedInUser(userAuthenticationData);
     }
+
+    TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT = authenticationDataLoggedInUser.role;
 
     return (
         <AuthContext.Provider
             value={{
                 authenticationDataLoggedInUser,
-                setauthenticationDataLoggedInUser,
+                setAuthenticationDataLoggedInUser,
                 handleSaveAuthenticationDataLoggedInUser
             }}>
             {children}

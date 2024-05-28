@@ -52,7 +52,7 @@ const routes = [
       {
         path: "/contact-persons",
         name: "Contatos",
-        miniName: "A",
+        miniName: "C",
         layout: "/records",
       },
       {

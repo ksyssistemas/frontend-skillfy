@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import dynamic from "next/dynamic";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardHeader,
@@ -9,63 +8,68 @@ import {
   NavItem,
   NavLink,
 } from "reactstrap";
-import ShowJobDescriptionsModal from "../../Modals/admin/show-job-descriptions";
+import ShowRoleDescriptionsModal from "../../Modals/admin/show-role-descriptions";
 import ShowFunctionsDescriptionsModal from "../../Modals/admin/show-functions-descriptions";
+import { useFindAllRoles } from "../../../hooks/role/useFindAllRoles";
+import { useFindAllFunctions } from "../../../hooks/employeeFunction/useFindAllFunctions";
 
 function RolesList() {
 
-  const [formData, setFormData] = useState({
-    companyName: '',
-    brandName: '',
-    email: '',
-    password: '',
-    phoneNumber: '',
-    webSite: '',
-    avatar: '',
-  });
+  const [detailedRoleData, setDetailedRoleData] = useState([]);
+  const [descriptionSelectedRole, setDescriptionSelectedRole] = useState("");
+  const [nameSelectedRole, setNameSelectedRole] = useState("");
 
-  const handleInputChange = (fieldName, value) => {
-    setFormData({ ...formData, [fieldName]: value });
-  };
-
-  const handleSubmit = async () => {
-    try {
-      const response = await fetch('http://localhost:4008/enterprise', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        setFormData({
-          companyName: '',
-          brandName: '',
-          email: '',
-          password: '',
-          phoneNumber: '',
-          webSite: '',
-          avatar: '',
-        });
-        console.log('Data sent successfully!');
-      } else {
-        console.error('Error in response:', response.status);
-      }
-    } catch (error) {
-      console.error('Error in request:', error);
-    }
-  };
+  const [detailedEmployeeFunctionData, setDetailedEmployeeFunctionData] = useState([]);
+  const [descriptionSelectedFunction, setDescriptionSelectedFunction] = useState("");
+  const [nameSelectedFunction, setNameSelectedFunction] = useState("");
 
   const [modalOpen, setModalOpen] = React.useState(false);
-  function handleShowJobDescriptionsModal() {
+
+  function handleShowRoleModal(name, description) {
+    setDescriptionSelectedRole(description);
+    setNameSelectedRole(name);
+    handleShowRoleDescriptionsModal();
+  }
+
+  function handleShowRoleDescriptionsModal() {
     setModalOpen(!modalOpen)
   }
 
   const [functionsDescriptionsModalOpen, setfunctionsDescriptionsModalOpen] = React.useState(false);
+
+  function handleShowFunctionModal(name, description) {
+    setDescriptionSelectedFunction(description);
+    setNameSelectedFunction(name);
+    handleShowFunctionsDescriptionsModal();
+  }
+
   function handleShowFunctionsDescriptionsModal() {
     setfunctionsDescriptionsModalOpen(!functionsDescriptionsModalOpen)
   }
+
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  }
+
+  useEffect(async () => {
+    if (detailedRoleData && detailedRoleData.length === 0) {
+      const foundRole = await useFindAllRoles();
+      setDetailedRoleData(foundRole);
+    }
+  }, [detailedRoleData]);
+
+  useEffect(async () => {
+    if (detailedEmployeeFunctionData && detailedEmployeeFunctionData.length === 0) {
+      const foundEmployeeFunction = await useFindAllFunctions();
+      setDetailedEmployeeFunctionData(foundEmployeeFunction);
+    }
+  }, [detailedEmployeeFunctionData]);
 
   return (
     <Form>
@@ -85,129 +89,59 @@ function RolesList() {
             </tr>
           </thead>
           <tbody>
-            <tr className="table-">
-              <td className="table-user">
-                <b>CEO</b>
-              </td>
-              <td>
-                <span className="text-muted">
-                  10/09/{new Date().getFullYear()}
-                </span>
-              </td>
-              <td>
-                <span className="name mb-0 text-sm">
+            {detailedRoleData && detailedRoleData.map((role) => (
+              <tr className="table-" key={role.ID_Role}>
+                <td className="table-user">
+                  <b>{role.roleName}</b>
+                </td>
+                <td>
+                  <span className="text-muted">
+                    {formatDate(role.CreatedAt)}
+                  </span>
+                </td>
+                <td>
+                  <span className="name mb-0 text-sm">
+                    {department.Responsible}
+                  </span>
+                </td>
+                <td className="text-muted">
+                  {
+                    role.Description ? (
+                      <Nav navbar>
+                        <NavItem>
+                          <NavLink target="_blank">
+                            <a href="#" className="text-underline">
+                              <span
+                                onClick={() => handleShowRoleModal(role.RoleName, role.Description)}
+                                className="name mb-0 text-sm"
+                              >
+                                Ver
+                              </span>
+                            </a>
+                          </NavLink>
+                        </NavItem>
+                      </Nav>
+                    ) : (
+                      <span
+                        className="name mb-0 text-sm"
+                      >
+                        Não há descrição
+                      </span>
 
-                </span>
-              </td>
-              <td className="text-muted ">
-                <Nav navbar>
-                  <NavItem>
-                    <NavLink target="_blank">
-                      <a href="#" className="text-underline">
-                        <span
-                          onClick={handleShowJobDescriptionsModal}
-                          className="name mb-0 text-sm"
-                        >
-                          Ver
-                        </span>
-                      </a>
-                    </NavLink>
-                  </NavItem>
-                </Nav>
-              </td>
-              <td>
-                <label className="custom-toggle">
-                  <input defaultChecked type="checkbox" />
-                  <span
-                    className="custom-toggle-slider rounded-circle"
-                    data-label-off="No"
-                    data-label-on="Yes"
-                  />
-                </label>
-              </td>
-            </tr>
-            <tr className="table-">
-              <td className="table-user">
-                <b>Diretor de Financeiro</b>
-              </td>
-              <td>
-                <span className="text-muted">
-                  08/09/{new Date().getFullYear()}
-                </span>
-              </td>
-              <td>
-                <span className="name mb-0 text-sm">
-                  CEO
-                </span>
-              </td>
-              <td className="text-muted ">
-                <Nav navbar>
-                  <NavItem>
-                    <NavLink target="_blank">
-                      <a href="#" className="text-underline">
-                        <span
-                          onClick={handleShowJobDescriptionsModal}
-                          className="name mb-0 text-sm"
-                        >
-                          Ver
-                        </span>
-                      </a>
-                    </NavLink>
-                  </NavItem>
-                </Nav>
-              </td>
-              <td>
-                <label className="custom-toggle">
-                  <input type="checkbox" />
-                  <span
-                    className="custom-toggle-slider rounded-circle"
-                    data-label-off="No"
-                    data-label-on="Yes"
-                  />
-                </label>
-              </td>
-            </tr>
-            <tr className="table-">
-              <td className="table-user">
-                <b>Diretor de Vendas</b>
-              </td>
-              <td>
-                <span className="text-muted">
-                  30/08/{new Date().getFullYear()}
-                </span>
-              </td>
-              <td>
-                <span className="name mb-0 text-sm">
-                  CEO
-                </span>
-              </td>
-              <td className="text-muted ">
-                <Nav navbar>
-                  <NavItem>
-                    <NavLink target="_blank">
-                      <a href="#" className="text-underline">
-                        <span
-                          onClick={handleShowJobDescriptionsModal}
-                          className="name mb-0 text-sm"
-                        >
-                          Ver
-                        </span>
-                      </a>
-                    </NavLink>
-                  </NavItem>
-                </Nav>
-              </td>
-              <td>
-                <label className="custom-toggle">
-                  <input defaultChecked type="checkbox" />
-                  <span
-                    className="custom-toggle-slider rounded-circle"
-                    data-label-off="No"
-                    data-label-on="Yes"
-                  />
-                </label>
-              </td>
-            </tr>
+                    )}
+                </td>
+                <td>
+                  <label className="custom-toggle">
+                    <input type="checkbox" checked={department.Status ? true : false} />
+                    <span
+                      className="custom-toggle-slider rounded-circle"
+                      data-label-off="No"
+                      data-label-on="Yes"
+                    />
+                  </label>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </Table>
       </Card>
@@ -228,181 +162,74 @@ function RolesList() {
             </tr>
           </thead>
           <tbody>
-            <tr className="table-">
-              <td className="table-user">
-                <b>Contador Sênior</b>
-              </td>
-              <td>
-                <span className="text-muted">
-                  10/09/{new Date().getFullYear()}
-                </span>
-              </td>
-              <td>
-                <span className="name mb-0 text-sm">
-                  Diretor Financeiro
-                </span>
-              </td>
-              <td className="text-muted ">
-                <Nav navbar>
-                  <NavItem>
-                    <NavLink target="_blank">
-                      <a href="#" className="text-underline">
-                        <span
-                          onClick={handleShowFunctionsDescriptionsModal}
-                          className="name mb-0 text-sm"
-                        >
-                          Ver
-                        </span>
-                      </a>
-                    </NavLink>
-                  </NavItem>
-                </Nav>
-              </td>
-              <td>
-                <label className="custom-toggle">
-                  <input defaultChecked type="checkbox" />
-                  <span
-                    className="custom-toggle-slider rounded-circle"
-                    data-label-off="No"
-                    data-label-on="Yes"
-                  />
-                </label>
-              </td>
-            </tr>
-            <tr className="table-">
-              <td className="table-user">
-                <b>Analista Financeiro</b>
-              </td>
-              <td>
-                <span className="text-muted">
-                  08/09/{new Date().getFullYear()}
-                </span>
-              </td>
-              <td>
-                <span className="name mb-0 text-sm">
-                  Diretor Financeiro
-                </span>
-              </td>
-              <td className="text-muted ">
-                <Nav navbar>
-                  <NavItem>
-                    <NavLink target="_blank">
-                      <a href="#" className="text-underline">
-                        <span
-                          onClick={handleShowFunctionsDescriptionsModal}
-                          className="name mb-0 text-sm"
-                        >
-                          Ver
-                        </span>
-                      </a>
-                    </NavLink>
-                  </NavItem>
-                </Nav>
-              </td>
-              <td>
-                <label className="custom-toggle">
-                  <input type="checkbox" />
-                  <span
-                    className="custom-toggle-slider rounded-circle"
-                    data-label-off="No"
-                    data-label-on="Yes"
-                  />
-                </label>
-              </td>
-            </tr>
-            <tr className="table-">
-              <td className="table-user">
-                <b>Gerente de Vendas</b>
-              </td>
-              <td>
-                <span className="text-muted">
-                  30/08/{new Date().getFullYear()}
-                </span>
-              </td>
-              <td>
-                <span className="name mb-0 text-sm">
-                  Diretor de Vendas
-                </span>
-              </td>
-              <td className="text-muted ">
-                <Nav navbar>
-                  <NavItem>
-                    <NavLink target="_blank">
-                      <a href="#" className="text-underline">
-                        <span
-                          onClick={handleShowFunctionsDescriptionsModal}
-                          className="name mb-0 text-sm"
-                        >
-                          Ver
-                        </span>
-                      </a>
-                    </NavLink>
-                  </NavItem>
-                </Nav>
-              </td>
-              <td>
-                <label className="custom-toggle">
-                  <input defaultChecked type="checkbox" />
-                  <span
-                    className="custom-toggle-slider rounded-circle"
-                    data-label-off="No"
-                    data-label-on="Yes"
-                  />
-                </label>
-              </td>
-            </tr>
-            <tr className="table-">
-              <td className="table-user">
-                <b>Representante de Vendas</b>
-              </td>
-              <td>
-                <span className="text-muted">
-                  30/08/{new Date().getFullYear()}
-                </span>
-              </td>
-              <td>
-                <span className="name mb-0 text-sm">
-                  Diretor de Vendas
-                </span>
-              </td>
-              <td className="text-muted ">
-                <Nav navbar>
-                  <NavItem>
-                    <NavLink target="_blank">
-                      <a href="#" className="text-underline">
-                        <span
-                          onClick={handleShowFunctionsDescriptionsModal}
-                          className="name mb-0 text-sm"
-                        >
-                          Ver
-                        </span>
-                      </a>
-                    </NavLink>
-                  </NavItem>
-                </Nav>
-              </td>
-              <td>
-                <label className="custom-toggle">
-                  <input defaultChecked type="checkbox" />
-                  <span
-                    className="custom-toggle-slider rounded-circle"
-                    data-label-off="No"
-                    data-label-on="Yes"
-                  />
-                </label>
-              </td>
-            </tr>
+            {detailedEmployeeFunctionData && detailedEmployeeFunctionData.map((employeeFunction) => (
+              <tr className="table-" key={employeeFunction.ID_Function}>
+                <td className="table-user">
+                  <b>{employeeFunction.FunctionName}</b>
+                </td>
+                <td>
+                  <span className="text-muted">
+                    {formatDate(employeeFunction.CreatedAt)}
+                  </span>
+                </td>
+                <td>
+                  <span className="name mb-0 text-sm">
+                    {employeeFunction.Responsible}
+                  </span>
+                </td>
+                <td className="text-muted ">
+                  {
+                    employeeFunction.Description ? (
+                      <Nav navbar>
+                        <NavItem>
+                          <NavLink target="_blank">
+                            <a href="#" className="text-underline">
+                              <span
+                                onClick={() => handleShowFunctionModal(employeeFunction.RoleName, employeeFunction.Description)}
+                                className="name mb-0 text-sm"
+                              >
+                                Ver
+                              </span>
+                            </a>
+                          </NavLink>
+                        </NavItem>
+                      </Nav>
+                    ) : (
+                      <span
+                        className="name mb-0 text-sm"
+                      >
+                        Não há descrição
+                      </span>
+
+                    )}
+                </td>
+                <td>
+                  <label className="custom-toggle">
+                    <input type="checkbox" checked={department.Status ? true : false} />
+                    <span
+                      className="custom-toggle-slider rounded-circle"
+                      data-label-off="No"
+                      data-label-on="Yes"
+                    />
+                  </label>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </Table>
       </Card>
 
-      <ShowJobDescriptionsModal
-        handleShowJobDescriptionsModal={handleShowJobDescriptionsModal}
+      <ShowRoleDescriptionsModal
+        handleShowRoleDescriptionsModal={handleShowRoleDescriptionsModal}
         modalOpen={modalOpen}
+        roleDescription={descriptionSelectedRole}
+        roleName={nameSelectedRole}
       />
       <ShowFunctionsDescriptionsModal
         handleShowFunctionsDescriptionsModal={handleShowFunctionsDescriptionsModal}
         functionsDescriptionsModalOpen={functionsDescriptionsModalOpen}
+        employeeFunctionDescription={descriptionSelectedFunction}
+        employeeFunctionName={nameSelectedFunction}
       />
     </Form>
   );

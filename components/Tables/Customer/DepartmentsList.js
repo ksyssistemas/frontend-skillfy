@@ -1,25 +1,64 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardHeader, Form, Table } from "reactstrap";
-import useDepartmentSelect from "../../../hooks/department/useDepartmentSelect";
-import useDepartmentForm from "../../../hooks/department/useDepartmentForm";
+import {
+  Card,
+  CardHeader,
+  Form,
+  Nav,
+  NavItem,
+  NavLink, Table
+} from "reactstrap";
+import { useFindAllDepartments } from "../../../hooks/department/useFindAllDepartments";
+import ShowDepartmentDescriptionsModal from "../../Modals/admin/show-department-descriptions";
 
 function DepartmentsList() {
 
-  const [selectedDepartment, setSelectedDepartment] = useState(null);
+  const [detailedDepartmentData, setDetailedDepartmentData] = useState([]);
+  const [descriptionSelectedDepartment, setDescriptionSelectedDepartment] = useState("");
+  const [nameSelectedDepartment, setNameSelectedDepartment] = useState("");
 
-  useEffect(() => {
-    if (selectedDepartment) {
-      console.log("Selected Department updated:", selectedDepartment);
-      // Você pode adicionar lógica adicional aqui, se necessário
+  //const deleteDepartment = useDeleteDepartment();
+
+  const [modalDepartmentOpen, setModalDepartmentOpen] = React.useState(false);
+
+  const toggleModalAdm = () => {
+    setModalDepartmentOpen(!modalDepartmentOpen);
+  };
+
+  const handleDeleteDepartment = async (id) => {
+    const deletedId = await deleteDepartment(id);
+    if (deletedId !== null) {
+      window.location.reload();
+    } else {
+      console.error('Failed to delete admin with ID:', id);
     }
-  }, [selectedDepartment]);
+  };
 
+  function formatDate(dateString) {
+    const date = new Date(dateString);
 
-  /** back a list of departments*/
-  const departments = useDepartmentSelect();
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
 
+    return `${day}/${month}/${year}`;
+  }
 
-  const { formData, handleDepartmentChange, onSubmit } = useDepartmentForm();
+  function handleShowModal(name, description) {
+    setDescriptionSelectedDepartment(description);
+    setNameSelectedDepartment(name);
+    handleShowDepartmentDescriptionsModal();
+  }
+
+  function handleShowDepartmentDescriptionsModal() {
+    setModalDepartmentOpen(!modalDepartmentOpen);
+  }
+
+  useEffect(async () => {
+    if (detailedDepartmentData.length === 0) {
+      const foundDepartment = await useFindAllDepartments();
+      setDetailedDepartmentData(foundDepartment);
+    }
+  }, [detailedDepartmentData]);
 
   return (
     <Form>
@@ -39,111 +78,70 @@ function DepartmentsList() {
             </tr>
           </thead>
           <tbody>
-            <tr className="table-">
-              <td className="table-user">
-                <b>Financeiro</b>
-              </td>
-              <td>
-                <span className="text-muted">
-                  10/09/{new Date().getFullYear()}
-                </span>
-              </td>
-              <td>
-                <span className="name mb-0 text-sm">
+            {detailedDepartmentData.map((department) => (
+              <tr className="table-" key={department.ID_Department}>
+                <td className="table-user">
+                  <b>{department.DepartmentName}</b>
+                </td>
+                <td>
+                  <span className="text-muted">
+                    {formatDate(department.CreatedAt)}
+                  </span>
+                </td>
+                <td>
+                  <span className="name mb-0 text-sm">
+                    {department.Responsible}
+                  </span>
+                </td>
+                <td className="text-muted">
+                  {
+                    department.Description ? (
+                      <Nav navbar>
+                        <NavItem>
+                          <NavLink target="_blank">
+                            <a href="#" className="text-underline">
+                              <span
+                                onClick={() => handleShowModal(department.DepartmentName, department.Description)}
+                                className="name mb-0 text-sm"
+                              >
+                                Ver
+                              </span>
+                            </a>
+                          </NavLink>
+                        </NavItem>
+                      </Nav>
+                    ) : (
+                      <span
+                        className="name mb-0 text-sm"
+                      >
+                        Não há descrição
+                      </span>
 
-                </span>
-              </td>
-              <td>
-                <a
-                  className="font-weight-bold"
-                  href="#pablo"
-                // onClick={(e) => e.preventDefault()}
-                >
-                  Ver
-                </a>
-              </td>
-              <td>
-                <label className="custom-toggle">
-                  <input defaultChecked type="checkbox" />
-                  <span
-                    className="custom-toggle-slider rounded-circle"
-                    data-label-off="No"
-                    data-label-on="Yes"
-                  />
-                </label>
-              </td>
-            </tr>
-            <tr className="table-">
-              <td className="table-user">
-                <b>Comercial</b>
-              </td>
-              <td>
-                <span className="text-muted">
-                  08/09/{new Date().getFullYear()}
-                </span>
-              </td>
-              <td>
-                <span className="name mb-0 text-sm">
-                  Financeiro
-                </span>
-              </td>
-              <td>
-                <a
-                  className="font-weight-bold"
-                  href="#pablo"
-                //onClick={(e) => e.preventDefault()}
-                >
-                  Ver
-                </a>
-              </td>
-              <td>
-                <label className="custom-toggle">
-                  <input type="checkbox" />
-                  <span
-                    className="custom-toggle-slider rounded-circle"
-                    data-label-off="No"
-                    data-label-on="Yes"
-                  />
-                </label>
-              </td>
-            </tr>
-            <tr className="table-">
-              <td className="table-user">
-                <b>Gestão de Pessoas</b>
-              </td>
-              <td>
-                <span className="text-muted">
-                  30/08/{new Date().getFullYear()}
-                </span>
-              </td>
-              <td>
-                <span className="name mb-0 text-sm">
-
-                </span>
-              </td>
-              <td>
-                <a
-                  className="font-weight-bold"
-                  href="#pablo"
-                //onClick={(e) => e.preventDefault()}
-                >
-                  Ver
-                </a>
-              </td>
-              <td>
-                <label className="custom-toggle">
-                  <input defaultChecked type="checkbox" />
-                  <span
-                    className="custom-toggle-slider rounded-circle"
-                    data-label-off="No"
-                    data-label-on="Yes"
-                  />
-                </label>
-              </td>
-            </tr>
+                    )}
+                </td>
+                <td>
+                  <label className="custom-toggle">
+                    <input type="checkbox" checked={department.Status ? true : false} />
+                    <span
+                      className="custom-toggle-slider rounded-circle"
+                      data-label-off="No"
+                      data-label-on="Yes"
+                    />
+                  </label>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </Table>
       </Card>
+
+      <ShowDepartmentDescriptionsModal
+        handleShowDepartmentDescriptionsModal={handleShowDepartmentDescriptionsModal}
+        modalOpen={modalDepartmentOpen}
+        departmentDescription={descriptionSelectedDepartment}
+        departmentName={nameSelectedDepartment}
+      />
+
     </Form>
   );
 }

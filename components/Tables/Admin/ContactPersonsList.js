@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Badge,
   Card,
@@ -8,40 +8,21 @@ import {
   Table,
   UncontrolledTooltip,
 } from 'reactstrap';
+import ModalAdm from "../../Modals/admin/ModalAdm"
+import { useFindAllAdmin } from "../../../hooks/admin/useFindAllAdmin"
+import { useDeleteAdmin } from "../../../hooks/admin/useDeleteAdmin"
 
-import { useFindAllAdmin } from "../../../hooks/useFindAllAdmin"
-import { useDeleteAdmin } from "../../../hooks/useDeleteAdmin"
+function ContactPersonsList() {
 
-const ContactPersonsList = () => {
+  const [userAdministratorAccountData, setUserAdministratorAccountData] = useState([]);
 
-  const admins = useFindAllAdmin();
   const deleteAdmin = useDeleteAdmin();
 
-  console.log(admins)
-
-  {/** Modal  Adm*/ }
   const [modalAdmOpen, setModalAdmOpen] = React.useState(false);
-
-  const [formData, setFormData] = useState({
-    name: '',
-    lastname: '',
-    email: '',
-    password: '',
-    phone: '',
-  });
-
 
   const toggleModalAdm = () => {
     setModalAdmOpen(!modalAdmOpen);
   };
-
-  //const handleSave = () => {
-  //  toggleModalAdm();
-  //};
-
-  //const handleInputChange = (fieldName, value) => {
-  //  setFormData({ ...formData, [fieldName]: value });
-  //};
 
   const handleDeleteAdmin = async (id) => {
     const deletedId = await deleteAdmin(id);
@@ -52,13 +33,20 @@ const ContactPersonsList = () => {
     }
   };
 
+  useEffect(async () => {
+    if (userAdministratorAccountData.length == 0) {
+      const foundAdministrators = await useFindAllAdmin();
+      setUserAdministratorAccountData(foundAdministrators);
+    }
+  }, [userAdministratorAccountData])
+
   return (
     <Card>
       {/** CardHeader with Button register and export */}
       <CardHeader className="border-0">
         <Row className="align-items-center">
           <Col xs="6">
-            <h3 className="mb-0">Lista de Pessoas de Contato</h3>
+            <h3 className="mb-0">Lista de Contatos</h3>
           </Col>
         </Row>
       </CardHeader>
@@ -67,36 +55,44 @@ const ContactPersonsList = () => {
         <thead className="thead-light">
           <tr>
             <th className="text-left">Nome</th>
-            <th className="text-left">Telefone</th>
             <th className="text-left">Email</th>
-            <th className="text-left">Cliente</th>
-            <th className="text-left">Ocupação</th>
+            <th className="text-left">Celular</th>
+            <th className="text-left">Estado</th>
+            <th className="text-center">Previlégios</th>
             <th className="text-center" />
           </tr>
         </thead>
         <tbody>
-          {admins.map((admin) => (
+          {userAdministratorAccountData.map((admin) => (
             <tr key={admin.id}>
               <td className="table-user">
-                <b className="text-left">John Michael</b>
-              </td>
-              <td className="text-left">
-                <span className="text-muted">{admin.phone}</span>
+                <img
+                  alt="..."
+                  className="avatar rounded-circle mr-3"
+                  //src={require(`../../../assets/img/theme/team-${admin.id}.jpg`)}
+                  src={require(`../../../assets/img/theme/team-1.jpg`)}
+                />
+                <b className="text-left">{admin.name}</b>
               </td>
               <td className="text-left">
                 <span className="text-muted">{admin.email}</span>
               </td>
+              <td className="text-left">
+                <span className="text-muted">{admin.phone}</span>
+              </td>
               <td>
+                <Badge color="success" pill>
+                  Active
+                </Badge>
+              </td>
+              <td className="text-center">
                 <a
                   className="font-weight-bold"
                   href="#pablo"
                   onClick={(e) => e.preventDefault()}
                 >
-                  Argon Dashboard PRO
+                  {admin.privileges}
                 </a>
-              </td>
-              <td className="text-left">
-                Financeiro
               </td>
               <td className="text-center table-actions">
                 <a
@@ -115,6 +111,16 @@ const ContactPersonsList = () => {
           ))}
         </tbody>
       </Table>
+      {/* <ModalAdm
+        isOpen={modalAdmOpen}
+        toggle={toggleModalAdm}
+        //handleSave={handleSave}
+        formData={userAdministratorAccountData}
+      //handleInputChange={handleInputChange}
+      /> */}
+
+
+
     </Card>
   );
 };

@@ -149,7 +149,9 @@ function CustomerUserRegister() {
         handleFormFieldsAutocomplete,
         hasValuesChangedWithAPIData,
         handleValuesChangedWithAPIData,
-        validateAddClientCompanyForm
+        validateAddClientCompanyForm,
+        handleValidateAddClientCompanyForm,
+        isCustomerCompanyFormValidated
     } = useCreateClientCompany();
 
     const {
@@ -170,6 +172,45 @@ function CustomerUserRegister() {
     const [date, setdate] = React.useState(false);
     const [ccv, setccv] = React.useState(false);
 
+    const dataOptionsToCompanySector = [
+        { id: "0", text: "Privado" },
+        { id: "1", text: "Público" },
+    ];
+
+    function handleChooseSector(e) {
+        const selectedId = e.target.value;
+        const optionType = dataOptionsToCompanySector.filter(option => option.id === selectedId);
+        setCustomerBusinessSector(optionType[0].text);
+        if (optionType.length === 0) {
+            setCustomerBusinessSectorState("invalid");
+        } else {
+            setCustomerBusinessSectorState("valid");
+        }
+    }
+
+    const dataOptionsToCompanyTypes = [
+        { id: "0", text: "EI" },
+        { id: "1", text: "MEI" },
+        { id: "2", text: "Ltda" },
+        { id: "3", text: "SLU" },
+        { id: "4", text: "SS" },
+        { id: "5", text: "S/A" },
+    ];
+
+    function handleChooseType(e) {
+        const selectedId = e.target.value;
+        const texts = dataOptionsToCompanyTypes
+            .filter(option => option.id === selectedId)
+            .map(option => option.text);
+        console.log(texts[0]);
+        setCompanyTypes(texts[0]);
+        // if (selectedId === 0) {
+        //     setCompanyTypesState("invalid");
+        // } else {
+        //     setCompanyTypesState("valid");
+        // }
+    }
+
     const handleNextStep = () => {
         if (step === 1) {
             if (checkbox === null) {
@@ -177,8 +218,11 @@ function CustomerUserRegister() {
             }
             handleValidateAddCustomerAccountHolderForm();
         }
-        if (checkboxState === "valid") {
+        if (step === 1 && checkboxState === "valid") {
             setStep(step + 1);
+        }
+        if (step === 2 && individualEmployerIdNumberState === "valid" && checkboxState === "valid") {
+            handleValidateAddClientCompanyForm();
         }
     };
 
@@ -200,16 +244,9 @@ function CustomerUserRegister() {
     }, [brasilAPICNPJData])
 
     useEffect(() => {
-        console.log(
-            loadingCNPJValidation,
-            errorCNPJValidation,
-            brasilAPICNPJData.cnpj,
-            !brasilAPICNPJData.cnpj
-        )
         if (hasValuesChangedWithAPIData) {
             handleValuesChangedWithAPIData(!hasValuesChangedWithAPIData);
             validateAddClientCompanyForm();
-            console.log("Validou!!")
         }
     }, [hasValuesChangedWithAPIData, validateAddClientCompanyForm]);
 
@@ -335,25 +372,23 @@ function CustomerUserRegister() {
                                                                     </div>
                                                                 </Col>
                                                                 <Col className="mb-3" md="6">
-                                                                    <FormGroup>
-                                                                        <label
-                                                                            className="form-control-label"
-                                                                            htmlFor="validationCustomerBirthdate"
-                                                                        >
-                                                                            Data de Nascimento
-                                                                        </label>
-                                                                        <ReactDatetime
-                                                                            inputProps={{
-                                                                                placeholder: "__/__/__",
-                                                                            }}
-                                                                            timeFormat={false}
-                                                                            onChange={handleBirthdateChange}
+                                                                    <label
+                                                                        className="form-control-label"
+                                                                        htmlFor="validationCustomerBirthdate"
+                                                                    >
+                                                                        Data de Nascimento
+                                                                    </label>
+                                                                    <ReactDatetime
+                                                                        inputProps={{
+                                                                            placeholder: "__/__/__",
+                                                                        }}
+                                                                        timeFormat={false}
+                                                                        onChange={handleBirthdateChange}
 
-                                                                        />
-                                                                        {/* <div className="invalid-feedback">
+                                                                    />
+                                                                    {/* <div className="invalid-feedback">
                                                                             É necessário selecionar uma data.
                                                                         </div> */}
-                                                                    </FormGroup>
                                                                 </Col>
                                                             </div>
                                                             <div className="form-row">
@@ -463,11 +498,15 @@ function CustomerUserRegister() {
                                                                         value={individualEmployerIdNumber}
                                                                         onChange={(e) => handleSaveCNPJ(e.target.value)}
                                                                     >
-                                                                        {(inputProps) => <Input {...inputProps} id="validationCustomerIndividualEmployerIdnNumber" invalid={individualEmployerIdNumberState === "invalid"} />}
+                                                                        {(inputProps) => <Input {...inputProps} id="validationCustomerIndividualEmployerIdnNumber" valid={individualEmployerIdNumberState === "valid"} invalid={individualEmployerIdNumberState === "invalid"} />}
                                                                     </InputMask>
-                                                                    {loadingCNPJValidation && <div style={{ display: 'none', width: '100%', marginTop: '0.25rem', fontSize: '80%', color: '#5e72e4' }}>Validando CNPJ...</div>}
-                                                                    {errorCNPJValidation !== null && <div className="invalid-feedback">Ocorreu um erro ao validar o CNPJ.</div>}
-                                                                    {brasilAPICNPJData.cnpj && brasilAPICNPJData.cnpj !== null ? <div className="valid-feedback">CNPJ válido!</div> : <div className="invalid-feedback">CNPJ inválido!</div>}
+                                                                    {
+                                                                        loadingCNPJValidation ? <div style={{ display: 'none', width: '100%', marginTop: '0.25rem', fontSize: '80%', color: '#5e72e4' }}>Validando CNPJ...</div> : (
+                                                                            errorCNPJValidation !== null ? <div className="invalid-feedback">Ocorreu um erro ao validar o CNPJ.</div> : (
+                                                                                brasilAPICNPJData ? <div className="valid-feedback">CNPJ válido!</div> : <div className="invalid-feedback">CNPJ inválido!</div>
+                                                                            )
+                                                                        )
+                                                                    }
                                                                 </Col>
                                                                 <Col className="mb-3" md="6">
                                                                     <label
@@ -534,19 +573,24 @@ function CustomerUserRegister() {
                                                                         Tipo de Empresa
                                                                     </label>
                                                                     <Select2
+                                                                        id="validationCustomerCompanyTypes"
                                                                         className="form-control"
                                                                         data-minimum-results-for-search="Infinity"
+                                                                        valid={companyTypesState === "valid"}
+                                                                        invalid={companyTypesState === "invalid"}
                                                                         options={{
                                                                             placeholder: "Selecione o tipo",
                                                                         }}
-                                                                        data={[
-                                                                            { id: "0", text: "EI" },
-                                                                            { id: "1", text: "MEI" },
-                                                                            { id: "2", text: "Ltda" },
-                                                                            { id: "3", text: "SLU" },
-                                                                            { id: "4", text: "SS" },
-                                                                            { id: "5", text: "S/A" },
-                                                                        ]}
+                                                                        data={dataOptionsToCompanyTypes.map(option => ({ id: option.id, text: option.text }))}
+                                                                        value={companyTypes}
+                                                                        onChange={(e) => {
+                                                                            setCompanyTypes(e.target.value);
+                                                                            if (e.target.value === "") {
+                                                                                setCompanyTypesState("invalid");
+                                                                            } else {
+                                                                                setCompanyTypesState("valid");
+                                                                            }
+                                                                        }}
                                                                     />
                                                                 </Col>
                                                             </div>
@@ -624,8 +668,8 @@ function CustomerUserRegister() {
                                                                         placeholder="www.site.com.br"
                                                                         value={customerWebSite}
                                                                         type="text"
-                                                                        valid={customerWebSiteState === "valid"}
-                                                                        invalid={customerWebSiteState === "invalid"}
+                                                                        // valid={customerWebSiteState === "valid"}
+                                                                        // invalid={customerWebSiteState === "invalid"}
                                                                         onChange={(e) => {
                                                                             setCustomerWebSite(e.target.value);
                                                                         }}
@@ -639,9 +683,8 @@ function CustomerUserRegister() {
                                                                         Matriz
                                                                     </label>
                                                                     <Input
-                                                                        defaultValue=""
                                                                         id="validationCustomerIdHeadOfficeBranch"
-                                                                        placeholder=""
+                                                                        placeholder="Matriz ou Filial"
                                                                         value={idHeadOfficeBranch}
                                                                         type="text"
                                                                         valid={idHeadOfficeBranchState === "valid"}
@@ -669,15 +712,24 @@ function CustomerUserRegister() {
                                                                         Setor
                                                                     </label>
                                                                     <Select2
+                                                                        id="validationCustomerBusinessSector"
                                                                         className="form-control"
                                                                         data-minimum-results-for-search="Infinity"
+                                                                        valid={customerBusinessSectorState === "valid"}
+                                                                        invalid={customerBusinessSectorState === "invalid"}
                                                                         options={{
                                                                             placeholder: "Selecione o setor",
                                                                         }}
-                                                                        data={[
-                                                                            { id: "0", text: "Privado" },
-                                                                            { id: "1", text: "Público" },
-                                                                        ]}
+                                                                        data={dataOptionsToCompanySector.map(option => ({ id: option.id, text: option.text }))}
+                                                                        value={customerBusinessSector}
+                                                                        onChange={(e) => {
+                                                                            setCustomerBusinessSector(e.target.value);
+                                                                            if (e.target.value === "") {
+                                                                                setCustomerBusinessSectorState("invalid");
+                                                                            } else {
+                                                                                setCustomerBusinessSectorState("valid");
+                                                                            }
+                                                                        }}
                                                                     />
                                                                 </Col>
                                                                 <Col className="mb-3" md="6">
@@ -891,7 +943,7 @@ function CustomerUserRegister() {
                                                 <div>
                                                     <div>
                                                         <h2>Informações de pagamento</h2>
-                                                        <div className="custom-control custom-radio mb-4">
+                                                        {/* <div className="custom-control custom-radio mb-4">
                                                             <input
                                                                 className="custom-control-input"
                                                                 defaultChecked
@@ -905,7 +957,7 @@ function CustomerUserRegister() {
                                                             >
                                                                 Cartão de crédito
                                                             </label>
-                                                        </div>
+                                                        </div> */}
                                                         <Card className="bg-gradient-default">
                                                             <CardBody>
                                                                 <Row className="justify-content-between align-items-center">
@@ -1027,7 +1079,7 @@ function CustomerUserRegister() {
                                                                 </div>
                                                             </CardBody>
                                                         </Card>
-                                                        <div className="custom-control custom-radio mb-3">
+                                                        {/* <div className="custom-control custom-radio mb-3">
                                                             <input
                                                                 className="custom-control-input"
                                                                 id="customRadio5"
@@ -1054,7 +1106,7 @@ function CustomerUserRegister() {
                                                             >
                                                                 Pix
                                                             </label>
-                                                        </div>
+                                                        </div> */}
                                                     </div>
                                                 </div>
                                             )}

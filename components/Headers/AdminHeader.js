@@ -37,7 +37,9 @@ function AdminHeader(
     handleShowPlansUserRegister,
     handleShowDepartmentsUserRegister,
     handleShowRolesUserRegister,
-    handleShowContactPersonsUserRegister
+    handleShowContactPersonsUserRegister,
+    employeeRecordEntrySettingsButtonName,
+    handleShowEmployeeRecordEntrySettings
   }) {
   return (
     <>
@@ -104,7 +106,19 @@ function AdminHeader(
                     </Button>
                   )
                 }
-
+                {
+                  employeeRecordEntrySettingsButtonName && (
+                    <Button
+                      className="btn-neutral"
+                      color=""
+                      href="#pablo"
+                      onClick={handleShowEmployeeRecordEntrySettings}
+                      size="sm"
+                    >
+                      {employeeRecordEntrySettingsButtonName}
+                    </Button>
+                  )
+                }
                 <Button
                   className="btn-neutral"
                   color=""
@@ -131,6 +145,7 @@ AdminHeader.propTypes = {
   handleShowDepartmentsUserRegister: () => { },
   handleShowRolesUserRegister: () => { },
   handleShowContactPersonsUserRegister: () => { },
+  handleShowEmployeeRecordEntrySettings: () => { }
 };
 
 AdminHeader.propTypes = {
@@ -144,6 +159,8 @@ AdminHeader.propTypes = {
   handleShowDepartmentsUserRegister: PropTypes.func,
   handleShowRolesUserRegister: PropTypes.func,
   handleShowContactPersonsUserRegister: PropTypes.func,
+  employeeRecordEntrySettingsButtonName: PropTypes.string,
+  handleShowEmployeeRecordEntrySettings: PropTypes.func,
 };
 
 export default AdminHeader;

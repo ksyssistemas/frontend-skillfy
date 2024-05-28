@@ -36,7 +36,7 @@ const useCNPJ = () => {
       }
     };
 
-    if (cnpj != "" &&
+    if (cnpj && cnpj !== "" &&
       cnpj.length === 14) {
       handleCPNJValidationLoading();
       fetchData(cnpj);

@@ -81,7 +81,6 @@ function Login() {
         }
 
         //redirectUrl += `?id=${data.data.id}&sector=${encodeURIComponent(data.data.sector)}`;
-
         router.push(redirectUrl); // Redireciona o usuário para a nova rota
 
       } else {

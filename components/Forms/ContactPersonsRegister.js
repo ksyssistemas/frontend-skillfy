@@ -4,8 +4,6 @@ import dynamic from "next/dynamic";
 // react plugin used to create DropdownMenu for selecting items
 const Select2 = dynamic(() => import("react-select2-wrapper"));
 import { Button, Card, CardHeader, CardBody, FormGroup, Form, Input, Row, Col, Table } from "reactstrap";
-import useDepartmentSelect from "../../hooks/department/useDepartmentSelect";
-import useDepartmentForm from "../../hooks/department/useDepartmentForm";
 
 function ContactPersonsRegister() {
 
@@ -20,9 +18,8 @@ function ContactPersonsRegister() {
 
 
     /** back a list of departments*/
-    const departments = useDepartmentSelect();
 
-    const { formData, handleDepartmentChange, onSubmit } = useDepartmentForm();
+    //const { formData, handleDepartmentChange, onSubmit } = useDepartmentForm();
 
     return (
         <Form>
