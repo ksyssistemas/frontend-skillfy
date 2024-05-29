@@ -8,7 +8,7 @@ import {
   Table,
   UncontrolledTooltip,
 } from 'reactstrap';
-import ModalAdm from "../../Modals/admin/ModalAdm"
+
 import { useFindAllAdmin } from "../../../hooks/admin/useFindAllAdmin"
 import { useDeleteAdmin } from "../../../hooks/admin/useDeleteAdmin"
 

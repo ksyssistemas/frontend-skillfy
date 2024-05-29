@@ -46,7 +46,7 @@ function Login() {
   const handleSubmit = async () => {
 
     try {
-      const response = await fetch('http://dlist.com.br:3009/auth/signin', {
+      const response = await fetch('https://skillfy.com.br/auth/signin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ function Login() {
         handleSaveAuthenticationDataLoggedInUser(data);
         // console.log('Data from API:', data); // Adicione esta linha
 
-        let redirectUrl = 'http://dlist.com.br:9001';
+        let redirectUrl = 'https://skillfy.com.br';
 
         switch (data.role) {
           case 'administrator':
@@ -77,7 +77,7 @@ function Login() {
             break;
           default:
             console.log('Redirecionando para a página padrão');
-            redirectUrl = 'http://dlist.com.br:9001/default';
+            redirectUrl = 'https://skillfy.com.br/default';
         }
 
         //redirectUrl += `?id=${data.data.id}&sector=${encodeURIComponent(data.data.sector)}`;
