@@ -1,7 +1,7 @@
 export async function useFindAllAdmin() {
 
   try {
-    const response = await fetch(`http://dlist.com.br:3008/administrator/findAll`);
+    const response = await fetch(`https://skillfy.com.br/administrator/findAll`);
 
     if (!response.ok) {
       throw new Error('Network response was not ok.');
