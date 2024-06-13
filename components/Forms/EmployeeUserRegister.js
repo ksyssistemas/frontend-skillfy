@@ -22,6 +22,17 @@ import useCreateEmployee from '../../hooks/employee/useCreateEmployee';
 import InputMask from 'react-input-mask';
 import { useRouter } from 'next/router';
 import useCEP from '../../hooks/useCEP';
+import useCreateTypeContract from '../../hooks/featuresEmploymentContract/useCreateTypeContract';
+import useCreateWorkModel from '../../hooks/featuresEmploymentContract/useCreateWorkModel';
+import useCreateWorkplace from '../../hooks/featuresEmploymentContract/useCreateWorkplace';
+import { useFindAllTypeContract } from '../../hooks/featuresEmploymentContract/useFindAllTypeContract';
+import { useFindAllWorkModels } from '../../hooks/featuresEmploymentContract/useFindAllWorkModels';
+import { useFindAllWorkplaces } from '../../hooks/featuresEmploymentContract/useFindAllWorkplaces';
+import { useFindAllDepartments } from '../../hooks/department/useFindAllDepartments';
+import { useFindAllRoles } from '../../hooks/role/useFindAllRoles';
+import { useFindAllFunctions } from '../../hooks/employeeFunction/useFindAllFunctions';
+import { employmentContractDataSearchAndProcess } from '../../util/employmentContractDataSearchAndProcess'
+import { handleSelectionEmploymentContractData } from '../../util/handleSelectionEmploymentContractData'
 
 function EmployeeUserRegister() {
 
@@ -90,14 +101,6 @@ function EmployeeUserRegister() {
         setEmployeeLeaderName,
         employeeLeaderNameState,
         setEmployeeLeaderNameState,
-        employeeContractType,
-        setEmployeeContractType,
-        employeeContractTypeState,
-        setEmployeeContractTypeState,
-        employeetWorkModel,
-        setEmployeetWorkModel,
-        employeetWorkModelState,
-        setEmployeetWorkModelState,
         employeeEntryTime,
         setEmployeeEntryTime,
         employeeEntryTimeState,
@@ -110,10 +113,6 @@ function EmployeeUserRegister() {
         setEmployeeDepartureTime,
         employeeDepartureTimeState,
         setEmployeeDepartureTimeState,
-        employeetWorkplace,
-        setEmployeetWorkplace,
-        employeetWorkplaceState,
-        setEmployeetWorkplaceState,
         handleValidateAddEmployeeForm,
         handleBirthdateChange,
         handleAdmissionDateChange,
@@ -122,8 +121,29 @@ function EmployeeUserRegister() {
         hasValuesChangedWithAPIData,
         handleFormFieldsAutocomplete,
         handleValuesChangedWithAPIData,
-        validateAddEmployeeAddressForm
+        validateAddEmployeeAddressForm,
     } = useCreateEmployee();
+
+    const {
+        handleEmployeeContractType,
+        handleEmployeeContractTypeState,
+        contractTypeDataList,
+        handleContractTypeDataList
+    } = useCreateTypeContract();
+
+    const {
+        handleEmployeetWorkModel,
+        handleEmployeetWorkModelState,
+        workModelDataList,
+        handleWorkModelDataList
+    } = useCreateWorkModel();
+
+    const {
+        handleEmployeeWorkplace,
+        handleEmployeeWorkplaceState,
+        workplaceDataList,
+        handleWorkplaceDataList
+    } = useCreateWorkplace();
 
     const {
         brasilAPICEPData,
@@ -138,144 +158,18 @@ function EmployeeUserRegister() {
     } = useCEP();
 
     const [departmentDataList, setDepartmentDataList] = useState([]);
-
-    async function getDepartmentDataList() {
-        try {
-            const response = await fetch(`http://dlist.com.br:3010/department`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            if (response.ok) {
-                let data = await response.json();
-                if (data && data.length > 0) {
-                    data = data.map((department, index) => ({
-                        id: index.toString(),
-                        text: department.name
-                    }));
-                    setDepartmentDataList([data]);
-                } else {
-                    setDepartmentDataList([{ id: "0", text: "Não há departamentos, clique aqui para cadastrá-los." }])
-                }
-            } else {
-                console.error('Erro na resposta: ', response.status);
-            }
-        } catch (error) {
-            console.error('Erro no pedido: ', error);
-        }
-    };
-
-    function handleChooseDepartment(e) {
-        const selectedId = e.target.value;
-        console.log(departmentDataList);
-        console.log(departmentDataList, departmentDataList.length === 0);
-        if (departmentDataList && departmentDataList.length === 1) {
-            let redirectUrl = 'http://dlist.com.br:9001/records/departments';
-            router.push(redirectUrl);
-        } else {
-            const optionType = departmentDataList.filter(option => option.id === selectedId);
-            setDepartmentWhichEmployeeReports(optionType[0].text);
-            if (optionType.length === 0) {
-                setDepartmentWhichEmployeeReportsState("invalid");
-            } else {
-                setDepartmentWhichEmployeeReportsState("valid");
-            }
-        }
+    const handleDepartmentDataList = (departmentData) => {
+        setDepartmentDataList(departmentData);
     }
 
     const [roleDataList, setRoleDataList] = useState([]);
-
-    async function getRoleDataList() {
-        try {
-            const response = await fetch(`http://dlist.com.br:3010/role`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            if (response.ok) {
-                let data = await response.json();
-                console.log(response.ok);
-                console.log(data);
-                if (data && data.length > 0) {
-                    data = data.map((role, index) => ({
-                        id: index.toString(),
-                        text: role.name
-                    }));
-                    setRoleDataList([data]);
-                } else {
-                    setRoleDataList([{ id: "0", text: "Não há cargos, clique aqui para cadastrá-los." }])
-                }
-            } else {
-                console.error('Erro na resposta: ', response.status);
-            }
-        } catch (error) {
-            console.error('Erro no pedido: ', error);
-        }
-    };
-
-    function handleChooseRole(e) {
-        const selectedId = e.target.value;
-        console.log(!roleDataList, roleDataList.length === 0);
-        if (!roleDataList || roleDataList.length === 0) {
-            let redirectUrl = 'http://dlist.com.br:9001/records/roles';
-            router.push(redirectUrl);
-        } else {
-            const optionType = roleDataList.filter(option => option.id === selectedId);
-            setEmployeeRole(optionType[0].text);
-            if (optionType.length === 0) {
-                setEmployeeRoleState("invalid");
-            } else {
-                setEmployeeRoleState("valid");
-            }
-        }
+    const handleRoleDataList = (roleData) => {
+        setRoleDataList(roleData);
     }
 
     const [functionDataList, setFunctionDataList] = useState([]);
-
-    async function getFunctionDataList() {
-        try {
-            const response = await fetch(`http://dlist.com.br:3010/employeeFunction`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            if (response) {
-                let data = await response.json();
-                if (data && data.length > 0) {
-                    data = data.map((functionUser, index) => ({
-                        id: index.toString(),
-                        text: functionUser.name
-                    }));
-                    setFunctionDataList([data]);
-                } else {
-                    setFunctionDataList([{ id: "0", text: "Não há funções, clique aqui para cadastrá-los." }])
-                }
-            } else {
-                console.error('Erro na resposta: ', response.status);
-            }
-        } catch (error) {
-            console.error('Erro no pedido: ', error);
-        }
-    };
-
-    function handleChooseFunction(e) {
-        const selectedId = e.target.value;
-        console.log(!functionDataList, functionDataList.length === 0);
-        if (!functionDataList || functionDataList.length === 0) {
-            let redirectUrl = 'http://dlist.com.br:9001/records/roles';
-            router.push(redirectUrl);
-        } else {
-            const optionType = functionDataList.filter(option => option.id === selectedId);
-            setEmployeeFunction(optionType[0].text);
-            if (optionType.length === 0) {
-                setEmployeeFunctionState("invalid");
-            } else {
-                setEmployeeFunctionState("valid");
-            }
-        }
+    const handleFunctionDataList = (functionData) => {
+        setFunctionDataList(functionData);
     }
 
     function handleIsEmployeeLeader() {
@@ -331,170 +225,22 @@ function EmployeeUserRegister() {
         }
     }
 
-    const [contractTypeDataList, setContractTypeDataList] = useState([]);
-
-    async function getContractTypeDataList() {
-        try {
-            const response = await fetch(`http://dlist.com.br:3010/contract-details`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            if (response.ok) {
-                let data = await response.json();
-                console.log(response.ok);
-                console.log(data);
-                if (data && data.length > 0) {
-                    data = data.map((contractType, index) => ({
-                        id: index.toString(),
-                        text: contractType.name
-                    }));
-                    setContractTypeDataList([data]);
-                } else {
-                    setContractTypeDataList([{ id: "0", text: 'Não há tipos de contrato, use o botão "Configurações".' }])
-                }
-            } else {
-                console.error('Erro na resposta: ', response.status);
-            }
-        } catch (error) {
-            console.error('Erro no pedido: ', error);
-        }
-    };
-
-    function handleChooseContractType(e) {
-        const selectedId = e.target.value;
-        console.log(!contractTypeDataList, contractTypeDataList.length === 0);
-        if (!contractTypeDataList || contractTypeDataList.length === 0) {
-            let redirectUrl = 'http://dlist.com.br:9001/records/contract-type';
-            router.push(redirectUrl);
-        } else {
-            const optionType = contractTypeDataList.filter(option => option.id === selectedId);
-            setEmployeeContractType(optionType[0].text);
-            if (optionType.length === 0) {
-                setEmployeeContractTypeState("invalid");
-            } else {
-                setEmployeeContractTypeState("valid");
-            }
-        }
-    }
-
-    const [workModelDataList, setWorkModelDataList] = useState([]);
-
-    async function getWorkModelDataList() {
-        try {
-            const response = await fetch(`http://dlist.com.br:3010/work-model`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            if (response.ok) {
-                let data = await response.json();
-                if (data && data.length > 0) {
-                    data = data.map((workModel, index) => ({
-                        id: index.toString(),
-                        text: workModel.name
-                    }));
-                    setWorkModelDataList([data]);
-                } else {
-                    setWorkModelDataList([{ id: "0", text: 'Não há colaboradores, use o botão "Configurações".' }])
-                }
-            } else {
-                console.error('Erro na resposta: ', response.status);
-            }
-        } catch (error) {
-            console.error('Erro no pedido: ', error);
-        }
-    };
-
-    function handleChooseWorkModel(e) {
-        const selectedId = e.target.value;
-        if (!workModelDataList || workModelDataList.length === 0) {
-            let redirectUrl = 'http://dlist.com.br:9001/records/work-model';
-            router.push(redirectUrl);
-        } else {
-            const optionType = workModelDataList.filter(option => option.id === selectedId);
-            setEmployeetWorkModel(optionType[0].text);
-            if (optionType.length === 0) {
-                setEmployeetWorkModelState("invalid");
-            } else {
-                setEmployeetWorkModelState("valid");
-            }
-        }
-    }
-
-    const [workplaceDataList, setWorkplaceDataList] = useState([]);
-
-    async function getWorkplaceDataList() {
-        try {
-            const response = await fetch(`http://dlist.com.br:3010/work-place`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            if (response.ok) {
-                let data = await response.json();
-                if (data && data.length > 0) {
-                    data = data.map((workplace, index) => ({
-                        id: index.toString(),
-                        text: workplace.name
-                    }));
-                    setWorkplaceDataList([data]);
-                } else {
-                    setWorkplaceDataList([{ id: "0", text: 'Não há local de trabalho, use o botão "Configurações".' }])
-                }
-            } else {
-                console.error('Erro na resposta: ', response.status);
-            }
-        } catch (error) {
-            console.error('Erro no pedido: ', error);
-        }
-    };
-
-    function handleChooseWorkplace(e) {
-        const selectedId = e.target.value;
-        if (!workplaceDataList || workplaceDataList.length === 0) {
-            let redirectUrl = 'http://dlist.com.br:9001/records/work-place';
-            router.push(redirectUrl);
-        } else {
-            const optionType = workplaceDataList.filter(option => option.id === selectedId);
-            setEmployeetWorkplace(optionType[0].text);
-            if (optionType.length === 0) {
-                setEmployeetWorkplaceState("invalid");
-            } else {
-                setEmployeetWorkplaceState("valid");
-            }
-        }
-    }
-
     useEffect(() => {
         if (departmentDataList.length === 0 &&
             roleDataList.length === 0 &&
             functionDataList.length === 0 &&
-            employeeDataList.length === 0 &&
             contractTypeDataList.length === 0 &&
             workModelDataList.length === 0 &&
             workplaceDataList.length === 0
         ) {
-            getDepartmentDataList();
-            getRoleDataList();
-            getFunctionDataList();
-            getEmployeeDataList();
-            getWorkModelDataList();
-            getContractTypeDataList();
-            getWorkplaceDataList();
+            employmentContractDataSearchAndProcess(useFindAllTypeContract, handleContractTypeDataList, 'contractType');
+            employmentContractDataSearchAndProcess(useFindAllWorkModels, handleWorkModelDataList, 'workModel');
+            employmentContractDataSearchAndProcess(useFindAllWorkplaces, handleWorkplaceDataList, 'workplace');
+            employmentContractDataSearchAndProcess(useFindAllDepartments, handleDepartmentDataList, 'department');
+            employmentContractDataSearchAndProcess(useFindAllRoles, handleRoleDataList, 'role');
+            employmentContractDataSearchAndProcess(useFindAllFunctions, handleFunctionDataList, 'function');
         }
-    }, [
-        departmentDataList,
-        roleDataList,
-        functionDataList,
-        employeeDataList,
-        contractTypeDataList,
-        workModelDataList,
-        workplaceDataList
-    ]);
+    }, [contractTypeDataList, workModelDataList, workplaceDataList, departmentDataList, roleDataList, functionDataList]);
 
     useEffect(() => {
         if (brasilAPICEPData !== null) {
@@ -510,39 +256,6 @@ function EmployeeUserRegister() {
             //validateAddEmployeeForm();
         }
     }, [hasValuesChangedWithAPIData, validateAddEmployeeAddressForm, validateAddEmployeeForm]);
-
-
-    const handleInputChange = (fieldName, value) => {
-        setFormData({ ...formData, [fieldName]: value });
-    };
-
-    const handleSubmit = async () => {
-        try {
-            const response = await fetch('http://localhost:4008/employee', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-
-            if (response.ok) {
-                setFormData({
-                    name: '',
-                    lastName: '',
-                    birthdate: '',
-                    email: '',
-                    password: '',
-                    phoneNumber: ''
-                });
-                console.log('Data sent successfully!');
-            } else {
-                console.error('Error in response:', response.status);
-            }
-        } catch (error) {
-            console.error('Error in request:', error);
-        }
-    };
 
     return (
         <Form>
@@ -792,20 +505,10 @@ function EmployeeUserRegister() {
                                     placeholder=""
                                     value={employeeAddressComplement}
                                     type="text"
-                                    // valid={companyAddressComplementState === "valid"}
-                                    // invalid={companyAddressComplementState === "invalid"}
                                     onChange={(e) => {
                                         setEmployeeAddressComplement(e.target.value);
-                                        // if (e.target.value === "") {
-                                        //     setCompanyAddressComplementState("invalid");
-                                        // } else {
-                                        //     setCompanyAddressComplementState("valid");
-                                        // }
                                     }}
                                 />
-                                {/* <div className="invalid-feedback">
-                                                                        É necessário preencher este campo.
-                                                                    </div> */}
                             </Col>
                         </div>
                         <div className="form-row">
@@ -911,7 +614,7 @@ function EmployeeUserRegister() {
                                         placeholder: "Selecione o departamento",
                                     }}
                                     data={departmentDataList}
-                                    onSelect={handleChooseDepartment}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, departmentDataList, setDepartmentWhichEmployeeReports, setDepartmentWhichEmployeeReportsState)}
                                 />
                             </Col>
                             <Col className="mb-3" md="4">
@@ -929,7 +632,7 @@ function EmployeeUserRegister() {
                                         placeholder: "Selecione o cargo",
                                     }}
                                     data={roleDataList}
-                                    onSelect={handleChooseRole}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, roleDataList, setEmployeeRole, setEmployeeRoleState)}
                                 />
                             </Col>
                             <Col className="mb-3" md="4">
@@ -947,7 +650,7 @@ function EmployeeUserRegister() {
                                         placeholder: "Selecione o função",
                                     }}
                                     data={functionDataList}
-                                    onSelect={handleChooseFunction}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, functionDataList, setEmployeeFunction, setEmployeeFunctionState)}
                                 />
                             </Col>
                         </div>
@@ -1034,7 +737,7 @@ function EmployeeUserRegister() {
                                         placeholder: "Selecione o tipo de contrato",
                                     }}
                                     data={contractTypeDataList}
-                                    onSelect={handleChooseContractType}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, contractTypeDataList, handleEmployeeContractType, handleEmployeeContractTypeState)}
                                 />
                             </Col>
                             <Col className="mb-3" md="4">
@@ -1052,7 +755,7 @@ function EmployeeUserRegister() {
                                         placeholder: "Selecione o modelo de trabalho",
                                     }}
                                     data={workModelDataList}
-                                    onSelect={handleChooseWorkModel}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, workModelDataList, handleEmployeetWorkModel, handleEmployeetWorkModelState)}
                                 />
                             </Col>
                             <Col className="mb-3" md="4">
@@ -1088,7 +791,7 @@ function EmployeeUserRegister() {
                                         placeholder: "Selecione o local de trabalho",
                                     }}
                                     data={workplaceDataList}
-                                    onSelect={handleChooseWorkplace}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, workplaceDataList, handleEmployeeWorkplace, handleEmployeeWorkplaceState)}
                                 />
                             </Col>
                             <Col className="mb-3" md="2">
@@ -1164,7 +867,7 @@ function EmployeeUserRegister() {
                         <Row>
                             <Col md="8" />
                             <Col className="d-flex justify-content-end align-items-center" md="4" >
-                                <Button className="px-5" color="primary" size="lg" type="button" onClick={handleSubmit}>
+                                <Button className="px-5" color="primary" size="lg" type="button" onClick={handleValidateAddEmployeeForm}>
                                     <span className="btn-inner--text">Adicionar Colaborador</span>
                                 </Button>
                             </Col>

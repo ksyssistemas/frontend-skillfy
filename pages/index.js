@@ -35,6 +35,7 @@ import IndexNavbar from "components/Navbars/IndexNavbar.js";
 import IndexHeader from "components/Headers/IndexHeader.js";
 import AuthFooter from "components/Footers/RegisterFooter.js";
 
+
 function Index() {
 
   return (
@@ -171,7 +172,7 @@ function Index() {
                       <div className="d-flex align-items-center">
                         <div>
                           <Badge className="badge-circle mr-3" color="success">
-                          <i className="fas fa-chart-line" />
+                            <i className="fas fa-chart-line" />
                           </Badge>
                         </div>
                         <div>
@@ -183,11 +184,11 @@ function Index() {
                       <div className="d-flex align-items-center">
                         <div>
                           <Badge className="badge-circle mr-3" color="success">
-                          <i className="fas fa-chart-bar" />
+                            <i className="fas fa-chart-bar" />
                           </Badge>
                         </div>
                         <div>
-                        <h4 className="mb-0">Avaliação de Desempenho 180&deg;</h4>
+                          <h4 className="mb-0">Avaliação de Desempenho 180&deg;</h4>
                         </div>
                       </div>
                     </li>
@@ -195,11 +196,11 @@ function Index() {
                       <div className="d-flex align-items-center">
                         <div>
                           <Badge className="badge-circle mr-3" color="success">
-                          <i className="fas fa-users" />
+                            <i className="fas fa-users" />
                           </Badge>
                         </div>
                         <div>
-                        <h4 className="mb-0">Avaliação de Desempenho 360&deg;</h4>
+                          <h4 className="mb-0">Avaliação de Desempenho 360&deg;</h4>
                         </div>
                       </div>
                     </li>
@@ -223,10 +224,10 @@ function Index() {
                 <div className="pr-md-5">
                   <h1>Análise Métrica de Desempenho</h1>
                   <p>
-                  Explore nossa plataforma para análise métrica de desempenho. 
-                  Obtenha insights precisos, avaliando cada métrica essencial. 
-                  Simplificamos o processo para que você possa tomar decisões 
-                  e aprimorar continuamente a sua excelência.
+                    Explore nossa plataforma para análise métrica de desempenho.
+                    Obtenha insights precisos, avaliando cada métrica essencial.
+                    Simplificamos o processo para que você possa tomar decisões
+                    e aprimorar continuamente a sua excelência.
                   </p>
                   <Link href="/auth/login">
                     <a className="font-weight-bold text-warning mt-5">
@@ -252,7 +253,7 @@ function Index() {
                 <div className="pr-md-5">
                   <h1>Ambiente Integrado de Recursos Humanos</h1>
                   <p>
-                  Desfrute de um ambiente centralizado para gestão de recursos humanos. Com a nossa plataforma, você pode criar pesquisas, cadastrar funcionários e utilizar os recursos essenciais do Twig em um único lugar. Simplifique e otimize sua gestão de RH, garantindo eficiência e praticidade em cada etapa.
+                    Desfrute de um ambiente centralizado para gestão de recursos humanos. Com a nossa plataforma, você pode criar pesquisas, cadastrar funcionários e utilizar os recursos essenciais do Twig em um único lugar. Simplifique e otimize sua gestão de RH, garantindo eficiência e praticidade em cada etapa.
                   </p>
                   <Link href="/auth/pricing">
                     <a className="font-weight-bold text-info mt-5">
@@ -270,26 +271,26 @@ function Index() {
               <Col className="text-center" lg="8">
                 <h2 className="display-3">Desperte o Potencial do seu RH com a Twig <span> Uma Jornada para a Excelência</span></h2>
                 <p className="lead">
-                Embarque conosco em uma jornada revolucionária para transformar 
-                sua gestão de recursos humanos. A Twig é muito mais do que uma 
-                plataforma; é a chave para desbloquear o potencial completo de sua equipe. 
-                Imagine um ambiente unificado, onde criar pesquisas, avaliar o desempenho 
-                individual, promover inclusão, e até mesmo medir o engajamento da sua equipe 
-                acontecem de maneira intuitiva e eficiente.
+                  Embarque conosco em uma jornada revolucionária para transformar
+                  sua gestão de recursos humanos. A Twig é muito mais do que uma
+                  plataforma; é a chave para desbloquear o potencial completo de sua equipe.
+                  Imagine um ambiente unificado, onde criar pesquisas, avaliar o desempenho
+                  individual, promover inclusão, e até mesmo medir o engajamento da sua equipe
+                  acontecem de maneira intuitiva e eficiente.
                 </p>
                 <p className="lead">
-                Com a Twig, você não apenas gerencia, você impulsiona. Nossa abordagem 
-                inovadora coloca você no comando, capacitando-o com ferramentas incríveis 
-                para moldar o futuro do seu departamento de RH. Visualize cada aspecto da 
-                performance individual, promova uma cultura inclusiva e meça o pulso da sua 
-                equipe com uma facilidade sem precedentes.
+                  Com a Twig, você não apenas gerencia, você impulsiona. Nossa abordagem
+                  inovadora coloca você no comando, capacitando-o com ferramentas incríveis
+                  para moldar o futuro do seu departamento de RH. Visualize cada aspecto da
+                  performance individual, promova uma cultura inclusiva e meça o pulso da sua
+                  equipe com uma facilidade sem precedentes.
                 </p>
                 <p className="lead">
-                E a melhor parte? Você está a um passo de ter acesso a todas essas vantagens. 
-                Não apenas uma ferramenta, mas um aliado poderoso para elevar sua gestão 
-                de RH a novos patamares. Não perca a oportunidade de transformar sua abordagem 
-                de recursos humanos. Acesse a Twig hoje e descubra como a excelência em RH está 
-                ao seu alcance, pronta para ser desbravada
+                  E a melhor parte? Você está a um passo de ter acesso a todas essas vantagens.
+                  Não apenas uma ferramenta, mas um aliado poderoso para elevar sua gestão
+                  de RH a novos patamares. Não perca a oportunidade de transformar sua abordagem
+                  de recursos humanos. Acesse a Twig hoje e descubra como a excelência em RH está
+                  ao seu alcance, pronta para ser desbravada
                 </p>
                 <div className="btn-wrapper">
                   <Button
@@ -348,18 +349,18 @@ function Index() {
             <Row className="row-grid justify-content-center">
               <Col className="text-center" lg="8">
                 <h2 className="display-3">
-                Desperte o Potencial do seu RH com a Twig{" "}
+                  Desperte o Potencial do seu RH com a Twig{" "}
                   <span className="text-success">
                     Uma Jornada para a Excelência
                   </span>
                 </h2>
                 <p className="lead">
-                Embarque conosco em uma jornada revolucionária para transformar sua gestão
-                 de recursos humanos. A Twig é muito mais do que uma plataforma; é a chave 
-                 para desbloquear o potencial completo de sua equipe. Imagine um ambiente 
-                 unificado, onde criar pesquisas, avaliar o desempenho individual, promover 
-                 inclusão, e até mesmo medir o engajamento da sua equipe acontecem de maneira 
-                 intuitiva e eficiente.
+                  Embarque conosco em uma jornada revolucionária para transformar sua gestão
+                  de recursos humanos. A Twig é muito mais do que uma plataforma; é a chave
+                  para desbloquear o potencial completo de sua equipe. Imagine um ambiente
+                  unificado, onde criar pesquisas, avaliar o desempenho individual, promover
+                  inclusão, e até mesmo medir o engajamento da sua equipe acontecem de maneira
+                  intuitiva e eficiente.
                 </p>
                 <div className="btn-wrapper">
                   <Button
@@ -377,7 +378,7 @@ function Index() {
                     target="_blank"
                   >
                     <span className="btn-inner--icon">
-                    <i className="fas fa-dollar-sign" />
+                      <i className="fas fa-dollar-sign" />
                     </span>
                     <span className="btn-inner--text">Contratar Plano</span>
                   </Button>

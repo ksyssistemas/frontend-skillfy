@@ -1,7 +1,7 @@
 export async function useFindAllFunctions() {
 
   try {
-    const response = await fetch(`http://dlist.com.br:3010/function`);
+    const response = await fetch(`http://dlist.com.br:3010/employeeFunction`);
 
     if (!response.ok) {
       throw new Error('Network response was not ok.');
