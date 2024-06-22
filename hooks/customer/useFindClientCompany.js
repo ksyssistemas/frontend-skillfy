@@ -1,14 +1,12 @@
-export async function useFindAllDepartments() {
-  console.log(process.env.NEXT_PUBLIC_DEPARTMENT);
+export async function useFindClientCompany(customerId) {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_DEPARTMENT}`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_CUSTOMER}/${customerId}`);
 
     if (!response.ok) {
       throw new Error('Network response was not ok.');
     }
-
     const data = await response.json();
-    console.log("DATA: ", data)
+
     return data;
 
   } catch (error) {

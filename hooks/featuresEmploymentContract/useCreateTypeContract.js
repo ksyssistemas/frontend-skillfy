@@ -1,9 +1,9 @@
 import React, { useState, useContext } from 'react';
-import { AlertContext } from '../../contexts/AlertContext';
+import { useAlert } from '../../contexts/AlertContext';
 
 const useCreateTypeContract = () => {
 
-  const { showAlert } = useContext(AlertContext);
+  const { showAlert } = useAlert();
 
   const [employeeContractType, setEmployeeContractType] = useState("");
   const [employeeContractTypeState, setEmployeeContractTypeState] = useState(null);
@@ -40,7 +40,7 @@ const useCreateTypeContract = () => {
   const handleSubmit = async (employeeContractType) => {
     if (employeeContractType && employeeContractType !== "") {
       try {
-        const response = await fetch(`http://dlist.com.br:3008/employment-contract`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE_CONTRACT_TYPE}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ const useCreateTypeContract = () => {
             name: employeeContractType,
           }),
         });
-
+        console.log("RESPONSE: ", response);
         if (response.ok) {
           reset();
           showAlert(
@@ -65,11 +65,17 @@ const useCreateTypeContract = () => {
             "danger",
             "fas fa-xmark",
             "Erro!",
-            `Erro na resposta: , ${response.status}`,
+            `Erro na resposta!`,
           );
         }
       } catch (error) {
         console.error('Erro no pedido:', error);
+        showAlert(
+          "danger",
+          "fas fa-xmark",
+          "Erro!",
+          `${error}`
+        );
       }
     }
   };

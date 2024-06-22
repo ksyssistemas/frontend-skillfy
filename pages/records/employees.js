@@ -69,10 +69,10 @@ function EmployeeRecords() {
           )
           : (isShouldSubmitEmployeeRegistration && !isShouldSubmitEmployeeRecordEntrySettingsRecord
             ? (
-              <EmployeeUserRegisterView handleShowEmployeeRecordEntrySettings={handleShowEmployeeRecordEntrySettings} authenticationDataLoggedInUser={authenticationDataLoggedInUser} />
+              <EmployeeUserRegisterView handleShowEmployeeUserRegister={handleShowEmployeeUserRegister} handleShowEmployeeRecordEntrySettings={handleShowEmployeeRecordEntrySettings} authenticationDataLoggedInUser={authenticationDataLoggedInUser} />
             ) : (
               !isShouldSubmitEmployeeRegistration && isShouldSubmitEmployeeRecordEntrySettingsRecord &&
-              <EmployeeRegisterFieldsRegisterView authenticationDataLoggedInUser={authenticationDataLoggedInUser} />
+              <EmployeeRegisterFieldsRegisterView handleShowEmployeeRecordEntrySettings={handleShowEmployeeRecordEntrySettings} authenticationDataLoggedInUser={authenticationDataLoggedInUser} />
             )
           )
       }

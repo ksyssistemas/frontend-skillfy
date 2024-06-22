@@ -54,9 +54,9 @@ function EmployeeRegisterFieldsRegister() {
 
     const {
         employeetWorkplace,
-        setEmployeetWorkplace,
+        setEmployeeWorkplace,
         employeetWorkplaceState,
-        setEmployeetWorkplaceState,
+        setEmployeeWorkplaceState,
         handleWorkplaceValidation,
         workplaceDataList,
         handleWorkplaceDataList
@@ -67,9 +67,9 @@ function EmployeeRegisterFieldsRegister() {
             workModelDataList.length === 0 &&
             workplaceDataList.length === 0
         ) {
-            employmentContractDataSearchAndProcess(useFindAllTypeContract, handleContractTypeDataList, 'contractType');
-            employmentContractDataSearchAndProcess(useFindAllWorkModels, handleWorkModelDataList, 'workModel');
-            employmentContractDataSearchAndProcess(useFindAllWorkplaces, handleWorkplaceDataList, 'workplace');
+            employmentContractDataSearchAndProcess(useFindAllTypeContract, handleContractTypeDataList, 'contractType', 'EmployeeRegisterFieldsRegister');
+            employmentContractDataSearchAndProcess(useFindAllWorkModels, handleWorkModelDataList, 'workModel', 'EmployeeRegisterFieldsRegister');
+            employmentContractDataSearchAndProcess(useFindAllWorkplaces, handleWorkplaceDataList, 'workplace', 'EmployeeRegisterFieldsRegister');
         }
     }, [
         contractTypeDataList,
@@ -252,11 +252,11 @@ function EmployeeRegisterFieldsRegister() {
                                     valid={employeetWorkplaceState === "valid"}
                                     invalid={employeetWorkplaceState === "invalid"}
                                     onChange={(e) => {
-                                        setEmployeetWorkplace(e.target.value);
+                                        setEmployeeWorkplace(e.target.value);
                                         if (e.target.value === "") {
-                                            setEmployeetWorkplaceState("invalid");
+                                            setEmployeeWorkplaceState("invalid");
                                         } else {
-                                            setEmployeetWorkplaceState("valid");
+                                            setEmployeeWorkplaceState("valid");
                                         }
                                     }}
                                 />

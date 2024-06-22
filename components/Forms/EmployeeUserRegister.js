@@ -25,16 +25,17 @@ import useCEP from '../../hooks/useCEP';
 import useCreateTypeContract from '../../hooks/featuresEmploymentContract/useCreateTypeContract';
 import useCreateWorkModel from '../../hooks/featuresEmploymentContract/useCreateWorkModel';
 import useCreateWorkplace from '../../hooks/featuresEmploymentContract/useCreateWorkplace';
+import { useFindAllEmployeeAndRole } from '../../hooks/featuresEmploymentContract/useFindAllEmployeeAndRole';
 import { useFindAllTypeContract } from '../../hooks/featuresEmploymentContract/useFindAllTypeContract';
 import { useFindAllWorkModels } from '../../hooks/featuresEmploymentContract/useFindAllWorkModels';
 import { useFindAllWorkplaces } from '../../hooks/featuresEmploymentContract/useFindAllWorkplaces';
 import { useFindAllDepartments } from '../../hooks/department/useFindAllDepartments';
 import { useFindAllRoles } from '../../hooks/role/useFindAllRoles';
 import { useFindAllFunctions } from '../../hooks/employeeFunction/useFindAllFunctions';
-import { employmentContractDataSearchAndProcess } from '../../util/employmentContractDataSearchAndProcess'
-import { handleSelectionEmploymentContractData } from '../../util/handleSelectionEmploymentContractData'
+import { employmentContractDataSearchAndProcess } from '../../util/employmentContractDataSearchAndProcess';
+import { handleSelectionEmploymentContractData } from '../../util/handleSelectionEmploymentContractData';
 
-function EmployeeUserRegister() {
+function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
 
     const router = useRouter();
 
@@ -43,19 +44,25 @@ function EmployeeUserRegister() {
         setEmployeeIdNumber,
         employeeIdNumberState,
         setEmployeeIdNumberState,
-        firstNameState,
-        lastNameState,
-        emailAddressState,
-        birthdateState,
-        phoneNumber,
-        phoneNumberState,
+        firstName,
         setFirstName,
+        firstNameState,
         setFirstNameState,
+        lastName,
         setLastName,
+        lastNameState,
         setLastNameState,
+        emailAddress,
         setEmailAddress,
+        emailAddressState,
         setEmailAddressState,
+        birthdate,
+        setBirthdate,
+        birthdateState,
+        setBirthdateState,
+        phoneNumber,
         setPhoneNumber,
+        phoneNumberState,
         setPhoneNumberState,
         employeeAddress,
         setEmployeeAddress,
@@ -101,6 +108,26 @@ function EmployeeUserRegister() {
         setEmployeeLeaderName,
         employeeLeaderNameState,
         setEmployeeLeaderNameState,
+        employeeContractType,
+        setEmployeeContractType,
+        employeeContractTypeState,
+        setEmployeeContractTypeState,
+        employeeWorkModel,
+        setEmployeeWorkModel,
+        employeeWorkModelState,
+        setEmployeeWorkModelState,
+        employeeWorkplace,
+        setEmployeeWorkplace,
+        employeeWorkplaceState,
+        setEmployeeWorkplaceState,
+        isInvalidEmployeeLeaderComponent,
+        setIsInvalidEmployeeLeaderComponent,
+        showErrorFeedbackEmployeeLeaderComponent,
+        setShowErrorFeedbackEmployeeLeaderComponent,
+        employeetAdmissionDate,
+        setEmployeetAdmissionDate,
+        employeetAdmissionDateState,
+        setEmployeetAdmissionDateState,
         employeeEntryTime,
         setEmployeeEntryTime,
         employeeEntryTimeState,
@@ -115,13 +142,16 @@ function EmployeeUserRegister() {
         setEmployeeDepartureTimeState,
         handleValidateAddEmployeeForm,
         handleBirthdateChange,
-        handleAdmissionDateChange,
         validateEmail,
         validateAddEmployeeForm,
-        hasValuesChangedWithAPIData,
-        handleFormFieldsAutocomplete,
-        handleValuesChangedWithAPIData,
         validateAddEmployeeAddressForm,
+        handleFormFieldsAutocomplete,
+        hasValuesChangedWithAPIData,
+        handleValuesChangedWithAPIData,
+        handleAdmissionDateChange,
+        handleTimeChange,
+        handleIsEmployeeLeader,
+        handleHasEmployeeLeader
     } = useCreateEmployee();
 
     const {
@@ -157,6 +187,23 @@ function EmployeeUserRegister() {
         setEmployeeZipCodeState
     } = useCEP();
 
+    const [selectedDepartment, setSelectedDepartment] = useState('');
+    const [selectedRole, setSelectedRole] = useState('');
+    const [selectedFunction, setSelectedFunction] = useState('');
+    const [selectedContractType, setSelectedContractType] = useState('');
+    const [selectedWorkModel, setSelectedWorkModel] = useState('');
+    const [selectedWorkplace, setSelectedWorkplace] = useState('');
+    const [selectedEmployeeAndRole, setSelectedEmployeeAndRole] = useState('');
+
+    const [selectedDepartmentId, setSelectedDepartmentId] = useState('');
+    const handleSelectedDepartmentId = (id) => {
+        setSelectedDepartmentId(id);
+    };
+    const [hasDepartmentSelected, setHasDepartmentSelected] = useState(false);
+    const handleHasDepartmentSelected = (departmentSelectedStatus) => {
+        setHasDepartmentSelected(departmentSelectedStatus);
+    };
+
     const [departmentDataList, setDepartmentDataList] = useState([]);
     const handleDepartmentDataList = (departmentData) => {
         setDepartmentDataList(departmentData);
@@ -172,90 +219,88 @@ function EmployeeUserRegister() {
         setFunctionDataList(functionData);
     }
 
-    function handleIsEmployeeLeader() {
-        setIsEmployeeLeader(!isEmployeeLeader);
-        setHasEmployeeLeader(false);
+    const [employeeAndRoleDataList, setEmployeeAndRoleDataList] = useState([]);
+    const handleEmployeeAndRoleDataList = (employeeAndRole) => {
+        setEmployeeAndRoleDataList(employeeAndRole);
     }
 
-    function handleHasEmployeeLeader() {
-        setHasEmployeeLeader(!hasEmployeeLeader);
-        setIsEmployeeLeader(false);
-    }
-
-    const [employeeDataList, setEmployeeDataList] = useState([]);
-
-    async function getEmployeeDataList() {
-        try {
-            const response = await fetch(`http://dlist.com.br:3010/employeee`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            if (response) {
-                let data = await response.json();
-                if (data && data.length > 0) {
-                    data = data.map((employee, index) => ({
-                        id: index.toString(),
-                        text: employee.name
-                    }));
-                    setEmployeeDataList([data]);
+    async function employeeAndRoleDataSearchAndProcess(apiCall, setData, departamentId, handleHasDepartmentSelected, setSelectedDepartmentId) {
+        if (!departamentId || departamentId === '') {
+            setData([{ id: "0", text: "Não há líderes, é necessário cadastrar colaboradores que exercem liderança." }])
+        } else {
+            try {
+                console.log("departamentId", departamentId)
+                const response = await apiCall(departamentId);
+                console.log("Response: ", response);
+                if (response) {
+                    if (response && response.length > 0) {
+                        const dataObject = response.map((employee, index) => {
+                            const nameAndRoleConcat = `${employee.EmployeeName} - ${employee.RoleName}`;
+                            return {
+                                id: index.toString(),
+                                text: nameAndRoleConcat
+                            }
+                        });
+                        console.log("dataObject: ", dataObject);
+                        setData(dataObject);
+                        handleHasDepartmentSelected(false);
+                        setSelectedDepartmentId('');
+                    } else {
+                        setData([{ id: "0", text: "Não há líderes, é necessário cadastrar colaboradores que exercem liderança." }])
+                        handleHasDepartmentSelected(false);
+                        setSelectedDepartmentId('');
+                    }
                 } else {
-                    setEmployeeDataList([{ id: "0", text: "Não há líderes, é necessário cadastrar colaboradores que exercem liderança." }])
+                    console.error('Erro na resposta: ', response.status);
+                    handleHasDepartmentSelected(false);
+                    setSelectedDepartmentId('');
                 }
-            } else {
-                console.error('Erro na resposta: ', response.status);
+            } catch (error) {
+                console.error('Erro no pedido: ', error);
+                handleHasDepartmentSelected(false);
+                setSelectedDepartmentId('');
             }
-        } catch (error) {
-            console.error('Erro no pedido: ', error);
         }
     };
 
-    function handleChooseEmployee(e) {
-        console.log("employeeDataList: ", employeeDataList)
-        const selectedId = e.target.value;
-        if (employeeDataList && employeeDataList.length !== 0) {
-            const optionType = employeeDataList.filter(option => option.id === selectedId);
-            setEmployeeLeaderName(optionType[0].text);
-            if (optionType.length === 0) {
-                setEmployeeLeaderNameState("invalid");
-            } else {
-                setEmployeeLeaderNameState("valid");
-            }
-        }
-    }
-
     useEffect(() => {
-        if (departmentDataList.length === 0 &&
-            roleDataList.length === 0 &&
-            functionDataList.length === 0 &&
-            contractTypeDataList.length === 0 &&
-            workModelDataList.length === 0 &&
-            workplaceDataList.length === 0
-        ) {
-            employmentContractDataSearchAndProcess(useFindAllTypeContract, handleContractTypeDataList, 'contractType');
-            employmentContractDataSearchAndProcess(useFindAllWorkModels, handleWorkModelDataList, 'workModel');
-            employmentContractDataSearchAndProcess(useFindAllWorkplaces, handleWorkplaceDataList, 'workplace');
-            employmentContractDataSearchAndProcess(useFindAllDepartments, handleDepartmentDataList, 'department');
-            employmentContractDataSearchAndProcess(useFindAllRoles, handleRoleDataList, 'role');
-            employmentContractDataSearchAndProcess(useFindAllFunctions, handleFunctionDataList, 'function');
+        if (employeeAndRoleDataList.length === 0 || hasDepartmentSelected) {
+            employeeAndRoleDataSearchAndProcess(useFindAllEmployeeAndRole, handleEmployeeAndRoleDataList, selectedDepartmentId, handleHasDepartmentSelected, setSelectedDepartmentId);
         }
-    }, [contractTypeDataList, workModelDataList, workplaceDataList, departmentDataList, roleDataList, functionDataList]);
+        if (contractTypeDataList.length === 0) {
+            employmentContractDataSearchAndProcess(useFindAllTypeContract, handleContractTypeDataList, 'contractType', 'EmployeeUserRegister');
+        }
+        if (workModelDataList.length === 0) {
+            employmentContractDataSearchAndProcess(useFindAllWorkModels, handleWorkModelDataList, 'workModel', 'EmployeeUserRegister');
+        }
+        if (workplaceDataList.length === 0) {
+            employmentContractDataSearchAndProcess(useFindAllWorkplaces, handleWorkplaceDataList, 'workplace', 'EmployeeUserRegister');
+        }
+        if (departmentDataList.length === 0) {
+            employmentContractDataSearchAndProcess(useFindAllDepartments, handleDepartmentDataList, 'department', 'EmployeeUserRegister');
+        }
+        if (roleDataList.length === 0) {
+            employmentContractDataSearchAndProcess(useFindAllRoles, handleRoleDataList, 'role', 'EmployeeUserRegister');
+        }
+        if (functionDataList.length === 0) {
+            employmentContractDataSearchAndProcess(useFindAllFunctions, handleFunctionDataList, 'function', 'EmployeeUserRegister');
+        }
+    }, [hasDepartmentSelected]);
 
     useEffect(() => {
         if (brasilAPICEPData !== null) {
             handleCEPValidationLoading();
             handleFormFieldsAutocomplete(brasilAPICEPData);
         }
-    }, [brasilAPICEPData])
+    }, [brasilAPICEPData]);
 
     useEffect(() => {
         if (hasValuesChangedWithAPIData) {
+            handleValuesChangedWithAPIData(!hasValuesChangedWithAPIData);
             validateAddEmployeeAddressForm();
-            handleValuesChangedWithAPIData();
             //validateAddEmployeeForm();
         }
-    }, [hasValuesChangedWithAPIData, validateAddEmployeeAddressForm, validateAddEmployeeForm]);
+    }, [hasValuesChangedWithAPIData, validateAddEmployeeAddressForm]);
 
     return (
         <Form>
@@ -266,7 +311,7 @@ function EmployeeUserRegister() {
                 <CardBody>
                     <Form className="needs-validation" noValidate>
                         <div className="form-row">
-                            <Col className="mb-3" md="4">
+                            {/* <Col className="mb-3" md="4">
                                 <label
                                     className="form-control-label"
                                     htmlFor="validationEmployeeIdNumber"
@@ -282,8 +327,8 @@ function EmployeeUserRegister() {
                                     }}
                                 />
 
-                            </Col>
-                            <Col className="mb-3" md="4">
+                            </Col> */}
+                            <Col className="mb-3" md="6">
                                 <label
                                     className="form-control-label"
                                     htmlFor="validationEmployeeFirstName"
@@ -309,7 +354,7 @@ function EmployeeUserRegister() {
                                     É necessário preencher este campo.
                                 </div>
                             </Col>
-                            <Col className="mb-3" md="4">
+                            <Col className="mb-3" md="6">
                                 <label
                                     className="form-control-label"
                                     htmlFor="validationEmployeeLastName"
@@ -613,8 +658,10 @@ function EmployeeUserRegister() {
                                     options={{
                                         placeholder: "Selecione o departamento",
                                     }}
+                                    value={selectedDepartment}
+                                    onChange={(e) => setSelectedDepartment(e.target.value)}
                                     data={departmentDataList}
-                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, departmentDataList, setDepartmentWhichEmployeeReports, setDepartmentWhichEmployeeReportsState)}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, departmentDataList, setSelectedDepartment, setDepartmentWhichEmployeeReports, setDepartmentWhichEmployeeReportsState, handleSelectedDepartmentId, setHasDepartmentSelected)}
                                 />
                             </Col>
                             <Col className="mb-3" md="4">
@@ -631,8 +678,10 @@ function EmployeeUserRegister() {
                                     options={{
                                         placeholder: "Selecione o cargo",
                                     }}
+                                    value={selectedRole}
+                                    onChange={(e) => setSelectedRole(e.target.value)}
                                     data={roleDataList}
-                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, roleDataList, setEmployeeRole, setEmployeeRoleState)}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, roleDataList, setSelectedRole, setEmployeeRole, setEmployeeRoleState, null)}
                                 />
                             </Col>
                             <Col className="mb-3" md="4">
@@ -649,8 +698,10 @@ function EmployeeUserRegister() {
                                     options={{
                                         placeholder: "Selecione o função",
                                     }}
+                                    value={selectedFunction}
+                                    onChange={(e) => setSelectedFunction(e.target.value)}
                                     data={functionDataList}
-                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, functionDataList, setEmployeeFunction, setEmployeeFunctionState)}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, functionDataList, setSelectedFunction, setEmployeeFunction, setEmployeeFunctionState, null)}
                                 />
                             </Col>
                         </div>
@@ -664,12 +715,12 @@ function EmployeeUserRegister() {
                                 </label>
                                 <Row className="mt-3">
                                     <Col md="6">
-                                        <div className="custom-control custom-radio mb-3">
+                                        <div className={`custom-control custom-radio mb-3 ${isInvalidEmployeeLeaderComponent ? 'is-invalid' : ''}`}>
                                             <input
+                                                className={`custom-control-input ${isInvalidEmployeeLeaderComponent ? 'is-invalid' : ''}`}
                                                 id="validationEmployeeIsLeader"
-                                                className="custom-control-input"
                                                 type="radio"
-                                                name="custom-radio-1"
+                                                name="custom-radio-leader"
                                                 checked={isEmployeeLeader}
                                                 onClick={handleIsEmployeeLeader}
                                             />
@@ -682,12 +733,12 @@ function EmployeeUserRegister() {
                                         </div>
                                     </Col>
                                     <Col md="6">
-                                        <div className="custom-control custom-radio mb-3">
+                                        <div className={`custom-control custom-radio mb-3 ${isInvalidEmployeeLeaderComponent ? 'is-invalid' : ''}`}>
                                             <input
-                                                className="custom-control-input"
+                                                className={`custom-control-input ${isInvalidEmployeeLeaderComponent ? 'is-invalid' : ''}`}
                                                 id="validationEmployeeNoLeader"
                                                 type="radio"
-                                                name="custom-radio-2"
+                                                name="custom-radio-leader"
                                                 checked={hasEmployeeLeader}
                                                 onClick={handleHasEmployeeLeader}
                                             />
@@ -700,6 +751,11 @@ function EmployeeUserRegister() {
                                         </div>
                                     </Col>
                                 </Row>
+                                {showErrorFeedbackEmployeeLeaderComponent && (
+                                    <div className="invalid-feedback" style={{ display: 'block' }}>
+                                        Necessário selecionar uma das opções, indicando se o colaborador exerce ou não liderança
+                                    </div>
+                                )}
                             </Col>
                             <Col className="mb-3" md="6">
                                 <label
@@ -708,16 +764,36 @@ function EmployeeUserRegister() {
                                 >
                                     Liderado por
                                 </label>
-                                <Select2
+                                <Input
+                                    id="validationSelectLeader"
+                                    placeholder="Nome do líder"
+                                    type="text"
+                                    valid={employeeLeaderNameState === "valid"}
+                                    invalid={employeeLeaderNameState === "invalid"}
+                                    onChange={(e) => {
+                                        setEmployeeLeaderName(e.target.value);
+                                        if (e.target.value === "") {
+                                            setEmployeeLeaderNameState("invalid");
+                                        } else {
+                                            setEmployeeLeaderNameState("valid");
+                                        }
+                                    }}
+                                />
+                                <div className="invalid-feedback">
+                                    É necessário preencher este campo.
+                                </div>
+                                {/* <Select2
                                     id="validationSelectLeader"
                                     className="form-control"
                                     data-minimum-results-for-search="Infinity"
                                     options={{
                                         placeholder: "Selecione o líder",
                                     }}
-                                    data={employeeDataList}
-                                    onSelect={handleChooseEmployee}
-                                />
+                                    value={selectedEmployeeAndRole}
+                                    onChange={(e) => setSelectedEmployeeAndRole(e.target.value)}
+                                    data={employeeAndRoleDataList}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, employeeAndRoleDataList, setSelectedEmployeeAndRole, setEmployeeLeaderName, setEmployeeLeaderNameState)}
+                                /> */}
                             </Col>
                         </div>
                         <hr />
@@ -736,8 +812,10 @@ function EmployeeUserRegister() {
                                     options={{
                                         placeholder: "Selecione o tipo de contrato",
                                     }}
+                                    value={selectedContractType}
+                                    onChange={(e) => setSelectedContractType(e.target.value)}
                                     data={contractTypeDataList}
-                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, contractTypeDataList, handleEmployeeContractType, handleEmployeeContractTypeState)}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, contractTypeDataList, setSelectedContractType, setEmployeeContractType, setEmployeeContractTypeState, null)}
                                 />
                             </Col>
                             <Col className="mb-3" md="4">
@@ -754,8 +832,10 @@ function EmployeeUserRegister() {
                                     options={{
                                         placeholder: "Selecione o modelo de trabalho",
                                     }}
+                                    value={selectedWorkModel}
+                                    onChange={(e) => setSelectedWorkModel(e.target.value)}
                                     data={workModelDataList}
-                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, workModelDataList, handleEmployeetWorkModel, handleEmployeetWorkModelState)}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, workModelDataList, setSelectedWorkModel, setEmployeeWorkModel, setEmployeeWorkModelState, null)}
                                 />
                             </Col>
                             <Col className="mb-3" md="4">
@@ -790,8 +870,10 @@ function EmployeeUserRegister() {
                                     options={{
                                         placeholder: "Selecione o local de trabalho",
                                     }}
+                                    value={selectedWorkplace}
+                                    onChange={(e) => setSelectedWorkplace(e.target.value)}
                                     data={workplaceDataList}
-                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, workplaceDataList, handleEmployeeWorkplace, handleEmployeeWorkplaceState)}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, workplaceDataList, setSelectedWorkplace, setEmployeeWorkplace, setEmployeeWorkplaceState, null)}
                                 />
                             </Col>
                             <Col className="mb-3" md="2">
@@ -801,21 +883,24 @@ function EmployeeUserRegister() {
                                 >
                                     Hora de Entrada
                                 </label>
-                                <Input
-                                    defaultValue="08:00:00"
-                                    id="validationEntryTime"
-                                    type="time"
-                                    valid={employeeEntryTimeState === "valid"}
-                                    invalid={employeeEntryTimeState === "invalid"}
+                                <InputMask
+                                    mask="99:99:99"
+                                    placeholder="08:00:00"
+                                    value={employeeEntryTime}
                                     onChange={(e) => {
-                                        setEmployeeEntryTime(e.target.value === "");
-                                        if (e.target.value === "") {
-                                            setEmployeeEntryTimeState("valid");
-                                        } else {
+                                        setEmployeeEntryTime(e.target.value);
+                                        if (e.target.value === "" || e.target.value.includes("_")) {
                                             setEmployeeEntryTimeState("invalid");
+                                        } else {
+                                            setEmployeeEntryTimeState("valid");
                                         }
                                     }}
-                                />
+                                >
+                                    {(inputProps) => <Input {...inputProps} id="validationEntryTime" type="text" valid={employeeEntryTimeState === "valid"} invalid={employeeEntryTimeState === "invalid"} />}
+                                </InputMask>
+                                <div className="invalid-feedback">
+                                    {employeeEntryTimeState === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
+                                </div>
                             </Col>
                             <Col className="mb-3" md="2">
                                 <label
@@ -824,21 +909,25 @@ function EmployeeUserRegister() {
                                 >
                                     Intervalo
                                 </label>
-                                <Input
-                                    defaultValue="12:00:00"
-                                    id="validationBreakTime"
-                                    type="time"
-                                    valid={employeeBreakTimeState === "valid"}
-                                    invalid={employeeBreakTimeState === "invalid"}
-                                    onChange={(e) => {
-                                        setEmployeeBreakTime(e.target.value === "");
-                                        if (e.target.value === "") {
-                                            setEmployeeBreakTimeState("valid");
-                                        } else {
-                                            setEmployeeBreakTimeState("invalid");
-                                        }
-                                    }}
-                                />
+                                <InputMask
+                                    mask="99:99:99"
+                                    placeholder="12:00:00"
+                                    value={employeeBreakTime}
+                                    onChange={handleTimeChange(setEmployeeBreakTime, setEmployeeBreakTimeState)}
+                                >
+                                    {(inputProps) => (
+                                        <Input
+                                            {...inputProps}
+                                            id="validationBreakTime"
+                                            type="text"
+                                            valid={employeeBreakTimeState === "valid"}
+                                            invalid={employeeBreakTimeState === "invalid"}
+                                        />
+                                    )}
+                                </InputMask>
+                                <div className="invalid-feedback">
+                                    {employeeBreakTimeState === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
+                                </div>
                             </Col>
                             <Col className="mb-3" md="2">
                                 <label
@@ -847,27 +936,31 @@ function EmployeeUserRegister() {
                                 >
                                     Horário de Saída
                                 </label>
-                                <Input
-                                    defaultValue="18:00:00"
-                                    id="validationDepartureTime"
-                                    type="time"
-                                    valid={employeeDepartureTimeState === "valid"}
-                                    invalid={employeeDepartureTimeState === "invalid"}
-                                    onChange={(e) => {
-                                        setEmployeeDepartureTime(e.target.value === "");
-                                        if (e.target.value === "") {
-                                            setEmployeeDepartureTimeState("valid");
-                                        } else {
-                                            setEmployeeDepartureTimeState("invalid");
-                                        }
-                                    }}
-                                />
+                                <InputMask
+                                    mask="99:99:99"
+                                    placeholder="18:00:00"
+                                    value={employeeDepartureTime}
+                                    onChange={handleTimeChange(setEmployeeDepartureTime, setEmployeeDepartureTimeState)}
+                                >
+                                    {(inputProps) => (
+                                        <Input
+                                            {...inputProps}
+                                            id="validationDepartureTime"
+                                            type="text"
+                                            valid={employeeDepartureTimeState === "valid"}
+                                            invalid={employeeDepartureTimeState === "invalid"}
+                                        />
+                                    )}
+                                </InputMask>
+                                <div className="invalid-feedback">
+                                    {employeeDepartureTimeState === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
+                                </div>
                             </Col>
                         </div>
                         <Row>
                             <Col md="8" />
                             <Col className="d-flex justify-content-end align-items-center" md="4" >
-                                <Button className="px-5" color="primary" size="lg" type="button" onClick={handleValidateAddEmployeeForm}>
+                                <Button className="px-5" color="primary" size="lg" type="button" onClick={() => handleValidateAddEmployeeForm(handleShowEmployeeUserRegister)}>
                                     <span className="btn-inner--text">Adicionar Colaborador</span>
                                 </Button>
                             </Col>

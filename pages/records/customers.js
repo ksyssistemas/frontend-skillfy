@@ -94,7 +94,7 @@ function CustomerRecords() {
             <>
               <AdminHeader name="Cliente" parentName="Cadastros" />
               <Container className="mt--6" fluid>
-                <CustomerUserRegister />
+                <CustomerUserRegister handleShowCustomerUserRegister={handleShowCustomerUserRegister} />
               </Container>
             </>
           )

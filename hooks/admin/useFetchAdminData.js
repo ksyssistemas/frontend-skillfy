@@ -7,7 +7,7 @@ const useFetchAdminData = (initialEmail) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://dlist.com.br:3008/administrator/email/${initialEmail}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_ADMINISTRATOR}/email/${initialEmail}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

@@ -1,23 +1,40 @@
-export function mappingEmploymentContractItemName(item, employmentContractItemName, isNoDataMessage = false) {
+export function mappingEmploymentContractItemName(item, employmentContractItemName, isNoDataMessage = false, context = '') {
     if (isNoDataMessage) {
-        switch (employmentContractItemName) {
-            case 'department':
-                return "Não há departamentos, clique aqui para cadastrá-los.";
-            case 'role':
-                return "Não há cargos, clique aqui para cadastrá-los.";
-            case 'function':
-                return "Não há funções, clique aqui para cadastrá-los.";
-            case 'contractType':
-                return "Não há tipos de contrato, use o botão 'Configurações'.";
-            case 'workModel':
-                return "Não há modelos de trabalho, use o botão 'Configurações'.";
-            case 'workplace':
-                return "Não há locais de trabalho, use o botão 'Configurações'.";
-            default:
-                return 'Não há dados disponíveis, use o botão "Configurações".';
+        if (context === 'EmployeeRegisterFieldsRegister') {
+            switch (employmentContractItemName) {
+                case 'contractType':
+                    return "Não há tipos de contrato, crie ao menos um.";
+                case 'workModel':
+                    return "Não há modelos de trabalho, crie ao menos um.";
+                case 'workplace':
+                    return "Não há locais de trabalho, crie ao menos um.";
+                default:
+                    return 'Não há dados disponíveis.';
+            }
+        } else {
+            switch (employmentContractItemName) {
+                case 'client-company':
+                    return "Não há clientes, clique aqui para cadastrá-los.";
+                case 'department':
+                    return "Não há departamentos, clique aqui para cadastrá-los.";
+                case 'role':
+                    return "Não há cargos, clique aqui para cadastrá-los.";
+                case 'function':
+                    return "Não há funções, clique aqui para cadastrá-los.";
+                case 'contractType':
+                    return "Não há tipos de contrato, use o botão 'Configurações'.";
+                case 'workModel':
+                    return "Não há modelos de trabalho, use o botão 'Configurações'.";
+                case 'workplace':
+                    return "Não há locais de trabalho, use o botão 'Configurações'.";
+                default:
+                    return 'Não há dados disponíveis.';
+            }
         }
     } else {
         switch (employmentContractItemName) {
+            case 'client-company':
+                return item.companyName;
             case 'department':
                 return item.DepartmentName;
             case 'role':

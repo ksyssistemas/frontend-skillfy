@@ -45,8 +45,9 @@ import {
     Row,
     Col,
 } from "reactstrap";
+import { handleSelectionEmploymentContractData } from '../../util/handleSelectionEmploymentContractData';
 
-function CustomerUserRegister() {
+function CustomerUserRegister({ handleShowCustomerUserRegister }) {
 
     const {
         firstNameState,
@@ -83,6 +84,7 @@ function CustomerUserRegister() {
         validateEmail,
         handleChangeCPF,
         validateCheckboxIsChecked,
+        isCustomerAccountHolderFormValidated
     } = useCreateCustomerAccountHolder();
 
     const {
@@ -106,6 +108,10 @@ function CustomerUserRegister() {
         setCustomerPhoneNumber,
         customerPhoneNumberState,
         setCustomerPhoneNumberState,
+        companyEmailAddress,
+        setCompanyEmailAddress,
+        companyEmailAddressState,
+        setCompanyEmailAddressState,
         customerBusinessSector,
         setCustomerBusinessSector,
         customerBusinessSectorState,
@@ -151,7 +157,10 @@ function CustomerUserRegister() {
         handleValuesChangedWithAPIData,
         validateAddClientCompanyForm,
         handleValidateAddClientCompanyForm,
-        isCustomerCompanyFormValidated
+        isCustomerCompanyFormValidated,
+        validatePhoneNumber,
+        validateWebSite,
+        validateCompanyEmail
     } = useCreateClientCompany();
 
     const {
@@ -172,44 +181,35 @@ function CustomerUserRegister() {
     const [date, setdate] = React.useState(false);
     const [ccv, setccv] = React.useState(false);
 
-    const dataOptionsToCompanySector = [
+    const [selectedCompanySector, setSelectedCompanySector] = useState('');
+    const [companySectorDataList, setCompanySectorDataList] = useState([
         { id: "0", text: "Privado" },
         { id: "1", text: "Público" },
-    ];
-
-    function handleChooseSector(e) {
-        const selectedId = e.target.value;
-        const optionType = dataOptionsToCompanySector.filter(option => option.id === selectedId);
-        setCustomerBusinessSector(optionType[0].text);
-        if (optionType.length === 0) {
-            setCustomerBusinessSectorState("invalid");
-        } else {
-            setCustomerBusinessSectorState("valid");
-        }
+    ]);
+    const handleCompanySectorDataList = (companySector) => {
+        setCompanySectorDataList(companySector);
     }
 
-    const dataOptionsToCompanyTypes = [
+    const [selectedCompanyTypes, setSelectedCompanyTypes] = useState('');
+    const [companyTypesDataList, setCompanyTypesDataList] = useState([
         { id: "0", text: "EI" },
         { id: "1", text: "MEI" },
         { id: "2", text: "Ltda" },
         { id: "3", text: "SLU" },
         { id: "4", text: "SS" },
         { id: "5", text: "S/A" },
-    ];
-
-    function handleChooseType(e) {
-        const selectedId = e.target.value;
-        const texts = dataOptionsToCompanyTypes
-            .filter(option => option.id === selectedId)
-            .map(option => option.text);
-        console.log(texts[0]);
-        setCompanyTypes(texts[0]);
-        // if (selectedId === 0) {
-        //     setCompanyTypesState("invalid");
-        // } else {
-        //     setCompanyTypesState("valid");
-        // }
+    ]);
+    const handleCompanyTypesDataList = (companyTypes) => {
+        setCompanyTypesDataList(companyTypes);
     }
+
+    const handleCheckboxChange = (e) => {
+        if (checkbox === null) {
+            setCheckbox(true);
+        } else {
+            setCheckbox(!checkbox);
+        }
+    };
 
     const handleNextStep = () => {
         if (step === 1) {
@@ -222,7 +222,7 @@ function CustomerUserRegister() {
             setStep(step + 1);
         }
         if (step === 2 && individualEmployerIdNumberState === "valid" && checkboxState === "valid") {
-            handleValidateAddClientCompanyForm();
+            handleValidateAddClientCompanyForm(handleShowCustomerUserRegister);
         }
     };
 
@@ -231,7 +231,7 @@ function CustomerUserRegister() {
     };
 
     useEffect(() => {
-        if (checkbox != null) {
+        if (checkbox !== null) {
             validateCheckboxIsChecked();
         }
     }, [checkbox])
@@ -386,9 +386,6 @@ function CustomerUserRegister() {
                                                                         onChange={handleBirthdateChange}
 
                                                                     />
-                                                                    {/* <div className="invalid-feedback">
-                                                                            É necessário selecionar uma data.
-                                                                        </div> */}
                                                                 </Col>
                                                             </div>
                                                             <div className="form-row">
@@ -424,7 +421,7 @@ function CustomerUserRegister() {
                                                                         className="form-control-label"
                                                                         htmlFor="validationCustomerEmailAddress"
                                                                     >
-                                                                        E-mail (utilizará como login)
+                                                                        E-mail
                                                                     </label>
                                                                     <Input
                                                                         aria-describedby="inputGroupPrepend"
@@ -452,23 +449,19 @@ function CustomerUserRegister() {
                                                             <FormGroup>
                                                                 <div className="custom-control custom-checkbox mb-3">
                                                                     <input
-                                                                        className={`custom-control-input ${checkboxState === "invalid" && "is-invalid"}`}
+                                                                        className={`custom-control-input ${checkboxState === "invalid" ? "is-invalid" : ""}`}
                                                                         defaultValue=""
                                                                         id="checkUseTerms"
                                                                         type="checkbox"
-                                                                        // valid={(checkboxState === "valid").toString()}
-                                                                        // invalid={(checkboxState === "invalid").toString()}
-                                                                        onChange={(e) => {
-                                                                            setCheckbox(e.target.value);
-                                                                        }}
+                                                                        onChange={handleCheckboxChange}
                                                                     />
                                                                     <label
                                                                         className="custom-control-label"
                                                                         htmlFor="checkUseTerms"
                                                                     >
-                                                                        Declaro que estou ciente e de acordo com os termos de uso: [Name]
+                                                                        Declaro que estou ciente e de acordo com os termos de uso: Skillfy
                                                                     </label>
-                                                                    <div className={`invalid-feedback mt-3 mt-sm-4 mt-md-4 mt-lg-3 mt-xl-2 mt-xxl-2`}>
+                                                                    <div className={`invalid-feedback mt-3 mt-sm-4 mt-md-4 mt-lg-3 mt-xl-2 mt-xxl-2 py-2`}>
                                                                         Você deve concordar antes de enviar.
                                                                     </div>
                                                                 </div>
@@ -576,21 +569,13 @@ function CustomerUserRegister() {
                                                                         id="validationCustomerCompanyTypes"
                                                                         className="form-control"
                                                                         data-minimum-results-for-search="Infinity"
-                                                                        valid={companyTypesState === "valid"}
-                                                                        invalid={companyTypesState === "invalid"}
                                                                         options={{
                                                                             placeholder: "Selecione o tipo",
                                                                         }}
-                                                                        data={dataOptionsToCompanyTypes.map(option => ({ id: option.id, text: option.text }))}
-                                                                        value={companyTypes}
-                                                                        onChange={(e) => {
-                                                                            setCompanyTypes(e.target.value);
-                                                                            if (e.target.value === "") {
-                                                                                setCompanyTypesState("invalid");
-                                                                            } else {
-                                                                                setCompanyTypesState("valid");
-                                                                            }
-                                                                        }}
+                                                                        value={selectedCompanyTypes}
+                                                                        onChange={(e) => setSelectedCompanyTypes(e.target.value)}
+                                                                        data={companyTypesDataList}
+                                                                        onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, companyTypesDataList, setSelectedCompanyTypes, setCompanyTypes, setCompanyTypesState, null)}
                                                                     />
                                                                 </Col>
                                                             </div>
@@ -603,13 +588,14 @@ function CustomerUserRegister() {
                                                                         Número de Telefone
                                                                     </label>
                                                                     <InputMask
-                                                                        placeholder="+55 (99) 9 9999-9999"
-                                                                        mask="+55 (99) 9 9999-9999"
+                                                                        placeholder="+55 (99) 9999-9999"
+                                                                        mask="+55 (99) 9999-9999"
                                                                         maskChar=" "
                                                                         value={customerBusinessPhoneNumber}
                                                                         onChange={(e) => {
-                                                                            setCustomerBusinessPhoneNumber(e.target.value);
-                                                                            if (e.target.value === "") {
+                                                                            const value = e.target.value;
+                                                                            setCustomerBusinessPhoneNumber(value);
+                                                                            if (value === "" || !validatePhoneNumber(value, 'business')) {
                                                                                 setCustomerBusinessPhoneNumberState("invalid");
                                                                             } else {
                                                                                 setCustomerBusinessPhoneNumberState("valid");
@@ -635,24 +621,55 @@ function CustomerUserRegister() {
                                                                         maskChar=" "
                                                                         value={customerPhoneNumber}
                                                                         onChange={(e) => {
-                                                                            setCustomerPhoneNumber(e.target.value);
-                                                                            // if (e.target.value === "") {
-                                                                            //     setCustomerPhoneNumberState("invalid");
-                                                                            // } else {
-                                                                            //     setCustomerPhoneNumberState("valid");
-                                                                            // }
+                                                                            const value = e.target.value;
+                                                                            setCustomerPhoneNumber(value);
+                                                                            if (value !== "" && !validatePhoneNumber(value, 'personal')) {
+                                                                                setCustomerPhoneNumberState("invalid");
+                                                                            } else {
+                                                                                setCustomerPhoneNumberState(value === "" ? null : "valid");
+                                                                            }
                                                                         }}
                                                                     >
                                                                         {(inputProps) => <Input {...inputProps}
                                                                             id="validationCustomerPhoneNumber"
                                                                             type="text"
-                                                                        // valid={customerPhoneNumberState === "valid"} 
-                                                                        // invalid={customerPhoneNumberState === "invalid"} 
+                                                                            valid={customerPhoneNumberState === "valid"}
+                                                                            invalid={customerPhoneNumberState === "invalid"}
                                                                         />}
                                                                     </InputMask>
-                                                                    {/* <div className="invalid-feedback">
-                                                                        É necessário preencher este campo.
-                                                                    </div> */}
+                                                                    <div className="invalid-feedback">
+                                                                        É necessário preencher este campo corretamente.
+                                                                    </div>
+                                                                </Col>
+                                                            </div>
+                                                            <div className="form-row">
+                                                                <Col className="mb-4" md="12">
+                                                                    <label
+                                                                        className="form-control-label"
+                                                                        htmlFor="validationCompanyEmailAddress"
+                                                                    >
+                                                                        E-mail (utilizará como login)
+                                                                    </label>
+                                                                    <Input
+                                                                        aria-describedby="inputGroupPrepend"
+                                                                        id="validationCompanyEmailAddress"
+                                                                        placeholder="Endereço de e-mail"
+                                                                        type="email"
+                                                                        valid={companyEmailAddressState === "valid"}
+                                                                        invalid={companyEmailAddressState === "invalid"}
+                                                                        onChange={(e) => {
+                                                                            const email = e.target.value;
+                                                                            setCompanyEmailAddress(email);
+                                                                            if (validateCompanyEmail(email)) {
+                                                                                setCompanyEmailAddressState("valid");
+                                                                            } else {
+                                                                                setCompanyEmailAddressState("invalid");
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                    <div className="invalid-feedback">
+                                                                        {companyEmailAddressState === "invalid" && "Forneça um endereço de e-mail válido."}
+                                                                    </div>
                                                                 </Col>
                                                             </div>
                                                             <div className="form-row">
@@ -668,12 +685,20 @@ function CustomerUserRegister() {
                                                                         placeholder="www.site.com.br"
                                                                         value={customerWebSite}
                                                                         type="text"
-                                                                        // valid={customerWebSiteState === "valid"}
-                                                                        // invalid={customerWebSiteState === "invalid"}
+                                                                        valid={customerWebSiteState === "valid"}
+                                                                        invalid={customerWebSiteState === "invalid"}
                                                                         onChange={(e) => {
                                                                             setCustomerWebSite(e.target.value);
+                                                                            if (e.target.value !== "" && !validateWebSite(e.target.value)) {
+                                                                                setCustomerWebSiteState("invalid");
+                                                                            } else {
+                                                                                setCustomerWebSiteState(e.target.value === "" ? null : "valid");
+                                                                            }
                                                                         }}
                                                                     />
+                                                                    <div className="invalid-feedback">
+                                                                        É necessário preencher este campo corretamente.
+                                                                    </div>
                                                                 </Col>
                                                                 <Col className="mb-3" md="6">
                                                                     <label
@@ -715,21 +740,13 @@ function CustomerUserRegister() {
                                                                         id="validationCustomerBusinessSector"
                                                                         className="form-control"
                                                                         data-minimum-results-for-search="Infinity"
-                                                                        valid={customerBusinessSectorState === "valid"}
-                                                                        invalid={customerBusinessSectorState === "invalid"}
                                                                         options={{
                                                                             placeholder: "Selecione o setor",
                                                                         }}
-                                                                        data={dataOptionsToCompanySector.map(option => ({ id: option.id, text: option.text }))}
-                                                                        value={customerBusinessSector}
-                                                                        onChange={(e) => {
-                                                                            setCustomerBusinessSector(e.target.value);
-                                                                            if (e.target.value === "") {
-                                                                                setCustomerBusinessSectorState("invalid");
-                                                                            } else {
-                                                                                setCustomerBusinessSectorState("valid");
-                                                                            }
-                                                                        }}
+                                                                        value={selectedCompanySector}
+                                                                        onChange={(e) => setSelectedCompanySector(e.target.value)}
+                                                                        data={companySectorDataList}
+                                                                        onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, companySectorDataList, setSelectedCompanySector, setCustomerBusinessSector, setCustomerBusinessSectorState, null)}
                                                                     />
                                                                 </Col>
                                                                 <Col className="mb-3" md="6">
@@ -889,20 +906,21 @@ function CustomerUserRegister() {
                                                                         placeholder=""
                                                                         value={companyAddressComplement}
                                                                         type="text"
-                                                                        // valid={companyAddressComplementState === "valid"}
-                                                                        // invalid={companyAddressComplementState === "invalid"}
+                                                                        valid={companyAddressComplementState === "valid"}
+                                                                        invalid={companyAddressComplementState === "invalid"}
                                                                         onChange={(e) => {
-                                                                            setCompanyAddressComplement(e.target.value);
-                                                                            // if (e.target.value === "") {
-                                                                            //     setCompanyAddressComplementState("invalid");
-                                                                            // } else {
-                                                                            //     setCompanyAddressComplementState("valid");
-                                                                            // }
+                                                                            const value = e.target.value;
+                                                                            setCompanyAddressComplement(value);
+                                                                            if (value === "") {
+                                                                                setCompanyAddressComplementState(null);
+                                                                            } else {
+                                                                                setCompanyAddressComplementState("valid");
+                                                                            }
                                                                         }}
                                                                     />
-                                                                    {/* <div className="invalid-feedback">
+                                                                    <div className="invalid-feedback">
                                                                         É necessário preencher este campo.
-                                                                    </div> */}
+                                                                    </div>
                                                                 </Col>
                                                                 <Col className="mb-3" md="4">
                                                                     <label

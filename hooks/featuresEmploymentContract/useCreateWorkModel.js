@@ -1,9 +1,9 @@
 import React, { useState, useContext } from 'react';
-import { AlertContext } from '../../contexts/AlertContext';
+import { useAlert } from '../../contexts/AlertContext';
 
 const useCreateWorkModel = () => {
 
-    const { showAlert } = useContext(AlertContext);
+    const { showAlert } = useAlert();
 
     const [employeetWorkModel, setEmployeetWorkModel] = useState("");
     const [employeetWorkModelState, setEmployeetWorkModelState] = useState(null);
@@ -39,7 +39,7 @@ const useCreateWorkModel = () => {
     const handleSubmit = async (employeetWorkModel) => {
         if (employeetWorkModel && employeetWorkModel !== "") {
             try {
-                const response = await fetch(`http://dlist.com.br:3008/contract-models`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE_WORK_MODEL}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -64,11 +64,17 @@ const useCreateWorkModel = () => {
                         "danger",
                         "fas fa-xmark",
                         "Erro!",
-                        `Erro na resposta: , ${response.status}`,
+                        `Erro na resposta!`,
                     );
                 }
             } catch (error) {
                 console.error('Erro no pedido:', error);
+                showAlert(
+                    "danger",
+                    "fas fa-xmark",
+                    "Erro!",
+                    `${error}`
+                );
             }
         }
     };

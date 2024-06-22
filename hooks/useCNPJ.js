@@ -27,10 +27,14 @@ const useCNPJ = () => {
 
     const fetchData = async (cnpj) => {
       try {
-        const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BRASIL_API_CNPJ_V1}/${cnpj}`);
         const result = await response.json();
-        setBrasilAPICNPJData(result);
-        validateCnpj();
+        if (!result.message) {
+          setBrasilAPICNPJData(result);
+          validateCnpj();
+        } else if (result.type && result.type === "not_found") {
+          setErrorCNPJValidation(result.message);
+        }
       } catch (error) {
         setErrorCNPJValidation(error);
       }

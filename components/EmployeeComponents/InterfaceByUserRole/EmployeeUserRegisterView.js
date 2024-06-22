@@ -6,7 +6,7 @@ import CustomerHeader from "../../Headers/CustomerHeader"
 import EmployeeUserRegister from "../../Forms/EmployeeUserRegister"
 
 
-const EmployeeUserRegisterView = ({ authenticationDataLoggedInUser, handleShowEmployeeRecordEntrySettings }) => {
+const EmployeeUserRegisterView = ({ handleShowEmployeeUserRegister, authenticationDataLoggedInUser, handleShowEmployeeRecordEntrySettings }) => {
     return (
         <>
             {
@@ -16,7 +16,7 @@ const EmployeeUserRegisterView = ({ authenticationDataLoggedInUser, handleShowEm
                         <>
                             <AdminHeader name="Colaboradores" parentName="Cadastros" employeeRecordEntrySettingsButtonName="Configurações" handleShowEmployeeRecordEntrySettings={handleShowEmployeeRecordEntrySettings} />
                             <Container className="mt--6" fluid>
-                                <EmployeeUserRegister />
+                                <EmployeeUserRegister handleShowEmployeeUserRegister={handleShowEmployeeUserRegister} />
                             </Container>
                         </>
                     )
@@ -26,7 +26,7 @@ const EmployeeUserRegisterView = ({ authenticationDataLoggedInUser, handleShowEm
                         <>
                             <CustomerHeader name="Colaboradores" parentName="Cadastros" employeeRecordEntrySettingsButtonName="Configurações" handleShowEmployeeRecordEntrySettings={handleShowEmployeeRecordEntrySettings} />
                             <Container className="mt--6" fluid>
-                                <EmployeeUserRegister />
+                                <EmployeeUserRegister handleShowEmployeeUserRegister={handleShowEmployeeUserRegister} />
                             </Container>
                         </>
                     )

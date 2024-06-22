@@ -1,25 +1,75 @@
 import React, { useState, useEffect } from 'react';
-
+import { Button, Card, CardHeader, CardBody, FormGroup, Form, Input, Row, Col, Table } from "reactstrap";
 import dynamic from "next/dynamic";
 // react plugin used to create DropdownMenu for selecting items
 const Select2 = dynamic(() => import("react-select2-wrapper"));
-import { Button, Card, CardHeader, CardBody, FormGroup, Form, Input, Row, Col, Table } from "reactstrap";
+// react plugin used to create datetimepicker
+import ReactDatetime from "react-datetime";
+import InputMask from 'react-input-mask';
+import useCreateCustomerAccountHolder from '../../hooks/customer/useCreateCustomerAccountHolder';
+import { useFindAllClientCompany } from '../../hooks/customer/useFindAllClientCompany';
+import { employmentContractDataSearchAndProcess } from '../../util/employmentContractDataSearchAndProcess';
+import { handleSelectionEmploymentContractData } from '../../util/handleSelectionEmploymentContractData';
 
-function ContactPersonsRegister() {
+function ContactPersonsRegister({ handleShowContactPersonsUserRegister }) {
 
-    const [selectedDepartment, setSelectedDepartment] = useState(null);
+    const {
+        firstNameState,
+        lastNameState,
+        taxIdentificationNumber,
+        taxIdentificationNumberState,
+        emailAddressState,
+        birthdateState,
+        password,
+        passwordState,
+        confirmPasswordState,
+        phoneNumber,
+        phoneNumberState,
+        checkbox,
+        checkboxState,
+        setCheckbox,
+        setCheckboxState,
+        setFirstName,
+        setFirstNameState,
+        setLastName,
+        setLastNameState,
+        setTaxIdentificationNumber,
+        setTaxIdentificationNumberState,
+        setEmailAddress,
+        setEmailAddressState,
+        setPassword,
+        setPasswordState,
+        setConfirmPassword,
+        setConfirmPasswordState,
+        setPhoneNumber,
+        setPhoneNumberState,
+        handleValidateAddCustomerAccountHolderForm,
+        handleBirthdateChange,
+        validateEmail,
+        handleChangeCPF,
+        validateCheckboxIsChecked,
+        isCustomerAccountHolderFormValidated,
+        contactPersonOccupation,
+        setContactPersonOccupation,
+        contactPersonOccupationState,
+        setContactPersonOccupationState,
+        contactPersonBelongsToClientCompany,
+        setContactPersonBelongsToClientCompany,
+        contactPersonBelongsToClientCompanyState,
+        setContactPersonBelongsToClientCompanyState
+    } = useCreateCustomerAccountHolder(handleShowContactPersonsUserRegister);
+
+    const [selectedBelongingToClientCompany, setSelectedBelongingToClientCompany] = useState('');
+    const [clientCompanyDataList, setClientCompanyDataList] = useState([]);
+    const handleClientCompanyDataList = (customerUser) => {
+        setClientCompanyDataList(customerUser);
+    }
 
     useEffect(() => {
-        if (selectedDepartment) {
-            console.log("Selected Department updated:", selectedDepartment);
-            // Você pode adicionar lógica adicional aqui, se necessário
+        if (clientCompanyDataList.length === 0) {
+            employmentContractDataSearchAndProcess(useFindAllClientCompany, handleClientCompanyDataList, 'client-company', 'EmployeeUserRegister');
         }
-    }, [selectedDepartment]);
-
-
-    /** back a list of departments*/
-
-    //const { formData, handleDepartmentChange, onSubmit } = useDepartmentForm();
+    }, []);
 
     return (
         <Form>
@@ -28,114 +78,213 @@ function ContactPersonsRegister() {
                     <h3 className="mb-0">Cadastrar Pessoa de Contato</h3>
                 </CardHeader>
                 <CardBody>
-                    <Row>
-                        <Col md="6">
-                            <FormGroup>
+                    <Form className="needs-validation" noValidate>
+                        <div className="form-row">
+                            <Col className="mb-3" md="6">
                                 <label
                                     className="form-control-label"
-                                    htmlFor="DepartmentNameInput"
+                                    htmlFor="validationContactPersonFirstName"
                                 >
                                     Nome
                                 </label>
                                 <Input
-                                    defaultValue="Mark"
-                                    id="validationDefault01"
-                                    placeholder="First name"
-                                    required
+                                    id="validationContactPersonFirstName"
+                                    placeholder="Nome"
                                     type="text"
+                                    valid={firstNameState === "valid"}
+                                    invalid={firstNameState === "invalid"}
+                                    onChange={(e) => {
+                                        setFirstName(e.target.value);
+                                        if (e.target.value === "") {
+                                            setFirstNameState("invalid");
+                                        } else {
+                                            setFirstNameState("valid");
+                                        }
+                                    }}
                                 />
-                            </FormGroup>
-                        </Col>
-                        <Col md="6">
-                            <FormGroup>
+                                <div className="invalid-feedback">
+                                    É necessário preencher este campo.
+                                </div>
+                            </Col>
+                            <Col className="mb-3" md="6">
                                 <label
                                     className="form-control-label"
-                                    htmlFor="DepartmentNameInput"
+                                    htmlFor="validationContactPersonLastName"
+                                >
+                                    Sobrenome
+                                </label>
+                                <Input
+                                    id="validationContactPersonLastName"
+                                    placeholder="Sobrenome"
+                                    type="text"
+                                    valid={lastNameState === "valid"}
+                                    invalid={lastNameState === "invalid"}
+                                    onChange={(e) => {
+                                        setLastName(e.target.value);
+                                        if (e.target.value === "") {
+                                            setLastNameState("invalid");
+                                        } else {
+                                            setLastNameState("valid");
+                                        }
+                                    }}
+                                />
+                                <div className="invalid-feedback">
+                                    É necessário preencher este campo.
+                                </div>
+                            </Col>
+                        </div>
+                        <div className="form-row">
+                            <Col className="mb-3" md="6">
+                                <label
+                                    className="form-control-label"
+                                    htmlFor="validationContactPersonTaxIdNumber"
+                                >
+                                    CPF
+                                </label>
+                                <InputMask
+                                    placeholder='999.999.999-99'
+                                    mask="999.999.999-99"
+                                    maskChar="_"
+                                    value={taxIdentificationNumber}
+                                    onChange={(e) => handleChangeCPF(e.target.value)}
+                                >
+                                    {(inputProps) => <Input {...inputProps} id="validationContactPersonTaxIdNumber" invalid={taxIdentificationNumberState === "invalid"} />}
+                                </InputMask>
+                                <div className="invalid-feedback">
+                                    {taxIdentificationNumberState === "invalid" && "Forneça um número de CPF válido."}
+                                </div>
+                            </Col>
+                            <Col className="mb-3" md="6">
+                                <label
+                                    className="form-control-label"
+                                    htmlFor="validationContactPersonBirthdate"
+                                >
+                                    Data de Nascimento
+                                </label>
+                                <ReactDatetime
+                                    inputProps={{
+                                        placeholder: "__/__/__",
+                                    }}
+                                    timeFormat={false}
+                                    onChange={handleBirthdateChange}
+
+                                />
+                            </Col>
+                        </div>
+                        <div className="form-row">
+                            <Col className="mb-3" md="6">
+                                <label
+                                    className="form-control-label"
+                                    htmlFor="validationContactPersonPhoneNumber"
+                                >
+                                    Número de Telefone
+                                </label>
+                                <InputMask
+                                    placeholder='+55 (99) 9 9999-9999'
+                                    mask="+55 (99) 9 9999-9999"
+                                    maskChar=" "
+                                    value={phoneNumber}
+                                    onChange={(e) => {
+                                        setPhoneNumber(e.target.value);
+                                        if (e.target.value === "") {
+                                            setPhoneNumberState("invalid");
+                                        } else {
+                                            setPhoneNumberState("valid");
+                                        }
+                                    }}
+                                >
+                                    {(inputProps) => <Input {...inputProps} id="validationContactPersonPhoneNumber" type="text" valid={phoneNumberState === "valid"} invalid={phoneNumberState === "invalid"} />}
+                                </InputMask>
+                                <div className="invalid-feedback">
+                                    É necessário preencher este campo.
+                                </div>
+                            </Col>
+                            <Col className="mb-4" md="6">
+                                <label
+                                    className="form-control-label"
+                                    htmlFor="validationContactPersonEmailAddress"
                                 >
                                     E-mail
                                 </label>
                                 <Input
-                                    defaultValue="seu@email.com"
-                                    id="validationDefault01"
-                                    placeholder="E-mail"
-                                    required
-                                    type="text"
+                                    aria-describedby="inputGroupPrepend"
+                                    id="validationContactPersonEmailAddress"
+                                    placeholder="Endereço de e-mail"
+                                    type="email"
+                                    valid={emailAddressState === "valid"}
+                                    invalid={emailAddressState === "invalid"}
+                                    onChange={(e) => {
+                                        const email = e.target.value;
+                                        setEmailAddress(email);
+                                        if (validateEmail(email)) {
+                                            setEmailAddressState("valid");
+                                        } else {
+                                            setEmailAddressState("invalid");
+                                        }
+                                    }}
                                 />
-                            </FormGroup>
-                        </Col>
-                        <Col md="4">
-                            <FormGroup>
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="DepartmentNameInput"
-                                >
-                                    Telefone
-                                </label>
-                                <Input
-                                    defaultValue="+00 (00) 00000-0000"
-                                    id="validationDefault01"
-                                    placeholder="Telefone"
-                                    required
-                                    type="text"
-                                />
-                            </FormGroup>
-                        </Col>
-                        <Col md="4">
-                            <FormGroup>
-                                <label className="form-control-label" htmlFor="reportToDepartmentInput">
+                                <div className="invalid-feedback">
+                                    {emailAddressState === "invalid" && "Forneça um endereço de e-mail válido."}
+                                </div>
+                            </Col>
+                        </div>
+                        {/* <div className="form-row">
+                            <Col className="mb-3" md="6">
+                                <label className="form-control-label" htmlFor="validationContactPersonBelonging">
                                     Cliente
                                 </label>
-                                <Form>
-                                    <Select2
-                                        className="form-control"
-                                        defaultValue="0"
-                                        options={{
-                                            placeholder: "Selecione um cliente",
-                                        }}
-                                        data={[
-                                            { id: "0", text: "Selecione o cliente" },
-                                            { id: "1", text: "Alerts" },
-                                            { id: "2", text: "Badges" },
-                                            { id: "3", text: "Buttons" },
-                                            { id: "4", text: "Cards" },
-                                            { id: "5", text: "Forms" },
-                                            { id: "6", text: "Modals" },
-                                        ]}
-                                    />
-                                </Form>
-                            </FormGroup>
-
-                        </Col>
-                        <Col md="4">
-                            <FormGroup>
+                                <Select2
+                                    id="validationContactPersonBelonging"
+                                    className="form-control"
+                                    data-minimum-results-for-search="Infinity"
+                                    options={{
+                                        placeholder: "Selecione um cliente",
+                                    }}
+                                    value={selectedBelongingToClientCompany}
+                                    onChange={(e) => setSelectedBelongingToClientCompany(e.target.value)}
+                                    data={clientCompanyDataList}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, clientCompanyDataList, setSelectedBelongingToClientCompany, setContactPersonBelongsToClientCompany, setContactPersonBelongsToClientCompanyState)}
+                                />
+                            </Col>
+                            <Col className="mb-3" md="6">
                                 <label
                                     className="form-control-label"
-                                    htmlFor="DepartmentNameInput"
+                                    htmlFor="validationContactPersonOccupation"
                                 >
                                     Ocupação
                                 </label>
                                 <Input
-                                    defaultValue="Financeiro"
-                                    id="validationDefault01"
-                                    placeholder="Occupation"
-                                    required
+                                    id="validationContactPersonOccupation"
+                                    placeholder="Ocupação"
                                     type="text"
+                                    valid={contactPersonOccupationState === "valid"}
+                                    invalid={contactPersonOccupationState === "invalid"}
+                                    onChange={(e) => {
+                                        setContactPersonOccupation(e.target.value);
+                                        if (e.target.value === "") {
+                                            setContactPersonOccupationState("invalid");
+                                        } else {
+                                            setContactPersonOccupationState("valid");
+                                        }
+                                    }}
                                 />
-                            </FormGroup>
-                        </Col>
-
-                    </Row>
-                    <Row>
-                        <Col md="4" />
-                        <Col className="d-flex justify-content-end align-items-center" md="8" >
-                            <Button className="px-5" color="primary" size="lg" type="button">
-                                <span className="btn-inner--text">Adicionar</span>
-                            </Button>
-                        </Col>
-                    </Row>
+                                <div className="invalid-feedback">
+                                    É necessário preencher este campo.
+                                </div>
+                            </Col>
+                        </div> */}
+                        <Row>
+                            <Col md="4" />
+                            <Col className="d-flex justify-content-end align-items-center" md="8" >
+                                <Button className="px-5" color="primary" size="lg" type="button" onClick={() => handleValidateAddCustomerAccountHolderForm(true)}>
+                                    <span className="btn-inner--text">Adicionar</span>
+                                </Button>
+                            </Col>
+                        </Row>
+                    </Form>
                 </CardBody>
             </Card>
-        </Form>
+        </Form >
     );
 }
 

@@ -18,6 +18,9 @@ import { useFindAllEmployee } from "../../../hooks/employee/useFindAllEmployee";
 const EmployeeUserList = () => {
 
   const [detailedEmployeeData, setDetailedEmployeeData] = useState([]);
+  const [idSelectedToShowEmployeeDetails, setIdSelectedToShowEmployeeDetails] = useState('');
+
+  //const deleteCustomer = useDeleteCustomerAccount();
 
   function formatDate(dateString) {
     const date = new Date(dateString);
@@ -31,9 +34,19 @@ const EmployeeUserList = () => {
 
   const [modalOpen, setModalOpen] = React.useState(false);
 
-  function handleShowEmployeeDetailsModal() {
+  function handleShowEmployeeDetailsModal(employeeId) {
     setModalOpen(!modalOpen)
+    setIdSelectedToShowEmployeeDetails(employeeId);
   }
+
+  const handleDeleteEmployee = async (id) => {
+    const deletedId = await deleteCustomer(id);
+    if (deletedId !== null) {
+      window.location.reload();
+    } else {
+      console.error('Failed to delete cursomer with ID:', id);
+    }
+  };
 
   useEffect(async () => {
     if (detailedEmployeeData && detailedEmployeeData.length === 0) {
@@ -96,7 +109,7 @@ const EmployeeUserList = () => {
         </thead>
         <tbody>
           {detailedEmployeeData && detailedEmployeeData.map((employee) => (
-            <tr key={employee.ID_Employee}>
+            <tr key={employee.id}>
               <th>
                 <div className="custom-control custom-checkbox">
                   <input
@@ -116,7 +129,7 @@ const EmployeeUserList = () => {
                   className="avatar rounded-circle mr-3"
                   src={require("assets/img/theme/team-1.jpg")}
                 />
-                <b>{employee.EmployeeName}</b>
+                <b>{employee.name} {employee.lastName}</b>
               </td>
               <td>
                 <a
@@ -124,12 +137,12 @@ const EmployeeUserList = () => {
                   href="#pablo"
                   onClick={(e) => e.preventDefault()}
                 >
-                  {employee.EmployeeRole}
+                  {employee.roleId}
                 </a>
               </td>
               <td>
                 <span className="text-muted">
-                  {formatDate(employee.CreatedAt)}
+                  {formatDate(employee.createdAt)}
                 </span>
               </td>
               <td>
@@ -143,7 +156,7 @@ const EmployeeUserList = () => {
                     <NavLink target="_blank">
                       <a href="#" className="text-underline">
                         <span
-                          onClick={handleShowEmployeeDetailsModal}
+                          onClick={() => handleShowEmployeeDetailsModal(employee.id)}
                           className="name mb-0 text-sm"
                         >
                           Mais
@@ -182,11 +195,13 @@ const EmployeeUserList = () => {
         </tbody>
       </Table>
 
-      <ShowEmployeeDetailsModal
-        handleShowEmployeeDetailsModal={handleShowEmployeeDetailsModal}
-        modalOpen={modalOpen}
-        detailedEmployeeData={detailedEmployeeData}
-      />
+      {idSelectedToShowEmployeeDetails && (
+        <ShowEmployeeDetailsModal
+          handleShowEmployeeDetailsModal={handleShowEmployeeDetailsModal}
+          modalOpen={modalOpen}
+          idSelectedToShowEmployeeDetails={idSelectedToShowEmployeeDetails}
+        />
+      )}
 
     </Card>
   );

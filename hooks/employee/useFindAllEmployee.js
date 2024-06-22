@@ -1,7 +1,7 @@
 export async function useFindAllEmployee() {
 
   try {
-    const response = await fetch(`http://dlist.com.br:3010/employee`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE}/findAll`);
 
     if (!response.ok) {
       throw new Error('Network response was not ok.');

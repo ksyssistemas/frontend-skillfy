@@ -75,7 +75,7 @@ const useCreateAdmin = (handleShowAdminUserRegister) => {
 
         if (firstName, lastName, birthdate, emailAddress, confirmPassword, phoneNumber) {
             try {
-                const response = await fetch(`http://dlist.com.br:3008/administrator`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_ADMINISTRATOR}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

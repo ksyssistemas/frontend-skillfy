@@ -4,11 +4,14 @@ const useCreateEmployeeFunction = (handleShowRolesUserRegister) => {
 
   const [employeeFunctionName, setEmployeeFunctionName] = useState("");
   const [employeeFunctionNameState, setEmployeeFunctionNameState] = useState(null);
-  const [employeeFunctionDataList, setEmployeeFunctionDataList] = useState([]);
   const [funtionReportsToFuntion, setFuntionReportsToFuntion] = useState("");
   const [funtionReportsToFuntionState, setFuntionReportsToFuntionState] = useState(null);
   const [employeeFunctiontDescription, setEmployeeFunctiontDescription] = useState("");
   const [employeeFunctiontDescriptionState, setEmployeeFunctiontDescriptionState] = useState(null);
+  const [employeeFunctionDataList, setEmployeeFunctionDataList] = useState([]);
+  const handleEmployeeFunctionDataList = (employeeFunctionData) => {
+    setEmployeeFunctionDataList(employeeFunctionData);
+  }
 
   const validateAddEmployeeFunctionForm = () => {
     if (employeeFunctionName === "") {
@@ -16,47 +19,53 @@ const useCreateEmployeeFunction = (handleShowRolesUserRegister) => {
     } else {
       setEmployeeFunctionNameState("valid");
     }
-    // if (departmentReportsToDepartment === "") {
-    //   setDepartmentReportsToDepartmentState("invalid");
-    // } else {
-    //   setDepartmentReportsToDepartmentState("valid");
-    // }
     if (employeeFunctiontDescription === "") {
-      setEmployeeFunctiontDescriptionState("invalid");
-    } else {
-      setEmployeeFunctiontDescriptionState("valid");
+      if (employeeFunctiontDescription.length < 10) {
+        setEmployeeFunctiontDescriptionState("invalid");
+      } else {
+        setEmployeeFunctiontDescriptionState("valid");
+      }
     }
   }
 
   function handleValidateAddEmployeeFunctionForm() {
     validateAddEmployeeFunctionForm();
     if (employeeFunctionNameState === "valid" &&
-      employeeFunctiontDescription === "valid"
-    ) {
-      handleSubmit(employeeFunctionName,
-        funtionReportsToFuntion,
-        employeeFunctiontDescription);
-    } else {
-      return null;
+      funtionReportsToFuntionState === "" &&
+      employeeFunctiontDescriptionState === "") {
+      handleSubmit(employeeFunctionName);
+    } else if (employeeFunctionNameState === "valid" &&
+      funtionReportsToFuntionState === "" &&
+      employeeFunctiontDescriptionState !== "") {
+      handleSubmit(employeeFunctionName, employeeFunctiontDescription);
+    } else if (employeeFunctionNameState === "valid" &&
+      funtionReportsToFuntionState !== "" &&
+      employeeFunctiontDescriptionState !== "") {
+      handleSubmit(employeeFunctionName, employeeFunctiontDescription, funtionReportsToFuntion);
     }
   }
 
-  const handleSubmit = async (employeeFunctionName, funtionReportsToFuntion, employeeFunctiontDescription) => {
+  const handleSubmit = async (employeeFunctionName, employeeFunctiontDescription, funtionReportsToFuntion) => {
     if (employeeFunctionName && employeeFunctionName !== "") {
       try {
         const payload = {
-          FunctionName: employeeFunctionName,
+          name: employeeFunctionName,
+          status: true
         };
 
         if (employeeFunctiontDescription && employeeFunctiontDescription !== "") {
-          payload.Description = employeeFunctiontDescription;
+          console.log(employeeFunctiontDescription);
+          payload.description = employeeFunctiontDescription;
         }
 
         if (funtionReportsToFuntion && funtionReportsToFuntion !== "") {
-          payload.Responsible = funtionReportsToFuntion;
+          console.log(funtionReportsToFuntion);
+          payload.responsible = funtionReportsToFuntion;
         }
 
-        const response = await fetch(`http://dlist.com.br:3010/department`, {
+        console.log("PAYLOAD: ", payload);
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE_FUNCTION}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -87,46 +96,6 @@ const useCreateEmployeeFunction = (handleShowRolesUserRegister) => {
     setEmployeeFunctiontDescriptionState(null);
   }
 
-  async function getEmployeeFunctionDataList() {
-    try {
-      const response = await fetch(`http://dlist.com.br:3010/function`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-      if (response.ok) {
-        let data = await response.json();
-        if (data && data.length > 0) {
-          data = data.map((employeeFunction, index) => ({
-            id: index.toString(),
-            text: employeeFunction.FunctionName
-          }));
-          setEmployeeFunctionDataList([data]);
-        } else {
-          setEmployeeFunctionDataList([{ id: "0", text: "Não há departamentos. É necessário cadastrar ao menos um." }])
-        }
-      } else {
-        console.error('Erro na resposta: ', response.status);
-      }
-    } catch (error) {
-      console.error('Erro no pedido: ', error);
-    }
-  };
-
-  function handleChooseEmployeeFunction(e) {
-    const selectedId = e.target.value;
-    if (employeeFunctionDataList && employeeFunctionDataList.length !== 0) {
-      const optionType = employeeFunctionDataList.filter(option => option.id === selectedId);
-      setFuntionReportsToFuntion(optionType[0].text);
-      if (optionType.length === 0) {
-        setFuntionReportsToFuntionState("invalid");
-      } else {
-        setFuntionReportsToFuntionState("valid");
-      }
-    }
-  }
-
   return {
     employeeFunctionName,
     setEmployeeFunctionName,
@@ -142,9 +111,8 @@ const useCreateEmployeeFunction = (handleShowRolesUserRegister) => {
     setEmployeeFunctiontDescription,
     employeeFunctiontDescriptionState,
     setEmployeeFunctiontDescriptionState,
-    getEmployeeFunctionDataList,
-    handleChooseEmployeeFunction,
-    handleValidateAddEmployeeFunctionForm
+    handleValidateAddEmployeeFunctionForm,
+    handleEmployeeFunctionDataList
   };
 };
 

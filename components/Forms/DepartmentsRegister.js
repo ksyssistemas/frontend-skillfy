@@ -5,6 +5,9 @@ import dynamic from "next/dynamic";
 const Select2 = dynamic(() => import("react-select2-wrapper"));
 import { Button, Card, CardHeader, CardBody, FormGroup, Form, Input, Container, Row, Col, Table } from "reactstrap";
 import useCreateDepartment from "../../hooks/department/useCreateDepartment";
+import { useFindAllDepartments } from '../../hooks/department/useFindAllDepartments';
+import { employmentContractDataSearchAndProcess } from '../../util/employmentContractDataSearchAndProcess';
+import { handleSelectionEmploymentContractData } from '../../util/handleSelectionEmploymentContractData';
 
 function DepartmentsRegister({ handleShowDepartmentsUserRegister }) {
 
@@ -24,15 +27,16 @@ function DepartmentsRegister({ handleShowDepartmentsUserRegister }) {
         departmentDescriptionState,
         setDepartmentDescriptionState,
         handleValidateAddDepartmentForm,
-        getDepartmentDataList,
-        handleChooseDepartment
+        handleDepartmentDataList
     } = useCreateDepartment(handleShowDepartmentsUserRegister);
+
+    const [selectedDepartment, setSelectedDepartment] = useState('');
 
     useEffect(() => {
         if (departmentDataList.length === 0) {
-            getDepartmentDataList();
+            employmentContractDataSearchAndProcess(useFindAllDepartments, handleDepartmentDataList, 'department', 'EmployeeUserRegister');
         }
-    }, [departmentDataList]);
+    }, []);
 
     return (
         <Form>
@@ -80,8 +84,10 @@ function DepartmentsRegister({ handleShowDepartmentsUserRegister }) {
                                 className="form-control"
                                 data-minimum-results-for-search="Infinity"
                                 options={{ placeholder: "Selecione um departamento:" }}
+                                value={selectedDepartment}
+                                onChange={(e) => setSelectedDepartment(e.target.value)}
                                 data={departmentDataList}
-                                onSelect={handleChooseDepartment}
+                                onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, departmentDataList, setSelectedDepartment, setDepartmentReportsToDepartment, setDepartmentReportsToDepartmentState)}
                             />
                         </Col>
                         <Col className="mb-3" md="12">
@@ -100,7 +106,7 @@ function DepartmentsRegister({ handleShowDepartmentsUserRegister }) {
                                 onChange={(e) => {
                                     setDepartmentDescription(e.target.value);
                                     if (e.target.value === "") {
-                                        setDepartmentDescriptionState("invalid");
+                                        setDepartmentDescriptionState("");
                                     } else {
                                         setDepartmentDescriptionState("valid");
                                     }

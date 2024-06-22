@@ -1,6 +1,6 @@
 export async function useFindAllWorkplaces() {
     try {
-        const response = await fetch(`http://dlist.com.br:3010/workplace`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE_WORKPLACE}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

@@ -44,9 +44,9 @@ function Login() {
 
 
   const handleSubmit = async () => {
-
+    console.log(process.env.NEXT_PUBLIC_AUTHENTICATION);
     try {
-      const response = await fetch('https://skillfy.com.br/auth/signin', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_AUTHENTICATION}/signin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ function Login() {
         handleSaveAuthenticationDataLoggedInUser(data);
         // console.log('Data from API:', data); // Adicione esta linha
 
-        let redirectUrl = 'https://skillfy.com.br';
+        let redirectUrl = `${process.env.NEXT_PUBLIC_HOME_PAGE}`;
 
         switch (data.role) {
           case 'administrator':
@@ -77,7 +77,7 @@ function Login() {
             break;
           default:
             console.log('Redirecionando para a página padrão');
-            redirectUrl = 'https://skillfy.com.br/default';
+            redirectUrl = `${process.env.NEXT_PUBLIC_HOME_PAGE}/default`;
         }
 
         //redirectUrl += `?id=${data.data.id}&sector=${encodeURIComponent(data.data.sector)}`;

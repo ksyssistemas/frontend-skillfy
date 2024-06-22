@@ -1,12 +1,10 @@
-export async function useFindEmployeeAddress() {
-
+export async function useFindEmployeeAddress(employeeId) {
   try {
-    const response = await fetch(`http://dlist.com.br:3010/employee`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE}-address/${employeeId}/address`);
 
     if (!response.ok) {
       throw new Error('Network response was not ok.');
     }
-
     const data = await response.json();
 
     return data;

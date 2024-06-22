@@ -6,7 +6,7 @@ import CustomerHeader from "../../Headers/CustomerHeader"
 import EmployeeRegisterFieldsRegister from "../../Forms/EmployeeRegisterFieldsRegister"
 
 
-const EmployeeRegisterFieldsRegisterView = ({ authenticationDataLoggedInUser }) => {
+const EmployeeRegisterFieldsRegisterView = ({ authenticationDataLoggedInUser, handleShowEmployeeRecordEntrySettings }) => {
     return (
         <>
             {
@@ -14,14 +14,14 @@ const EmployeeRegisterFieldsRegisterView = ({ authenticationDataLoggedInUser }) 
                     authenticationDataLoggedInUser.role === 'administrator'
                     ? (
                         <>
-                            <AdminHeader name="Colaboradores" parentName="Definição dos Campos" />
+                            <AdminHeader name="Colaboradores" parentName="Definição dos Campos" employeeRecordEntrySettingsButtonName="Retornar ao Cadastro" handleShowEmployeeRecordEntrySettings={handleShowEmployeeRecordEntrySettings} />
                             <Container className="mt--6" fluid>
                                 <EmployeeRegisterFieldsRegister />
                             </Container>
                         </>
                     ) : (
                         <>
-                            <CustomerHeader name="Colaboradores" parentName="Definição dos Campos" />
+                            <CustomerHeader name="Colaboradores" parentName="Definição dos Campos" employeeRecordEntrySettingsButtonName="Retornar ao Cadastro" handleShowEmployeeRecordEntrySettings={handleShowEmployeeRecordEntrySettings} />
                             <Container className="mt--6" fluid>
                                 <EmployeeRegisterFieldsRegister />
                             </Container>

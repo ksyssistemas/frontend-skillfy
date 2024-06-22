@@ -1,8 +1,8 @@
-export const useDeleteAdmin = () => {
+export const useDeleteCustomerAccount = () => {
 
   const deleteAdmin = async (id) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_ADMINISTRATOR}/${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_CUSTOMER}/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {

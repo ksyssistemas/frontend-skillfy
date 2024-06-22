@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import useCPF from '../useCPF';
 
-const useCreateCustomer = () => {
+const useCreateCustomer = (handleShowContactPersonsUserRegister) => {
 
   const {
     validateCPF
@@ -23,8 +23,14 @@ const useCreateCustomer = () => {
   const [confirmPasswordState, setConfirmPasswordState] = React.useState(null);
   const [phoneNumber, setPhoneNumber] = React.useState("");
   const [phoneNumberState, setPhoneNumberState] = React.useState(null);
-  const [checkbox, setCheckbox] = React.useState(null);
+  const [checkbox, setCheckbox] = React.useState(false);
   const [checkboxState, setCheckboxState] = React.useState(null);
+  const [isCustomerAccountHolderFormValidated, setIsCustomerAccountHolderFormValidated] = React.useState(false);
+
+  const [contactPersonOccupation, setContactPersonOccupation] = React.useState("");
+  const [contactPersonOccupationState, setContactPersonOccupationState] = React.useState(null);
+  const [contactPersonBelongsToClientCompany, setContactPersonBelongsToClientCompany] = React.useState("");
+  const [contactPersonBelongsToClientCompanyState, setContactPersonBelongsToClientCompanyState] = React.useState(null);
 
   const validateAddCustomerAccountHolderForm = () => {
     if (firstName === "") {
@@ -67,36 +73,76 @@ const useCreateCustomer = () => {
     } else {
       setPhoneNumberState("valid");
     }
+    if (contactPersonOccupation === "") {
+      setContactPersonOccupationState("invalid");
+    } else {
+      setContactPersonOccupationState("valid");
+    }
   };
 
   const validateCheckboxIsChecked = () => {
     if (checkbox === false) {
       setCheckboxState("invalid");
-    } else {
+    }
+    if (checkbox === true) {
       setCheckboxState("valid");
     }
   };
 
-  function handleValidateAddCustomerAccountHolderForm() {
+  function handleContactPersonRegister() {
+
+  }
+
+  function handleValidateAddCustomerAccountHolderForm(isContactPerson = false) {
+    console.log(isContactPerson);
+    if (isContactPerson) {
+      setCheckbox(true);
+      validateCheckboxIsChecked();
+    }
+    console.log(
+      firstName,
+      lastName,
+      taxIdentificationNumber,
+      emailAddress,
+      birthdate,
+      phoneNumber,
+      checkbox,
+    );
     validateAddCustomerAccountHolderForm();
-    if (firstNameState === "valid" &&
+    console.log(
+      firstNameState,
+      lastNameState,
+      taxIdentificationNumberState,
+      emailAddressState,
+      phoneNumberState,
+      birthdateState,
+      checkboxState,
+    );
+    if (
+      firstNameState === "valid" &&
       lastNameState === "valid" &&
       taxIdentificationNumberState === "valid" &&
       emailAddressState === "valid" &&
       phoneNumberState === "valid" &&
+      birthdateState === "valid" &&
       checkboxState === "valid"
     ) {
-      handleSubmit(firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber);
+      if (isContactPerson) {
+        handleSubmitContractPerson(firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber);
+      } else {
+        handleSubmit(firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber);
+      }
     } else {
       return null;
     }
   }
 
   const handleSubmit = async (firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, terms = true) => {
-    return console.log(firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, terms);
+    console.log(firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, terms);
+
     if (firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, terms) {
       try {
-        const response = await fetch(`http://localhost:3010/checkout/create`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_CONTACT_PERSON}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -113,8 +159,7 @@ const useCreateCustomer = () => {
         });
 
         if (response.ok) {
-          reset();
-          handleShowAdminUserRegister();
+          console.log(response);
           console.log('Data sent successfully!');
         } else {
           console.error('Error in response:', response.status);
@@ -125,7 +170,41 @@ const useCreateCustomer = () => {
     }
   };
 
-  function reset() {
+  const handleSubmitContractPerson = async (firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, terms = true) => {
+    console.log(firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, terms);
+
+    if (firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, terms) {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_CONTACT_PERSON}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: firstName,
+            lastname: lastName,
+            cpf: taxIdentificationNumber,
+            birthdate: birthdate,
+            email: emailAddress,
+            phone: phoneNumber,
+            terms: terms
+          }),
+        });
+
+        if (response.ok) {
+          console.log(response);
+          console.log('Data sent successfully!');
+          handleShowContactPersonsUserRegister();
+        } else {
+          console.error('Error in response:', response.status);
+        }
+      } catch (error) {
+        console.error('Error in request:', error);
+      }
+    }
+  };
+
+  function resetCreateCustomer() {
     setFirstName("");
     setFirstNameState(null);
     setLastName("");
@@ -213,6 +292,16 @@ const useCreateCustomer = () => {
     handleChangeCPF,
     validateEmail,
     handleValidateAddCustomerAccountHolderForm,
+    resetCreateCustomer,
+    isCustomerAccountHolderFormValidated,
+    contactPersonOccupation,
+    setContactPersonOccupation,
+    contactPersonOccupationState,
+    setContactPersonOccupationState,
+    contactPersonBelongsToClientCompany,
+    setContactPersonBelongsToClientCompany,
+    contactPersonBelongsToClientCompanyState,
+    setContactPersonBelongsToClientCompanyState,
   };
 };
 

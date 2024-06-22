@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 // reactstrap components
 import {
@@ -21,8 +21,10 @@ import {
 } from "reactstrap";
 
 import ReactDatetime from "react-datetime";
+import { useFindClientCompany } from "../../../hooks/customer/useFindClientCompany";
+import { useFindEmployeeAddress } from "../../../hooks/customer/useFindClientCompanyAddress";
 
-function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen }) {
+function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, idSelectedToShowCompanyDetails, modalOpen }) {
   const [focused, setFocused] = React.useState(false);
   const [firstName, setfirstName] = React.useState("Mark");
   const [firstNameState, setfirstNameState] = React.useState(null);
@@ -120,16 +122,37 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
     return "";
   };
 
+  const [userCustomerAccountData, setUserCustomerAccountData] = useState([]);
+  const [userCustomerAddressData, setUserCustomerAddressData] = useState([]);
+
+  useEffect(async () => {
+    console.log(idSelectedToShowCompanyDetails)
+    if (userCustomerAccountData.length === 0 && userCustomerAddressData.length == 0) {
+      const foundCustomer = await useFindClientCompany(idSelectedToShowCompanyDetails);
+      setUserCustomerAccountData(foundCustomer);
+      const foundCustomerAddress = await useFindEmployeeAddress(idSelectedToShowCompanyDetails);
+      console.log(foundCustomerAddress[0])
+      setUserCustomerAddressData(foundCustomerAddress[0]);
+    }
+  }, [userCustomerAccountData, userCustomerAddressData, idSelectedToShowCompanyDetails]);
+
+
+  // useEffect(async () => {
+  //   if (userCustomerAddressData.length == 0) {
+  //   }
+  // }, [userCustomerAddressData, idSelectedToShowCompanyDetails]);
+
   return (
     <Modal
       toggle={handleShowCustomerDetailsModal}
       isOpen={modalOpen}
       size="xl"
+      key={`${userCustomerAccountData.id}.${userCustomerAddressData.id}`}
     //fullscreen
     >
       <div className=" modal-header">
         <h5 className=" modal-title" id="exampleModalLabel">
-          Informações de [Nome Cliente]
+          Informações de {userCustomerAccountData.companyName}
         </h5>
         <button
           aria-label="Close"
@@ -144,7 +167,7 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
         <Row>
           <div className="col">
             <div className="card-wrapper">
-            <h6 className="heading-small text-muted mb-4">
+              <h6 className="heading-small text-muted mb-4">
                 Informações Institucionais
               </h6>
               <div className="form-row">
@@ -157,7 +180,7 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      Cargo Lorem ipsum dolor sit
+                      {userCustomerAccountData.companyName}
                     </span>
                   </div>
                   <div className="valid-feedback">Looks good!</div>
@@ -171,7 +194,7 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      Cargo Lorem ipsum dolor sit
+                      {userCustomerAccountData.brandName}
                     </span>
                   </div>
                   <div className="invalid-feedback">
@@ -187,7 +210,7 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      Cargo Lorem ipsum dolor sit
+                      {userCustomerAccountData.identificationNumber}
                     </span>
                   </div>
                   <div className="valid-feedback">Looks good!</div>
@@ -203,7 +226,7 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      Cargo Lorem ipsum dolor sit
+                      {userCustomerAccountData.email}
                     </span>
                   </div>
                   <div className="valid-feedback">Looks good!</div>
@@ -217,7 +240,7 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      Cargo Lorem ipsum dolor sit
+                      {userCustomerAccountData.phoneNumber}
                     </span>
                   </div>
                   <div className="invalid-feedback">
@@ -233,7 +256,7 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      Cargo Lorem ipsum dolor sit
+                      {userCustomerAccountData.type}
                     </span>
                   </div>
                   <div className="valid-feedback">Looks good!</div>
@@ -253,7 +276,7 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      Cargo Lorem ipsum dolor sit
+                      {userCustomerAddressData.zipCode}
                     </span>
                   </div>
                 </Col>
@@ -266,7 +289,7 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      Cargo Lorem ipsum dolor sit
+                      {userCustomerAddressData.address}
                     </span>
                   </div>
                 </Col>
@@ -281,7 +304,7 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      Cargo Lorem ipsum dolor sit
+                      {userCustomerAddressData.complement ? userCustomerAddressData.complement : "Não registrado"}
                     </span>
                   </div>
                 </Col>
@@ -294,7 +317,7 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      Cargo Lorem ipsum dolor sit
+                      {userCustomerAddressData.addressNumber}
                     </span>
                   </div>
                 </Col>
@@ -309,7 +332,7 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      Cargo Lorem ipsum dolor sit
+                      {userCustomerAddressData.neighborhood}
                     </span>
                   </div>
                 </Col>
@@ -322,7 +345,7 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      Cargo Lorem ipsum dolor sit
+                      {userCustomerAddressData.city}
                     </span>
                   </div>
                 </Col>
@@ -335,7 +358,7 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      Cargo Lorem ipsum dolor sit
+                      {userCustomerAddressData.state}
                     </span>
                   </div>
                 </Col>
@@ -368,7 +391,7 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      Cargo Lorem ipsum dolor sit
+                      {userCustomerAccountData.createdAt}
                     </span>
                   </div>
                   <div className="valid-feedback">Looks good!</div>
@@ -396,7 +419,7 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      Cargo Lorem ipsum dolor sit
+                      {userCustomerAccountData.status ? "Ativo" : "Inativo"}
                     </span>
                   </div>
                   <div className="valid-feedback">Looks good!</div>
@@ -406,17 +429,17 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, modalOpen })
           </div>
         </Row>
       </ModalBody>
-      <ModalFooter/>
+      <ModalFooter />
       {/* <ModalFooter>
         <Button
-          color="secondary"
-          type="button"
-          onClick={handleShowCustomerDetailsModal}
+        color="secondary"
+        type="button"
+        onClick={handleShowCustomerDetailsModal}
         >
-          Fechar
+        Fechar
         </Button>
         <Button color="primary" type="button">
-          Editar
+        Editar
         </Button>
       </ModalFooter> */}
     </Modal >

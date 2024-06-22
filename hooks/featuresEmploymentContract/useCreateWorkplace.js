@@ -1,9 +1,9 @@
 import React, { useState, useContext } from 'react';
-import { AlertContext } from '../../contexts/AlertContext';
+import { useAlert } from '../../contexts/AlertContext';
 
 const useCreateWorkplace = () => {
 
-    const { showAlert } = useContext(AlertContext);
+    const { showAlert } = useAlert();
 
     const [employeeWorkplace, setEmployeeWorkplace] = useState("");
     const [employeeWorkplaceState, setEmployeeWorkplaceState] = useState(null);
@@ -39,7 +39,7 @@ const useCreateWorkplace = () => {
     const handleSubmit = async (employeeWorkplace) => {
         if (employeeWorkplace && employeeWorkplace !== "") {
             try {
-                const response = await fetch(`http://dlist.com.br:3008/workplace`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE_WORKPLACE}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -64,11 +64,17 @@ const useCreateWorkplace = () => {
                         "danger",
                         "fas fa-xmark",
                         "Erro!",
-                        `Erro na resposta: , ${response.status}`,
+                        `Erro na resposta!`,
                     );
                 }
             } catch (error) {
                 console.error('Erro no pedido:', error);
+                showAlert(
+                    "danger",
+                    "fas fa-xmark",
+                    "Erro!",
+                    `${error}`
+                );
             }
         }
     };

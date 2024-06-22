@@ -1,28 +1,26 @@
 
-import { createContext, ReactNode, useState } from "react";
+import { createContext, ReactNode, useState, useContext } from "react";
 // reactstrap components
-import {
-    UncontrolledAlert,
-} from "reactstrap";
+import { Alert } from 'reactstrap';
 
-export const AlertContext = createContext({});
+const AlertContext = createContext({});
 
-function AlertProvider({ children }) {
+export const AlertProvider = ({ children }) => {
 
-    const showAlert = (props) => {
-        const { alertComponentTheme, alertComponentIcon, alertMessageTitle, alertMessageText } = props;
+    const [alerts, setAlerts] = useState([]);
 
-        return (
-            <UncontrolledAlert className={alertComponentTheme}>
-                <span className="alert-icon">
-                    <i className={alertComponentIcon} />
-                </span>
-                <span className="alert-text ml-1">
-                    <strong>{alertMessageTitle}</strong>{alertMessageText}
-                </span>
-            </UncontrolledAlert>
-        );
-    }
+    const showAlert = (color, icon, title, message) => {
+        const id = Date.now();
+        const newAlert = { id, color, icon, title, message };
+        setAlerts([...alerts, newAlert]);
+
+        // Remover o alerta após 5 segundos
+        setTimeout(() => removeAlert(id), 5000);
+    };
+
+    const removeAlert = (id) => {
+        setAlerts(alerts.filter(alert => alert.id !== id));
+    };
 
     return (
         <AlertContext.Provider
@@ -31,8 +29,29 @@ function AlertProvider({ children }) {
             }}
         >
             {children}
+            <div style={{ position: 'fixed', top: '10px', left: '50%', transform: 'translateX(-50%)', zIndex: 9999, width: '80%', maxWidth: '600px' }}>
+                {alerts.map(alert => (
+                    <Alert color={alert.color} isOpen={true} key={alert.id}>
+                        <span className="alert-icon">
+                            <i className={alert.icon} />
+                        </span>
+                        <span className="alert-text">
+                            <strong>{alert.title}</strong> {alert.message}
+                        </span>
+                        <button
+                            type="button"
+                            className="close"
+                            aria-label="Close"
+                            onClick={() => removeAlert(alert.id)}
+                        >
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </Alert>
+                ))}
+            </div>
         </AlertContext.Provider>
     );
 }
 
-export { AlertProvider };
+// Custom hook para usar o alerta
+export const useAlert = () => useContext(AlertContext);

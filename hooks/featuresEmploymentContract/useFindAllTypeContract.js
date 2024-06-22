@@ -1,7 +1,7 @@
 export async function useFindAllTypeContract() {
 
     try {
-        const response = await fetch(`http://dlist.com.br:3010/employment-contract`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE_CONTRACT_TYPE}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

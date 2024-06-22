@@ -11,6 +11,7 @@ import {
 
 import { useFindAllAdmin } from "../../../hooks/admin/useFindAllAdmin"
 import { useDeleteAdmin } from "../../../hooks/admin/useDeleteAdmin"
+import { useFindAllContactPerson } from '../../../hooks/contactPerson/useFindAllContactPerson';
 
 function ContactPersonsList() {
 
@@ -35,7 +36,8 @@ function ContactPersonsList() {
 
   useEffect(async () => {
     if (userAdministratorAccountData.length == 0) {
-      const foundAdministrators = await useFindAllAdmin();
+      const foundAdministrators = await useFindAllContactPerson();
+      console.log(foundAdministrators);
       setUserAdministratorAccountData(foundAdministrators);
     }
   }, [userAdministratorAccountData])

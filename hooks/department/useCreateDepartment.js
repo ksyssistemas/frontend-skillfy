@@ -4,49 +4,49 @@ const useCreateDepartment = (handleShowDepartmentsUserRegister) => {
 
   const [departmentName, setDepartmentName] = useState("");
   const [departmentNameState, setDepartmentNameState] = useState(null);
-  const [departmentDataList, setDepartmentDataList] = useState([]);
   const [departmentReportsToDepartment, setDepartmentReportsToDepartment] = useState("");
   const [departmentReportsToDepartmentState, setDepartmentReportsToDepartmentState] = useState(null);
   const [departmentDescription, setDepartmentDescription] = useState("");
   const [departmentDescriptionState, setDepartmentDescriptionState] = useState(null);
+  const [departmentDataList, setDepartmentDataList] = useState([]);
+  const handleDepartmentDataList = (departmentData) => {
+    setDepartmentDataList(departmentData);
+  }
 
   const validateAddDepartmentForm = () => {
-    console.log(departmentName, departmentReportsToDepartment, departmentDescription)
     if (departmentName === "") {
       setDepartmentNameState("invalid");
     } else {
       setDepartmentNameState("valid");
     }
-    // if (departmentReportsToDepartment === "") {
-    //   setDepartmentReportsToDepartmentState("invalid");
-    // } else {
-    //   setDepartmentReportsToDepartmentState("valid");
-    // }
-    // if (departmentDescription === "") {
-    //   setDepartmentDescriptionState("invalid");
-    // } else {
-    //   setDepartmentDescriptionState("valid");
-    // }
+    if (departmentDescription === "") {
+      if (departmentDescription.length < 10) {
+        setEmployeeRoleDescriptionState("invalid");
+      } else {
+        setEmployeeRoleDescriptionState("valid");
+      }
+    }
   }
 
   function handleValidateAddDepartmentForm() {
     validateAddDepartmentForm();
     if (departmentNameState === "valid" &&
-      departmentReportsToDepartment === "" &&
-      departmentDescription === "") {
+      departmentReportsToDepartmentState === "" &&
+      departmentDescriptionState === "") {
       handleSubmit(departmentName);
     } else if (departmentNameState === "valid" &&
-      departmentReportsToDepartment === "" &&
-      departmentDescription !== "") {
+      departmentReportsToDepartmentState === "" &&
+      departmentDescriptionState !== "") {
       handleSubmit(departmentName, departmentDescription);
     } else if (departmentNameState === "valid" &&
-      departmentReportsToDepartment !== "" &&
-      departmentDescription !== "") {
+      departmentReportsToDepartmentState !== "" &&
+      departmentDescriptionState !== "") {
       handleSubmit(departmentName, departmentDescription, departmentReportsToDepartment);
     }
   }
 
   const handleSubmit = async (departmentName, departmentDescription, departmentReportsToDepartment) => {
+    console.log(departmentName, departmentDescription, departmentReportsToDepartment);
     if (departmentName && departmentName !== "") {
       try {
         const payload = {
@@ -61,7 +61,7 @@ const useCreateDepartment = (handleShowDepartmentsUserRegister) => {
           payload.Responsible = departmentReportsToDepartment;
         }
 
-        const response = await fetch(`http://dlist.com.br:3010/department`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_DEPARTMENT}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -82,7 +82,6 @@ const useCreateDepartment = (handleShowDepartmentsUserRegister) => {
     }
   };
 
-
   function reset() {
     setDepartmentName("");
     setDepartmentNameState(null);
@@ -91,46 +90,6 @@ const useCreateDepartment = (handleShowDepartmentsUserRegister) => {
     setDepartmentReportsToDepartmentState(null);
     setDepartmentDescription("");
     setDepartmentDescriptionState(null);
-  }
-
-  async function getDepartmentDataList() {
-    try {
-      const response = await fetch(`http://dlist.com.br:3010/department`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-      if (response.ok) {
-        let data = await response.json();
-        if (data && data.length > 0) {
-          data = data.map((department, index) => ({
-            id: index.toString(),
-            text: department.DepartmentName
-          }));
-          setDepartmentDataList([data]);
-        } else {
-          setDepartmentDataList([{ id: "0", text: "Não há departamentos. É necessário cadastrar ao menos um." }])
-        }
-      } else {
-        console.error('Erro na resposta: ', response.status);
-      }
-    } catch (error) {
-      console.error('Erro no pedido: ', error);
-    }
-  };
-
-  function handleChooseDepartment(e) {
-    const selectedId = e.target.value;
-    if (departmentDataList && departmentDataList.length !== 0) {
-      const optionType = departmentDataList.filter(option => option.id === selectedId);
-      setDepartmentReportsToDepartment(optionType[0].text);
-      if (optionType.length === 0) {
-        setDepartmentReportsToDepartmentState("invalid");
-      } else {
-        setDepartmentReportsToDepartmentState("valid");
-      }
-    }
   }
 
   return {
@@ -149,8 +108,7 @@ const useCreateDepartment = (handleShowDepartmentsUserRegister) => {
     departmentDescriptionState,
     setDepartmentDescriptionState,
     handleValidateAddDepartmentForm,
-    getDepartmentDataList,
-    handleChooseDepartment
+    handleDepartmentDataList
   };
 };
 

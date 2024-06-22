@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import useCNPJ from '../useCNPJ';
+import useCreateCustomer from './useCreateCustomerAccountHolder';
 
 const useCreateClientCompany = () => {
 
@@ -11,6 +12,8 @@ const useCreateClientCompany = () => {
     setIndividualEmployerIdNumberState
   } = useCNPJ("");
 
+  const { resetCreateCustomer } = useCreateCustomer();
+
   const [companyName, setCompanyName] = React.useState("");
   const [companyNameState, setCompanyNameState] = React.useState(null);
   const [registrationName, setRegistrationName] = React.useState("");
@@ -21,6 +24,8 @@ const useCreateClientCompany = () => {
   const [customerBusinessPhoneNumberState, setCustomerBusinessPhoneNumberState] = React.useState(null);
   const [customerPhoneNumber, setCustomerPhoneNumber] = React.useState("");
   const [customerPhoneNumberState, setCustomerPhoneNumberState] = React.useState(null);
+  const [companyEmailAddress, setCompanyEmailAddress] = React.useState("");
+  const [companyEmailAddressState, setCompanyEmailAddressState] = React.useState(null);
   const [customerBusinessSector, setCustomerBusinessSector] = React.useState("");
   const [customerBusinessSectorState, setCustomerBusinessSectorState] = React.useState(null);
   const [customerWebSite, setCustomerWebSite] = React.useState("");
@@ -43,6 +48,9 @@ const useCreateClientCompany = () => {
   const [companyDistrictState, setCompanyDistrictState] = React.useState(null);
   const [hasValuesChangedWithAPIData, setHasValuesChangedWithAPIData] = React.useState(false);
   const [isCustomerCompanyFormValidated, setIsCustomerCompanyFormValidated] = React.useState(false);
+  const [isClientCompanySaved, setIsClientCompanySaved] = React.useState(false);
+  const [isCompanyAddressSaved, setIsCompanyAddressSaved] = React.useState(false);
+  const [customerUserIdToCreateAddress, setCustomerUserIdToCreateAddress] = React.useState('');
 
   const handleValuesChangedWithAPIData = () => setHasValuesChangedWithAPIData(!hasValuesChangedWithAPIData);
 
@@ -72,15 +80,20 @@ const useCreateClientCompany = () => {
     } else {
       setCustomerBusinessPhoneNumberState("valid");
     }
-    if (customerPhoneNumber === "") {
+    if (customerBusinessPhoneNumber === "" || !validatePhoneNumber(customerBusinessPhoneNumber, 'business')) {
+      setCustomerBusinessPhoneNumberState("invalid");
+    } else {
+      setCustomerBusinessPhoneNumberState("valid");
+    }
+    if (customerPhoneNumber !== "" && !validatePhoneNumber(customerPhoneNumber, 'personal')) {
       setCustomerPhoneNumberState("invalid");
     } else {
-      setCustomerPhoneNumberState("valid");
+      setCustomerPhoneNumberState(customerPhoneNumber === "" ? null : "valid");
     }
-    if (customerWebSite === "") {
-      setCustomerWebSiteState("invalid");
+    if (companyEmailAddress === "") {
+      setCompanyEmailAddressState("invalid");
     } else {
-      setCustomerWebSiteState("valid");
+      setCompanyEmailAddressState("valid");
     }
     if (idHeadOfficeBranch === "") {
       setIdHeadOfficeBranchState("invalid");
@@ -91,6 +104,11 @@ const useCreateClientCompany = () => {
       setCustomerBusinessSectorState("invalid");
     } else {
       setCustomerBusinessSectorState("valid");
+    }
+    if (customerWebSite !== "" && !validateWebSite(customerWebSite)) {
+      setCustomerWebSiteState("invalid");
+    } else {
+      setCustomerWebSiteState(customerWebSite === "" ? null : "valid");
     }
     if (customerZipCode === "") {
       setCustomerZipCodeState("invalid");
@@ -118,9 +136,9 @@ const useCreateClientCompany = () => {
       setCompanyAddressNumberState("valid");
     }
     if (companyAddressComplement === "") {
+      setCompanyAddressComplementState(null);
+    } else if (companyAddressComplementState === null) {
       setCompanyAddressComplementState("invalid");
-    } else {
-      setCompanyAddressComplementState("valid");
     }
     if (companyDistrict === "") {
       setCompanyDistrictState("invalid");
@@ -130,6 +148,9 @@ const useCreateClientCompany = () => {
   };
 
   function handleFormFieldsAutocomplete(cnpj) {
+    if (cnpj.cnpj) {
+      handleSaveCNPJ(cnpj.cnpj)
+    }
     if (cnpj.nome_fantasia) {
       setCompanyName(cnpj.nome_fantasia)
     }
@@ -137,7 +158,7 @@ const useCreateClientCompany = () => {
       setRegistrationName(cnpj.razao_social)
     }
     if (cnpj.ddd_telefone_1) {
-      setCustomerBusinessPhoneNumber(cnpj.ddd_telefone_1)
+      setCustomerBusinessPhoneNumber(formatPhoneNumber(cnpj.ddd_telefone_1, 'business'));
     }
     if (cnpj.descricao_identificador_matriz_filial) {
       if (cnpj.descricao_identificador_matriz_filial === "MATRIZ" || cnpj.descricao_identificador_matriz_filial === "Matriz") {
@@ -170,80 +191,159 @@ const useCreateClientCompany = () => {
     handleValuesChangedWithAPIData();
   }
 
-  function handleValidateAddClientCompanyForm() {
+  const formatPhoneNumber = (phone, type) => {
+    if (type === 'business') {
+      // Formato para "+55 (99) 9999-9999"
+      return `+55 (${phone.slice(0, 2)}) ${phone.slice(2, 6)}-${phone.slice(6, 10)}`;
+    } else if (type === 'personal') {
+      // Formato para "+55 (99) 9 9999-9999"
+      return `+55 (${phone.slice(0, 2)}) ${phone.slice(2, 3)} ${phone.slice(3, 7)}-${phone.slice(7, 11)}`;
+    }
+    return phone;
+  };
+
+  const validatePhoneNumber = (phone, type) => {
+    const businessPhoneRegex = /^\+55 \(\d{2}\) \d{4}-\d{4}$/; // Regex para "+55 (99) 9999-9999"
+    const personalPhoneRegex = /^\+55 \(\d{2}\) 9 \d{4}-\d{4}$/; // Regex para "+55 (99) 9 9999-9999"
+    if (type === 'business') {
+      return businessPhoneRegex.test(phone);
+    } else if (type === 'personal') {
+      return personalPhoneRegex.test(phone);
+    }
+    return false;
+  };
+
+  const validateWebSite = (webSite) => {
+    const webSiteRegex = /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-_]+)(\.[a-zA-Z]{2,})+$/;
+    return webSiteRegex.test(webSite);
+  };
+
+  const validateCompanyEmail = (email) => {
+    if (email) {
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return regex.test(email);
+    }
+  };
+
+  async function handleValidateAddClientCompanyForm(handleShowCustomerUserRegister) {
     validateAddClientCompanyForm();
-    console.log(individualEmployerIdNumberState === "valid",
-      companyNameState === "valid",
-      registrationNameState === "valid",
-      companyTypesState === "valid",
-      customerBusinessPhoneNumberState === "valid",
-      idHeadOfficeBranchState === "valid",
-      customerBusinessSectorState === "valid",
-      customerZipCodeState === "valid",
-      federatedUnitState === "valid",
-      companyCityState === "valid",
-      companyAddressState === "valid",
-      companyAddressNumberState === "valid",
-      companyDistrictState === "valid")
     if (
       individualEmployerIdNumberState === "valid" &&
       companyNameState === "valid" &&
       registrationNameState === "valid" &&
       companyTypesState === "valid" &&
       customerBusinessPhoneNumberState === "valid" &&
-      idHeadOfficeBranchState === "valid" &&
       customerBusinessSectorState === "valid" &&
-      customerZipCodeState === "valid" &&
-      federatedUnitState === "valid" &&
-      companyCityState === "valid" &&
-      companyAddressState === "valid" &&
-      companyAddressNumberState === "valid" &&
-      companyDistrictState === "valid"
+      companyEmailAddressState === "valid"
     ) {
-      console.log(
-        individualEmployerIdNumber,
-        companyName,
-        registrationName,
-        companyTypes,
-        customerBusinessPhoneNumber,
-        idHeadOfficeBranch,
-        customerBusinessSector,
-        customerZipCode,
-        federatedUnit,
-        companyCity,
-        companyAddress,
-        companyAddressNumber,
-        companyDistrict
-      );
       setIsCustomerCompanyFormValidated(!isCustomerCompanyFormValidated);
-    } else {
-      return null;
+      const customerUserIdCreated = await handleSubmitCompany(individualEmployerIdNumber, companyName, registrationName, companyTypes, customerBusinessPhoneNumber, customerPhoneNumber, companyEmailAddress, customerBusinessSector, customerWebSite);
+      //console.log("1", isClientCompanySaved);
+      //setIsClientCompanySaved(!isClientCompanySaved);
+      if (
+        idHeadOfficeBranchState === "valid" &&
+        customerZipCodeState === "valid" &&
+        federatedUnitState === "valid" &&
+        companyCityState === "valid" &&
+        companyAddressState === "valid" &&
+        companyAddressNumberState === "valid" &&
+        companyDistrictState === "valid" &&
+        customerUserIdCreated
+      ) {
+        await handleSubmitCompanyAddress(idHeadOfficeBranch, customerZipCode, federatedUnit, companyCity, companyAddress, companyAddressNumber, companyAddressComplement, companyDistrict, customerUserIdCreated);
+        //console.log("1", isCompanyAddressSaved);
+        //setIsCompanyAddressSaved(!isCompanyAddressSaved);
+        goBackToCustomerUserList(handleShowCustomerUserRegister);
+      }
     }
   }
 
-  const handleSubmitCompany = async (firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, terms = true) => {
-    return console.log(firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, terms);
-    if (firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, terms) {
+  function goBackToCustomerUserList(handleShowCustomerUserRegister) {
+    //console.log("2", isClientCompanySaved, "2", isCompanyAddressSaved);
+    //if (isClientCompanySaved && isCompanyAddressSaved) {
+    resetCreateCustomer();
+    resetCreateCustomerAddress();
+    handleShowCustomerUserRegister();
+    //}
+  }
+
+  const handleSubmitCompany = async (individualEmployerIdNumber, companyName, registrationName, companyTypes, customerBusinessPhoneNumber, customerPhoneNumber, companyEmailAddress, customerBusinessSector, customerWebSite) => {
+    console.log(individualEmployerIdNumber, companyName, registrationName, companyTypes, customerBusinessPhoneNumber, customerPhoneNumber, companyEmailAddress, customerBusinessSector, customerWebSite);
+    if (individualEmployerIdNumber && companyName && registrationName && companyTypes && customerBusinessPhoneNumber && companyEmailAddress && customerBusinessSector) {
       try {
-        const response = await fetch(`http://localhost:3010/checkout/create`, {
+        const payload = {
+          companyName: companyName,
+          brandName: registrationName,
+          identificationNumber: individualEmployerIdNumber,
+          phoneNumber: customerBusinessPhoneNumber,
+          email: companyEmailAddress,
+          type: companyTypes,
+          sector: customerBusinessSector,
+          status: true
+        };
+
+        if (customerPhoneNumber) {
+          payload.phone = customerPhoneNumber;
+        }
+
+        if (customerWebSite) {
+          payload.webSite = customerWebSite;
+        }
+
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_CUSTOMER}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            name: firstName,
-            lastname: lastName,
-            cpf: taxIdentificationNumber,
-            birthdate: birthdate,
-            email: emailAddress,
-            phone: phoneNumber,
-            terms: terms
-          }),
+          body: JSON.stringify(payload),
         });
 
         if (response.ok) {
-          reset();
-          handleShowAdminUserRegister();
+
+          const data = await response.json();
+
+          console.log('Data sent successfully!');
+
+          return data.id;
+        } else {
+          console.error('Error in response:', response.status);
+        }
+      } catch (error) {
+        console.error('Error in request:', error);
+      }
+    }
+  };
+
+  const handleSubmitCompanyAddress = async (idHeadOfficeBranch, customerZipCode, federatedUnit, companyCity, companyAddress, companyAddressNumber, companyAddressComplement, companyDistrict, customerUserIdCreated) => {
+    console.log(idHeadOfficeBranch, customerZipCode, federatedUnit, companyCity, companyAddress, companyAddressNumber, companyAddressComplement, companyDistrict, customerUserIdCreated);
+    if (idHeadOfficeBranch && customerZipCode && federatedUnit && companyCity && companyAddress && companyAddressNumber && companyDistrict && customerUserIdCreated) {
+      try {
+        const payload = {
+          country: "Brasil",
+          state: federatedUnit,
+          city: companyCity,
+          address: companyAddress,
+          neighborhood: companyDistrict,
+          zipCode: customerZipCode,
+          addressNumber: companyAddressNumber,
+          isBranche: idHeadOfficeBranch === "Matriz" ? false : true,
+          customerId: customerUserIdCreated
+        };
+
+        if (companyAddressComplement) {
+          payload.complement = companyAddressComplement;
+        }
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_CUSTOMER}-address`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (response.ok) {
           console.log('Data sent successfully!');
         } else {
           console.error('Error in response:', response.status);
@@ -253,6 +353,45 @@ const useCreateClientCompany = () => {
       }
     }
   };
+
+  function resetCreateCustomerAddress() {
+    setCompanyName("");
+    setCompanyNameState(null);
+    setRegistrationName("");
+    setRegistrationNameState(null);
+    setCompanyTypes("");
+    setCompanyTypesState(null);
+    setCustomerBusinessPhoneNumber("");
+    setCustomerBusinessPhoneNumberState(null);
+    setCustomerPhoneNumber("");
+    setCustomerPhoneNumberState(null);
+    setCompanyEmailAddress("");
+    setCompanyEmailAddressState(null);
+    setCustomerBusinessSector("");
+    setCustomerBusinessSectorState(null);
+    setCustomerWebSite("");
+    setCustomerWebSiteState(null);
+    setIdHeadOfficeBranch("");
+    setIdHeadOfficeBranchState(null);
+    setCustomerZipCode("");
+    setCustomerZipCodeState(null);
+    setFederatedUnit("");
+    setFederatedUnitState(null);
+    setCompanyCity("");
+    setCompanyCityState(null);
+    setCompanyAddress("");
+    setCompanyAddressState(null);
+    setCompanyAddressNumber("");
+    setCompanyAddressNumberState(null);
+    setCompanyAddressComplement("");
+    setCompanyAddressComplementState(null);
+    setCompanyDistrict("");
+    setCompanyDistrictState(null);
+    setHasValuesChangedWithAPIData(false);
+    setIsCustomerCompanyFormValidated(false);
+    setIsClientCompanySaved(false);
+    setIsCompanyAddressSaved(false);
+  }
 
   return {
     individualEmployerIdNumberState,
@@ -277,6 +416,10 @@ const useCreateClientCompany = () => {
     setCustomerPhoneNumber,
     customerPhoneNumberState,
     setCustomerPhoneNumberState,
+    companyEmailAddress,
+    setCompanyEmailAddress,
+    companyEmailAddressState,
+    setCompanyEmailAddressState,
     customerWebSite,
     setCustomerWebSite,
     customerWebSiteState,
@@ -323,7 +466,10 @@ const useCreateClientCompany = () => {
     hasValuesChangedWithAPIData,
     handleValuesChangedWithAPIData,
     validateAddClientCompanyForm,
-    isCustomerCompanyFormValidated
+    isCustomerCompanyFormValidated,
+    validatePhoneNumber,
+    validateWebSite,
+    validateCompanyEmail
   };
 };
 

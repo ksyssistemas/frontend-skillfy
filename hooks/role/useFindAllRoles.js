@@ -1,7 +1,7 @@
 export async function useFindAllRoles() {
 
   try {
-    const response = await fetch(`http://dlist.com.br:3010/role`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE_ROLE}`);
 
     if (!response.ok) {
       throw new Error('Network response was not ok.');

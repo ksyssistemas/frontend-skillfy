@@ -15,6 +15,10 @@ import {
 } from "reactstrap";
 import useCreateRole from "../../hooks/role/useCreateRole";
 import useCreateEmployeeFunction from "../../hooks/employeeFunction/useCreateEmployeeFunction";
+import { useFindAllRoles } from '../../hooks/role/useFindAllRoles';
+import { useFindAllFunctions } from '../../hooks/employeeFunction/useFindAllFunctions';
+import { employmentContractDataSearchAndProcess } from '../../util/employmentContractDataSearchAndProcess';
+import { handleSelectionEmploymentContractData } from '../../util/handleSelectionEmploymentContractData';
 
 function RolesRegister({ handleShowRolesUserRegister }) {
 
@@ -33,9 +37,8 @@ function RolesRegister({ handleShowRolesUserRegister }) {
         setEmployeeRoleDescription,
         employeeRoleDescriptionState,
         setEmployeeRoleDescriptionState,
-        getEmployeeRoleDataList,
-        handleChooseEmployeeRole,
-        handleValidateAddEmployeeRoleForm
+        handleValidateAddEmployeeRoleForm,
+        handleEmployeeRoleDataList
     } = useCreateRole(handleShowRolesUserRegister);
 
     const {
@@ -53,22 +56,21 @@ function RolesRegister({ handleShowRolesUserRegister }) {
         setEmployeeFunctiontDescription,
         employeeFunctiontDescriptionState,
         setEmployeeFunctiontDescriptionState,
-        getEmployeeFunctionDataList,
-        handleChooseEmployeeFunction,
-        handleValidateAddEmployeeFunctionForm
+        handleValidateAddEmployeeFunctionForm,
+        handleEmployeeFunctionDataList
     } = useCreateEmployeeFunction(handleShowRolesUserRegister);
+
+    const [selectedRole, setSelectedRole] = useState('');
+    const [selectedFunction, setSelectedFunction] = useState('');
 
     useEffect(() => {
         if (employeeRoleDataList.length === 0) {
-            getEmployeeRoleDataList();
+            employmentContractDataSearchAndProcess(useFindAllRoles, handleEmployeeRoleDataList, 'role', 'EmployeeUserRegister');
         }
-    }, [employeeRoleDataList]);
-
-    useEffect(() => {
         if (employeeFunctionDataList.length === 0) {
-            getEmployeeFunctionDataList();
+            employmentContractDataSearchAndProcess(useFindAllFunctions, handleEmployeeFunctionDataList, 'function', 'EmployeeUserRegister');
         }
-    }, [employeeFunctionDataList]);
+    }, []);
 
     return (
         <Form>
@@ -78,7 +80,7 @@ function RolesRegister({ handleShowRolesUserRegister }) {
                 </CardHeader>
                 <CardBody>
                     <Row>
-                        <Col md="12">
+                        <Col md="6">
                             <label
                                 className="form-control-label"
                                 htmlFor="validationEmployeeRoleName"
@@ -104,7 +106,7 @@ function RolesRegister({ handleShowRolesUserRegister }) {
                                 É necessário preencher este campo.
                             </div>
                         </Col>
-                        <Col md="12">
+                        <Col md="6">
                             <FormGroup>
                                 <label
                                     className="form-control-label"
@@ -117,8 +119,10 @@ function RolesRegister({ handleShowRolesUserRegister }) {
                                     className="form-control"
                                     data-minimum-results-for-search="Infinity"
                                     options={{ placeholder: "Selecione um cargo:" }}
+                                    value={selectedRole}
+                                    onChange={(e) => setSelectedRole(e.target.value)}
                                     data={employeeRoleDataList}
-                                    onSelect={handleChooseEmployeeRole}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, employeeRoleDataList, setSelectedRole, setRoleReportsToRole, setRoleReportsToRoleState)}
                                 />
                             </FormGroup>
                         </Col>
@@ -139,7 +143,7 @@ function RolesRegister({ handleShowRolesUserRegister }) {
                                     onChange={(e) => {
                                         setEmployeeRoleDescription(e.target.value);
                                         if (e.target.value === "") {
-                                            setEmployeeRoleDescriptionState("invalid");
+                                            setEmployeeRoleDescriptionState("");
                                         } else {
                                             setEmployeeRoleDescriptionState("valid");
                                         }
@@ -149,8 +153,8 @@ function RolesRegister({ handleShowRolesUserRegister }) {
                         </Col>
                     </Row>
                     <Row>
-                        <Col md="4" />
-                        <Col className="d-flex justify-content-end align-items-center" md="8" >
+                        <Col md="8" />
+                        <Col className="d-flex justify-content-end align-items-center" md="4" >
                             <Button className="px-5" color="primary" size="lg" type="button" onClick={handleValidateAddEmployeeRoleForm}>
                                 <span className="btn-inner--text">Adicionar Cargo</span>
                             </Button>
@@ -165,7 +169,7 @@ function RolesRegister({ handleShowRolesUserRegister }) {
                 </CardHeader>
                 <CardBody>
                     <Row>
-                        <Col md="12">
+                        <Col md="6">
                             <label
                                 className="form-control-label"
                                 htmlFor="validationEmployeeFunctionName"
@@ -191,7 +195,7 @@ function RolesRegister({ handleShowRolesUserRegister }) {
                                 É necessário preencher este campo.
                             </div>
                         </Col>
-                        <Col md="12">
+                        <Col md="6">
                             <label
                                 className="form-control-label"
                                 htmlFor="validationReportToFunction"
@@ -203,8 +207,10 @@ function RolesRegister({ handleShowRolesUserRegister }) {
                                 className="form-control"
                                 data-minimum-results-for-search="Infinity"
                                 options={{ placeholder: "Selecione uma função:" }}
+                                value={selectedFunction}
+                                onChange={(e) => setSelectedFunction(e.target.value)}
                                 data={employeeFunctionDataList}
-                                onSelect={handleChooseEmployeeFunction}
+                                onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, employeeFunctionDataList, setSelectedFunction, setFuntionReportsToFuntion, setFuntionReportsToFuntionState)}
                             />
                         </Col>
                         <Col className="mb-3" md="12">
@@ -232,8 +238,8 @@ function RolesRegister({ handleShowRolesUserRegister }) {
                         </Col>
                     </Row>
                     <Row>
-                        <Col md="4" />
-                        <Col className="d-flex justify-content-end align-items-center" md="8" >
+                        <Col md="8" />
+                        <Col className="d-flex justify-content-end align-items-center" md="4" >
                             <Button className="px-5" color="primary" size="lg" type="button" onClick={handleValidateAddEmployeeFunctionForm}>
                                 <span className="btn-inner--text">Adicionar Função</span>
                             </Button>

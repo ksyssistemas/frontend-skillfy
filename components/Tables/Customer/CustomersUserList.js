@@ -16,6 +16,10 @@ import {
   Table,
   UncontrolledTooltip,
 } from 'reactstrap';
+import { useFindAllClientCompany } from "../../../hooks/customer/useFindAllClientCompany";
+import { useFindClientCompany } from "../../../hooks/customer/useFindClientCompany";
+import { useFindClientCompanyAddress } from "../../../hooks/customer/useFindClientCompanyAddress";
+import { useDeleteCustomerAccount } from "../../../hooks/customer/useDeleteCustomerAccount";
 
 import ShowCustomerDetailsModal from "../../Modals/admin/show-customer-details";
 import ModalEnterprise from "../../Modals/admin/ModalEnterprise"
@@ -24,6 +28,38 @@ import fakeCompanies from '../../../mocks/mockEnterprises'
 import useCNPJ from "../../../hooks/useCNPJ"
 
 const CustomersUserList = () => {
+
+  const [userCustomerAccountData, setUserCustomerAccountData] = useState([]);
+  const [idSelectedToShowCompanyDetails, setIdSelectedToShowCompanyDetails] = useState('');
+
+  const deleteCustomer = useDeleteCustomerAccount();
+
+  const [modalOpen, setModalOpen] = React.useState(false);
+
+  function handleShowCustomerDetailsModal(companyId) {
+    setModalOpen(!modalOpen)
+    setIdSelectedToShowCompanyDetails(companyId);
+  }
+
+  const handleDeleteCustomer = async (id) => {
+    const deletedId = await deleteCustomer(id);
+    if (deletedId !== null) {
+      window.location.reload();
+    } else {
+      console.error('Failed to delete cursomer with ID:', id);
+    }
+  };
+
+  useEffect(async () => {
+    if (userCustomerAccountData.length == 0) {
+      const foundCustomer = await useFindAllClientCompany();
+      setUserCustomerAccountData(foundCustomer);
+    }
+  }, [userCustomerAccountData]);
+
+
+
+
 
   const [cnpj, setCnpj] = useState('19131243000197');
   const { data: enterpriseData, loading, error, setCnpj: setCnpjFromHook } = useCNPJ(cnpj);
@@ -37,8 +73,6 @@ const CustomersUserList = () => {
   const deleteCompany = (companyId) => {
     // Implemente a lógica para deletar a empresa
   };
-
-
 
   {/** Modal  Enterprise*/ }
   const [modalEnterpriseOpen, setModalEnterpriseOpen] = React.useState(false);
@@ -55,10 +89,7 @@ const CustomersUserList = () => {
     setFormData({ ...formData, [fieldName]: value });
   };
 
-  const [modalOpen, setModalOpen] = React.useState(false);
-  function handleShowCustomerDetailsModal() {
-    setModalOpen(!modalOpen)
-  }
+
 
   return (
     <Card>
@@ -108,7 +139,7 @@ const CustomersUserList = () => {
           <tr>
             <th className="text-center">Nome</th>
             <th className="text-center">CNPJ</th>
-            <th className="text-center">E-mail Titular</th>
+            <th className="text-center">E-mail</th>
             <th className="text-center">Telefone</th>
             <th className="text-center">Plano</th>
             <th className="text-center">Estado</th>
@@ -117,12 +148,12 @@ const CustomersUserList = () => {
           </tr>
         </thead>
         <tbody>
-          {fakeCompanies.map((company) => (
+          {userCustomerAccountData.map((company) => (
             <tr key={company.id}>
-              <td className="text-center">{company.name}</td>
-              <td className="text-center">{company.cnpj}</td>
-              <td className="text-center">{company.accountHolderEmail}</td>
-              <td className="text-center">{company.phone}</td>
+              <td className="text-center">{company.companyName}</td>
+              <td className="text-center">{company.identificationNumber}</td>
+              <td className="text-center">{company.email}</td>
+              <td className="text-center">{company.phoneNumber}</td>
               <td className="text-center">{company.plan}</td>
               <td className="text-center">
                 <Badge color="success" pill>
@@ -135,7 +166,7 @@ const CustomersUserList = () => {
                     <NavLink target="_blank">
                       <a href="#" className="text-underline">
                         <span
-                          onClick={handleShowCustomerDetailsModal}
+                          onClick={() => handleShowCustomerDetailsModal(company.id)}
                           className="name mb-0 text-sm"
                         >
                           Mais
@@ -188,7 +219,6 @@ const CustomersUserList = () => {
         isOpen={modalEnterpriseOpen}
         toggle={toggleModalEnterprise}
         handleSave={handleSave}
-        //formData={formData}
         handleInputChange={handleInputChange}
       />
 
@@ -207,10 +237,14 @@ const CustomersUserList = () => {
         )}
       </div> 
     */}
-    <ShowCustomerDetailsModal 
-            handleShowCustomerDetailsModal={handleShowCustomerDetailsModal}
-            modalOpen={modalOpen}
-          />
+      {idSelectedToShowCompanyDetails && (
+        <ShowCustomerDetailsModal
+          handleShowCustomerDetailsModal={handleShowCustomerDetailsModal}
+          idSelectedToShowCompanyDetails={idSelectedToShowCompanyDetails}
+          modalOpen={modalOpen}
+        />
+      )
+      }
 
     </Card>
 

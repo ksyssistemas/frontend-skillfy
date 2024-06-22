@@ -60,6 +60,7 @@ function RolesList() {
   useEffect(async () => {
     if (detailedRoleData && detailedRoleData.length === 0) {
       const foundRole = await useFindAllRoles();
+      console.log(foundRole);
       setDetailedRoleData(foundRole);
     }
   }, [detailedRoleData]);
@@ -67,14 +68,15 @@ function RolesList() {
   useEffect(async () => {
     if (detailedEmployeeFunctionData && detailedEmployeeFunctionData.length === 0) {
       const foundEmployeeFunction = await useFindAllFunctions();
+      console.log(foundEmployeeFunction);
       setDetailedEmployeeFunctionData(foundEmployeeFunction);
     }
   }, [detailedEmployeeFunctionData]);
 
   return (
     <Form>
-      <Card>
-        <CardHeader className="bg-transparent border-0">
+      <Card >
+        <CardHeader className="bg-white border-0">
           <h3 className="mb-0">Cargos Registrados</h3>
         </CardHeader>
 
@@ -90,9 +92,9 @@ function RolesList() {
           </thead>
           <tbody>
             {detailedRoleData && detailedRoleData.map((role) => (
-              <tr className="table-" key={role.ID_Role}>
+              <tr className="table-" key={role.ID_Roles}>
                 <td className="table-user">
-                  <b>{role.roleName}</b>
+                  <b>{role.RoleName}</b>
                 </td>
                 <td>
                   <span className="text-muted">
@@ -101,7 +103,7 @@ function RolesList() {
                 </td>
                 <td>
                   <span className="name mb-0 text-sm">
-                    {department.Responsible}
+                    {role.Responsible}
                   </span>
                 </td>
                 <td className="text-muted">
@@ -132,7 +134,7 @@ function RolesList() {
                 </td>
                 <td>
                   <label className="custom-toggle">
-                    <input type="checkbox" checked={department.Status ? true : false} />
+                    <input type="checkbox" checked={role.Status === 1 ? true : false} />
                     <span
                       className="custom-toggle-slider rounded-circle"
                       data-label-off="No"
@@ -147,7 +149,7 @@ function RolesList() {
       </Card>
 
       <Card>
-        <CardHeader className="bg-transparent border-0">
+        <CardHeader className="bg-secondary border-0">
           <h3 className="mb-0">Funções Registradas</h3>
         </CardHeader>
 
@@ -163,29 +165,29 @@ function RolesList() {
           </thead>
           <tbody>
             {detailedEmployeeFunctionData && detailedEmployeeFunctionData.map((employeeFunction) => (
-              <tr className="table-" key={employeeFunction.ID_Function}>
+              <tr className="table-" key={employeeFunction.id}>
                 <td className="table-user">
-                  <b>{employeeFunction.FunctionName}</b>
+                  <b>{employeeFunction.name}</b>
                 </td>
                 <td>
                   <span className="text-muted">
-                    {formatDate(employeeFunction.CreatedAt)}
+                    {formatDate(employeeFunction.createdAt)}
                   </span>
                 </td>
                 <td>
                   <span className="name mb-0 text-sm">
-                    {employeeFunction.Responsible}
+                    {employeeFunction.responsible}
                   </span>
                 </td>
                 <td className="text-muted ">
                   {
-                    employeeFunction.Description ? (
+                    employeeFunction.description ? (
                       <Nav navbar>
                         <NavItem>
                           <NavLink target="_blank">
                             <a href="#" className="text-underline">
                               <span
-                                onClick={() => handleShowFunctionModal(employeeFunction.RoleName, employeeFunction.Description)}
+                                onClick={() => handleShowFunctionModal(employeeFunction.name, employeeFunction.description)}
                                 className="name mb-0 text-sm"
                               >
                                 Ver
@@ -205,7 +207,7 @@ function RolesList() {
                 </td>
                 <td>
                   <label className="custom-toggle">
-                    <input type="checkbox" checked={department.Status ? true : false} />
+                    <input type="checkbox" checked={employeeFunction.status ? true : false} />
                     <span
                       className="custom-toggle-slider rounded-circle"
                       data-label-off="No"

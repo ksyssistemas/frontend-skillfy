@@ -13,10 +13,10 @@ const useCEP = () => {
     const handleSaveCEP = (cep) => setEmployeeZipCode(cep);
 
     const validateCep = () => {
-        if (employeeZipCode !== "") {
-            setEmployeeZipCodeState("valid");
-        } else {
+        if (employeeZipCode === "") {
             setEmployeeZipCodeState("invalid");
+        } else {
+            setEmployeeZipCodeState("valid");
         }
     };
 
@@ -25,16 +25,20 @@ const useCEP = () => {
 
         const fetchData = async (cep) => {
             try {
-                const response = await fetch(`https://brasilapi.com.br/api/cep/v2/${cep}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_BRASIL_API_CEP_V2}/${cep}`);
                 const result = await response.json();
-                setBrasilAPICEPData(result);
-                validateCep();
+                if (!result.message) {
+                    setBrasilAPICEPData(result);
+                    validateCep();
+                } else if (result.type && result.type === "not_found") {
+                    setErrorCEPValidation(result.message);
+                }
             } catch (error) {
                 setErrorCEPValidation(error);
             }
         };
 
-        if (cep != "" &&
+        if (cep && cep !== "" &&
             cep.length === 8) {
             handleCEPValidationLoading();
             fetchData(cep);
