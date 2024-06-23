@@ -50,12 +50,24 @@ const CustomersUserList = () => {
     }
   };
 
-  useEffect(async () => {
-    if (userCustomerAccountData.length == 0) {
-      const foundCustomer = await useFindAllClientCompany();
-      setUserCustomerAccountData(foundCustomer);
+  const [isDataFetched, setIsDataFetched] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const foundCustomer = await useFindAllClientCompany();
+        setUserCustomerAccountData(foundCustomer || []);
+        setIsDataFetched(true);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setIsDataFetched(true); // Set to true to avoid infinite loop even on error
+      }
+    };
+
+    if (!isDataFetched) {
+      fetchData();
     }
-  }, [userCustomerAccountData]);
+  }, [isDataFetched]);
 
 
 
@@ -148,69 +160,75 @@ const CustomersUserList = () => {
           </tr>
         </thead>
         <tbody>
-          {userCustomerAccountData.map((company) => (
-            <tr key={company.id}>
-              <td className="text-center">{company.companyName}</td>
-              <td className="text-center">{company.identificationNumber}</td>
-              <td className="text-center">{company.email}</td>
-              <td className="text-center">{company.phoneNumber}</td>
-              <td className="text-center">{company.plan}</td>
-              <td className="text-center">
-                <Badge color="success" pill>
-                  Active{company.status}
-                </Badge>
-              </td>
-              <td className="text-center text-muted ">
-                <Nav navbar>
-                  <NavItem>
-                    <NavLink target="_blank">
-                      <a href="#" className="text-underline">
-                        <span
-                          onClick={() => handleShowCustomerDetailsModal(company.id)}
-                          className="name mb-0 text-sm"
-                        >
-                          Mais
-                        </span>
-                      </a>
-                    </NavLink>
-                  </NavItem>
-                </Nav>
+          {userCustomerAccountData.length > 0 ? (
+            userCustomerAccountData.map((company) => (
+              <tr key={company.id}>
+                <td className="text-center">{company.companyName}</td>
+                <td className="text-center">{company.identificationNumber}</td>
+                <td className="text-center">{company.email}</td>
+                <td className="text-center">{company.phoneNumber}</td>
+                <td className="text-center">{company.plan}</td>
+                <td className="text-center">
+                  <Badge color="success" pill>
+                    Active{company.status}
+                  </Badge>
+                </td>
+                <td className="text-center text-muted ">
+                  <Nav navbar>
+                    <NavItem>
+                      <NavLink target="_blank">
+                        <a href="#" className="text-underline">
+                          <span
+                            onClick={() => handleShowCustomerDetailsModal(company.id)}
+                            className="name mb-0 text-sm"
+                          >
+                            Mais
+                          </span>
+                        </a>
+                      </NavLink>
+                    </NavItem>
+                  </Nav>
 
-              </td>
-              <td className="text-right">
-                <UncontrolledDropdown>
-                  <DropdownToggle
-                    className="btn-icon-only text-light"
-                    color=""
-                    role="button"
-                    size="sm"
-                  >
-                    <i className="fas fa-ellipsis-v" />
-                  </DropdownToggle>
-                  <DropdownMenu className="dropdown-menu-arrow" right>
-                    <DropdownItem
-                      href="#pablo"
-                      onClick={(e) => e.preventDefault()}
+                </td>
+                <td className="text-right">
+                  <UncontrolledDropdown>
+                    <DropdownToggle
+                      className="btn-icon-only text-light"
+                      color=""
+                      role="button"
+                      size="sm"
                     >
-                      Editar
-                    </DropdownItem>
-                    <DropdownItem
-                      href="#pablo"
-                      onClick={(e) => e.preventDefault()}
-                    >
-                      Desabilitar
-                    </DropdownItem>
-                    <DropdownItem
-                      href="#pablo"
-                      onClick={(e) => e.preventDefault()}
-                    >
-                      Something else here
-                    </DropdownItem>
-                  </DropdownMenu>
-                </UncontrolledDropdown>
-              </td>
+                      <i className="fas fa-ellipsis-v" />
+                    </DropdownToggle>
+                    <DropdownMenu className="dropdown-menu-arrow" right>
+                      <DropdownItem
+                        href="#pablo"
+                        onClick={(e) => e.preventDefault()}
+                      >
+                        Editar
+                      </DropdownItem>
+                      <DropdownItem
+                        href="#pablo"
+                        onClick={(e) => e.preventDefault()}
+                      >
+                        Desabilitar
+                      </DropdownItem>
+                      <DropdownItem
+                        href="#pablo"
+                        onClick={(e) => e.preventDefault()}
+                      >
+                        Something else here
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="8" className="text-center">No data available</td>
             </tr>
-          ))}
+          )}
         </tbody>
       </Table>
 

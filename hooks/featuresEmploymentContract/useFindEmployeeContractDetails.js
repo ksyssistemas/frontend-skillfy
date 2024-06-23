@@ -1,7 +1,7 @@
 export async function useFindEmployeeContractDetails(employeeId) {
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_CONTRACT_DETAILS}/${employeeId}`);
-
+        console.log(response);
         if (!response.ok) {
             throw new Error('Network response was not ok.');
         }

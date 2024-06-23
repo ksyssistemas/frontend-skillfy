@@ -7,8 +7,8 @@ export async function useFindAllClientCompany() {
       throw new Error('Network response was not ok.');
     }
 
-    console.log(response);
     const data = await response.json();
+    console.log(data);
 
     return data;
 

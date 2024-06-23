@@ -57,21 +57,32 @@ function RolesList() {
     return `${day}/${month}/${year}`;
   }
 
-  useEffect(async () => {
-    if (detailedRoleData && detailedRoleData.length === 0) {
-      const foundRole = await useFindAllRoles();
-      console.log(foundRole);
-      setDetailedRoleData(foundRole);
-    }
-  }, [detailedRoleData]);
+  useEffect(() => {
+    const fetchRoles = async () => {
+      if (detailedRoleData.length === 0) {
+        try {
+          const foundRole = await useFindAllRoles();
+          setDetailedRoleData(foundRole);
+        } catch (error) {
+          console.error('Error fetching roles:', error);
+        }
+      }
+    };
 
-  useEffect(async () => {
-    if (detailedEmployeeFunctionData && detailedEmployeeFunctionData.length === 0) {
-      const foundEmployeeFunction = await useFindAllFunctions();
-      console.log(foundEmployeeFunction);
-      setDetailedEmployeeFunctionData(foundEmployeeFunction);
-    }
-  }, [detailedEmployeeFunctionData]);
+    const fetchEmployeeFunctions = async () => {
+      if (detailedEmployeeFunctionData.length === 0) {
+        try {
+          const foundEmployeeFunction = await useFindAllFunctions();
+          setDetailedEmployeeFunctionData(foundEmployeeFunction);
+        } catch (error) {
+          console.error('Error fetching employee functions:', error);
+        }
+      }
+    };
+
+    fetchRoles();
+    fetchEmployeeFunctions();
+  }, [detailedRoleData, detailedEmployeeFunctionData]);
 
   return (
     <Form>
@@ -91,59 +102,65 @@ function RolesList() {
             </tr>
           </thead>
           <tbody>
-            {detailedRoleData && detailedRoleData.map((role) => (
-              <tr className="table-" key={role.ID_Roles}>
-                <td className="table-user">
-                  <b>{role.RoleName}</b>
-                </td>
-                <td>
-                  <span className="text-muted">
-                    {formatDate(role.CreatedAt)}
-                  </span>
-                </td>
-                <td>
-                  <span className="name mb-0 text-sm">
-                    {role.Responsible}
-                  </span>
-                </td>
-                <td className="text-muted">
-                  {
-                    role.Description ? (
-                      <Nav navbar>
-                        <NavItem>
-                          <NavLink target="_blank">
-                            <a href="#" className="text-underline">
-                              <span
-                                onClick={() => handleShowRoleModal(role.RoleName, role.Description)}
-                                className="name mb-0 text-sm"
-                              >
-                                Ver
-                              </span>
-                            </a>
-                          </NavLink>
-                        </NavItem>
-                      </Nav>
-                    ) : (
-                      <span
-                        className="name mb-0 text-sm"
-                      >
-                        Não há descrição
-                      </span>
+            {detailedRoleData && detailedRoleData.length > 0 ? (
+              detailedRoleData.map((role) => (
+                <tr className="table-" key={role.ID_Roles}>
+                  <td className="table-user">
+                    <b>{role.RoleName}</b>
+                  </td>
+                  <td>
+                    <span className="text-muted">
+                      {formatDate(role.CreatedAt)}
+                    </span>
+                  </td>
+                  <td>
+                    <span className="name mb-0 text-sm">
+                      {role.Responsible}
+                    </span>
+                  </td>
+                  <td className="text-muted">
+                    {
+                      role.Description ? (
+                        <Nav navbar>
+                          <NavItem>
+                            <NavLink target="_blank">
+                              <a href="#" className="text-underline">
+                                <span
+                                  onClick={() => handleShowRoleModal(role.RoleName, role.Description)}
+                                  className="name mb-0 text-sm"
+                                >
+                                  Ver
+                                </span>
+                              </a>
+                            </NavLink>
+                          </NavItem>
+                        </Nav>
+                      ) : (
+                        <span
+                          className="name mb-0 text-sm"
+                        >
+                          Não há descrição
+                        </span>
 
-                    )}
-                </td>
-                <td>
-                  <label className="custom-toggle">
-                    <input type="checkbox" checked={role.Status === 1 ? true : false} />
-                    <span
-                      className="custom-toggle-slider rounded-circle"
-                      data-label-off="No"
-                      data-label-on="Yes"
-                    />
-                  </label>
-                </td>
+                      )}
+                  </td>
+                  <td>
+                    <label className="custom-toggle">
+                      <input type="checkbox" checked={role.Status === 1 ? true : false} />
+                      <span
+                        className="custom-toggle-slider rounded-circle"
+                        data-label-off="No"
+                        data-label-on="Yes"
+                      />
+                    </label>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5">Nenhum dado de roles encontrado.</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </Table>
       </Card>
@@ -164,59 +181,65 @@ function RolesList() {
             </tr>
           </thead>
           <tbody>
-            {detailedEmployeeFunctionData && detailedEmployeeFunctionData.map((employeeFunction) => (
-              <tr className="table-" key={employeeFunction.id}>
-                <td className="table-user">
-                  <b>{employeeFunction.name}</b>
-                </td>
-                <td>
-                  <span className="text-muted">
-                    {formatDate(employeeFunction.createdAt)}
-                  </span>
-                </td>
-                <td>
-                  <span className="name mb-0 text-sm">
-                    {employeeFunction.responsible}
-                  </span>
-                </td>
-                <td className="text-muted ">
-                  {
-                    employeeFunction.description ? (
-                      <Nav navbar>
-                        <NavItem>
-                          <NavLink target="_blank">
-                            <a href="#" className="text-underline">
-                              <span
-                                onClick={() => handleShowFunctionModal(employeeFunction.name, employeeFunction.description)}
-                                className="name mb-0 text-sm"
-                              >
-                                Ver
-                              </span>
-                            </a>
-                          </NavLink>
-                        </NavItem>
-                      </Nav>
-                    ) : (
-                      <span
-                        className="name mb-0 text-sm"
-                      >
-                        Não há descrição
-                      </span>
+            {detailedEmployeeFunctionData && detailedEmployeeFunctionData.length > 0 ? (
+              detailedEmployeeFunctionData.map((employeeFunction) => (
+                <tr className="table-" key={employeeFunction.id}>
+                  <td className="table-user">
+                    <b>{employeeFunction.name}</b>
+                  </td>
+                  <td>
+                    <span className="text-muted">
+                      {formatDate(employeeFunction.createdAt)}
+                    </span>
+                  </td>
+                  <td>
+                    <span className="name mb-0 text-sm">
+                      {employeeFunction.responsible}
+                    </span>
+                  </td>
+                  <td className="text-muted ">
+                    {
+                      employeeFunction.description ? (
+                        <Nav navbar>
+                          <NavItem>
+                            <NavLink target="_blank">
+                              <a href="#" className="text-underline">
+                                <span
+                                  onClick={() => handleShowFunctionModal(employeeFunction.name, employeeFunction.description)}
+                                  className="name mb-0 text-sm"
+                                >
+                                  Ver
+                                </span>
+                              </a>
+                            </NavLink>
+                          </NavItem>
+                        </Nav>
+                      ) : (
+                        <span
+                          className="name mb-0 text-sm"
+                        >
+                          Não há descrição
+                        </span>
 
-                    )}
-                </td>
-                <td>
-                  <label className="custom-toggle">
-                    <input type="checkbox" checked={employeeFunction.status ? true : false} />
-                    <span
-                      className="custom-toggle-slider rounded-circle"
-                      data-label-off="No"
-                      data-label-on="Yes"
-                    />
-                  </label>
-                </td>
+                      )}
+                  </td>
+                  <td>
+                    <label className="custom-toggle">
+                      <input type="checkbox" checked={employeeFunction.status ? true : false} />
+                      <span
+                        className="custom-toggle-slider rounded-circle"
+                        data-label-off="No"
+                        data-label-on="Yes"
+                      />
+                    </label>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5">Nenhum dado de funções de funcionário encontrado.</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </Table>
       </Card>

@@ -12,7 +12,7 @@ import { useFindEmployee } from "../../../hooks/employee/useFindEmployee";
 import { useFindEmployeeAddress } from "../../../hooks/employee/useFindEmployeeAddress";
 import { useFindEmployeeContractDetails } from "../../../hooks/featuresEmploymentContract/useFindEmployeeContractDetails";
 
-function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, idSelectedToShowEmployeeDetails }) {
+function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, idSelectedToShowEmployeeDetails, setIdSelectedToShowEmployeeDetails }) {
 
   const [detailsSelectedEmployee, setDetailsSelectedEmployee] = useState([]);
   const [addressDetailsSelectedEmployee, setAddressDetailsSelectedEmployee] = useState([]);
@@ -28,17 +28,26 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
     return `${day}/${month}/${year}`;
   }
 
-  useEffect(async () => {
-    if (detailsSelectedEmployee.length === 0 && addressDetailsSelectedEmployee.length === 0 && contractDetailsSelectedEmployee.length === 0) {
-      const foundEmployee = await useFindEmployee(idSelectedToShowEmployeeDetails);
-      setDetailsSelectedEmployee(foundEmployee);
-      const foundEmployeeAddress = await useFindEmployeeAddress(idSelectedToShowEmployeeDetails);
-      setAddressDetailsSelectedEmployee(foundEmployeeAddress.data[0]);
-      const foundEmployeeContractDetails = await useFindEmployeeContractDetails(idSelectedToShowEmployeeDetails);
-      setContractDetailsSelectedEmployee(foundEmployeeContractDetails);
-    }
+  useEffect(() => {
+    const fetchData = async () => {
+      if (detailsSelectedEmployee.length === 0 && addressDetailsSelectedEmployee.length === 0 && contractDetailsSelectedEmployee.length === 0) {
+        console.log("ID: ", idSelectedToShowEmployeeDetails)
+        const foundEmployee = await useFindEmployee(idSelectedToShowEmployeeDetails);
+        setDetailsSelectedEmployee(foundEmployee || []);
+        const foundEmployeeAddress = await useFindEmployeeAddress(idSelectedToShowEmployeeDetails);
+        setAddressDetailsSelectedEmployee(foundEmployeeAddress.data[0] || []);
+        const foundEmployeeContractDetails = await useFindEmployeeContractDetails(idSelectedToShowEmployeeDetails);
+        setContractDetailsSelectedEmployee(foundEmployeeContractDetails || []);
+      }
+    };
+
+    fetchData();
   }, [detailsSelectedEmployee, addressDetailsSelectedEmployee, contractDetailsSelectedEmployee, idSelectedToShowEmployeeDetails]);
 
+  function handleCloseModal() {
+    handleShowEmployeeDetailsModal();
+    setIdSelectedToShowEmployeeDetails('');
+  }
 
   return (
     <Modal
@@ -50,13 +59,13 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
     >
       <div className=" modal-header">
         <h5 className=" modal-title" id="exampleModalLabel">
-          Informações de {detailsSelectedEmployee.name}
+          Informações de {detailsSelectedEmployee?.name || ''}
         </h5>
         <button
           aria-label="Close"
           className=" close"
           type="button"
-          onClick={handleShowEmployeeDetailsModal}
+          onClick={handleCloseModal}
         >
           <span aria-hidden={true}>×</span>
         </button>
@@ -91,7 +100,7 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      {detailsSelectedEmployee.name}
+                      {detailsSelectedEmployee?.name || ''}
                     </span>
                   </div>
                 </Col>
@@ -104,7 +113,7 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      {detailsSelectedEmployee.lastName}
+                      {detailsSelectedEmployee?.lastName || ''}
                     </span>
                   </div>
                 </Col>
@@ -119,7 +128,7 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      {formatDate(detailsSelectedEmployee.birthdate)}
+                      {detailsSelectedEmployee?.birthdate ? formatDate(detailsSelectedEmployee.birthdate) : ''}
                     </span>
                   </div>
                 </Col>
@@ -132,7 +141,7 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      {detailsSelectedEmployee.email}
+                      {detailsSelectedEmployee?.email || ''}
                     </span>
                   </div>
                 </Col>
@@ -145,7 +154,7 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      {detailsSelectedEmployee.phoneNumber}
+                      {detailsSelectedEmployee?.phoneNumber || ''}
                     </span>
                   </div>
                 </Col>
@@ -164,7 +173,7 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      {addressDetailsSelectedEmployee.zipCode}
+                      {addressDetailsSelectedEmployee?.zipCode || ''}
                     </span>
                   </div>
                 </Col>
@@ -177,7 +186,7 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      {addressDetailsSelectedEmployee.address}
+                      {addressDetailsSelectedEmployee?.address || ''}
                     </span>
                   </div>
                 </Col>
@@ -192,7 +201,7 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      {addressDetailsSelectedEmployee.complement}
+                      {addressDetailsSelectedEmployee?.complement || ''}
                     </span>
                   </div>
                 </Col>
@@ -205,7 +214,7 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      {addressDetailsSelectedEmployee.addressNumber}
+                      {addressDetailsSelectedEmployee?.addressNumber || ''}
                     </span>
                   </div>
                 </Col>
@@ -220,7 +229,7 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      {addressDetailsSelectedEmployee.neighborhood}
+                      {addressDetailsSelectedEmployee?.neighborhood || ''}
                     </span>
                   </div>
                 </Col>
@@ -233,7 +242,7 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      {addressDetailsSelectedEmployee.city}
+                      {addressDetailsSelectedEmployee?.city || ''}
                     </span>
                   </div>
                 </Col>
@@ -246,7 +255,7 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      {addressDetailsSelectedEmployee.state}
+                      {addressDetailsSelectedEmployee?.state || ''}
                     </span>
                   </div>
                 </Col>
@@ -265,7 +274,7 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      {contractDetailsSelectedEmployee.department}
+                      {contractDetailsSelectedEmployee?.department || ''}
                     </span>
                   </div>
                 </Col>
@@ -278,7 +287,7 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      {contractDetailsSelectedEmployee.roles}
+                      {contractDetailsSelectedEmployee?.roles || ''}
                     </span>
                   </div>
                 </Col>
@@ -291,7 +300,7 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      {contractDetailsSelectedEmployee.employeeFunction}
+                      {contractDetailsSelectedEmployee?.employeeFunction || ''}
                     </span>
                   </div>
                 </Col>
@@ -306,7 +315,7 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      {contractDetailsSelectedEmployee.contractType}
+                      {contractDetailsSelectedEmployee?.contractType || ''}
                     </span>
                   </div>
                 </Col>
@@ -319,7 +328,7 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      {contractDetailsSelectedEmployee.contractModel}
+                      {contractDetailsSelectedEmployee?.contractModel || ''}
                     </span>
                   </div>
                 </Col>
@@ -332,7 +341,7 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      {formatDate(contractDetailsSelectedEmployee.adimissionDate)}
+                      {contractDetailsSelectedEmployee?.adimissionDate ? formatDate(contractDetailsSelectedEmployee.adimissionDate) : ''}
                     </span>
                   </div>
                 </Col>
@@ -347,7 +356,7 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      {detailsSelectedEmployee.isLead === true ? "Sim" : "Não"}
+                      {detailsSelectedEmployee?.isLead === true ? "Sim" : "Não"}
                     </span>
                   </div>
                 </Col>
@@ -360,7 +369,7 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      {contractDetailsSelectedEmployee.entryTime}
+                      {contractDetailsSelectedEmployee?.entryTime || ''}
                     </span>
                   </div>
                 </Col>
@@ -373,7 +382,7 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      {contractDetailsSelectedEmployee.breakTime}
+                      {contractDetailsSelectedEmployee?.breakTime || ''}
                     </span>
                   </div>
                 </Col>
@@ -386,7 +395,7 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </label>
                   <div className="mt-1 mb-3">
                     <span className="name text-sm">
-                      {contractDetailsSelectedEmployee.departureTime}
+                      {contractDetailsSelectedEmployee?.departureTime || ''}
                     </span>
                   </div>
                 </Col>

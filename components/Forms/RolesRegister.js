@@ -68,7 +68,7 @@ function RolesRegister({ handleShowRolesUserRegister }) {
             employmentContractDataSearchAndProcess(useFindAllRoles, handleEmployeeRoleDataList, 'role', 'EmployeeUserRegister');
         }
         if (employeeFunctionDataList.length === 0) {
-            employmentContractDataSearchAndProcess(useFindAllFunctions, handleEmployeeFunctionDataList, 'function', 'EmployeeUserRegister');
+            employmentContractDataSearchAndProcess(useFindAllRoles, handleEmployeeFunctionDataList, 'role', 'EmployeeUserRegister');
         }
     }, []);
 

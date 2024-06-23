@@ -34,13 +34,17 @@ function ContactPersonsList() {
     }
   };
 
-  useEffect(async () => {
-    if (userAdministratorAccountData.length == 0) {
-      const foundAdministrators = await useFindAllContactPerson();
-      console.log(foundAdministrators);
-      setUserAdministratorAccountData(foundAdministrators);
-    }
-  }, [userAdministratorAccountData])
+  useEffect(() => {
+    const fetchData = async () => {
+      if (userAdministratorAccountData.length === 0) {
+        const foundAdministrators = await useFindAllContactPerson();
+        console.log(foundAdministrators);
+        setUserAdministratorAccountData(foundAdministrators || []);
+      }
+    };
+
+    fetchData();
+  }, [userAdministratorAccountData]);
 
   return (
     <Card>
@@ -65,52 +69,58 @@ function ContactPersonsList() {
           </tr>
         </thead>
         <tbody>
-          {userAdministratorAccountData.map((admin) => (
-            <tr key={admin.id}>
-              <td className="table-user">
-                <img
-                  alt="..."
-                  className="avatar rounded-circle mr-3"
-                  //src={require(`../../../assets/img/theme/team-${admin.id}.jpg`)}
-                  src={require(`../../../assets/img/theme/team-1.jpg`)}
-                />
-                <b className="text-left">{admin.name}</b>
-              </td>
-              <td className="text-left">
-                <span className="text-muted">{admin.email}</span>
-              </td>
-              <td className="text-left">
-                <span className="text-muted">{admin.phone}</span>
-              </td>
-              <td>
-                <Badge color="success" pill>
-                  Active
-                </Badge>
-              </td>
-              <td className="text-center">
-                <a
-                  className="font-weight-bold"
-                  href="#pablo"
-                  onClick={(e) => e.preventDefault()}
-                >
-                  {admin.privileges}
-                </a>
-              </td>
-              <td className="text-center table-actions">
-                <a
-                  className="table-action table-action-delete"
-                  href="#pablo"
-                  id={`delete${admin.id}`}
-                  onClick={() => handleDeleteAdmin(admin.id)}
-                >
-                  <i className="fas fa-trash" />
-                </a>
-                <UncontrolledTooltip delay={0} target={`delete${admin.id}`}>
-                  Excluir
-                </UncontrolledTooltip>
-              </td>
+          {userAdministratorAccountData.length > 0 ? (
+            userAdministratorAccountData.map((admin) => (
+              <tr key={admin.id}>
+                <td className="table-user">
+                  <img
+                    alt="..."
+                    className="avatar rounded-circle mr-3"
+                    //src={require(`../../../assets/img/theme/team-${admin.id}.jpg`)}
+                    src={require(`../../../assets/img/theme/team-1.jpg`)}
+                  />
+                  <b className="text-left">{admin.name}</b>
+                </td>
+                <td className="text-left">
+                  <span className="text-muted">{admin.email}</span>
+                </td>
+                <td className="text-left">
+                  <span className="text-muted">{admin.phone}</span>
+                </td>
+                <td>
+                  <Badge color="success" pill>
+                    Active
+                  </Badge>
+                </td>
+                <td className="text-center">
+                  <a
+                    className="font-weight-bold"
+                    href="#pablo"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    {admin.privileges}
+                  </a>
+                </td>
+                <td className="text-center table-actions">
+                  <a
+                    className="table-action table-action-delete"
+                    href="#pablo"
+                    id={`delete${admin.id}`}
+                    onClick={() => handleDeleteAdmin(admin.id)}
+                  >
+                    <i className="fas fa-trash" />
+                  </a>
+                  <UncontrolledTooltip delay={0} target={`delete${admin.id}`}>
+                    Excluir
+                  </UncontrolledTooltip>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="6" className="text-center">Nenhum contato encontrado</td>
             </tr>
-          ))}
+          )}
         </tbody>
       </Table>
       {/* <ModalAdm
@@ -120,9 +130,6 @@ function ContactPersonsList() {
         formData={userAdministratorAccountData}
       //handleInputChange={handleInputChange}
       /> */}
-
-
-
     </Card>
   );
 };

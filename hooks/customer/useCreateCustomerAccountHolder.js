@@ -94,31 +94,19 @@ const useCreateCustomer = (handleShowContactPersonsUserRegister) => {
   }
 
   function handleValidateAddCustomerAccountHolderForm(isContactPerson = false) {
-    console.log(isContactPerson);
-    if (isContactPerson) {
-      setCheckbox(true);
-      validateCheckboxIsChecked();
-    }
-    console.log(
-      firstName,
-      lastName,
-      taxIdentificationNumber,
-      emailAddress,
-      birthdate,
-      phoneNumber,
-      checkbox,
-    );
     validateAddCustomerAccountHolderForm();
-    console.log(
-      firstNameState,
-      lastNameState,
-      taxIdentificationNumberState,
-      emailAddressState,
-      phoneNumberState,
-      birthdateState,
-      checkboxState,
-    );
-    if (
+    if (isContactPerson) {
+      if (
+        firstNameState === "valid" &&
+        lastNameState === "valid" &&
+        taxIdentificationNumberState === "valid" &&
+        emailAddressState === "valid" &&
+        phoneNumberState === "valid" &&
+        birthdateState === "valid"
+      ) {
+        handleSubmitContractPerson(firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber);
+      }
+    } else if (
       firstNameState === "valid" &&
       lastNameState === "valid" &&
       taxIdentificationNumberState === "valid" &&
@@ -127,13 +115,8 @@ const useCreateCustomer = (handleShowContactPersonsUserRegister) => {
       birthdateState === "valid" &&
       checkboxState === "valid"
     ) {
-      if (isContactPerson) {
-        handleSubmitContractPerson(firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber);
-      } else {
-        handleSubmit(firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber);
-      }
-    } else {
-      return null;
+      handleSubmit(firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber);
+
     }
   }
 

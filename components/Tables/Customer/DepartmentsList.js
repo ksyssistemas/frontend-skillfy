@@ -53,11 +53,14 @@ function DepartmentsList() {
     setModalDepartmentOpen(!modalDepartmentOpen);
   }
 
-  useEffect(async () => {
-    if (detailedDepartmentData.length === 0) {
-      const foundDepartment = await useFindAllDepartments();
-      setDetailedDepartmentData(foundDepartment);
-    }
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      if (detailedDepartmentData.length === 0) {
+        const foundDepartment = await useFindAllDepartments();
+        setDetailedDepartmentData(foundDepartment);
+      }
+    };
+    fetchDepartments();
   }, [detailedDepartmentData]);
 
   return (
@@ -78,59 +81,65 @@ function DepartmentsList() {
             </tr>
           </thead>
           <tbody>
-            {detailedDepartmentData.map((department) => (
-              <tr className="table-" key={department.ID_Department}>
-                <td className="table-user">
-                  <b>{department.DepartmentName}</b>
-                </td>
-                <td>
-                  <span className="text-muted">
-                    {formatDate(department.CreatedAt)}
-                  </span>
-                </td>
-                <td>
-                  <span className="name mb-0 text-sm">
-                    {department.Responsible}
-                  </span>
-                </td>
-                <td className="text-muted">
-                  {
-                    department.Description ? (
-                      <Nav navbar>
-                        <NavItem>
-                          <NavLink target="_blank">
-                            <a href="#" className="text-underline">
-                              <span
-                                onClick={() => handleShowModal(department.DepartmentName, department.Description)}
-                                className="name mb-0 text-sm"
-                              >
-                                Ver
-                              </span>
-                            </a>
-                          </NavLink>
-                        </NavItem>
-                      </Nav>
-                    ) : (
-                      <span
-                        className="name mb-0 text-sm"
-                      >
-                        Não há descrição
-                      </span>
+            {detailedDepartmentData.length > 0 ? (
+              detailedDepartmentData.map((department) => (
+                <tr className="table-" key={department.ID_Department}>
+                  <td className="table-user">
+                    <b>{department.DepartmentName}</b>
+                  </td>
+                  <td>
+                    <span className="text-muted">
+                      {formatDate(department.CreatedAt)}
+                    </span>
+                  </td>
+                  <td>
+                    <span className="name mb-0 text-sm">
+                      {department.Responsible}
+                    </span>
+                  </td>
+                  <td className="text-muted">
+                    {
+                      department.Description ? (
+                        <Nav navbar>
+                          <NavItem>
+                            <NavLink target="_blank">
+                              <a href="#" className="text-underline">
+                                <span
+                                  onClick={() => handleShowModal(department.DepartmentName, department.Description)}
+                                  className="name mb-0 text-sm"
+                                >
+                                  Ver
+                                </span>
+                              </a>
+                            </NavLink>
+                          </NavItem>
+                        </Nav>
+                      ) : (
+                        <span
+                          className="name mb-0 text-sm"
+                        >
+                          Não há descrição
+                        </span>
 
-                    )}
-                </td>
-                <td>
-                  <label className="custom-toggle">
-                    <input type="checkbox" checked={department.Status ? true : false} />
-                    <span
-                      className="custom-toggle-slider rounded-circle"
-                      data-label-off="No"
-                      data-label-on="Yes"
-                    />
-                  </label>
-                </td>
+                      )}
+                  </td>
+                  <td>
+                    <label className="custom-toggle">
+                      <input type="checkbox" checked={department.Status ? true : false} />
+                      <span
+                        className="custom-toggle-slider rounded-circle"
+                        data-label-off="No"
+                        data-label-on="Yes"
+                      />
+                    </label>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5">Nenhum dado encontrado.</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </Table>
       </Card>
