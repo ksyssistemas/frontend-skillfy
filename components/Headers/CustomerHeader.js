@@ -27,8 +27,16 @@ import {
     Col,
 } from "reactstrap";
 
-function CustomerHeader({ name, parentName, newRegistrationButtonText, handleShowDepartmentsUserRegister,
-    handleShowRolesUserRegister, handleShowEmployeeUserRegister }) {
+function CustomerHeader({
+    name,
+    parentName,
+    newRegistrationButtonText,
+    handleShowDepartmentsUserRegister,
+    handleShowRolesUserRegister,
+    handleShowEmployeeUserRegister,
+    employeeRecordEntrySettingsButtonName,
+    handleShowEmployeeRecordEntrySettings
+}) {
 
     const [modalOpen, setModalOpen] = React.useState(false);
 
@@ -89,7 +97,19 @@ function CustomerHeader({ name, parentName, newRegistrationButtonText, handleSho
                                         </Button>
                                     )
                                 }
-
+                                {
+                                    employeeRecordEntrySettingsButtonName && (
+                                        <Button
+                                            className="btn-neutral"
+                                            color=""
+                                            href="#pablo"
+                                            onClick={handleShowEmployeeRecordEntrySettings}
+                                            size="sm"
+                                        >
+                                            {employeeRecordEntrySettingsButtonName}
+                                        </Button>
+                                    )
+                                }
                                 <Button
                                     className="btn-neutral"
                                     color=""
@@ -112,6 +132,7 @@ CustomerHeader.propTypes = {
     handleShowDepartmentsUserRegister: () => { },
     handleShowRolesUserRegister: () => { },
     handleShowEmployeeUserRegister: () => { },
+    handleShowEmployeeRecordEntrySettings: () => { }
 };
 
 CustomerHeader.propTypes = {
@@ -121,6 +142,8 @@ CustomerHeader.propTypes = {
     handleShowDepartmentsUserRegister: PropTypes.func,
     handleShowRolesUserRegister: PropTypes.func,
     handleShowEmployeeUserRegister: PropTypes.func,
+    employeeRecordEntrySettingsButtonName: PropTypes.string,
+    handleShowEmployeeRecordEntrySettings: PropTypes.func,
 };
 
 export default CustomerHeader;

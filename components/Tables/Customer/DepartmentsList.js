@@ -7,7 +7,7 @@ import {
   NavItem,
   NavLink, Table
 } from "reactstrap";
-import { useFindAllDepartments } from "../../../hooks/department/useFindAllDepartments";
+import { useFindAllDepartments } from "../../../hooks/RecordsHooks/department/useFindAllDepartments";
 import ShowDepartmentDescriptionsModal from "../../Modals/admin/show-department-descriptions";
 
 function DepartmentsList() {
@@ -55,7 +55,7 @@ function DepartmentsList() {
 
   useEffect(() => {
     const fetchDepartments = async () => {
-      if (detailedDepartmentData.length === 0) {
+      if (detailedDepartmentData && detailedDepartmentData.length === 0) {
         const foundDepartment = await useFindAllDepartments();
         setDetailedDepartmentData(foundDepartment);
       }
@@ -81,7 +81,7 @@ function DepartmentsList() {
             </tr>
           </thead>
           <tbody>
-            {detailedDepartmentData.length > 0 ? (
+            {detailedDepartmentData && detailedDepartmentData.length > 0 ? (
               detailedDepartmentData.map((department) => (
                 <tr className="table-" key={department.ID_Department}>
                   <td className="table-user">

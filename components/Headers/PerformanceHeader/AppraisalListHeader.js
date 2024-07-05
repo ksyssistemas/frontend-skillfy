@@ -79,11 +79,11 @@ function AppraisalListHeader({ name, parentName }) {
                         size="sm"
                       >
                         <span
-                        className="btn-inner--icon"
+                          className="btn-inner--icon"
                         >
                           <i className="ni ni-ruler-pencil mr-2" />
                         </span>
-                        <span className="nav-link-inner--text">Adicionar Onboarding</span>
+                        <span className="nav-link-inner--text">Adicionar Integração</span>
                       </Button>
                     </NavLink>
                   </Link>
@@ -97,11 +97,11 @@ function AppraisalListHeader({ name, parentName }) {
                         size="sm"
                       >
                         <span
-                        className="btn-inner--icon"
+                          className="btn-inner--icon"
                         >
                           <i className="ni ni-ruler-pencil mr-2" />
                         </span>
-                        <span className="nav-link-inner--text">Adicionar Avaliação de Competências</span>
+                        <span className="nav-link-inner--text">Adicionar Avaliação</span>
                       </Button>
                     </NavLink>
                   </Link>

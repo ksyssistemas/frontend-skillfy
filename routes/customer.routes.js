@@ -86,7 +86,7 @@ const routes = () => {
         },
         {
           path: "/roles",
-          name: "Cargos",
+          name: "Cargos e Funçôes",
           miniName: "C",
           layout: "/records",
         },

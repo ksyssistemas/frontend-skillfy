@@ -5,7 +5,7 @@ import ReactDatetime from "react-datetime";
 import PropTypes from "prop-types";
 import InputMask from 'react-input-mask';
 import { Button, Card, CardHeader, CardBody, FormGroup, Form, Input, Row, Col } from "reactstrap";
-import useCreateAdmin from '../../hooks/admin/useCreateAdmin';
+import useCreateAdmin from '../../hooks/RecordsHooks/admin/useCreateAdmin';
 
 function AdminUserRegister({ handleShowAdminUserRegister }) {
 

@@ -21,8 +21,8 @@ import {
 } from "reactstrap";
 
 import ReactDatetime from "react-datetime";
-import { useFindClientCompany } from "../../../hooks/customer/useFindClientCompany";
-import { useFindEmployeeAddress } from "../../../hooks/customer/useFindClientCompanyAddress";
+import { useFindClientCompany } from "../../../hooks/RecordsHooks/customer/useFindClientCompany";
+import { useFindEmployeeAddress } from "../../../hooks/RecordsHooks/customer/useFindClientCompanyAddress";
 
 function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, idSelectedToShowCompanyDetails, modalOpen }) {
   const [focused, setFocused] = React.useState(false);

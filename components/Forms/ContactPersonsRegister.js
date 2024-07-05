@@ -6,8 +6,8 @@ const Select2 = dynamic(() => import("react-select2-wrapper"));
 // react plugin used to create datetimepicker
 import ReactDatetime from "react-datetime";
 import InputMask from 'react-input-mask';
-import useCreateCustomerAccountHolder from '../../hooks/customer/useCreateCustomerAccountHolder';
-import { useFindAllClientCompany } from '../../hooks/customer/useFindAllClientCompany';
+import useCreateCustomerAccountHolder from '../../hooks/RecordsHooks/customer/useCreateCustomerAccountHolder';
+import { useFindAllClientCompany } from '../../hooks/RecordsHooks/customer/useFindAllClientCompany';
 import { employmentContractDataSearchAndProcess } from '../../util/employmentContractDataSearchAndProcess';
 import { handleSelectionEmploymentContractData } from '../../util/handleSelectionEmploymentContractData';
 

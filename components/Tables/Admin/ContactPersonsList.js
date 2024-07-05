@@ -9,9 +9,9 @@ import {
   UncontrolledTooltip,
 } from 'reactstrap';
 
-import { useFindAllAdmin } from "../../../hooks/admin/useFindAllAdmin"
-import { useDeleteAdmin } from "../../../hooks/admin/useDeleteAdmin"
-import { useFindAllContactPerson } from '../../../hooks/contactPerson/useFindAllContactPerson';
+import { useFindAllAdmin } from "../../../hooks/RecordsHooks/admin/useFindAllAdmin"
+import { useDeleteAdmin } from "../../../hooks/RecordsHooks/admin/useDeleteAdmin"
+import { useFindAllContactPerson } from '../../../hooks/RecordsHooks/contactPerson/useFindAllContactPerson';
 
 function ContactPersonsList() {
 

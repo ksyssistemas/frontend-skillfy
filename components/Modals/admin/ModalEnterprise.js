@@ -21,7 +21,7 @@ import {
   capitaisBrasileiras
 } from "../../../mocks/mockStateBr"
 
-import useCNPJ from "../../../hooks/useCNPJ"
+import useCNPJ from "../../../hooks/RecordsHooks/useCNPJ"
 
 function ModalEnterprise({ isOpen, toggle }) {
 

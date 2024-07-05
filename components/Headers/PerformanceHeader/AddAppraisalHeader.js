@@ -15,6 +15,7 @@
 
 */
 import React from "react";
+import Link from "next/link";
 // nodejs library to set properties for components
 import PropTypes from "prop-types";
 // reactstrap components
@@ -25,6 +26,8 @@ import {
   Container,
   Row,
   Col,
+  Nav,
+  NavLink,
 } from "reactstrap";
 import AddAppraisalCycleModal from "../../Modals/AppraisalModal/add-appraisal-cycle";
 
@@ -66,8 +69,8 @@ function AddAppraisalHeader({ name, parentName }) {
                 </Breadcrumb>
               </Col>
               <Col className="mt-3 mt-md-0 text-md-right" lg="6" xs="5">
-                {/* <Nav className="d-inline-flex">
-                  <Link href="/performance/add-appraisal">
+                <Nav className="d-inline-flex">
+                  <Link href="/performance/appraisal-settings">
                     <NavLink href="#pablo">
                       <Button
                         className="btn-neutral"
@@ -75,22 +78,22 @@ function AddAppraisalHeader({ name, parentName }) {
                         size="sm"
                       >
                         <span
-                        className="btn-inner--icon"
+                          className="btn-inner--icon"
                         >
                           <i className="ni ni-ruler-pencil mr-2" />
                         </span>
-                        <span className="nav-link-inner--text">Definir Configurações da Avalização</span>
+                        <span className="nav-link-inner--text">Configurações da Avaliação</span>
                       </Button>
                     </NavLink>
                   </Link>
-                </Nav> */}
+                </Nav>
                 <Button className="btn-neutral" color="default" size="sm">
                   Filtros
                 </Button>
               </Col>
             </Row>
           </div>
-          <AddAppraisalCycleModal 
+          <AddAppraisalCycleModal
             handleOpenAddAppraisalCycleModal={handleOpenAddAppraisalCycleModal}
             modalOpen={modalOpen}
           />

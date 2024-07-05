@@ -13,10 +13,10 @@ import {
     Input,
     Row
 } from "reactstrap";
-import useCreateRole from "../../hooks/role/useCreateRole";
-import useCreateEmployeeFunction from "../../hooks/employeeFunction/useCreateEmployeeFunction";
-import { useFindAllRoles } from '../../hooks/role/useFindAllRoles';
-import { useFindAllFunctions } from '../../hooks/employeeFunction/useFindAllFunctions';
+import useCreateRole from "../../hooks/RecordsHooks/role/useCreateRole";
+import useCreateEmployeeFunction from "../../hooks/RecordsHooks/employeeFunction/useCreateEmployeeFunction";
+import { useFindAllRoles } from '../../hooks/RecordsHooks/role/useFindAllRoles';
+import { useFindAllFunctions } from '../../hooks/RecordsHooks/employeeFunction/useFindAllFunctions';
 import { employmentContractDataSearchAndProcess } from '../../util/employmentContractDataSearchAndProcess';
 import { handleSelectionEmploymentContractData } from '../../util/handleSelectionEmploymentContractData';
 

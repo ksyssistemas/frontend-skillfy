@@ -284,9 +284,9 @@ function AddAppraisal() {
                   <CardHeader>
                     <Row className="align-items-center">
                       <Col xs="8">
-                        <h3 className="mb-0 ">Criar Avaliação de Desempenho</h3>
+                        <h3 className="mb-0 ">Avaliação de Desempenho</h3>
                       </Col>
-                      <Col className="text-right" xs="4">
+                      {/* <Col className="text-right" xs="4">
                         <Button
                           className="btn-outline-primary"
                           color=""
@@ -301,7 +301,7 @@ function AddAppraisal() {
                           </span>
                           <span>Definir Configurações de Avaliação</span>
                         </Button>
-                      </Col>
+                      </Col> */}
                     </Row>
                   </CardHeader>
 

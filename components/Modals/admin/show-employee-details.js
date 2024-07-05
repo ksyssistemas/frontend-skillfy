@@ -8,9 +8,9 @@ import {
   Row,
   Col,
 } from "reactstrap";
-import { useFindEmployee } from "../../../hooks/employee/useFindEmployee";
-import { useFindEmployeeAddress } from "../../../hooks/employee/useFindEmployeeAddress";
-import { useFindEmployeeContractDetails } from "../../../hooks/featuresEmploymentContract/useFindEmployeeContractDetails";
+import { useFindEmployee } from "../../../hooks/RecordsHooks/employee/useFindEmployee";
+import { useFindEmployeeAddress } from "../../../hooks/RecordsHooks/employee/useFindEmployeeAddress";
+import { useFindEmployeeContractDetails } from "../../../hooks/RecordsHooks/featuresEmploymentContract/useFindEmployeeContractDetails";
 
 function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, idSelectedToShowEmployeeDetails, setIdSelectedToShowEmployeeDetails }) {
 

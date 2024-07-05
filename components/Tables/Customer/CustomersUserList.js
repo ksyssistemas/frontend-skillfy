@@ -16,16 +16,16 @@ import {
   Table,
   UncontrolledTooltip,
 } from 'reactstrap';
-import { useFindAllClientCompany } from "../../../hooks/customer/useFindAllClientCompany";
-import { useFindClientCompany } from "../../../hooks/customer/useFindClientCompany";
-import { useFindClientCompanyAddress } from "../../../hooks/customer/useFindClientCompanyAddress";
-import { useDeleteCustomerAccount } from "../../../hooks/customer/useDeleteCustomerAccount";
+import { useFindAllClientCompany } from "../../../hooks/RecordsHooks/customer/useFindAllClientCompany";
+import { useFindClientCompany } from "../../../hooks/RecordsHooks/customer/useFindClientCompany";
+import { useFindClientCompanyAddress } from "../../../hooks/RecordsHooks/customer/useFindClientCompanyAddress";
+import { useDeleteCustomerAccount } from "../../../hooks/RecordsHooks/customer/useDeleteCustomerAccount";
 
 import ShowCustomerDetailsModal from "../../Modals/admin/show-customer-details";
 import ModalEnterprise from "../../Modals/admin/ModalEnterprise"
 import fakeCompanies from '../../../mocks/mockEnterprises'
 
-import useCNPJ from "../../../hooks/useCNPJ"
+import useCNPJ from "../../../hooks/RecordsHooks/useCNPJ"
 
 const CustomersUserList = () => {
 

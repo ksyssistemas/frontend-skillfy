@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-
 import dynamic from "next/dynamic";
-// react plugin used to create DropdownMenu for selecting items
 const Select2 = dynamic(() => import("react-select2-wrapper"));
 import { Button, Card, CardHeader, CardBody, FormGroup, Form, Input, Container, Row, Col, Table } from "reactstrap";
-import useCreateDepartment from "../../hooks/department/useCreateDepartment";
-import { useFindAllDepartments } from '../../hooks/department/useFindAllDepartments';
+import useCreateDepartment from "../../hooks/RecordsHooks/department/useCreateDepartment";
+import { useFindAllDepartments } from '../../hooks/RecordsHooks/department/useFindAllDepartments';
 import { employmentContractDataSearchAndProcess } from '../../util/employmentContractDataSearchAndProcess';
 import { handleSelectionEmploymentContractData } from '../../util/handleSelectionEmploymentContractData';
 

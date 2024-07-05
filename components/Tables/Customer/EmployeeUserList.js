@@ -13,7 +13,7 @@ import {
   UncontrolledTooltip,
 } from 'reactstrap';
 import ShowEmployeeDetailsModal from "../../Modals/admin/show-employee-details";
-import { useFindAllEmployee } from "../../../hooks/employee/useFindAllEmployee";
+import { useFindAllEmployee } from "../../../hooks/RecordsHooks/employee/useFindAllEmployee";
 
 const EmployeeUserList = () => {
 

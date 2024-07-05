@@ -26,15 +26,8 @@ import {
   Row,
   Col,
 } from "reactstrap";
-import AddAppraisalCycleModal from "../../Modals/AppraisalModal/add-appraisal-cycle";
 
-function AppraisalCycleHeader({ name, parentName }) {
-
-  const [modalOpen, setModalOpen] = React.useState(false);
-
-  function handleOpenAddAppraisalCycleModal() {
-    setModalOpen(!modalOpen)
-  }
+function AppraisalCycleHeader({ name, parentName, handleOpenAddAppraisalCycleModal }) {
 
   return (
     <>
@@ -66,9 +59,9 @@ function AppraisalCycleHeader({ name, parentName }) {
                 </Breadcrumb>
               </Col>
               <Col className="mt-3 mt-md-0 text-md-right" lg="6" xs="5">
-                <Button 
-                  className="btn-neutral" 
-                  color="default" 
+                <Button
+                  className="btn-neutral"
+                  color="default"
                   size="sm"
                   onClick={handleOpenAddAppraisalCycleModal}
                 >
@@ -83,10 +76,6 @@ function AppraisalCycleHeader({ name, parentName }) {
               </Col>
             </Row>
           </div>
-          <AddAppraisalCycleModal 
-            handleOpenAddAppraisalCycleModal={handleOpenAddAppraisalCycleModal}
-            modalOpen={modalOpen}
-          />
         </Container>
       </div>
     </>
@@ -96,6 +85,7 @@ function AppraisalCycleHeader({ name, parentName }) {
 AppraisalCycleHeader.propTypes = {
   name: PropTypes.string,
   parentName: PropTypes.string,
+  handleOpenAddAppraisalCycleModal: PropTypes.func,
 };
 
 export default AppraisalCycleHeader;

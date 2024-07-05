@@ -9,8 +9,8 @@ import {
   UncontrolledTooltip,
 } from 'reactstrap';
 import ModalAdm from "../../Modals/admin/ModalAdm"
-import { useFindAllAdmin } from "../../../hooks/admin/useFindAllAdmin"
-import { useDeleteAdmin } from "../../../hooks/admin/useDeleteAdmin"
+import { useFindAllAdmin } from "../../../hooks/RecordsHooks/admin/useFindAllAdmin"
+import { useDeleteAdmin } from "../../../hooks/RecordsHooks/admin/useDeleteAdmin"
 
 function AdminList() {
 

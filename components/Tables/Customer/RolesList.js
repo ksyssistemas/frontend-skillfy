@@ -10,8 +10,8 @@ import {
 } from "reactstrap";
 import ShowRoleDescriptionsModal from "../../Modals/admin/show-role-descriptions";
 import ShowFunctionsDescriptionsModal from "../../Modals/admin/show-functions-descriptions";
-import { useFindAllRoles } from "../../../hooks/role/useFindAllRoles";
-import { useFindAllFunctions } from "../../../hooks/employeeFunction/useFindAllFunctions";
+import { useFindAllRoles } from "../../../hooks/RecordsHooks/role/useFindAllRoles";
+import { useFindAllFunctions } from "../../../hooks/RecordsHooks/employeeFunction/useFindAllFunctions";
 
 function RolesList() {
 
@@ -59,7 +59,7 @@ function RolesList() {
 
   useEffect(() => {
     const fetchRoles = async () => {
-      if (detailedRoleData.length === 0) {
+      if (detailedRoleData && detailedRoleData.length === 0) {
         try {
           const foundRole = await useFindAllRoles();
           setDetailedRoleData(foundRole);
@@ -70,7 +70,7 @@ function RolesList() {
     };
 
     const fetchEmployeeFunctions = async () => {
-      if (detailedEmployeeFunctionData.length === 0) {
+      if (detailedEmployeeFunctionData && detailedEmployeeFunctionData.length === 0) {
         try {
           const foundEmployeeFunction = await useFindAllFunctions();
           setDetailedEmployeeFunctionData(foundEmployeeFunction);
