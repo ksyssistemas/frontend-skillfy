@@ -23,6 +23,7 @@ import { AuthProvider } from "../contexts/AuthContext";
 import { AlertProvider } from "../contexts/AlertContext";
 import { AppraisalCycleProvider } from "../contexts/PerformanceContext/CycleContext";
 import { SweetAlertProvider } from "../contexts/SweetAlertContext";
+import { AppraisalSkillsProvider } from "../contexts/PerformanceContext/AppraisalSkillsContext";
 
 Router.events.on("routeChangeStart", (url) => {
   console.log(`Loading: ${url}`);
@@ -81,17 +82,19 @@ export default class MyApp extends App {
           <AlertProvider>
             <AppraisalCycleProvider>
               <SweetAlertProvider>
-                <Head>
-                  <meta
-                    name="viewport"
-                    content="width=device-width, initial-scale=1, shrink-to-fit=no"
-                  />
-                  <title>Twig</title>
-                  {/* <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script> */}
-                </Head>
-                <Layout>
-                  <Component {...pageProps} />
-                </Layout>
+                <AppraisalSkillsProvider>
+                  <Head>
+                    <meta
+                      name="viewport"
+                      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+                    />
+                    <title>Twig</title>
+                    {/* <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script> */}
+                  </Head>
+                  <Layout>
+                    <Component {...pageProps} />
+                  </Layout>
+                </AppraisalSkillsProvider>
               </SweetAlertProvider>
             </AppraisalCycleProvider>
           </AlertProvider>

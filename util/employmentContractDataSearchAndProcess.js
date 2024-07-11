@@ -4,7 +4,6 @@ export async function employmentContractDataSearchAndProcess(apiCall, setData, e
     try {
         const response = await apiCall();
         if (response) {
-            console.log("Response: ", response);
             if (response && response.length > 0) {
                 const dataObject = response.map((item, index) => {
                     let id;
@@ -28,6 +27,15 @@ export async function employmentContractDataSearchAndProcess(apiCall, setData, e
                             id = item.id;
                             break;
                         case 'workplace':
+                            id = item.id;
+                            break;
+                        case 'skillClassification':
+                            id = item.id;
+                            break;
+                        case 'occupationalGroup':
+                            id = item.id;
+                            break;
+                        case 'skillTypes':
                             id = item.id;
                             break;
                         default:

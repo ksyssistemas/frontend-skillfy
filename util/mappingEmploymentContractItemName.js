@@ -27,6 +27,12 @@ export function mappingEmploymentContractItemName(item, employmentContractItemNa
                     return "Não há modelos de trabalho, use o botão 'Configurações'.";
                 case 'workplace':
                     return "Não há locais de trabalho, use o botão 'Configurações'.";
+                case 'skillClassification':
+                    return "Não há classificações, crie ao menos um.";
+                case 'occupationalGroup':
+                    return "Não há grupos, crie ao menos um.";
+                case 'skillTypes':
+                    return "Não há tipos de competência, crie ao menos um.";
                 default:
                     return 'Não há dados disponíveis.';
             }
@@ -47,6 +53,12 @@ export function mappingEmploymentContractItemName(item, employmentContractItemNa
                 return item.name;
             case 'workplace':
                 return item.name;
+            case 'skillClassification':
+                return item.competenceClassificationName;
+            case 'occupationalGroup':
+                return item.competencieName;
+            case 'skillTypes':
+                return item.competencieTypeName;
             default:
                 return 'Unknown';
         }

@@ -1,352 +1,215 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import dynamic from "next/dynamic";
-// react plugin used to create datetimepicker
-import ReactDatetime from "react-datetime";
-// react plugin used to create DropdownMenu for selecting items
-const Select2 = dynamic(() => import("react-select2-wrapper"));
 import {
     Button,
     Card,
     CardHeader,
     CardBody,
-    FormGroup,
-    Form,
-    Input,
-    InputGroupAddon,
-    InputGroupText,
-    InputGroup,
     Container,
     Row,
     Col,
-    Badge,
     ListGroup,
     ListGroupItem
 } from "reactstrap";
 import Performance from "../../layouts/Performance";
-import AddAppraisalHeader from "../../components/Headers/PerformanceHeader/AddAppraisalHeader"
-import { string } from "prop-types";
-import SkillsRegister from "../../components/Forms/PerformanceForms/SkillsRegister";
-import EvidencesRegister from "../../components/Forms/PerformanceForms/EvidencesRegister";
-import CapitonsRegister from "../../components/Forms/PerformanceForms/CapitonsRegister";
+import EvidencesList from "../../components/Tables/AppraisalTables/AppraisalSettings/EvidencesList";
+import CaptionsList from "../../components/Tables/AppraisalTables/AppraisalSettings/CaptionsList";
+import AppraisalSettingsHeader from "../../components/Headers/PerformanceHeader/AppraisalSettingsHeader";
+import SkillsManagement from "../../components/Tables/AppraisalTables/AppraisalSettings/AppraisalSkills/SkillsManagement";
+import { AppraisalSkillsContext } from "../../contexts/PerformanceContext/AppraisalSkillsContext";
 
-function AddAppraisal() {
+function AppraisalSettings() {
 
-    const [activeComponent, setActiveComponent] = useState('SkillsRegister');
+    const { handleDropdownClickSkillsComponents } = useContext(AppraisalSkillsContext);
 
-    function handleShowSkillsRegistrationForm() {
-        setActiveComponent('SkillsRegister');
-    }
+    const [view, setView] = useState('default');
+    // function handleSettingsViewComponents(view) {
+    //     setView(view);
+    // }
 
-    function handleShowEvidenceRegistrationForm() {
-        setActiveComponent('EvidencesRegister');
-    }
+    const [headerProps, setHeaderProps] = useState({
+        sonName: null,
+        name: 'Definições de Avaliação',
+        parentName: 'Desempenho',
+        firstButtonText: 'Voltar',
+        firstButtonIcon: 'fas fa-solid fa-arrow-left mr-2',
+        onFirstButtonClick: null,
+        secondButtonText: null,
+        secondButtonIcon: null,
+        onSecondButtonClick: null,
+    });
 
-    function handleShowCapitionRegistrationForm() {
-        setActiveComponent('CapitonsRegister');
-    }
-
-    const [admins, setAdmins] = useState([]);
-    const [appraisalIdToBeShown, setAppraisalIdToBeShown] = useState(null);
-    const [startDate, setStartDate] = React.useState(null);
-    const [endDate, setEndDate] = React.useState(null);
-
-    const [selectedSupervisorValue, setSelectedSupervisorValue] = useState([]);
-    const [selectedLeaderValue, setSelectedLeaderValue] = useState([]);
-    const [selectedPeersValue, setSelectedPeersValue] = useState([]);
-    const [selectedSubordinatesValue, setSelectedSubordinatesValue] = useState([]);
-
-    // useEffect(() => {
-    //   async function fetchAdmins() {
-    //     try {
-    //       const response = await fetch('http://localhost:4008/administrator/findAll');
-    //       if (!response.ok) {
-    //         throw new Error('Network response was not ok.');
-    //       }
-    //       const data = await response.json();
-    //       setAdmins(data);
-    //     } catch (error) {
-    //       console.error('There was a problem fetching the data:', error);
-    //     }
-    //   }
-    //   fetchAdmins();
-    // }, []);
-
-    const deleteAdmin = async (id) => {
-        try {
-            const response = await fetch(`http://localhost:4008/administrator/${id}`, {
-                method: 'DELETE',
+    const handleSettingsViewComponents = (view) => {
+        setView(view);
+        if (view === 'default') {
+            setHeaderProps({
+                sonName: null,
+                name: 'Definições de Avaliação',
+                parentName: 'Desempenho',
+                firstButtonText: 'Voltar',
+                firstButtonIcon: 'fas fa-solid fa-arrow-left mr-2',
+                onFirstButtonClick: null,
+                secondButtonText: null,
+                secondButtonIcon: null,
+                onSecondButtonClick: null,
             });
-            if (!response.ok) {
-                throw new Error('Failed to delete admin.');
-            }
-            setAdmins(admins.filter(admin => admin.id !== id));
-        } catch (error) {
-            console.error('There was a problem deleting the admin:', error);
         }
     };
 
-    React.useEffect(async () => {
-        // we make a dynamic import for the QuillJS, as this component is not made to work on SSR
-        const Quill = (await import("quill")).default;
-        new Quill(document.querySelector('[data-toggle="quill"]'), {
-            modules: {
-                toolbar: [
-                    ['bold', 'italic'],
-                    ['link', 'blockquote', 'code', 'image'],
-                    [{
-                        'list': 'ordered'
-                    }, {
-                        'list': 'bullet'
-                    }]
-                ]
-            },
-            placeholder: "Lorem Ipsum is simply dummy text...",
-            theme: 'snow',
-            className: "is-invalid",
-            id: "validationServer03"
-        });
-    }, []);
+    const handleListButtonClick = (listType) => {
+        handleSettingsViewComponents(listType);
 
-    const handleReactDatetimeChange = (who, date) => {
-        if (
-            startDate &&
-            who === "endDate" &&
-            new Date(startDate._d + "") > new Date(date._d + "")
-        ) {
-            setStartDate(date);
-            setEndDate(date);
-        } else if (
-            endDate &&
-            who === "startDate" &&
-            new Date(endDate._d + "") < new Date(date._d + "")
-        ) {
-            setStartDate(date);
-            setEndDate(date);
-        } else {
-            if (who === "startDate") {
-                setStartDate(date);
-            } else {
-                setEndDate(date);
-            }
+        switch (listType) {
+            case 'skills':
+                setHeaderProps({
+                    sonName: 'Competências',
+                    name: 'Definições de Avaliação',
+                    parentName: 'Desempenho',
+                    firstButtonText: 'Voltar',
+                    firstButtonIcon: 'fas fa-solid fa-arrow-left mr-2',
+                    onFirstButtonClick: () => handleSettingsViewComponents('default'),
+                    secondButtonText: 'Opções de Competência',
+                    secondButtonIcon: 'fas fa-solid fa-list mr-2',
+                    onSecondButtonClick: null,
+                });
+                break;
+            case 'evidences':
+                setHeaderProps({
+                    sonName: 'Evidências',
+                    name: 'Definições de Avaliação',
+                    parentName: 'Desempenho',
+                    firstButtonText: 'Voltar',
+                    firstButtonIcon: 'fas fa-solid fa-arrow-left mr-2',
+                    onFirstButtonClick: () => handleSettingsViewComponents('default'),
+                    secondButtonText: null,
+                    secondButtonIcon: null,
+                    onSecondButtonClick: null,
+                });
+                break;
+            case 'captions':
+                setHeaderProps({
+                    sonName: 'Legendas',
+                    name: 'Definições de Avaliação',
+                    parentName: 'Desempenho',
+                    firstButtonText: 'Voltar',
+                    firstButtonIcon: 'fas fa-solid fa-arrow-left mr-2',
+                    onFirstButtonClick: () => handleSettingsViewComponents('default'),
+                    secondButtonText: null,
+                    secondButtonIcon: null,
+                    onSecondButtonClick: null,
+                });
+                break;
+            default:
+                setHeaderProps({
+                    sonName: null,
+                    name: 'Definições de Avaliação',
+                    parentName: 'Desempenho',
+                    firstButtonText: 'Voltar',
+                    firstButtonIcon: 'fas fa-solid fa-arrow-left mr-2',
+                    onFirstButtonClick: null,
+                    secondButtonText: null,
+                    secondButtonIcon: null,
+                    onSecondButtonClick: null,
+                });
+                break;
         }
     };
 
-    const getClassNameReactDatetimeDays = (date) => {
-        if (startDate && endDate) {
+
+    const renderContent = () => {
+        switch (view) {
+            case 'skills':
+                return <SkillsManagement />;
+            case 'evidences':
+                return <EvidencesList />;
+            case 'captions':
+                return <CaptionsList />;
+            default:
+                return (
+                    <Card>
+                        <CardHeader>
+                            <h5 className="h3 mb-0">Opções de Configuração</h5>
+                        </CardHeader>
+
+                        <CardBody>
+                            <ListGroup className="list my--3" flush>
+                                <ListGroupItem className="px-0">
+                                    <Row className="align-items-center">
+                                        <div className="col ml-4">
+                                            <h4 className="mb-0">
+                                                <a href="#pablo" onClick={(e) => e.preventDefault()}>
+                                                    Competências
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <Col className="col-auto mr-4">
+                                            <Button className="px-4 py-2" color="primary" size="sm" type="button" onClick={() => handleListButtonClick('skills')}>
+                                                Listar
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                </ListGroupItem>
+                                <ListGroupItem className="px-0">
+                                    <Row className="align-items-center">
+                                        <div className="col ml-4">
+                                            <h4 className="mb-0">
+                                                <a href="#pablo" onClick={(e) => e.preventDefault()}>
+                                                    Evidências
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <Col className="col-auto mr-4">
+                                            <Button className="px-4 py-2" disabled color="primary" size="sm" type="button" onClick={() => handleListButtonClick('evidences')}>
+                                                Listar
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                </ListGroupItem>
+                                <ListGroupItem className="px-0">
+                                    <Row className="align-items-center">
+                                        <div className="col ml-4">
+                                            <h4 className="mb-0">
+                                                <a href="#pablo" onClick={(e) => e.preventDefault()}>
+                                                    Legendas de Evidência
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <Col className="col-auto mr-4 justify-content-center">
+                                            <Button className="px-4 py-2" disabled color="primary" size="sm" type="button" onClick={() => handleListButtonClick('captions')}>
+                                                Listar
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                </ListGroupItem>
+                            </ListGroup>
+                        </CardBody>
+                    </Card>
+                );
         }
-        if (startDate && endDate && startDate._d + "" !== endDate._d + "") {
-            if (
-                new Date(endDate._d + "") > new Date(date._d + "") &&
-                new Date(startDate._d + "") < new Date(date._d + "")
-            ) {
-                return " middle-date";
-            }
-            if (endDate._d + "" === date._d + "") {
-                return " end-date";
-            }
-            if (startDate._d + "" === date._d + "") {
-                return " start-date";
-            }
-        }
-        return "";
-    };
-
-    const dataSupervisors = [
-        { id: 'all', text: 'Selecionar Todos' },
-        { id: '1', text: 'João Paulo' },
-        { id: '2', text: 'Pedro Alcantara' },
-        { id: '3', text: 'Tiago Bernardes' },
-        { id: '4', text: 'Felipe Santiago' },
-        { id: '5', text: 'Mateus Henrique' },
-        { id: '6', text: 'André Santos' },
-    ];
-
-    const handleSupervisorsBadgeClose = (index) => {
-        const updatedSupervisors = [...selectedSupervisorValue];
-        updatedSupervisors.splice(index, 1);
-        setSelectedSupervisorValue(updatedSupervisors);
-    };
-
-    function handleChangeInSelectingSupervisor(e) {
-        const newValue = e.target.value;
-        if (newValue === 'all') {
-            const allSupervisorIds = dataSupervisors
-                .filter(item => item.id !== 'all')
-                .map(item => item.id);
-            setSelectedSupervisorValue(allSupervisorIds);
-        } else {
-            setSelectedSupervisorValue([...selectedSupervisorValue, newValue]);
-        }
-    };
-
-    const dataLeaders = [
-        { id: 'all', text: 'Selecionar Todos' },
-        { id: '1', text: 'João Paulo' },
-        { id: '2', text: 'Pedro Alcantara' },
-        { id: '3', text: 'Tiago Bernardes' },
-        { id: '4', text: 'Felipe Santiago' },
-        { id: '5', text: 'Mateus Henrique' },
-        { id: '6', text: 'André Santos' },
-    ];
-
-    const handleLeadersBadgeClose = (index) => {
-        const updatedLeaders = [...selectedLeaderValue];
-        updatedLeaders.splice(index, 1);
-        setSelectedLeaderValue(updatedLeaders);
-    };
-
-    function handleChangeInSelectingLeader(e) {
-        const newValue = e.target.value;
-        if (newValue === 'all') {
-            const allLeaderIds = dataLeaders
-                .filter(item => item.id !== 'all')
-                .map(item => item.id);
-            setSelectedLeaderValue(allLeaderIds);
-        } else {
-            setSelectedLeaderValue([...selectedLeaderValue, newValue]);
-        }
-    };
-
-    const dataPeers = [
-        { id: 'all', text: 'Selecionar Todos' },
-        { id: '1', text: 'João Paulo' },
-        { id: '2', text: 'Pedro Alcantara' },
-        { id: '3', text: 'Tiago Bernardes' },
-        { id: '4', text: 'Felipe Santiago' },
-        { id: '5', text: 'Mateus Henrique' },
-        { id: '6', text: 'André Santos' },
-    ];
-
-    const handlePeersBadgeClose = (index) => {
-        const updatedPeers = [...selectedPeersValue];
-        updatedPeers.splice(index, 1);
-        setSelectedPeersValue(updatedPeers);
-    };
-
-    function handleChangeInSelectingPeer(e) {
-        const newValue = e.target.value;
-        if (newValue === 'all') {
-            const allPeerIds = dataPeers
-                .filter(item => item.id !== 'all')
-                .map(item => item.id);
-            setSelectedPeersValue(allPeerIds);
-        } else {
-            setSelectedPeersValue([...selectedPeersValue, newValue]);
-        }
-    };
-
-    const handleDrawLotsPeer = () => {
-        const peersToChooseFrom = dataPeers.filter(item => item.id !== 'all');
-
-        const randomPeers = [];
-        while (randomPeers.length < 2 && peersToChooseFrom.length > 0) {
-            const randomIndex = Math.floor(Math.random() * peersToChooseFrom.length);
-            const selectedPeer = peersToChooseFrom.splice(randomIndex, 1)[0];
-            randomPeers.push(selectedPeer.id);
-        }
-
-        setSelectedPeersValue([...selectedPeersValue, ...randomPeers]);
-    };
-
-    const dataSubordinates = [
-        { id: 'all', text: 'Selecionar Todos' },
-        { id: '1', text: 'João Paulo' },
-        { id: '2', text: 'Pedro Alcantara' },
-        { id: '3', text: 'Tiago Bernardes' },
-        { id: '4', text: 'Felipe Santiago' },
-        { id: '5', text: 'Mateus Henrique' },
-        { id: '6', text: 'André Santos' },
-    ];
-
-    const handleSubordinatesBadgeClose = (index) => {
-        const updatedSubordinates = [...selectedSubordinatesValue];
-        updatedSubordinates.splice(index, 1);
-        setSelectedSubordinatesValue(updatedSubordinates);
-    };
-
-    function handleChangeInSelectingSubordinate(e) {
-        const newValue = e.target.value;
-        if (newValue === 'all') {
-            const allSubordinateIds = dataSubordinates
-                .filter(item => item.id !== 'all')
-                .map(item => item.id);
-            setSelectedSubordinatesValue(allSubordinateIds);
-        } else {
-            setSelectedSubordinatesValue([...selectedSubordinatesValue, newValue]);
-        }
-    };
-
-    const handleDrawLotsSubordinate = () => {
-        const subordinatesToChooseFrom = dataSubordinates.filter(item => item.id !== 'all');
-
-        const randomSubordinates = [];
-        while (randomSubordinates.length < 2 && subordinatesToChooseFrom.length > 0) {
-            const randomIndex = Math.floor(Math.random() * subordinatesToChooseFrom.length);
-            const selectedSubordinate = subordinatesToChooseFrom.splice(randomIndex, 1)[0];
-            randomSubordinates.push(selectedSubordinate.id);
-        }
-
-        setSelectedSubordinatesValue([...selectedSubordinatesValue, ...randomSubordinates]);
     };
 
     return (
         <>
-            <AddAppraisalHeader name="Adicionar Avaliação" parentName="Desenvolvimento" />
+            <AppraisalSettingsHeader
+                view={view}
+                sonName={headerProps.sonName}
+                name={headerProps.name}
+                parentName={headerProps.parentName}
+                firstButtonText={headerProps.firstButtonText}
+                firstButtonIcon={headerProps.firstButtonIcon}
+                onFirstButtonClick={headerProps.onFirstButtonClick}
+                secondButtonText={headerProps.secondButtonText}
+                secondButtonIcon={headerProps.secondButtonIcon}
+                onSecondButtonClick={headerProps.onSecondButtonClick}
+                onDropdownItemClick={handleDropdownClickSkillsComponents}
+            />
             <Container className="mt--6" fluid>
-                <Form>
-                    <Row>
-                        <div className="col">
-                            <div className="card-wrapper">
-                                <Card>
-
-                                    <CardHeader>
-                                        <Row className="align-items-center">
-                                            <Col md="3" />
-                                            <Col className="d-flex align-items-center justify-content-around" md="6">
-                                                <a
-                                                    className="font-weight-bold mx-2"
-                                                    href="#pablo"
-                                                    onClick={(e) => { e.preventDefault(); handleShowSkillsRegistrationForm(); }}
-                                                >
-                                                    <h3 className="heading mb-0 text-primary">Competências</h3>
-                                                </a>
-                                                <a
-                                                    className="font-weight-bold mx-2"
-                                                    href="#pablo"
-                                                    onClick={(e) => { e.preventDefault(); handleShowEvidenceRegistrationForm(); }}
-                                                >
-                                                    <h3 className="heading mb-0 text-primary">Evidências</h3>
-                                                </a>
-                                                <a
-                                                    className="font-weight-bold mx-2"
-                                                    href="#pablo"
-                                                    onClick={(e) => { e.preventDefault(); handleShowCapitionRegistrationForm(); }}
-                                                >
-                                                    <h3 className="heading mb-0 text-primary">Legenda</h3>
-                                                </a>
-                                            </Col>
-                                            <Col md="3" />
-                                        </Row>
-                                    </CardHeader>
-                                    {
-                                        activeComponent === 'SkillsRegister' && <SkillsRegister />
-                                    }
-                                    {
-                                        activeComponent === 'EvidencesRegister' && <EvidencesRegister />
-                                    }
-                                    {
-                                        activeComponent === 'CapitonsRegister' && <CapitonsRegister />
-                                    }
-                                </Card>
-                            </div>
-                        </div>
-                    </Row>
-                </Form>
+                {renderContent()}
             </Container>
         </>
     );
 }
 
-AddAppraisal.layout = Performance;
+AppraisalSettings.layout = Performance;
 
-export default AddAppraisal;
+export default AppraisalSettings;
