@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   Badge,
   Button,
@@ -26,82 +26,111 @@ import ModalEnterprise from "../../Modals/admin/ModalEnterprise"
 import fakeCompanies from '../../../mocks/mockEnterprises'
 
 import useCNPJ from "../../../hooks/RecordsHooks/useCNPJ"
+import { CustomerContext } from '../../../contexts/RecordsContext/CustomerContext';
+import { useSweetAlert } from '../../../contexts/SweetAlertContext';
 
-const CustomersUserList = () => {
+function CustomersUserList() {
+
+  const {
+    customerIdToUpdate,
+    handleCustomerIdToUpdate,
+    hasUpdatedCustomerRecord,
+    handleUpdatedCustomerRecordStatusChange,
+    hasDeletedCustomerRecord,
+    handleDeletedCustomerRecordStatusChange,
+  } = useContext(CustomerContext);
+
+  const { warningAlert } = useSweetAlert();
 
   const [userCustomerAccountData, setUserCustomerAccountData] = useState([]);
-  const [idSelectedToShowCompanyDetails, setIdSelectedToShowCompanyDetails] = useState('');
-
-  const deleteCustomer = useDeleteCustomerAccount();
+  const [selectedIdToShowCompanyDetails, setSelectedIdToShowCompanyDetails] = useState(null);
+  function handleCleaningSelectedIdToShowCompanyDetails() {
+    setSelectedIdToShowCompanyDetails(null)
+  }
 
   const [modalOpen, setModalOpen] = React.useState(false);
 
-  function handleShowCustomerDetailsModal(companyId) {
-    setModalOpen(!modalOpen)
-    setIdSelectedToShowCompanyDetails(companyId);
+  function handleOpenCustomerModal() {
+    setModalOpen(!modalOpen);
   }
 
-  const handleDeleteCustomer = async (id) => {
-    const deletedId = await deleteCustomer(id);
-    if (deletedId !== null) {
-      window.location.reload();
-    } else {
-      console.error('Failed to delete cursomer with ID:', id);
+  function handleShowCustomerDetailsModal(companyId, customerName) {
+    setSelectedIdToShowCompanyDetails(companyId);
+    setCompanyName(customerName);
+    handleOpenCustomerModal();
+  }
+
+  const [companyName, setCompanyName] = useState('');
+
+  function handleCleaningCompanyNameStatus() {
+    setCompanyName('');
+  }
+
+  function handleOpenCustomerUpdateModal(customerId, customerName) {
+    handleCustomerIdToUpdate(customerId);
+    setCompanyName(customerName);
+    handleOpenCustomerModal();
+  }
+
+  const formatCNPJ = (cnpj) => {
+    cnpj = cnpj.replace(/\D/g, "");
+    return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5");
+  };
+
+  const handleDeleteClientCompany = async (companyId, companyNameToDelete) => {
+    try {
+      const deleteResponse = await useDeleteCustomerAccount(companyId);
+
+      if (deleteResponse !== null) {
+        console.log('Data sent successfully!', deleteResponse);
+        handleDeletedCustomerRecordStatusChange();
+      } else {
+        console.error('Failed to delete cycle with ID:', companyId, '. Response Status: ', deleteResponse.status);
+      }
+    } catch (error) {
+      console.error('Error in request:', error);
     }
   };
 
-  const [isDataFetched, setIsDataFetched] = useState(false);
+  const showWarningAlert = (companyId, companyNameToDelete) => {
+    warningAlert(
+      "Atenção",
+      "Deletar",
+      `Você deseja realmente excluir ${companyNameToDelete}?`,
+      "lg",
+      () => handleDeleteClientCompany(companyId, companyNameToDelete)
+    );
+  };
+
+  const commonProps = {
+    handleShowCustomerDetailsModal,
+    selectedIdToShowCompanyDetails,
+    handleCleaningSelectedIdToShowCompanyDetails,
+    handleOpenCustomerModal,
+    modalOpen,
+    companyName,
+    handleCleaningCompanyNameStatus,
+  };
+
+  const shouldShowModal =
+    (selectedIdToShowCompanyDetails && selectedIdToShowCompanyDetails !== 0) ||
+    (customerIdToUpdate && customerIdToUpdate !== 0);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const foundCustomer = await useFindAllClientCompany();
-        setUserCustomerAccountData(foundCustomer || []);
-        setIsDataFetched(true);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setIsDataFetched(true); // Set to true to avoid infinite loop even on error
-      }
+    const fetchDataCustomer = async () => {
+      const foundCustomer = await useFindAllClientCompany();
+      setUserCustomerAccountData(foundCustomer);
     };
 
-    if (!isDataFetched) {
-      fetchData();
+    fetchDataCustomer();
+    if (hasUpdatedCustomerRecord) {
+      handleUpdatedCustomerRecordStatusChange();
     }
-  }, [isDataFetched]);
+    if (hasDeletedCustomerRecord) {
+      handleDeletedCustomerRecordStatusChange();
+    }
 
-
-
-
-
-  const [cnpj, setCnpj] = useState('19131243000197');
-  const { data: enterpriseData, loading, error, setCnpj: setCnpjFromHook } = useCNPJ(cnpj);
-
-  const handleCnpjChange = (event) => {
-    // Atualiza o estado local do CNPJ e chama a função setCnpj do hook
-    setCnpj(event.target.value);
-    setCnpjFromHook(event.target.value);
-  };
-
-  const deleteCompany = (companyId) => {
-    // Implemente a lógica para deletar a empresa
-  };
-
-  {/** Modal  Enterprise*/ }
-  const [modalEnterpriseOpen, setModalEnterpriseOpen] = React.useState(false);
-
-  const toggleModalEnterprise = () => {
-    setModalEnterpriseOpen(!modalEnterpriseOpen);
-  };
-
-  const handleSave = () => {
-    toggleModalEnterprise();
-  };
-
-  const handleInputChange = (fieldName, value) => {
-    setFormData({ ...formData, [fieldName]: value });
-  };
-
-
+  }, [hasUpdatedCustomerRecord, hasDeletedCustomerRecord]);
 
   return (
     <Card>
@@ -110,87 +139,69 @@ const CustomersUserList = () => {
           <Col xs="6">
             <h3 className="mb-0">Lista de Clientes</h3>
           </Col>
-          {/* <Col className="text-right" xs="6">
-            <Button
-              className="btn-neutral btn-round btn-icon"
-              color="default"
-              href="#pablo"
-              id="tooltipCadastro"
-              onClick={toggleModalEnterprise}
-              size="sm"
-            >
-              <span className="btn-inner--icon mr-1">
-                <i className="fas fa-user-plus" />
-              </span>
-              <span className="btn-inner--text">Cadastrar</span>
-            </Button>
-            <UncontrolledTooltip delay={0} target="tooltipCadastro">
-              Cadastrar Adm
-            </UncontrolledTooltip>
-            <Button
-              className="btn-neutral btn-round btn-icon"
-              color="default"
-              href="#pablo"
-              id="tooltipExport"
-              onClick={(e) => e.preventDefault()}
-              size="sm"
-            >
-              <span className="btn-inner--icon mr-1">
-                <i className="fas fa-building" />
-              </span>
-              <span className="btn-inner--text">Exportar</span>
-            </Button>
-            <UncontrolledTooltip delay={0} target="tooltipExport">
-              Exportar Empresas
-            </UncontrolledTooltip>
-          </Col> */}
         </Row>
       </CardHeader>
       <Table className="align-items-center table-flush" responsive>
         <thead className="thead-light">
           <tr>
-            <th className="text-center">Nome</th>
-            <th className="text-center">CNPJ</th>
-            <th className="text-center">E-mail</th>
-            <th className="text-center">Telefone</th>
-            <th className="text-center">Plano</th>
-            <th className="text-center">Estado</th>
-            <th className="text-center">Detalhes</th>
-            <th className="text-center"></th>
+            <th className="text-left">Nome</th>
+            <th className="text-left">CNPJ</th>
+            <th className="text-left">E-mail</th>
+            <th className="text-left">Telefone</th>
+            <th className="text-left">Plano</th>
+            <th className="text-left">Estado</th>
+            <th className="text-left">Ações</th>
           </tr>
         </thead>
         <tbody>
           {userCustomerAccountData.length > 0 ? (
             userCustomerAccountData.map((company) => (
               <tr key={company.id}>
-                <td className="text-center">{company.companyName}</td>
-                <td className="text-center">{company.identificationNumber}</td>
-                <td className="text-center">{company.email}</td>
-                <td className="text-center">{company.phoneNumber}</td>
-                <td className="text-center">{company.plan}</td>
-                <td className="text-center">
-                  <Badge color="success" pill>
-                    Active{company.status}
-                  </Badge>
+                <td className="table-user">
+                  <b className="text-left">{company.companyName}</b>
                 </td>
-                <td className="text-center text-muted ">
-                  <Nav navbar>
-                    <NavItem>
-                      <NavLink target="_blank">
-                        <a href="#" className="text-underline">
-                          <span
-                            onClick={() => handleShowCustomerDetailsModal(company.id)}
-                            className="name mb-0 text-sm"
-                          >
-                            Mais
-                          </span>
-                        </a>
-                      </NavLink>
-                    </NavItem>
-                  </Nav>
-
+                <td className="text-left">
+                  <span className="text-muted">
+                    {formatCNPJ(company.identificationNumber)}
+                  </span>
                 </td>
-                <td className="text-right">
+                <td className="text-left">
+                  <span className="text-muted">
+                    {company.email}
+                  </span>
+                </td>
+                <td className="text-left">
+                  <span className="text-muted">
+                    {company.phoneNumber}
+                  </span>
+                </td>
+                <td className="text-left">
+                  <span className="text-muted">
+                    {company.plan ? company.plan : "N/A"}
+                  </span>
+                </td>
+                <td className="text-left">
+                  {
+                    company.status === true
+                      ? (
+                        <Badge color="success" pill>
+                          Ativo
+                        </Badge>
+                      ) : (
+                        company.status === false
+                          ? (
+                            <Badge color="danger" pill>
+                              Inativo
+                            </Badge>
+                          ) : (
+                            <Badge color="primary" pill>
+                              N/A
+                            </Badge>
+                          )
+                      )
+                  }
+                </td>
+                <td className="text-left" >
                   <UncontrolledDropdown>
                     <DropdownToggle
                       className="btn-icon-only text-light"
@@ -203,21 +214,21 @@ const CustomersUserList = () => {
                     <DropdownMenu className="dropdown-menu-arrow" right>
                       <DropdownItem
                         href="#pablo"
-                        onClick={(e) => e.preventDefault()}
+                        onClick={(e) => { e.preventDefault(); handleShowCustomerDetailsModal(company.id, company.companyName) }}
+                      >
+                        Detalhes
+                      </DropdownItem>
+                      <DropdownItem
+                        href="#pablo"
+                        onClick={(e) => { e.preventDefault(); handleOpenCustomerUpdateModal(company.id, company.companyName) }}
                       >
                         Editar
                       </DropdownItem>
                       <DropdownItem
                         href="#pablo"
-                        onClick={(e) => e.preventDefault()}
+                        onClick={(e) => { e.preventDefault(); showWarningAlert(company.id, company.companyName); }}
                       >
-                        Desabilitar
-                      </DropdownItem>
-                      <DropdownItem
-                        href="#pablo"
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        Something else here
+                        Deletar
                       </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
@@ -230,42 +241,12 @@ const CustomersUserList = () => {
             </tr>
           )}
         </tbody>
-      </Table>
+      </Table >
+      {shouldShowModal ? (
+        <ShowCustomerDetailsModal {...commonProps} />
+      ) : null}
 
-
-      <ModalEnterprise
-        isOpen={modalEnterpriseOpen}
-        toggle={toggleModalEnterprise}
-        handleSave={handleSave}
-        handleInputChange={handleInputChange}
-      />
-
-
-      {/* <div>
-        {enterpriseData && (
-          <div>
-            <h2>Endereço da Empresa</h2>
-            <p>Logradouro: {enterpriseData.logradouro}</p>
-            <p>Bairro: {enterpriseData.bairro}</p>
-            <p>Município: {enterpriseData.municipio}</p>
-            <p>UF: {enterpriseData.uf}</p>
-            <p>CEP: {enterpriseData.cep}</p>
-            {/* Outros detalhes de endereço, se necessário 
-          </div>
-        )}
-      </div> 
-    */}
-      {idSelectedToShowCompanyDetails && (
-        <ShowCustomerDetailsModal
-          handleShowCustomerDetailsModal={handleShowCustomerDetailsModal}
-          idSelectedToShowCompanyDetails={idSelectedToShowCompanyDetails}
-          modalOpen={modalOpen}
-        />
-      )
-      }
-
-    </Card>
-
+    </Card >
 
   );
 };

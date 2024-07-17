@@ -98,50 +98,6 @@ function AddAppraisalCycleModal(
     setSelectePeriod('');
   };
 
-  const handleReactDatetimeChange = (who, date) => {
-    if (
-      startDate &&
-      who === "endDate" &&
-      new Date(startDate._d + "") > new Date(date._d + "")
-    ) {
-      setStartDate(date);
-      setEndDate(date);
-    } else if (
-      endDate &&
-      who === "startDate" &&
-      new Date(endDate._d + "") < new Date(date._d + "")
-    ) {
-      setStartDate(date);
-      setEndDate(date);
-    } else {
-      if (who === "startDate") {
-        setStartDate(date);
-      } else {
-        setEndDate(date);
-      }
-    }
-  };
-
-  const getClassNameReactDatetimeDays = (date) => {
-    if (startDate && endDate) {
-    }
-    if (startDate && endDate && startDate._d + "" !== endDate._d + "") {
-      if (
-        new Date(endDate._d + "") > new Date(date._d + "") &&
-        new Date(startDate._d + "") < new Date(date._d + "")
-      ) {
-        return " middle-date";
-      }
-      if (endDate._d + "" === date._d + "") {
-        return " end-date";
-      }
-      if (startDate._d + "" === date._d + "") {
-        return " start-date";
-      }
-    }
-    return "";
-  };
-
   const [detailedAppraisalCycleData, setDetailedAppraisalCycleData] = useState([]);
   function handleCleanDetailedAppraisalCycleData() {
     setDetailedAppraisalCycleData([]);

@@ -7,8 +7,6 @@ export async function useFindEmployeeAddress(customerId) {
     }
     const data = await response.json();
 
-    console.log(data);
-    console.log(typeof data);
     return data;
 
   } catch (error) {

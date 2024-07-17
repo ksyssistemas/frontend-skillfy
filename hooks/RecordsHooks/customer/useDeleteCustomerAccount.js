@@ -1,20 +1,18 @@
-export const useDeleteCustomerAccount = () => {
-
-  const deleteAdmin = async (id) => {
+export async function useDeleteCustomerAccount(customerId) {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_CUSTOMER}/${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_CUSTOMER}/${customerId}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
-        throw new Error('Failed to delete admin.');
+        throw new Error('Failed to delete customer.');
       }
-      // Não podemos usar admins aqui diretamente, então retornamos o id excluído
-      return id;
-    } catch (error) {
-      console.error('There was a problem deleting the admin:', error);
-      return null; // Se ocorrer um erro, retornamos null
-    }
-  };
+      console.log("Response useDelete: ", response);
+      const data = await response.json();
 
-  return deleteAdmin;
+      console.log("Data useDelete: ", data);
+      return data;
+
+    } catch (error) {
+      console.error('There was a problem deleting the customer:', error);
+    }
 };

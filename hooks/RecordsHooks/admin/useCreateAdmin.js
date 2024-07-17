@@ -17,6 +17,10 @@ const useCreateAdmin = (handleShowAdminUserRegister) => {
     const [confirmPasswordState, setConfirmPasswordState] = React.useState(null);
     const [phoneNumber, setPhoneNumber] = React.useState("");
     const [phoneNumberState, setPhoneNumberState] = React.useState(null);
+    const [adminStatus, setAdminStatus] = React.useState("");
+    const [adminStatusState, setAdminStatusState] = React.useState(null);
+    const [adminPrivilege, setadminPrivilege] = React.useState("");
+    const [adminPrivilegeState, setadminPrivilegeState] = React.useState(null);
 
     const validateAddAdminForm = () => {
         if (firstName === "") {
@@ -145,27 +149,42 @@ const useCreateAdmin = (handleShowAdminUserRegister) => {
     }
 
     return {
-        firstNameState,
-        lastNameState,
-        emailAddressState,
-        birthdateState,
-        password,
-        passwordState,
-        confirmPasswordState,
-        phoneNumber,
-        phoneNumberState,
+        firstName,
         setFirstName,
+        firstNameState,
         setFirstNameState,
+        lastName,
         setLastName,
+        lastNameState,
         setLastNameState,
+        emailAddress,
         setEmailAddress,
+        emailAddressState,
         setEmailAddressState,
+        birthdate,
+        setBirthdate,
+        birthdateState,
+        setBirthdateState,
+        password,
         setPassword,
+        passwordState,
         setPasswordState,
+        confirmPassword,
         setConfirmPassword,
+        confirmPasswordState,
         setConfirmPasswordState,
+        phoneNumber,
         setPhoneNumber,
+        phoneNumberState,
         setPhoneNumberState,
+        adminStatus,
+        setAdminStatus,
+        adminStatusState,
+        setAdminStatusState,
+        adminPrivilege,
+        setadminPrivilege,
+        adminPrivilegeState,
+        setadminPrivilegeState,
         handleValidateAddAdminForm,
         handleBirthdateChange,
         validateEmail

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import useCEP from '../useCEP';
 import useCNPJ from '../useCNPJ';
 import useCreateCustomer from './useCreateCustomerAccountHolder';
 
@@ -11,6 +12,18 @@ const useCreateClientCompany = () => {
     individualEmployerIdNumberState,
     setIndividualEmployerIdNumberState
   } = useCNPJ("");
+
+  const {
+    brasilAPICEPData,
+    loadingCEPValidation,
+    errorCEPValidation,
+    handleCEPValidationLoading,
+    handleSaveCEP,
+    zipCode,
+    setZipCode,
+    zipCodeState,
+    setZipCodeState
+  } = useCEP("");
 
   const { resetCreateCustomer } = useCreateCustomer();
 
@@ -30,6 +43,9 @@ const useCreateClientCompany = () => {
   const [customerBusinessSectorState, setCustomerBusinessSectorState] = React.useState(null);
   const [customerWebSite, setCustomerWebSite] = React.useState("");
   const [customerWebSiteState, setCustomerWebSiteState] = React.useState(null);
+  const [customerStatus, setCustomerStatus] = React.useState(false);
+  const [customerAccessionDate, setCustomerAccessionDate] = React.useState("");
+
   const [idHeadOfficeBranch, setIdHeadOfficeBranch] = React.useState("");
   const [idHeadOfficeBranchState, setIdHeadOfficeBranchState] = React.useState(null);
   const [customerZipCode, setCustomerZipCode] = React.useState("");
@@ -46,13 +62,18 @@ const useCreateClientCompany = () => {
   const [companyAddressComplementState, setCompanyAddressComplementState] = React.useState(null);
   const [companyDistrict, setCompanyDistrict] = React.useState("");
   const [companyDistrictState, setCompanyDistrictState] = React.useState(null);
-  const [hasValuesChangedWithAPIData, setHasValuesChangedWithAPIData] = React.useState(false);
+  const [companyCountry, setCompanyCountry] = React.useState("");
+  const [companyCountryState, setCompanyCountryState] = React.useState(null);
   const [isCustomerCompanyFormValidated, setIsCustomerCompanyFormValidated] = React.useState(false);
   const [isClientCompanySaved, setIsClientCompanySaved] = React.useState(false);
   const [isCompanyAddressSaved, setIsCompanyAddressSaved] = React.useState(false);
   const [customerUserIdToCreateAddress, setCustomerUserIdToCreateAddress] = React.useState('');
 
+  const [hasValuesChangedWithAPIData, setHasValuesChangedWithAPIData] = React.useState(false);
   const handleValuesChangedWithAPIData = () => setHasValuesChangedWithAPIData(!hasValuesChangedWithAPIData);
+
+  const [hasValuesChangedWithAPIDataCEP, setHasValuesChangedWithAPIDataCEP] = React.useState(false);
+  const handleValuesChangedWithAPIDataCEP = () => setHasValuesChangedWithAPIDataCEP(!hasValuesChangedWithAPIDataCEP);
 
   const validateAddClientCompanyForm = () => {
     if (individualEmployerIdNumber !== "") {
@@ -95,11 +116,6 @@ const useCreateClientCompany = () => {
     } else {
       setCompanyEmailAddressState("valid");
     }
-    if (idHeadOfficeBranch === "") {
-      setIdHeadOfficeBranchState("invalid");
-    } else {
-      setIdHeadOfficeBranchState("valid");
-    }
     if (customerBusinessSector === "") {
       setCustomerBusinessSectorState("invalid");
     } else {
@@ -109,6 +125,14 @@ const useCreateClientCompany = () => {
       setCustomerWebSiteState("invalid");
     } else {
       setCustomerWebSiteState(customerWebSite === "" ? null : "valid");
+    }
+  }
+
+  function validateAddCustomerAddressForm() {
+    if (idHeadOfficeBranch === "") {
+      setIdHeadOfficeBranchState("invalid");
+    } else {
+      setIdHeadOfficeBranchState("valid");
     }
     if (customerZipCode === "") {
       setCustomerZipCodeState("invalid");
@@ -191,6 +215,30 @@ const useCreateClientCompany = () => {
     handleValuesChangedWithAPIData();
   }
 
+  function handleFormFieldsAutocompleteCEP(cep) {
+    if (cep.cep) {
+      console.log(cep.cep);
+      setCustomerZipCode(cep.cep);
+    }
+    if (cep.state) {
+      console.log(cep.state);
+      setFederatedUnit(cep.state)
+    }
+    if (cep.city) {
+      console.log(cep.city);
+      setCompanyCity(cep.city)
+    }
+    if (cep.neighborhood) {
+      console.log(cep.neighborhood);
+      setCompanyDistrict(cep.neighborhood)
+    }
+    if (cep.street) {
+      console.log(cep.street);
+      setCompanyAddress(cep.street);
+    }
+    handleValuesChangedWithAPIDataCEP();
+  }
+
   const formatPhoneNumber = (phone, type) => {
     if (type === 'business') {
       // Formato para "+55 (99) 9999-9999"
@@ -227,6 +275,7 @@ const useCreateClientCompany = () => {
 
   async function handleValidateAddClientCompanyForm(handleShowCustomerUserRegister) {
     validateAddClientCompanyForm();
+    validateAddCustomerAddressForm();
     if (
       individualEmployerIdNumberState === "valid" &&
       companyNameState === "valid" &&
@@ -424,6 +473,10 @@ const useCreateClientCompany = () => {
     setCustomerWebSite,
     customerWebSiteState,
     setCustomerWebSiteState,
+    customerStatus,
+    setCustomerStatus,
+    customerAccessionDate,
+    setCustomerAccessionDate,
     idHeadOfficeBranch,
     setIdHeadOfficeBranch,
     idHeadOfficeBranchState,
@@ -460,6 +513,10 @@ const useCreateClientCompany = () => {
     setCompanyDistrict,
     companyDistrictState,
     setCompanyDistrictState,
+    companyCountry,
+    setCompanyCountry,
+    companyCountryState,
+    setCompanyCountryState,
     handleSaveCNPJ,
     handleValidateAddClientCompanyForm,
     handleFormFieldsAutocomplete,
@@ -469,7 +526,12 @@ const useCreateClientCompany = () => {
     isCustomerCompanyFormValidated,
     validatePhoneNumber,
     validateWebSite,
-    validateCompanyEmail
+    validateCompanyEmail,
+    resetCreateCustomerAddress,
+    hasValuesChangedWithAPIDataCEP,
+    handleValuesChangedWithAPIDataCEP,
+    validateAddCustomerAddressForm,
+    handleFormFieldsAutocompleteCEP,
   };
 };
 

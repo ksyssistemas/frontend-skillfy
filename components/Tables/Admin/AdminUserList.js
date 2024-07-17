@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Badge,
   Card,
@@ -11,12 +11,26 @@ import {
 import ModalAdm from "../../Modals/admin/ModalAdm"
 import { useFindAllAdmin } from "../../../hooks/RecordsHooks/admin/useFindAllAdmin"
 import { useDeleteAdmin } from "../../../hooks/RecordsHooks/admin/useDeleteAdmin"
+import { AdminContext } from '../../../contexts/RecordsContext/AdminContext';
+import { useSweetAlert } from '../../../contexts/SweetAlertContext';
 
-function AdminList() {
+function AdminList({ handleShowAdminUserRegister }) {
+
+  const { adminIdToUpdate,
+    handleAdminIdStatusCleanupToUpdate,
+    handleAdminIdToUpdate,
+    hasDeletedAdminRecord,
+    handleDeletedAdminRecordStatusChange
+  } = useContext(AdminContext);
+
+  const { warningAlert } = useSweetAlert();
 
   const [userAdministratorAccountData, setUserAdministratorAccountData] = useState([]);
 
-  const deleteAdmin = useDeleteAdmin();
+  function handleAdminUpdate(adminId) {
+    handleAdminIdToUpdate(adminId);
+    handleShowAdminUserRegister();
+  }
 
   const [modalAdmOpen, setModalAdmOpen] = React.useState(false);
 
@@ -24,21 +38,42 @@ function AdminList() {
     setModalAdmOpen(!modalAdmOpen);
   };
 
-  const handleDeleteAdmin = async (id) => {
-    const deletedId = await deleteAdmin(id);
-    if (deletedId !== null) {
-      window.location.reload();
-    } else {
-      console.error('Failed to delete admin with ID:', id);
+  const handleDeleteAdmin = async (adminId, adminName, adminLastName) => {
+    if (adminId) {
+      try {
+        const deleteResponse = await useDeleteAdmin(adminId);
+        console.log('DeleteResponse: ', deleteResponse);
+        if (deleteResponse !== null) {
+          handleDeletedAdminRecordStatusChange();
+        } else {
+          console.error('Failed to delete admin with ID:', adminId, '. Response Status: ', deleteResponse.status);
+        }
+      } catch (error) {
+        console.error('Error in request:', error);
+      }
     }
   };
 
+  const showWarningAlert = (adminId, adminName, adminLastName) => {
+    warningAlert(
+      "Atenção",
+      "Deletar",
+      `Você deseja realmente excluir ${adminName} ${adminLastName}?`,
+      "lg",
+      () => handleDeleteAdmin(adminId, adminName, adminLastName)
+    );
+  };
+
   useEffect(async () => {
-    if (userAdministratorAccountData.length == 0) {
+    if (userAdministratorAccountData.length === 0 || hasDeletedAdminRecord) {
       const foundAdministrators = await useFindAllAdmin();
       setUserAdministratorAccountData(foundAdministrators);
     }
-  }, [userAdministratorAccountData])
+    if (hasDeletedAdminRecord) {
+      handleAdminIdStatusCleanupToUpdate();
+      handleDeletedAdminRecordStatusChange();
+    }
+  }, [userAdministratorAccountData, hasDeletedAdminRecord])
 
   return (
     <Card>
@@ -58,21 +93,21 @@ function AdminList() {
             <th className="text-left">Email</th>
             <th className="text-left">Celular</th>
             <th className="text-left">Estado</th>
-            <th className="text-center">Previlégios</th>
-            <th className="text-center" />
+            <th className="text-left">Previlégios</th>
+            <th className="text-left">Ações</th>
           </tr>
         </thead>
         <tbody>
           {userAdministratorAccountData.map((admin) => (
             <tr key={admin.id}>
               <td className="table-user">
-                <img
+                {/* <img
                   alt="..."
                   className="avatar rounded-circle mr-3"
                   //src={require(`../../../assets/img/theme/team-${admin.id}.jpg`)}
                   src={require(`../../../assets/img/theme/team-1.jpg`)}
-                />
-                <b className="text-left">{admin.name}</b>
+                /> */}
+                <b className="text-left">{admin.name} {admin.lastname}</b>
               </td>
               <td className="text-left">
                 <span className="text-muted">{admin.email}</span>
@@ -81,30 +116,57 @@ function AdminList() {
                 <span className="text-muted">{admin.phone}</span>
               </td>
               <td>
-                <Badge color="success" pill>
-                  Active
-                </Badge>
+                {
+                  admin.status === true
+                    ? (
+                      <Badge color="success" pill>
+                        Ativo
+                      </Badge>
+                    ) : (
+                      admin.status === false
+                        ? (
+                          <Badge color="danger" pill>
+                            Inativo
+                          </Badge>
+                        ) : (
+                          <Badge color="primary" pill>
+                            N/A
+                          </Badge>
+                        )
+                    )
+                }
               </td>
-              <td className="text-center">
+              <td className="text-left">
                 <a
                   className="font-weight-bold"
                   href="#pablo"
                   onClick={(e) => e.preventDefault()}
                 >
-                  {admin.privileges}
+                  {admin.privileges === "1" ? "Administrador" : "Desenvolvimento"}
                 </a>
               </td>
-              <td className="text-center table-actions">
+              <td className="table-actions text-left">
+                <a
+                  className="table-action"
+                  href="#pablo"
+                  id="tooltipEditAdmin"
+                //onClick={(e) => { e.preventDefault(); handleAdminUpdate(admin.id); }}
+                >
+                  <i className="fas fa-user-edit" />
+                </a>
+                <UncontrolledTooltip delay={0} target="tooltipEditAdmin">
+                  Editar
+                </UncontrolledTooltip>
                 <a
                   className="table-action table-action-delete"
                   href="#pablo"
-                  id={`delete${admin.id}`}
-                  onClick={() => handleDeleteAdmin(admin.id)}
+                  id="tooltipDeleteAdmin"
+                  onClick={(e) => { e.preventDefault(); showWarningAlert(admin.id, admin.name, admin.lastname); }}
                 >
                   <i className="fas fa-trash" />
                 </a>
-                <UncontrolledTooltip delay={0} target={`delete${admin.id}`}>
-                  Excluir
+                <UncontrolledTooltip delay={0} target="tooltipDeleteAdmin">
+                  Deletar
                 </UncontrolledTooltip>
               </td>
             </tr>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 // reactstrap components
 import {
@@ -23,104 +23,55 @@ import {
 import ReactDatetime from "react-datetime";
 import { useFindClientCompany } from "../../../hooks/RecordsHooks/customer/useFindClientCompany";
 import { useFindEmployeeAddress } from "../../../hooks/RecordsHooks/customer/useFindClientCompanyAddress";
+import useCreateClientCompany from "../../../hooks/RecordsHooks/customer/useCreateClientCompany";
+import CustomerUserUpdate from "../../Forms/CustomerUserUpdate";
+import useCNPJ from "../../../hooks/RecordsHooks/useCNPJ";
+import { CustomerContext } from "../../../contexts/RecordsContext/CustomerContext";
 
-function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, idSelectedToShowCompanyDetails, modalOpen }) {
-  const [focused, setFocused] = React.useState(false);
-  const [firstName, setfirstName] = React.useState("Mark");
-  const [firstNameState, setfirstNameState] = React.useState(null);
-  const [lastName, setlastName] = React.useState("Otto");
-  const [lastNameState, setlastNameState] = React.useState(null);
-  const [username, setusername] = React.useState("");
-  const [usernameState, setusernameState] = React.useState(null);
-  const [city, setcity] = React.useState("");
-  const [cityState, setcityState] = React.useState(null);
-  const [state, setstate] = React.useState("");
-  const [stateState, setstateState] = React.useState(null);
-  const [zip, setzip] = React.useState("");
-  const [zipState, setzipState] = React.useState(null);
-  const [checkbox, setcheckbox] = React.useState(false);
-  const [checkboxState, setcheckboxState] = React.useState(null);
-  const validateCustomStylesForm = () => {
-    if (firstName === "") {
-      setfirstNameState("invalid");
-    } else {
-      setfirstNameState("valid");
-    }
-    if (lastName === "") {
-      setlastNameState("invalid");
-    } else {
-      setlastNameState("valid");
-    }
-    if (username === "") {
-      setusernameState("invalid");
-    } else {
-      setusernameState("valid");
-    }
-    if (city === "") {
-      setcityState("invalid");
-    } else {
-      setcityState("valid");
-    }
-    if (state === "") {
-      setstateState("invalid");
-    } else {
-      setstateState("valid");
-    }
-    if (zip === "") {
-      setzipState("invalid");
-    } else {
-      setzipState("valid");
-    }
-    if (checkbox === false) {
-      setcheckboxState("invalid");
-    } else {
-      setcheckboxState("valid");
-    }
+function ShowCustomerDetailsModal(
+  {
+    handleShowCustomerDetailsModal,
+    selectedIdToShowCompanyDetails,
+    handleCleaningSelectedIdToShowCompanyDetails,
+    handleOpenCustomerModal,
+    modalOpen,
+    companyName,
+    handleCleaningCompanyNameStatus,
+  }) {
+
+  const {
+    handleIsShouldUpdateClientCompany,
+    customerIdToUpdate,
+    handleCustomerIdStatusCleanupToUpdate
+  } = useContext(CustomerContext);
+
+  const formatCNPJ = (cnpj) => {
+    cnpj = cnpj.replace(/\D/g, "");
+    return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5");
   };
 
-  const handleReactDatetimeChange = (who, date) => {
-    if (
-      startDate &&
-      who === "endDate" &&
-      new Date(startDate._d + "") > new Date(date._d + "")
-    ) {
-      setStartDate(date);
-      setEndDate(date);
-    } else if (
-      endDate &&
-      who === "startDate" &&
-      new Date(endDate._d + "") < new Date(date._d + "")
-    ) {
-      setStartDate(date);
-      setEndDate(date);
-    } else {
-      if (who === "startDate") {
-        setStartDate(date);
-      } else {
-        setEndDate(date);
-      }
-    }
-  };
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    const adjustedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
 
-  const getClassNameReactDatetimeDays = (date) => {
-    if (startDate && endDate) {
-    }
-    if (startDate && endDate && startDate._d + "" !== endDate._d + "") {
-      if (
-        new Date(endDate._d + "") > new Date(date._d + "") &&
-        new Date(startDate._d + "") < new Date(date._d + "")
-      ) {
-        return " middle-date";
-      }
-      if (endDate._d + "" === date._d + "") {
-        return " end-date";
-      }
-      if (startDate._d + "" === date._d + "") {
-        return " start-date";
-      }
-    }
-    return "";
-  };
+    const day = String(adjustedDate.getDate()).padStart(2, '0');
+    const month = String(adjustedDate.getMonth() + 1).padStart(2, '0');
+    const year = adjustedDate.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  }
+
+  function handleCloseCustomerDetailsModal() {
+    handleCleaningSelectedIdToShowCompanyDetails();
+    handleCleaningCompanyNameStatus();
+    handleOpenCustomerModal();
+  }
+
+  function handleCloseCustomerUpdateModal() {
+    handleCustomerIdStatusCleanupToUpdate();
+    handleCleaningCompanyNameStatus();
+    handleOpenCustomerModal();
+  }
 
   const [userCustomerAccountData, setUserCustomerAccountData] = useState([]);
   const [userCustomerAddressData, setUserCustomerAddressData] = useState([]);
@@ -128,339 +79,455 @@ function ShowCustomerDetailsModal({ handleShowCustomerDetailsModal, idSelectedTo
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const foundCustomer = await useFindClientCompany(idSelectedToShowCompanyDetails);
-        setUserCustomerAccountData(foundCustomer || {});
-        const foundCustomerAddress = await useFindEmployeeAddress(idSelectedToShowCompanyDetails);
-        setUserCustomerAddressData(foundCustomerAddress[0] || {});
+        if (!userCustomerAccountData.length) {
+          const foundCustomer = await useFindClientCompany(selectedIdToShowCompanyDetails);
+          setUserCustomerAccountData(foundCustomer);
+        }
+        if (!userCustomerAddressData.length) {
+          const foundCustomerAddress = await useFindEmployeeAddress(selectedIdToShowCompanyDetails);
+          setUserCustomerAddressData(foundCustomerAddress[0]);
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
 
     fetchData();
-  }, [idSelectedToShowCompanyDetails]);
+  }, [selectedIdToShowCompanyDetails]);
 
-  // useEffect(async () => {
-  //   if (userCustomerAddressData.length == 0) {
-  //   }
-  // }, [userCustomerAddressData, idSelectedToShowCompanyDetails]);
+  function handleUpdateCustomerUserUpdate() {
+    handleIsShouldUpdateClientCompany();
+  }
+
+  const commonProps = {
+    handleShowCustomerDetailsModal,
+    handleOpenCustomerModal,
+    modalOpen,
+    companyName,
+    handleCleaningCompanyNameStatus,
+  };
 
   return (
     <Modal
       toggle={handleShowCustomerDetailsModal}
       isOpen={modalOpen}
       size="xl"
-      key={`${userCustomerAccountData.id || ''}.${userCustomerAddressData.id || ''}`}
+      key={selectedIdToShowCompanyDetails ? selectedIdToShowCompanyDetails : customerIdToUpdate.id}
     //fullscreen
     >
       <div className=" modal-header">
         <h5 className=" modal-title" id="exampleModalLabel">
-          {userCustomerAccountData.companyName ? `Informações de ${userCustomerAccountData.companyName}` : 'Informações'}
+          {
+            companyName
+              ? `Informações de ${companyName}`
+              : (
+                customerIdToUpdate && companyNameToUpdate
+                  ? `Informações de ${companyNameToUpdate}`
+                  : 'Informações'
+              )
+          }
         </h5>
         <button
           aria-label="Close"
           className=" close"
           type="button"
-          onClick={handleShowCustomerDetailsModal}
+          onClick={selectedIdToShowCompanyDetails ? handleCloseCustomerDetailsModal : handleCloseCustomerUpdateModal}
         >
           <span aria-hidden={true}>×</span>
         </button>
       </div>
       <ModalBody>
-        {Object.keys(userCustomerAccountData).length > 0 && Object.keys(userCustomerAddressData).length > 0 ? (
-          <Row>
-            <div className="col">
-              <div className="card-wrapper">
-                <h6 className="heading-small text-muted mb-4">
-                  Informações Institucionais
-                </h6>
-                <div className="form-row">
-                  <Col className="mb-3" md="4">
-                    <label
-                      className="form-control-label"
-                      htmlFor="validationCustom01"
-                    >
-                      Nome
-                    </label>
-                    <div className="mt-1 mb-3">
-                      <span className="name text-sm">
-                        {userCustomerAccountData.companyName}
-                      </span>
-                    </div>
-                    <div className="valid-feedback">Looks good!</div>
-                  </Col>
-                  <Col className="mb-3" md="4">
-                    <label
-                      className="form-control-label"
-                      htmlFor="validationCustom05"
-                    >
-                      Nome Fantasia
-                    </label>
-                    <div className="mt-1 mb-3">
-                      <span className="name text-sm">
-                        {userCustomerAccountData.brandName}
-                      </span>
-                    </div>
-                    <div className="invalid-feedback">
-                      Please provide a valid zip.
-                    </div>
-                  </Col>
-                  <Col className="mb-3" md="4">
-                    <label
-                      className="form-control-label"
-                      htmlFor="validationCustom02"
-                    >
-                      CNPJ
-                    </label>
-                    <div className="mt-1 mb-3">
-                      <span className="name text-sm">
-                        {userCustomerAccountData.identificationNumber}
-                      </span>
-                    </div>
-                    <div className="valid-feedback">Looks good!</div>
-                  </Col>
-                </div>
-                <div className="form-row">
-                  <Col className="mb-3" md="4">
-                    <label
-                      className="form-control-label"
-                      htmlFor="validationCustom01"
-                    >
-                      E-mail Titular
-                    </label>
-                    <div className="mt-1 mb-3">
-                      <span className="name text-sm">
-                        {userCustomerAccountData.email}
-                      </span>
-                    </div>
-                    <div className="valid-feedback">Looks good!</div>
-                  </Col>
-                  <Col className="mb-3" md="4">
-                    <label
-                      className="form-control-label"
-                      htmlFor="validationCustom05"
-                    >
-                      Telefone
-                    </label>
-                    <div className="mt-1 mb-3">
-                      <span className="name text-sm">
-                        {userCustomerAccountData.phoneNumber}
-                      </span>
-                    </div>
-                    <div className="invalid-feedback">
-                      Please provide a valid zip.
-                    </div>
-                  </Col>
-                  <Col className="mb-3" md="4">
-                    <label
-                      className="form-control-label"
-                      htmlFor="validationCustom02"
-                    >
-                      Classificação do Estabelecimento
-                    </label>
-                    <div className="mt-1 mb-3">
-                      <span className="name text-sm">
-                        {userCustomerAccountData.type}
-                      </span>
-                    </div>
-                    <div className="valid-feedback">Looks good!</div>
-                  </Col>
-                </div>
-                <hr />
-                <h6 className="heading-small text-muted mb-4">
-                  Informações de Endereço
-                </h6>
-                <div className="form-row">
-                  <Col className="mb-3" md="4">
-                    <label
-                      className="form-control-label"
-                      htmlFor="validationCustomUsername"
-                    >
-                      CEP
-                    </label>
-                    <div className="mt-1 mb-3">
-                      <span className="name text-sm">
-                        {userCustomerAddressData.zipCode}
-                      </span>
-                    </div>
-                  </Col>
-                  <Col className="mb-3" md="8">
-                    <label
-                      className="form-control-label"
-                      htmlFor="validationCustomUsername"
-                    >
-                      Logradouro
-                    </label>
-                    <div className="mt-1 mb-3">
-                      <span className="name text-sm">
-                        {userCustomerAddressData.address}
-                      </span>
-                    </div>
-                  </Col>
-                </div>
-                <div className="form-row">
-                  <Col className="mb-3" md="8">
-                    <label
-                      className="form-control-label"
-                      htmlFor="validationCustom03"
-                    >
-                      Complemento
-                    </label>
-                    <div className="mt-1 mb-3">
-                      <span className="name text-sm">
-                        {userCustomerAddressData.complement ? userCustomerAddressData.complement : "Não registrado"}
-                      </span>
-                    </div>
-                  </Col>
-                  <Col className="mb-3" md="4">
-                    <label
-                      className="form-control-label"
-                      htmlFor="validationCustomUsername"
-                    >
-                      Número
-                    </label>
-                    <div className="mt-1 mb-3">
-                      <span className="name text-sm">
-                        {userCustomerAddressData.addressNumber}
-                      </span>
-                    </div>
-                  </Col>
-                </div>
-                <div className="form-row">
-                  <Col className="mb-3" md="4">
-                    <label
-                      className="form-control-label"
-                      htmlFor="validationCustom04"
-                    >
-                      Bairro
-                    </label>
-                    <div className="mt-1 mb-3">
-                      <span className="name text-sm">
-                        {userCustomerAddressData.neighborhood}
-                      </span>
-                    </div>
-                  </Col>
-                  <Col className="mb-3" md="4">
-                    <label
-                      className="form-control-label"
-                      htmlFor="validationCustom05"
-                    >
-                      Cidade
-                    </label>
-                    <div className="mt-1 mb-3">
-                      <span className="name text-sm">
-                        {userCustomerAddressData.city}
-                      </span>
-                    </div>
-                  </Col>
-                  <Col className="mb-3" md="4">
-                    <label
-                      className="form-control-label"
-                      htmlFor="validationCustom05"
-                    >
-                      Estado
-                    </label>
-                    <div className="mt-1 mb-3">
-                      <span className="name text-sm">
-                        {userCustomerAddressData.state}
-                      </span>
-                    </div>
-                  </Col>
-                </div>
-                <hr />
-                <h6 className="heading-small text-muted mb-4">
-                  Informações do Plano Aderido
-                </h6>
-                <div className="form-row">
-                  <Col className="mb-3" md="6">
-                    <label
-                      className="form-control-label"
-                      htmlFor="validationCustom02"
-                    >
-                      Plano
-                    </label>
-                    <div className="mt-1 mb-3">
-                      <span className="name text-sm">
-                        Cargo Lorem ipsum dolor sit
-                      </span>
-                    </div>
-                    <div className="valid-feedback">Looks good!</div>
-                  </Col>
-                  <Col className="mb-3" md="6">
-                    <label
-                      className="form-control-label"
-                      htmlFor="validationCustom02"
-                    >
-                      Data de Adesão
-                    </label>
-                    <div className="mt-1 mb-3">
-                      <span className="name text-sm">
-                        {userCustomerAccountData.createdAt}
-                      </span>
-                    </div>
-                    <div className="valid-feedback">Looks good!</div>
-                  </Col>
-                  <Col className="mb-3" md="6">
-                    <label
-                      className="form-control-label"
-                      htmlFor="validationCustom02"
-                    >
-                      Número de Colaboradores
-                    </label>
-                    <div className="mt-1 mb-3">
-                      <span className="name text-sm">
-                        Cargo Lorem ipsum dolor sit
-                      </span>
-                    </div>
-                    <div className="valid-feedback">Looks good!</div>
-                  </Col>
-                  <Col className="mb-3" md="6">
-                    <label
-                      className="form-control-label"
-                      htmlFor="validationCustom02"
-                    >
-                      Estado
-                    </label>
-                    <div className="mt-1 mb-3">
-                      <span className="name text-sm">
-                        {userCustomerAccountData.status ? "Ativo" : "Inativo"}
-                      </span>
-                    </div>
-                    <div className="valid-feedback">Looks good!</div>
-                  </Col>
+        {
+          userCustomerAccountData && userCustomerAccountData.id ? (
+            <Row>
+              <div className="col">
+                <div className="card-wrapper">
+                  {/* <h6 className="heading-small text-muted mb-4">
+                    Informações Institucionais
+                  </h6> */}
+                  <div className="form-row">
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom01"
+                      >
+                        Nome
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {userCustomerAccountData.companyName}
+                        </span>
+                      </div>
+                      <div className="valid-feedback">Looks good!</div>
+                    </Col>
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom05"
+                      >
+                        Nome Fantasia
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {userCustomerAccountData.brandName}
+                        </span>
+                      </div>
+                      <div className="invalid-feedback">
+                        Please provide a valid zip.
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        CNPJ
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {formatCNPJ(userCustomerAccountData.identificationNumber)}
+                        </span>
+                      </div>
+                      <div className="valid-feedback">Looks good!</div>
+                    </Col>
+                  </div>
+                  <div className="form-row">
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom01"
+                      >
+                        E-mail Titular
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {userCustomerAccountData.email}
+                        </span>
+                      </div>
+                      <div className="valid-feedback">Looks good!</div>
+                    </Col>
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom05"
+                      >
+                        Telefone
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {userCustomerAccountData.phoneNumber}
+                        </span>
+                      </div>
+                      <div className="invalid-feedback">
+                        Please provide a valid zip.
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom05"
+                      >
+                        Celular
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {userCustomerAccountData.phone ? userCustomerAccountData.phone : "N/A"}
+                        </span>
+                      </div>
+                      <div className="invalid-feedback">
+                        Please provide a valid zip.
+                      </div>
+                    </Col>
+                  </div>
+                  <div className="form-row">
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Tipo de Empresa
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {userCustomerAccountData.type}
+                        </span>
+                      </div>
+                      <div className="valid-feedback">Looks good!</div>
+                    </Col>
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Setor
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {userCustomerAccountData.sector}
+                        </span>
+                      </div>
+                      <div className="valid-feedback">Looks good!</div>
+                    </Col>
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Web Site
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {userCustomerAccountData.webSite ? userCustomerAccountData.webSite : "N/A"}
+                        </span>
+                      </div>
+                      <div className="valid-feedback">Looks good!</div>
+                    </Col>
+                  </div>
+                  <hr />
+                  {/* <h6 className="heading-small text-muted mb-4">
+                    Informações de Endereço
+                  </h6> */}
+                  <div className="form-row">
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustomUsername"
+                      >
+                        CEP
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {userCustomerAddressData.zipCode}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="6">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustomUsername"
+                      >
+                        Endereço
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {userCustomerAddressData.address}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="2">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustomUsername"
+                      >
+                        Número
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {userCustomerAddressData.addressNumber}
+                        </span>
+                      </div>
+                    </Col>
+                  </div>
+                  <div className="form-row">
+                    <Col className="mb-3" md="6">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom03"
+                      >
+                        Complemento
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {userCustomerAddressData.complement ? userCustomerAddressData.complement : "Não registrado"}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="2">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom04"
+                      >
+                        Matriz
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {userCustomerAddressData.idHeadOfficeBranch ? "Filial" : "Matriz"}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom04"
+                      >
+                        Bairro
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {userCustomerAddressData.neighborhood}
+                        </span>
+                      </div>
+                    </Col>
+                  </div>
+                  <div className="form-row">
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom05"
+                      >
+                        Cidade
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {userCustomerAddressData.city}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom05"
+                      >
+                        Estado
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {userCustomerAddressData.state}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom05"
+                      >
+                        País
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {userCustomerAddressData.country}
+                        </span>
+                      </div>
+                    </Col>
+                  </div>
+                  <hr />
+                  {/* <h6 className="heading-small text-muted mb-4">
+                    Informações do Plano Aderido
+                  </h6> */}
+                  <div className="form-row">
+                    <Col className="mb-3" md="6">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Plano
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          Cargo Lorem ipsum dolor sit
+                        </span>
+                      </div>
+                      <div className="valid-feedback">Looks good!</div>
+                    </Col>
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Data de Adesão
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {formatDate(userCustomerAccountData.createdAt)}
+                        </span>
+                      </div>
+                      <div className="valid-feedback">Looks good!</div>
+                    </Col>
+                    <Col className="mb-3" md="2">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Estado Ativo
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {userCustomerAccountData.status ? "Sim" : "Não"}
+                        </span>
+                      </div>
+                      <div className="valid-feedback">Looks good!</div>
+                    </Col>
+                  </div>
+                  <div className="form-row">
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Número de Colaboradores
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          Cargo Lorem ipsum dolor sit
+                        </span>
+                      </div>
+                      <div className="valid-feedback">Looks good!</div>
+                    </Col>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Row>
-        ) : (
-          <div className="text-center">Dados não disponíveis</div>
-        )}
+            </Row>
+          ) : (
+            customerIdToUpdate ? (
+              <CustomerUserUpdate {...commonProps} />
+            ) : (
+              <div className="text-center">Dados não disponíveis</div>
+            )
+          )
+        }
       </ModalBody>
-      <ModalFooter />
-      {/* <ModalFooter>
-        <Button
-        color="secondary"
-        type="button"
-        onClick={handleShowCustomerDetailsModal}
-        >
-        Fechar
-        </Button>
-        <Button color="primary" type="button">
-        Editar
-        </Button>
-      </ModalFooter> */}
+      {
+        customerIdToUpdate ? (
+          <ModalFooter>
+            <Button
+              color="secondary"
+              type="button"
+              onClick={selectedIdToShowCompanyDetails ? handleCloseCustomerDetailsModal : handleCloseCustomerUpdateModal}
+            >
+              Fechar
+            </Button>
+            <Button
+              color={'warning'}
+              type="button"
+              onClick={() => handleUpdateCustomerUserUpdate()}
+            >
+              Editar Ciclo
+            </Button>
+          </ModalFooter>
+        ) : null
+      }
     </Modal >
   );
 }
 
 ShowCustomerDetailsModal.defaultProps = {
   handleShowCustomerDetailsModal: () => { },
+  selectedIdToShowCompanyDetails: null,
+  handleCleaningSelectedIdToShowCompanyDetails: () => { },
+  handleOpenCustomerModal: () => { },
   modalOpen: false,
+  companyName: '',
+  handleCleaningCompanyNameStatus: () => { },
 };
 
 ShowCustomerDetailsModal.propTypes = {
   handleShowCustomerDetailsModal: PropTypes.func,
+  selectedIdToShowCompanyDetails: PropTypes.string,
+  handleCleaningSelectedIdToShowCompanyDetails: PropTypes.func,
+  handleOpenCustomerModal: PropTypes.func,
   modalOpen: PropTypes.bool,
+  companyName: PropTypes.string,
+  handleCleaningCompanyNameStatus: PropTypes.func,
 };
 
 export default ShowCustomerDetailsModal;

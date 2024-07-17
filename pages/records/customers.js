@@ -86,7 +86,7 @@ function CustomerRecords() {
             <>
               <AdminHeader name="Cliente" parentName="Registros" newRegistrationButtonText="Adicionar Cliente" handleShowCustomerUserRegister={handleShowCustomerUserRegister} />
               <Container className="mt--6" fluid>
-                <CustomersUserList />
+                <CustomersUserList handleShowCustomerUserRegister={handleShowCustomerUserRegister} />
               </Container>
             </>
           )

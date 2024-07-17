@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Admin from "../../layouts/Admin";
 import AdminHeader from "components/Headers/AdminHeader.js";
 import { Container } from "reactstrap";
 import AdminList from "../../components/Tables/Admin/AdminUserList";
 import AdminUserRegister from "../../components/Forms/AdminUserRegister";
+import { AdminContext } from "../../contexts/RecordsContext/AdminContext";
 
 function AdminRecords() {
 
@@ -21,7 +22,7 @@ function AdminRecords() {
             <>
               <AdminHeader name="Administrador" parentName="Registros" newRegistrationButtonText="Adicionar Administrador" handleShowAdminUserRegister={handleShowAdminUserRegister} />
               <Container className="mt--6" fluid>
-                <AdminList />
+                <AdminList handleShowAdminUserRegister={handleShowAdminUserRegister} />
               </Container>
             </>
           )

@@ -24,6 +24,8 @@ import { AlertProvider } from "../contexts/AlertContext";
 import { AppraisalCycleProvider } from "../contexts/PerformanceContext/CycleContext";
 import { SweetAlertProvider } from "../contexts/SweetAlertContext";
 import { AppraisalSkillsProvider } from "../contexts/PerformanceContext/AppraisalSkillsContext";
+import { AdminProvider } from "../contexts/RecordsContext/AdminContext";
+import { CustomerProvider } from "../contexts/RecordsContext/CustomerContext";
 
 Router.events.on("routeChangeStart", (url) => {
   console.log(`Loading: ${url}`);
@@ -80,23 +82,27 @@ export default class MyApp extends App {
       <React.Fragment>
         <AuthProvider>
           <AlertProvider>
-            <AppraisalCycleProvider>
-              <SweetAlertProvider>
-                <AppraisalSkillsProvider>
-                  <Head>
-                    <meta
-                      name="viewport"
-                      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-                    />
-                    <title>Twig</title>
-                    {/* <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script> */}
-                  </Head>
-                  <Layout>
-                    <Component {...pageProps} />
-                  </Layout>
-                </AppraisalSkillsProvider>
-              </SweetAlertProvider>
-            </AppraisalCycleProvider>
+            <AdminProvider>
+              <CustomerProvider>
+                <AppraisalCycleProvider>
+                  <SweetAlertProvider>
+                    <AppraisalSkillsProvider>
+                      <Head>
+                        <meta
+                          name="viewport"
+                          content="width=device-width, initial-scale=1, shrink-to-fit=no"
+                        />
+                        <title>Twig</title>
+                        {/* <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script> */}
+                      </Head>
+                      <Layout>
+                        <Component {...pageProps} />
+                      </Layout>
+                    </AppraisalSkillsProvider>
+                  </SweetAlertProvider>
+                </AppraisalCycleProvider>
+              </CustomerProvider>
+            </AdminProvider>
           </AlertProvider>
         </AuthProvider>
       </React.Fragment>

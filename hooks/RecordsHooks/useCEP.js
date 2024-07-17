@@ -2,26 +2,27 @@ import React, { useState, useEffect } from 'react';
 
 const useCEP = () => {
 
-    const [employeeZipCode, setEmployeeZipCode] = useState("");
-    const [employeeZipCodeState, setEmployeeZipCodeState] = useState(null);
+    const [zipCode, setZipCode] = useState("");
+    const [zipCodeState, setZipCodeState] = useState(null);
     const [brasilAPICEPData, setBrasilAPICEPData] = useState(null);
     const [loadingCEPValidation, setLoadingCEPValidation] = useState(false);
     const [errorCEPValidation, setErrorCEPValidation] = useState(null);
+    const handleErrorCEPValidation = () => setErrorCEPValidation(null);
 
     const handleCEPValidationLoading = () => setLoadingCEPValidation(!loadingCEPValidation);
 
-    const handleSaveCEP = (cep) => setEmployeeZipCode(cep);
+    const handleSaveCEP = (cep) => setZipCode(cep);
 
     const validateCep = () => {
-        if (employeeZipCode === "") {
-            setEmployeeZipCodeState("invalid");
+        if (zipCode === "") {
+            setZipCodeState("invalid");
         } else {
-            setEmployeeZipCodeState("valid");
+            setZipCodeState("valid");
         }
     };
 
     useEffect(() => {
-        const cep = employeeZipCode.replace(/[^\d]+/g, '');
+        const cep = zipCode.replace(/[^\d]+/g, '');
 
         const fetchData = async (cep) => {
             try {
@@ -30,20 +31,21 @@ const useCEP = () => {
                 if (!result.message) {
                     setBrasilAPICEPData(result);
                     validateCep();
-                } else if (result.type && result.type === "not_found") {
+                } else {
+                //if (result.type && result.type === "not_found") 
                     setErrorCEPValidation(result.message);
                 }
             } catch (error) {
+                console.log(error);
                 setErrorCEPValidation(error);
             }
         };
 
         if (cep && cep !== "" &&
             cep.length === 8) {
-            handleCEPValidationLoading();
             fetchData(cep);
         }
-    }, [employeeZipCode]);
+    }, [zipCode]);
 
     return {
         brasilAPICEPData,
@@ -51,10 +53,11 @@ const useCEP = () => {
         errorCEPValidation,
         handleCEPValidationLoading,
         handleSaveCEP,
-        employeeZipCode,
-        setEmployeeZipCode,
-        employeeZipCodeState,
-        setEmployeeZipCodeState
+        zipCode,
+        setZipCode,
+        zipCodeState,
+        setZipCodeState,
+        handleErrorCEPValidation
     };
 };
 

@@ -10,6 +10,7 @@ export function handleSelectionEmploymentContractData(
     if (dataList && dataList.length !== 0) {
         const optionType = dataList.filter(option => option.id === selectedId);
         setSelectedItem(selectedId);
+        console.log(optionType[0]?.text);
         setItem(optionType[0]?.text);
         setItemState(optionType.length === 0 ? "invalid" : "valid");
         if (setSelectedDepartmentId) {
