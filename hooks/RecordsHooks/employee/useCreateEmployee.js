@@ -70,6 +70,9 @@ const useCreateEmployee = () => {
     const [employeeBreakTimeState, setEmployeeBreakTimeState] = useState(null);
     const [employeeDepartureTime, setEmployeeDepartureTime] = useState("");
     const [employeeDepartureTimeState, setEmployeeDepartureTimeState] = useState(null);
+    const [employeeStatus, setEmployeeStatus] = useState("");
+    const [employeeStatusState, setEmployeeStatusState] = useState(null);
+
     const [hasValuesChangedWithAPIData, setHasValuesChangedWithAPIData] = React.useState(false);
     const handleValuesChangedWithAPIData = () => setHasValuesChangedWithAPIData(!hasValuesChangedWithAPIData);
     const [isInvalidEmployeeLeaderComponent, setIsInvalidEmployeeLeaderComponent] = useState(false);
@@ -253,7 +256,7 @@ const useCreateEmployee = () => {
         let isLead;
         validateAddEmployeeForm();
         validateSelection();
-        validateAddEmployeeAddressForm();
+        //validateAddEmployeeAddressForm();
         if (isEmployeeLeader && !hasEmployeeLeader) {
             isLead = true;
         } else if (!isEmployeeLeader && hasEmployeeLeader) {
@@ -265,8 +268,8 @@ const useCreateEmployee = () => {
             lastNameState === "valid" &&
             birthdateState === "valid" &&
             emailAddressState === "valid" &&
-            phoneNumberState === "valid" &&
-            employeeLeaderNameState === "valid"
+            phoneNumberState === "valid"
+            // && employeeLeaderNameState === "valid"
         ) {
             const userIdCreated = await handleSubmit(
                 firstName,
@@ -278,19 +281,6 @@ const useCreateEmployee = () => {
                 employeeLeaderName,
             );
             console.log(
-                departmentWhichEmployeeReportsState,
-                employeeRoleState,
-                employeeFunctionState,
-                employeeContractTypeState,
-                employeeWorkModelState,
-                employeeWorkplaceState,
-                employeetAdmissionDateState,
-                employeeEntryTimeState,
-                employeeBreakTimeState,
-                employeeDepartureTimeState,
-            );
-            console.log(userIdCreated);
-            console.log(
                 departmentWhichEmployeeReports,
                 employeeRole,
                 employeeFunction,
@@ -301,6 +291,7 @@ const useCreateEmployee = () => {
                 employeeEntryTime,
                 employeeBreakTime,
                 employeeDepartureTime,
+                userIdCreated
             );
             if (
                 departmentWhichEmployeeReportsState === "valid" &&
@@ -329,37 +320,33 @@ const useCreateEmployee = () => {
                     userIdCreated
                 )
             }
-            if (
-                employeeZipCodeState === "valid" &&
-                employeeAddressState === "valid" &&
-                employeeAddressNumberState === "valid" &&
-                employeeNeighborhoodState === "valid" &&
-                employeeCityState === "valid" &&
-                federatedUnitState === "valid" &&
-                userIdCreated
-            ) {
-                await handleSubmitAddress(
-                    employeeZipCode,
-                    employeeAddress,
-                    employeeAddressNumber,
-                    employeeAddressComplement,
-                    employeeNeighborhood,
-                    employeeCity,
-                    federatedUnit,
-                    userIdCreated
-                );
-                goBackToEmployeeUserList(handleShowEmployeeUserRegister);
-            }
+            // if (
+            //     employeeZipCodeState === "valid" &&
+            //     employeeAddressState === "valid" &&
+            //     employeeAddressNumberState === "valid" &&
+            //     employeeNeighborhoodState === "valid" &&
+            //     employeeCityState === "valid" &&
+            //     federatedUnitState === "valid" &&
+            //     userIdCreated
+            // ) {
+            //     await handleSubmitAddress(
+            //         employeeZipCode,
+            //         employeeAddress,
+            //         employeeAddressNumber,
+            //         employeeAddressComplement,
+            //         employeeNeighborhood,
+            //         employeeCity,
+            //         federatedUnit,
+            //         userIdCreated
+            //     );
+            // }
+            goBackToEmployeeUserList(handleShowEmployeeUserRegister);
         }
     }
 
     function goBackToEmployeeUserList(handleShowEmployeeUserRegister) {
-        //console.log("2", isClientCompanySaved, "2", isCompanyAddressSaved);
-        //if (isClientCompanySaved && isCompanyAddressSaved) {
-        //resetCreateCustomer();
-        //resetCreateCustomerAddress();
         handleShowEmployeeUserRegister();
-        //}
+        reset();
     }
 
     const handleSubmit = async (
@@ -371,14 +358,20 @@ const useCreateEmployee = () => {
         isLead,
         employeeLeaderName,
     ) => {
-
-        if (firstName,
+        console.log(
+            firstName,
             lastName,
             emailAddress,
             birthdate,
             phoneNumber,
             isLead,
             employeeLeaderName
+        );
+        if (firstName,
+            lastName,
+            emailAddress,
+            birthdate,
+            phoneNumber
         ) {
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE}`, {
@@ -397,7 +390,7 @@ const useCreateEmployee = () => {
                         LeaderName: employeeLeaderName,
                     }),
                 });
-
+                console.log(response);
                 if (response.ok) {
                     console.log('Data sent successfully!');
                     const data = await response.json();
@@ -424,7 +417,19 @@ const useCreateEmployee = () => {
         employeeDepartureTime,
         userIdCreated
     ) => {
-
+        console.log(
+            departmentWhichEmployeeReports,
+            employeeRole,
+            employeeFunction,
+            employeeContractType,
+            employeeWorkModel,
+            employeeWorkplace,
+            employeetAdmissionDate,
+            employeeEntryTime,
+            employeeBreakTime,
+            employeeDepartureTime,
+            userIdCreated
+        );
         if (departmentWhichEmployeeReports,
             employeeRole,
             employeeFunction,
@@ -515,12 +520,38 @@ const useCreateEmployee = () => {
         setEmailAddressState(null);
         setBirthdate("");
         setBirthdateState(null);
-        setPassword("");
-        setPasswordState(null);
-        setConfirmPassword("");
-        setConfirmPasswordState(null);
+        // setPassword("");
+        // setPasswordState(null);
+        // setConfirmPassword("");
+        // setConfirmPasswordState(null);
         setPhoneNumber("");
         setPhoneNumberState(null);
+        setIsEmployeeLeader(false);
+        setHasEmployeeLeader(false);
+        setEmployeeLeaderName("");
+        setEmployeeLeaderNameState(null);
+        setDepartmentWhichEmployeeReports("");
+        setDepartmentWhichEmployeeReportsState(null);
+        setEmployeeRole("");
+        setEmployeeRoleState(null);
+        setEmployeeFunction("");
+        setEmployeeFunctionState(null);
+        setEmployeeContractType("");
+        setEmployeeContractTypeState(null);
+        setEmployeeWorkModel("");
+        setEmployeeWorkModelState(null);
+        setEmployeeWorkplace("");
+        setEmployeeWorkplaceState(null);
+        setEmployeetAdmissionDate("");
+        setEmployeetAdmissionDateState(null);
+        setEmployeeEntryTime("");
+        setEmployeeEntryTimeState(null);
+        setEmployeeBreakTime("");
+        setEmployeeBreakTimeState(null);
+        setEmployeeDepartureTime("");
+        setEmployeeDepartureTimeState(null);
+        setEmployeeStatus("");
+        setEmployeeStatusState(null);
     }
 
     const validateEmail = (email) => {
@@ -674,6 +705,10 @@ const useCreateEmployee = () => {
         setEmployeeDepartureTime,
         employeeDepartureTimeState,
         setEmployeeDepartureTimeState,
+        employeeStatus,
+        setEmployeeStatus,
+        employeeStatusState,
+        setEmployeeStatusState,
         handleValidateAddEmployeeForm,
         handleBirthdateChange,
         validateEmail,

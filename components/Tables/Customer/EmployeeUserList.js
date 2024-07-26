@@ -1,24 +1,48 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   Badge,
   Button,
   Card,
   CardHeader,
   Col,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
   Nav,
   NavItem,
   NavLink,
   Row,
   Table,
+  UncontrolledDropdown,
   UncontrolledTooltip,
 } from 'reactstrap';
 import ShowEmployeeDetailsModal from "../../Modals/admin/show-employee-details";
 import { useFindAllEmployee } from "../../../hooks/RecordsHooks/employee/useFindAllEmployee";
+import { EmployeeContext } from '../../../contexts/RecordsContext/EmployeeContext';
+import { useSweetAlert } from '../../../contexts/SweetAlertContext';
+import { useDeleteEmployee } from '../../../hooks/RecordsHooks/employee/useDeleteEmployee';
 
 const EmployeeUserList = () => {
 
+  const {
+    employeeIdToUpdate,
+    handleEmployeeIdStatusCleanupToUpdate,
+    handleEmployeeIdToUpdate,
+    hasNewEmployeeRecordCreated,
+    handleCreatedEmployeeRecordStatusChange,
+    hasUpdatedEmployeeRecord,
+    handleUpdatedEmployeeRecordStatusChange,
+    hasDeletedEmployeeRecord,
+    handleDeletedEmployeeRecordStatusChange,
+  } = useContext(EmployeeContext);
+
+  const { warningAlert } = useSweetAlert();
+
   const [detailedEmployeeData, setDetailedEmployeeData] = useState([]);
   const [idSelectedToShowEmployeeDetails, setIdSelectedToShowEmployeeDetails] = useState('');
+  function handleCleaningSelectedIdToShowEmployeeDetails() {
+    setIdSelectedToShowEmployeeDetails(null)
+  }
 
   //const deleteCustomer = useDeleteCustomerAccount();
 
@@ -34,34 +58,93 @@ const EmployeeUserList = () => {
 
   const [modalOpen, setModalOpen] = React.useState(false);
 
-  function handleShowEmployeeDetailsModal(employeeId) {
-    setModalOpen(!modalOpen)
-    setIdSelectedToShowEmployeeDetails(employeeId);
+  function handleOpenEmployeeModal() {
+    setModalOpen(!modalOpen);
   }
 
-  const handleDeleteEmployee = async (id) => {
-    const deletedId = await deleteCustomer(id);
-    if (deletedId !== null) {
-      window.location.reload();
-    } else {
-      console.error('Failed to delete cursomer with ID:', id);
+  function handleShowEmployeeDetailsModal(employeeId, employeeName, employeeLastName) {
+    const name = `${employeeName} ${employeeLastName}`;
+    setIdSelectedToShowEmployeeDetails(employeeId);
+    setEmployeeName(name);
+    handleOpenEmployeeModal();
+  }
+
+  const [employeeName, setEmployeeName] = useState('');
+
+  function handleCleaningEmployeeNameStatus() {
+    setEmployeeName('');
+  }
+
+  function handleOpenEmployeeUpdateModal(employeeId, employeeName, employeeLastName) {
+    const name = `${employeeName} ${employeeLastName}`;
+    handleEmployeeIdToUpdate(employeeId);
+    setEmployeeName(name);
+    handleOpenEmployeeModal();
+  }
+
+  const commonProps = {
+    handleShowEmployeeDetailsModal,
+    idSelectedToShowEmployeeDetails,
+    handleCleaningSelectedIdToShowEmployeeDetails,
+    handleOpenEmployeeModal,
+    modalOpen,
+    employeeName,
+    handleCleaningEmployeeNameStatus,
+  };
+
+  const shouldShowModal =
+    (idSelectedToShowEmployeeDetails && idSelectedToShowEmployeeDetails !== 0) ||
+    (employeeIdToUpdate && employeeIdToUpdate !== 0);
+
+  const handleDeleteClientEmployee = async (employeeId, employeeName, employeeLastName) => {
+    try {
+      const deleteResponse = await useDeleteEmployee(employeeId);
+
+      if (deleteResponse !== null) {
+        console.log('Data sent successfully!', deleteResponse);
+        handleDeletedEmployeeRecordStatusChange();
+      } else {
+        console.error('Failed to delete employee with ID:', employeeId, '. Response Status: ', deleteResponse.status);
+      }
+    } catch (error) {
+      console.error('Error in request:', error);
     }
+  };
+
+  const showWarningAlert = (employeeId, employeeName, employeeLastName) => {
+    const name = `${employeeName} ${employeeLastName}`
+    warningAlert(
+      `${employeeId}`,
+      "Atenção",
+      "Deletar",
+      `Você deseja realmente excluir ${name}?`,
+      "lg",
+      () => handleDeleteClientEmployee(employeeId, employeeName, employeeLastName)
+    );
   };
 
   useEffect(() => {
     const fetchEmployees = async () => {
-      if (detailedEmployeeData.length === 0) {
-        try {
-          const foundEmployees = await useFindAllEmployee();
-          setDetailedEmployeeData(foundEmployees);
-        } catch (error) {
-          console.error('Error fetching employees:', error);
-        }
+      try {
+        const foundEmployees = await useFindAllEmployee();
+        setDetailedEmployeeData(foundEmployees);
+      } catch (error) {
+        console.error('Error fetching employees:', error);
       }
     };
 
     fetchEmployees();
-  }, [detailedEmployeeData]);
+    if (hasUpdatedEmployeeRecord) {
+      handleUpdatedEmployeeRecordStatusChange();
+    }
+    if (hasDeletedEmployeeRecord) {
+      handleDeletedEmployeeRecordStatusChange();
+    }
+  }, [
+    detailedEmployeeData,
+    hasUpdatedEmployeeRecord,
+    hasDeletedEmployeeRecord
+  ]);
 
   return (
     <Card>
@@ -107,11 +190,12 @@ const EmployeeUserList = () => {
                 />
               </div>
             </th>
-            <th>Nome</th>
-            <th>Ocupação</th>
-            <th>Data de Admissão</th>
-            <th>Estado</th>
-            <th>Detalhes</th>
+            <th className="text-left">Nome</th>
+            <th className="text-left">Empresa</th>
+            <th className="text-left">Ocupação</th>
+            <th className="text-left">Data de Admissão</th>
+            <th className="text-left">Estado</th>
+            <th className="text-left">Ações</th>
             <th />
           </tr>
         </thead>
@@ -140,6 +224,9 @@ const EmployeeUserList = () => {
                   />
                   <b>{employee.name} {employee.lastName}</b>
                 </td>
+                <td className="table-user">
+                  <b>Nome da Empresa</b>
+                </td>
                 <td>
                   <a
                     className="font-weight-bold"
@@ -154,50 +241,58 @@ const EmployeeUserList = () => {
                     {formatDate(employee.createdAt)}
                   </span>
                 </td>
-                <td>
-                  <Badge color="success" pill>
-                    Active
-                  </Badge>
+                <td className="text-left">
+                  {
+                    employee.status === true
+                      ? (
+                        <Badge color="success" pill>
+                          Ativo
+                        </Badge>
+                      ) : (
+                        employee.status === false
+                          ? (
+                            <Badge color="danger" pill>
+                              Inativo
+                            </Badge>
+                          ) : (
+                            <Badge color="primary" pill>
+                              N/A
+                            </Badge>
+                          )
+                      )
+                  }
                 </td>
-                <td className="text-muted">
-                  <Nav navbar>
-                    <NavItem>
-                      <NavLink target="_blank">
-                        <a href="#" className="text-underline">
-                          <span
-                            onClick={() => handleShowEmployeeDetailsModal(employee.id)}
-                            className="name mb-0 text-sm"
-                          >
-                            Mais
-                          </span>
-                        </a>
-                      </NavLink>
-                    </NavItem>
-                  </Nav>
-                </td>
-                <td className="table-actions">
-                  <a
-                    className="table-action"
-                    href="#pablo"
-                    id="tooltip564981685"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    <i className="fas fa-user-edit" />
-                  </a>
-                  <UncontrolledTooltip delay={0} target="tooltip564981685">
-                    Edit product
-                  </UncontrolledTooltip>
-                  <a
-                    className="table-action table-action-delete"
-                    href="#pablo"
-                    id="tooltip601065234"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    <i className="fas fa-trash" />
-                  </a>
-                  <UncontrolledTooltip delay={0} target="tooltip601065234">
-                    Delete product
-                  </UncontrolledTooltip>
+                <td className="text-left" >
+                  <UncontrolledDropdown>
+                    <DropdownToggle
+                      className="btn-icon-only text-light"
+                      color=""
+                      role="button"
+                      size="sm"
+                    >
+                      <i className="fas fa-ellipsis-v" />
+                    </DropdownToggle>
+                    <DropdownMenu className="dropdown-menu-arrow" right>
+                      <DropdownItem
+                        href="#pablo"
+                        onClick={(e) => { e.preventDefault(); handleShowEmployeeDetailsModal(employee.id, employee.name, employee.lastName) }}
+                      >
+                        Detalhes
+                      </DropdownItem>
+                      <DropdownItem
+                        href="#pablo"
+                        onClick={(e) => { e.preventDefault(); handleOpenEmployeeUpdateModal(employee.id, employee.name, employee.lastName) }}
+                      >
+                        Editar
+                      </DropdownItem>
+                      <DropdownItem
+                        href="#pablo"
+                        onClick={(e) => { e.preventDefault(); showWarningAlert(employee.id, employee.name, employee.lastName); }}
+                      >
+                        Deletar
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
                 </td>
               </tr>
             ))
@@ -208,15 +303,9 @@ const EmployeeUserList = () => {
           )}
         </tbody>
       </Table>
-
-      {idSelectedToShowEmployeeDetails && (
-        <ShowEmployeeDetailsModal
-          handleShowEmployeeDetailsModal={handleShowEmployeeDetailsModal}
-          modalOpen={modalOpen}
-          idSelectedToShowEmployeeDetails={idSelectedToShowEmployeeDetails}
-          setIdSelectedToShowEmployeeDetails={setIdSelectedToShowEmployeeDetails}
-        />
-      )}
+      {shouldShowModal ? (
+        <ShowEmployeeDetailsModal {...commonProps} />
+      ) : null}
 
     </Card>
   );

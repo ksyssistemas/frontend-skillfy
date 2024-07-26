@@ -27,3 +27,5 @@ yarn-error.log*
 
 Dockerfile
 docker-compose.yml
+*.example.*
+*.http

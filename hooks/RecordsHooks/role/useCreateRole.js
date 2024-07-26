@@ -8,6 +8,8 @@ const useCreateRole = (handleShowRolesUserRegister) => {
   const [roleReportsToRoleState, setRoleReportsToRoleState] = useState(null);
   const [employeeRoleDescription, setEmployeeRoleDescription] = useState("");
   const [employeeRoleDescriptionState, setEmployeeRoleDescriptionState] = useState(null);
+  const [employeeRoleStatus, setEmployeeRoleStatus] = useState(false);
+  const [employeeRoleStatusState, setEmployeeRoleStatusState] = useState(null);
   const [employeeRoleDataList, setEmployeeRoleDataList] = useState([]);
   const handleEmployeeRoleDataList = (roleData) => {
     setEmployeeRoleDataList(roleData);
@@ -90,6 +92,8 @@ const useCreateRole = (handleShowRolesUserRegister) => {
     setRoleReportsToRoleState(null);
     setEmployeeRoleDescription("");
     setEmployeeRoleDescriptionState(null);
+    setEmployeeRoleStatus(false);
+    setEmployeeRoleStatusState(null);
   }
 
   return {
@@ -107,8 +111,13 @@ const useCreateRole = (handleShowRolesUserRegister) => {
     setEmployeeRoleDescription,
     employeeRoleDescriptionState,
     setEmployeeRoleDescriptionState,
+    employeeRoleStatus,
+    setEmployeeRoleStatus,
+    employeeRoleStatusState,
+    setEmployeeRoleStatusState,
     handleValidateAddEmployeeRoleForm,
-    handleEmployeeRoleDataList
+    handleEmployeeRoleDataList,
+    reset
   };
 };
 

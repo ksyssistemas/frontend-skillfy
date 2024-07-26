@@ -94,6 +94,7 @@ function CustomersUserList() {
 
   const showWarningAlert = (companyId, companyNameToDelete) => {
     warningAlert(
+      `${companyId}`,
       "Atenção",
       "Deletar",
       `Você deseja realmente excluir ${companyNameToDelete}?`,

@@ -26,36 +26,6 @@ function EmployeeRecords() {
     setIsShouldSubmitEmployeeRecordEntrySettingsRecord(!isShouldSubmitEmployeeRecordEntrySettingsRecord);
   }
 
-  useEffect(() => {
-    async function fetchAdmins() {
-      try {
-        const response = await fetch('http://localhost:4008/administrator/findAll');
-        if (!response.ok) {
-          throw new Error('Network response was not ok.');
-        }
-        const data = await response.json();
-        setAdmins(data);
-      } catch (error) {
-        console.error('There was a problem fetching the data:', error);
-      }
-    }
-    fetchAdmins();
-  }, []);
-
-  const deleteAdmin = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:4008/administrator/${id}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
-        throw new Error('Failed to delete admin.');
-      }
-      setAdmins(admins.filter(admin => admin.id !== id));
-    } catch (error) {
-      console.error('There was a problem deleting the admin:', error);
-    }
-  };
-
   if (!authenticationDataLoggedInUser) {
     return null;
   }

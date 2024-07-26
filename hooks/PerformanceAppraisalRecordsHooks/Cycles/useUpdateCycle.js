@@ -46,7 +46,6 @@ const useUpdateCycle = () => {
     // } else {
     //   return null;
     // }
-    console.log(formattedStartDate, formattedFinishDate,);
     await handleSubmit(cycleIdToUpdate, cycleTitle, cyclePeriod, formattedStartDate, formattedFinishDate, cycleObjective);
     goBackToAppraisalCycleList(handleCloseAddAppraisalCycleModal, handleCycleIdToUpdate, handleCleanDetailedAppraisalCycleData);
   }

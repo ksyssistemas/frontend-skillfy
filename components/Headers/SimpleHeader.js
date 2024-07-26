@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 // nodejs library to set properties for components
 import PropTypes from "prop-types";
 // reactstrap components
@@ -11,7 +11,7 @@ import {
   Col,
 } from "reactstrap";
 
-import ModalAdm from "../Modals/admin/ModalAdm";
+//import ModalAdm from "../Modals/admin/ModalAdm";
 import ModalEnterprise from "../Modals/admin/ModalEnterprise";
 import ModalEmployee from "../Modals/enterprise/ModalEmployee"
 
@@ -58,7 +58,7 @@ function RegisterHeader({ name, parentName }) {
                 >
                   Cadastrar Admin
                 </Button>
-                <ModalAdm isOpen={modalAdmOpen} toggle={() => setModalAdmOpen(!modalAdmOpen)} />
+                {/* <ModalAdm isOpen={modalAdmOpen} toggle={() => setModalAdmOpen(!modalAdmOpen)} /> */}
 
                 <Button
                   className="btn-neutral"
@@ -84,7 +84,7 @@ function RegisterHeader({ name, parentName }) {
                   isOpen={modalEmployeeOpen}
                   toggle={() => setModalEmployeeOpen(!modalEmployeeOpen)}
                 />
-                
+
               </Col>
             </Row>
           </div>

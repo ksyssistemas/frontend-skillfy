@@ -8,7 +8,7 @@ import {
   Table,
   UncontrolledTooltip,
 } from 'reactstrap';
-import ModalAdm from "../../Modals/admin/ModalAdm"
+//import ModalAdm from "../../Modals/admin/ModalAdm"
 import { useFindAllAdmin } from "../../../hooks/RecordsHooks/admin/useFindAllAdmin"
 import { useDeleteAdmin } from "../../../hooks/RecordsHooks/admin/useDeleteAdmin"
 
@@ -111,13 +111,13 @@ function PlansList() {
           ))}
         </tbody>
       </Table>
-      <ModalAdm
+      {/* <ModalAdm
         isOpen={modalAdmOpen}
         toggle={toggleModalAdm}
         //handleSave={handleSave}
         formData={userAdministratorAccountData}
       //handleInputChange={handleInputChange}
-      />
+      /> */}
 
 
 

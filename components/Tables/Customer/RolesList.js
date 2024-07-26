@@ -1,19 +1,45 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Card,
   CardHeader,
-  Form,
   Table,
   Nav,
   NavItem,
   NavLink,
+  Badge,
+  UncontrolledTooltip,
 } from "reactstrap";
 import ShowRoleDescriptionsModal from "../../Modals/admin/show-role-descriptions";
 import ShowFunctionsDescriptionsModal from "../../Modals/admin/show-functions-descriptions";
 import { useFindAllRoles } from "../../../hooks/RecordsHooks/role/useFindAllRoles";
 import { useFindAllFunctions } from "../../../hooks/RecordsHooks/employeeFunction/useFindAllFunctions";
+import { RoleContext } from "../../../contexts/RecordsContext/RoleContext";
+import { EmployeeFunctionContext } from "../../../contexts/RecordsContext/EmployeeFunctionContext";
+import ModalRole from "../../Modals/admin/ModalRole";
+import ModalEmployeeFunction from "../../Modals/admin/ModalEmployeeFunction";
+import { useSweetAlert } from "../../../contexts/SweetAlertContext";
+import { useDeleteEmployeeFunction } from "../../../hooks/RecordsHooks/employeeFunction/useDeleteEmployeeFunction";
+import { useDeleteRole } from "../../../hooks/RecordsHooks/role/useDeleteRole";
 
 function RolesList() {
+
+  const {
+    handleRoleIdToUpdate,
+    hasUpdatedRoleRecord,
+    handleUpdatedRoleRecordStatusChange,
+    hasDeletedRoleRecord,
+    handleDeletedRoleRecordStatusChange
+  } = useContext(RoleContext);
+
+  const {
+    handleEmployeeFunctionIdToUpdate,
+    hasUpdatedEmployeeFunctionRecord,
+    handleUpdatedEmployeeFunctionRecordStatusChange,
+    hasDeletedEmployeeFunctionRecord,
+    handleDeletedEmployeeFunctionRecordStatusChange
+  } = useContext(EmployeeFunctionContext);
+
+  const { warningAlert } = useSweetAlert();
 
   const [detailedRoleData, setDetailedRoleData] = useState([]);
   const [descriptionSelectedRole, setDescriptionSelectedRole] = useState("");
@@ -57,8 +83,79 @@ function RolesList() {
     return `${day}/${month}/${year}`;
   }
 
+  const [openRoleUpdateModal, setOpenRoleUpdateModal] = React.useState(false);
+
+  function handleOpenRoleUpdateModal() {
+    setOpenRoleUpdateModal(!openRoleUpdateModal);
+  }
+
+  function handleRoleUpdate(roleId) {
+    handleRoleIdToUpdate(roleId);
+    handleOpenRoleUpdateModal();
+  }
+
+  const [openEmployeeFunctionUpdateModal, setOpenEmployeeFunctionUpdateModal] = React.useState(false);
+
+  function handleOpenEmployeeFunctionUpdateModal() {
+    setOpenEmployeeFunctionUpdateModal(!openEmployeeFunctionUpdateModal);
+  }
+
+  function handleEmployeeFunctionUpdate(employeeFunctionId) {
+    handleEmployeeFunctionIdToUpdate(employeeFunctionId);
+    handleOpenEmployeeFunctionUpdateModal();
+  }
+
+  const handleDeleteRole = async (roleId, roleName) => {
+    try {
+      const deleteResponse = await useDeleteRole(roleId);
+      if (deleteResponse !== null) {
+        handleDeletedRoleRecordStatusChange();
+      } else {
+        console.error('Failed to delete role with ID:', roleId, '. Response Status: ', deleteResponse.status);
+      }
+    } catch (error) {
+      console.error('Error in request:', error);
+    }
+  };
+
+  const handleDeleteEmployeeFunction = async (employeeFunctionId, employeeFunctionName) => {
+    try {
+      const deleteResponse = await useDeleteEmployeeFunction(employeeFunctionId);
+      if (deleteResponse !== null) {
+        handleDeletedEmployeeFunctionRecordStatusChange();
+      } else {
+        console.error('Failed to delete function with ID:', employeeFunctionId, '. Response Status: ', deleteResponse.status);
+      }
+    } catch (error) {
+      console.error('Error in request:', error);
+    }
+  };
+
+  const showWarningAlert = (itemId, itemName, itemContext = '') => {
+    if (itemContext === 'role') {
+      warningAlert(
+        `${itemId}`,
+        "Atenção",
+        "Deletar",
+        `Você deseja realmente excluir ${itemName}?`,
+        "lg",
+        () => handleDeleteRole(itemId, itemName)
+      );
+    } else if (itemContext === 'function') {
+      warningAlert(
+        `${itemId}`,
+        "Atenção",
+        "Deletar",
+        `Você deseja realmente excluir ${itemName}?`,
+        "lg",
+        () => handleDeleteEmployeeFunction(itemId, itemName)
+      );
+
+    }
+  };
+
   useEffect(() => {
-    const fetchRoles = async () => {
+    const fetchRolesAndEmployeeFunctions = async () => {
       if (detailedRoleData && detailedRoleData.length === 0) {
         try {
           const foundRole = await useFindAllRoles();
@@ -67,9 +164,6 @@ function RolesList() {
           console.error('Error fetching roles:', error);
         }
       }
-    };
-
-    const fetchEmployeeFunctions = async () => {
       if (detailedEmployeeFunctionData && detailedEmployeeFunctionData.length === 0) {
         try {
           const foundEmployeeFunction = await useFindAllFunctions();
@@ -78,14 +172,34 @@ function RolesList() {
           console.error('Error fetching employee functions:', error);
         }
       }
+
     };
 
-    fetchRoles();
-    fetchEmployeeFunctions();
-  }, [detailedRoleData, detailedEmployeeFunctionData]);
+    fetchRolesAndEmployeeFunctions();
+    if (hasUpdatedRoleRecord) {
+      handleUpdatedRoleRecordStatusChange();
+    }
+    if (hasUpdatedEmployeeFunctionRecord) {
+      handleUpdatedEmployeeFunctionRecordStatusChange();
+    }
+    if (hasDeletedRoleRecord) {
+      handleDeletedRoleRecordStatusChange();
+    }
+    if (hasDeletedEmployeeFunctionRecord) {
+      handleDeletedEmployeeFunctionRecordStatusChange();
+    }
+
+  }, [
+    detailedRoleData,
+    hasUpdatedRoleRecord,
+    hasUpdatedEmployeeFunctionRecord,
+    hasDeletedRoleRecord,
+    hasDeletedEmployeeFunctionRecord,
+    detailedEmployeeFunctionData
+  ]);
 
   return (
-    <Form>
+    <>
       <Card >
         <CardHeader className="bg-white border-0">
           <h3 className="mb-0">Cargos Registrados</h3>
@@ -94,11 +208,12 @@ function RolesList() {
         <Table className="align-items-center table-flush" hover responsive>
           <thead className="thead-light">
             <tr>
-              <th>Nome</th>
-              <th>Criado Em</th>
-              <th>Reporta Ao Cargo</th>
-              <th>Descrição</th>
-              <th>Ativo</th>
+              <th className="text-left">Nome</th>
+              <th className="text-left">Criado Em</th>
+              <th className="text-left">Reporta Ao Cargo</th>
+              <th className="text-left">Descrição</th>
+              <th className="text-left">Estado</th>
+              <th className="text-left">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -145,14 +260,49 @@ function RolesList() {
                       )}
                   </td>
                   <td>
-                    <label className="custom-toggle">
-                      <input type="checkbox" checked={role.Status === 1 ? true : false} />
-                      <span
-                        className="custom-toggle-slider rounded-circle"
-                        data-label-off="No"
-                        data-label-on="Yes"
-                      />
-                    </label>
+                    {
+                      role.status === true
+                        ? (
+                          <Badge color="success" pill>
+                            Ativo
+                          </Badge>
+                        ) : (
+                          role.status === false
+                            ? (
+                              <Badge color="danger" pill>
+                                Inativo
+                              </Badge>
+                            ) : (
+                              <Badge color="primary" pill>
+                                N/A
+                              </Badge>
+                            )
+                        )
+                    }
+                  </td>
+                  <td className="table-actions text-left">
+                    <a
+                      className="table-action"
+                      href="#pablo"
+                      id="tooltipEditRole"
+                      onClick={(e) => { e.preventDefault(); handleRoleUpdate(role.ID_Roles); }}
+                    >
+                      <i className="fas fa-user-edit" />
+                    </a>
+                    <UncontrolledTooltip delay={0} target="tooltipEditRole">
+                      Editar
+                    </UncontrolledTooltip>
+                    <a
+                      className="table-action table-action-delete"
+                      href="#pablo"
+                      id="tooltipDeleteRole"
+                      onClick={(e) => { e.preventDefault(); showWarningAlert(role.ID_Roles, role.RoleName, 'role'); }}
+                    >
+                      <i className="fas fa-trash" />
+                    </a>
+                    <UncontrolledTooltip delay={0} target="tooltipDeleteRole">
+                      Deletar
+                    </UncontrolledTooltip>
                   </td>
                 </tr>
               ))
@@ -173,11 +323,12 @@ function RolesList() {
         <Table className="align-items-center table-flush" hover responsive>
           <thead className="thead-light">
             <tr>
-              <th>Nome</th>
-              <th>Criada Em</th>
-              <th>Reporta Ao Cargo</th>
-              <th>Descrição</th>
-              <th>Ativo</th>
+              <th className="text-left">Nome</th>
+              <th className="text-left">Criada Em</th>
+              <th className="text-left">Reporta Ao Cargo</th>
+              <th className="text-left">Descrição</th>
+              <th className="text-left">Estado</th>
+              <th className="text-left">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -224,14 +375,49 @@ function RolesList() {
                       )}
                   </td>
                   <td>
-                    <label className="custom-toggle">
-                      <input type="checkbox" checked={employeeFunction.status ? true : false} />
-                      <span
-                        className="custom-toggle-slider rounded-circle"
-                        data-label-off="No"
-                        data-label-on="Yes"
-                      />
-                    </label>
+                    {
+                      employeeFunction.status === true
+                        ? (
+                          <Badge color="success" pill>
+                            Ativo
+                          </Badge>
+                        ) : (
+                          employeeFunction.status === false
+                            ? (
+                              <Badge color="danger" pill>
+                                Inativo
+                              </Badge>
+                            ) : (
+                              <Badge color="primary" pill>
+                                N/A
+                              </Badge>
+                            )
+                        )
+                    }
+                  </td>
+                  <td className="table-actions text-left">
+                    <a
+                      className="table-action"
+                      href="#pablo"
+                      id="tooltipEditEmployeeFunction"
+                      onClick={(e) => { e.preventDefault(); handleEmployeeFunctionUpdate(employeeFunction.id); }}
+                    >
+                      <i className="fas fa-user-edit" />
+                    </a>
+                    <UncontrolledTooltip delay={0} target="tooltipEditEmployeeFunction">
+                      Editar
+                    </UncontrolledTooltip>
+                    <a
+                      className="table-action table-action-delete"
+                      href="#pablo"
+                      id="tooltipDeleteEmployeeFunction"
+                      onClick={(e) => { e.preventDefault(); showWarningAlert(employeeFunction.id, employeeFunction.name, 'function'); }}
+                    >
+                      <i className="fas fa-trash" />
+                    </a>
+                    <UncontrolledTooltip delay={0} target="tooltipDeleteEmployeeFunction">
+                      Deletar
+                    </UncontrolledTooltip>
                   </td>
                 </tr>
               ))
@@ -256,7 +442,17 @@ function RolesList() {
         employeeFunctionDescription={descriptionSelectedFunction}
         employeeFunctionName={nameSelectedFunction}
       />
-    </Form>
+
+      <ModalRole
+        handleOpenRoleUpdateModal={handleOpenRoleUpdateModal}
+        modalOpen={openRoleUpdateModal}
+      />
+
+      <ModalEmployeeFunction
+        handleOpenEmployeeFunctionUpdateModal={handleOpenEmployeeFunctionUpdateModal}
+        modalOpen={openEmployeeFunctionUpdateModal}
+      />
+    </>
   );
 }
 

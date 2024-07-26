@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Badge,
   Card,
@@ -6,49 +6,83 @@ import {
   Col,
   Row,
   Table,
-  UncontrolledTooltip,
+  UncontrolledTooltip
 } from 'reactstrap';
-
-import { useFindAllAdmin } from "../../../hooks/RecordsHooks/admin/useFindAllAdmin"
-import { useDeleteAdmin } from "../../../hooks/RecordsHooks/admin/useDeleteAdmin"
+import { ContactPersonContext } from '../../../contexts/RecordsContext/ContactPersonContext';
 import { useFindAllContactPerson } from '../../../hooks/RecordsHooks/contactPerson/useFindAllContactPerson';
+import ModalContactPerson from '../../Modals/admin/ModalContactPerson';
+import { useSweetAlert } from '../../../contexts/SweetAlertContext';
+import { useDeleteContactPerson } from '../../../hooks/RecordsHooks/contactPerson/useDeleteContactPerson';
 
 function ContactPersonsList() {
 
-  const [userAdministratorAccountData, setUserAdministratorAccountData] = useState([]);
+  const {
+    contactPersonIdToUpdate,
+    handleContactIdStatusCleanupToUpdate,
+    handleContactPersonIdToUpdate,
+    hasNewContactRecordCreated,
+    handleCreatedContactRecordStatusChange,
+    hasUpdatedContactRecord,
+    handleUpdatedContactRecordStatusChange,
+    hasDeletedContactRecord,
+    handleDeletedContactRecordStatusChange,
+  } = useContext(ContactPersonContext);
 
-  const deleteAdmin = useDeleteAdmin();
+  const { warningAlert } = useSweetAlert();
 
-  const [modalAdmOpen, setModalAdmOpen] = React.useState(false);
+  const [userContactAccountData, setUserContactAccountData] = useState([]);
 
-  const toggleModalAdm = () => {
-    setModalAdmOpen(!modalAdmOpen);
+  function handleContactPersonUpdate(contactId) {
+    handleContactPersonIdToUpdate(contactId);
+    handleOpenContactUpdateModal();
+  }
+
+  const [modalOpen, setModalOpen] = React.useState(false);
+
+  function handleOpenContactUpdateModal() {
+    setModalOpen(!modalOpen)
+  }
+
+  const handleDeleteAdmin = async (contactId, contactName, contactLastName) => {
+    if (contactId) {
+      try {
+        const deleteResponse = await useDeleteContactPerson(contactId);
+        console.log('DeleteResponse: ', deleteResponse);
+        if (deleteResponse !== null) {
+          handleDeletedContactRecordStatusChange();
+        } else {
+          console.error('Failed to delete contact person with ID:', contactId, '. Response Status: ', deleteResponse.status);
+        }
+      } catch (error) {
+        console.error('Error in request:', error);
+      }
+    }
   };
 
-  const handleDeleteAdmin = async (id) => {
-    const deletedId = await deleteAdmin(id);
-    if (deletedId !== null) {
-      window.location.reload();
-    } else {
-      console.error('Failed to delete admin with ID:', id);
-    }
+  const showWarningAlert = (contactId, contactName, contactLastName) => {
+    warningAlert(
+      `${contactId}`,
+      "Atenção",
+      "Deletar",
+      `Você deseja realmente excluir ${contactName} ${contactLastName}?`,
+      "lg",
+      () => handleDeleteAdmin(contactId, contactName, contactLastName)
+    );
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      if (userAdministratorAccountData.length === 0) {
-        const foundAdministrators = await useFindAllContactPerson();
-        console.log(foundAdministrators);
-        setUserAdministratorAccountData(foundAdministrators || []);
+      if (userContactAccountData.length === 0) {
+        const foundContactPersonistrators = await useFindAllContactPerson();
+        setUserContactAccountData(foundContactPersonistrators);
       }
     };
 
     fetchData();
-  }, [userAdministratorAccountData]);
+  }, [userContactAccountData]);
 
   return (
     <Card>
-      {/** CardHeader with Button register and export */}
       <CardHeader className="border-0">
         <Row className="align-items-center">
           <Col xs="6">
@@ -60,58 +94,79 @@ function ContactPersonsList() {
       <Table className="align-items-center table-flush" responsive>
         <thead className="thead-light">
           <tr>
+            <th className="text-left">Empresa</th>
             <th className="text-left">Nome</th>
             <th className="text-left">Email</th>
             <th className="text-left">Celular</th>
+            <th className="text-left">CPF</th>
             <th className="text-left">Estado</th>
-            <th className="text-center">Previlégios</th>
-            <th className="text-center" />
+            <th className="text-left">Ações</th>
           </tr>
         </thead>
         <tbody>
-          {userAdministratorAccountData.length > 0 ? (
-            userAdministratorAccountData.map((admin) => (
-              <tr key={admin.id}>
+          {userContactAccountData.length > 0 ? (
+            userContactAccountData.map((contactPerson) => (
+              <tr key={contactPerson.id}>
                 <td className="table-user">
-                  <img
-                    alt="..."
-                    className="avatar rounded-circle mr-3"
-                    //src={require(`../../../assets/img/theme/team-${admin.id}.jpg`)}
-                    src={require(`../../../assets/img/theme/team-1.jpg`)}
-                  />
-                  <b className="text-left">{admin.name}</b>
+                  <b className="text-left">Nome da emrpesa</b>
+                </td>
+                <td className="table-user">
+                  <b className="text-left">{contactPerson.name}  {contactPerson.lastname}</b>
                 </td>
                 <td className="text-left">
-                  <span className="text-muted">{admin.email}</span>
+                  <span className="text-muted">{contactPerson.email}</span>
                 </td>
                 <td className="text-left">
-                  <span className="text-muted">{admin.phone}</span>
+                  <span className="text-muted">{contactPerson.phone}</span>
+                </td>
+                <td className="text-left">
+                  <span className="text-muted">
+                    {contactPerson.cpf}
+                  </span>
                 </td>
                 <td>
-                  <Badge color="success" pill>
-                    Active
-                  </Badge>
+                  {
+                    contactPerson.status === true
+                      ? (
+                        <Badge color="success" pill>
+                          Ativo
+                        </Badge>
+                      ) : (
+                        contactPerson.status === false
+                          ? (
+                            <Badge color="danger" pill>
+                              Inativo
+                            </Badge>
+                          ) : (
+                            <Badge color="primary" pill>
+                              N/A
+                            </Badge>
+                          )
+                      )
+                  }
                 </td>
-                <td className="text-center">
+                <td className="table-actions text-left">
                   <a
-                    className="font-weight-bold"
+                    className="table-action"
                     href="#pablo"
-                    onClick={(e) => e.preventDefault()}
+                    id="tooltipEditcontactPerson"
+                    onClick={(e) => { e.preventDefault(); handleContactPersonUpdate(contactPerson.id); }}
                   >
-                    {admin.privileges}
+                    <i className="fas fa-user-edit" />
                   </a>
-                </td>
-                <td className="text-center table-actions">
+                  <UncontrolledTooltip delay={0} target="tooltipEditcontactPerson">
+                    Editar
+                  </UncontrolledTooltip>
                   <a
                     className="table-action table-action-delete"
                     href="#pablo"
-                    id={`delete${admin.id}`}
-                    onClick={() => handleDeleteAdmin(admin.id)}
+                    id={`delete${contactPerson.id}`}
+                    onClick={(e) => { e.preventDefault(); showWarningAlert(contactPerson.id, contactPerson.name, contactPerson.lastname); }}
                   >
                     <i className="fas fa-trash" />
                   </a>
-                  <UncontrolledTooltip delay={0} target={`delete${admin.id}`}>
-                    Excluir
+                  <UncontrolledTooltip delay={0} target={`delete${contactPerson.id}`}>
+                    Deletar
                   </UncontrolledTooltip>
                 </td>
               </tr>
@@ -123,13 +178,11 @@ function ContactPersonsList() {
           )}
         </tbody>
       </Table>
-      {/* <ModalAdm
-        isOpen={modalAdmOpen}
-        toggle={toggleModalAdm}
-        //handleSave={handleSave}
-        formData={userAdministratorAccountData}
-      //handleInputChange={handleInputChange}
-      /> */}
+      <ModalContactPerson
+        handleOpenContactUpdateModal={handleOpenContactUpdateModal}
+        modalOpen={modalOpen}
+      />
+
     </Card>
   );
 };

@@ -1,37 +1,53 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
+  Badge,
   Card,
   CardHeader,
   Form,
   Nav,
   NavItem,
-  NavLink, Table
+  NavLink, Table,
+  UncontrolledTooltip
 } from "reactstrap";
 import { useFindAllDepartments } from "../../../hooks/RecordsHooks/department/useFindAllDepartments";
 import ShowDepartmentDescriptionsModal from "../../Modals/admin/show-department-descriptions";
+import ModalDepartment from '../../Modals/admin/ModalDepartment';
+import { DepartmentContext } from '../../../contexts/RecordsContext/DepartmentContext';
+import { useSweetAlert } from '../../../contexts/SweetAlertContext';
+import { useDeleteDepartment } from '../../../hooks/RecordsHooks/department/useDeleteDepartment';
 
 function DepartmentsList() {
+
+  const {
+    handleDepartmentIdToUpdate,
+    hasUpdatedDepartmentRecord,
+    handleUpdatedDepartmentRecordStatusChange,
+    hasDeletedDepartmentRecord,
+    handleDeletedDepartmentRecordStatusChange,
+  } = useContext(DepartmentContext);
+
+  const { warningAlert } = useSweetAlert();
 
   const [detailedDepartmentData, setDetailedDepartmentData] = useState([]);
   const [descriptionSelectedDepartment, setDescriptionSelectedDepartment] = useState("");
   const [nameSelectedDepartment, setNameSelectedDepartment] = useState("");
 
-  //const deleteDepartment = useDeleteDepartment();
+  const [openDepartmentDetailModal, setOpenDepartmentDetailModal] = React.useState(false);
 
-  const [modalDepartmentOpen, setModalDepartmentOpen] = React.useState(false);
+  function handleOpenDepartmentDetailsModal() {
+    setOpenDepartmentDetailModal(!openDepartmentDetailModal);
+  }
 
-  const toggleModalAdm = () => {
-    setModalDepartmentOpen(!modalDepartmentOpen);
-  };
+  const [openDepartmentUpdateModal, setOpenDepartmentUpdateModal] = React.useState(false);
 
-  const handleDeleteDepartment = async (id) => {
-    const deletedId = await deleteDepartment(id);
-    if (deletedId !== null) {
-      window.location.reload();
-    } else {
-      console.error('Failed to delete admin with ID:', id);
-    }
-  };
+  function handleOpenDepartmentUpdateModal() {
+    setOpenDepartmentUpdateModal(!openDepartmentUpdateModal);
+  }
+
+  function handleDepartmentUpdate(departmentId) {
+    handleDepartmentIdToUpdate(departmentId);
+    handleOpenDepartmentUpdateModal();
+  }
 
   function formatDate(dateString) {
     const date = new Date(dateString);
@@ -50,8 +66,32 @@ function DepartmentsList() {
   }
 
   function handleShowDepartmentDescriptionsModal() {
-    setModalDepartmentOpen(!modalDepartmentOpen);
+    handleOpenDepartmentDetailsModal();
   }
+
+  const handleDeleteDepartment = async (departmentId, departmentName) => {
+    try {
+      const deleteResponse = await useDeleteDepartment(departmentId);
+      if (deleteResponse !== null) {
+        handleDeletedDepartmentRecordStatusChange();
+      } else {
+        console.error('Failed to delete department with ID:', departmentId, '. Response Status: ', deleteResponse.status);
+      }
+    } catch (error) {
+      console.error('Error in request:', error);
+    }
+  };
+
+  const showWarningAlert = (departmentId, departmentName) => {
+    warningAlert(
+      `${departmentId}`,
+      "Atenção",
+      "Deletar",
+      `Você deseja realmente excluir ${departmentName}?`,
+      "lg",
+      () => handleDeleteDepartment(departmentId, departmentName)
+    );
+  };
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -61,7 +101,16 @@ function DepartmentsList() {
       }
     };
     fetchDepartments();
-  }, [detailedDepartmentData]);
+    if (hasUpdatedDepartmentRecord) {
+      handleUpdatedDepartmentRecordStatusChange();
+    }
+    if (hasDeletedDepartmentRecord) {
+      handleDeletedDepartmentRecordStatusChange();
+    }
+  }, [detailedDepartmentData,
+    hasUpdatedDepartmentRecord,
+    hasDeletedDepartmentRecord,
+  ]);
 
   return (
     <Form>
@@ -73,11 +122,12 @@ function DepartmentsList() {
         <Table className="align-items-center table-flush" hover responsive>
           <thead className="thead-light">
             <tr>
-              <th>Nome</th>
-              <th>Criado Em</th>
-              <th>Reporta Ao</th>
-              <th>Descrição</th>
-              <th>Ativo</th>
+              <th className="text-left">Nome</th>
+              <th className="text-left">Criado Em</th>
+              <th className="text-left">Reporta Ao</th>
+              <th className="text-left">Descrição</th>
+              <th className="text-left">Estado</th>
+              <th className="text-left">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -124,14 +174,49 @@ function DepartmentsList() {
                       )}
                   </td>
                   <td>
-                    <label className="custom-toggle">
-                      <input type="checkbox" checked={department.Status ? true : false} />
-                      <span
-                        className="custom-toggle-slider rounded-circle"
-                        data-label-off="No"
-                        data-label-on="Yes"
-                      />
-                    </label>
+                    {
+                      department.status === true
+                        ? (
+                          <Badge color="success" pill>
+                            Ativo
+                          </Badge>
+                        ) : (
+                          department.status === false
+                            ? (
+                              <Badge color="danger" pill>
+                                Inativo
+                              </Badge>
+                            ) : (
+                              <Badge color="primary" pill>
+                                N/A
+                              </Badge>
+                            )
+                        )
+                    }
+                  </td>
+                  <td className="table-actions text-left">
+                    <a
+                      className="table-action"
+                      href="#pablo"
+                      id="tooltipEditDepartment"
+                      onClick={(e) => { e.preventDefault(); handleDepartmentUpdate(department.ID_Department); }}
+                    >
+                      <i className="fas fa-user-edit" />
+                    </a>
+                    <UncontrolledTooltip delay={0} target="tooltipEditDepartment">
+                      Editar
+                    </UncontrolledTooltip>
+                    <a
+                      className="table-action table-action-delete"
+                      href="#pablo"
+                      id="tooltipDeleteDepartment"
+                      onClick={(e) => { e.preventDefault(); showWarningAlert(department.ID_Department, department.DepartmentName); }}
+                    >
+                      <i className="fas fa-trash" />
+                    </a>
+                    <UncontrolledTooltip delay={0} target="tooltipDeleteDepartment">
+                      Deletar
+                    </UncontrolledTooltip>
                   </td>
                 </tr>
               ))
@@ -146,9 +231,14 @@ function DepartmentsList() {
 
       <ShowDepartmentDescriptionsModal
         handleShowDepartmentDescriptionsModal={handleShowDepartmentDescriptionsModal}
-        modalOpen={modalDepartmentOpen}
+        modalOpen={openDepartmentDetailModal}
         departmentDescription={descriptionSelectedDepartment}
         departmentName={nameSelectedDepartment}
+      />
+
+      <ModalDepartment
+        handleOpenDepartmentUpdateModal={handleOpenDepartmentUpdateModal}
+        modalOpen={openDepartmentUpdateModal}
       />
 
     </Form>

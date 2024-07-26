@@ -34,7 +34,7 @@ import Link from "next/link";
 import ModalPlan from "../Modals/admin/ModalPlan";
 import ModalEnterprise from "../Modals/admin/ModalEnterprise"
 import ModalEmployee from "../Modals/enterprise/ModalEmployee"
-import ModalAdm from "../Modals/admin/ModalAdm"
+//import ModalAdm from "../Modals/admin/ModalAdm"
 
 function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
 
@@ -419,7 +419,7 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                       <small>Contatos</small>
                     </Col>
 
-                    <ModalAdm isOpen={modalAdmOpen} toggle={toggleModalAdm} />
+                    {/* <ModalAdm isOpen={modalAdmOpen} toggle={toggleModalAdm} /> */}
                     <Col
                       className="shortcut-item"
                       href="#pablo"

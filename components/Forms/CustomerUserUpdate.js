@@ -19,6 +19,7 @@ import { useFindEmployeeAddress } from "../../hooks/RecordsHooks/customer/useFin
 import useUpdateClientCompany from '../../hooks/RecordsHooks/customer/useUpdateClientCompany';
 import useCEP from "../../hooks/RecordsHooks/useCEP";
 import { handleSelectionEmploymentContractData } from '../../util/handleSelectionEmploymentContractData';
+import { handleDateFormatting } from "../../util/handleDateFormatting";
 
 function CustomerUserUpdate({ handleOpenCustomerModal }) {
 
@@ -310,7 +311,7 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
         }
     }, [hasValuesChangedWithAPIData, validateAddClientCompanyForm]);
 
-    
+
     useEffect(() => {
         console.log("brasilAPICEPData", brasilAPICEPData);
         console.log("errorCEPValidation", errorCEPValidation);

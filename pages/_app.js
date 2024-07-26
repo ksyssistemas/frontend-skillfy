@@ -26,6 +26,11 @@ import { SweetAlertProvider } from "../contexts/SweetAlertContext";
 import { AppraisalSkillsProvider } from "../contexts/PerformanceContext/AppraisalSkillsContext";
 import { AdminProvider } from "../contexts/RecordsContext/AdminContext";
 import { CustomerProvider } from "../contexts/RecordsContext/CustomerContext";
+import { ContactPersonProvider } from "../contexts/RecordsContext/ContactPersonContext";
+import { DepartmentProvider } from "../contexts/RecordsContext/DepartmentContext";
+import { EmployeeFunctionProvider } from "../contexts/RecordsContext/EmployeeFunctionContext";
+import { RoleProvider } from "../contexts/RecordsContext/RoleContext";
+import { EmployeeProvider } from "../contexts/RecordsContext/EmployeeContext";
 
 Router.events.on("routeChangeStart", (url) => {
   console.log(`Loading: ${url}`);
@@ -84,28 +89,38 @@ export default class MyApp extends App {
           <AlertProvider>
             <AdminProvider>
               <CustomerProvider>
-                <AppraisalCycleProvider>
-                  <SweetAlertProvider>
-                    <AppraisalSkillsProvider>
-                      <Head>
-                        <meta
-                          name="viewport"
-                          content="width=device-width, initial-scale=1, shrink-to-fit=no"
-                        />
-                        <title>Twig</title>
-                        {/* <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script> */}
-                      </Head>
-                      <Layout>
-                        <Component {...pageProps} />
-                      </Layout>
-                    </AppraisalSkillsProvider>
-                  </SweetAlertProvider>
-                </AppraisalCycleProvider>
+                <ContactPersonProvider>
+                  <DepartmentProvider>
+                    <RoleProvider>
+                      <EmployeeFunctionProvider>
+                        <EmployeeProvider>
+                          <AppraisalCycleProvider>
+                            <SweetAlertProvider>
+                              <AppraisalSkillsProvider>
+                                <Head>
+                                  <meta
+                                    name="viewport"
+                                    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+                                  />
+                                  <title>SkillFy</title>
+                                  {/* <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script> */}
+                                </Head>
+                                <Layout>
+                                  <Component {...pageProps} />
+                                </Layout>
+                              </AppraisalSkillsProvider>
+                            </SweetAlertProvider>
+                          </AppraisalCycleProvider>
+                        </EmployeeProvider>
+                      </EmployeeFunctionProvider>
+                    </RoleProvider>
+                  </DepartmentProvider>
+                </ContactPersonProvider>
               </CustomerProvider>
             </AdminProvider>
           </AlertProvider>
         </AuthProvider>
-      </React.Fragment>
+      </React.Fragment >
     );
   }
 }

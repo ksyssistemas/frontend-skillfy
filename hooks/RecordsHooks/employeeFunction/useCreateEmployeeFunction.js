@@ -8,6 +8,8 @@ const useCreateEmployeeFunction = (handleShowRolesUserRegister) => {
   const [funtionReportsToFuntionState, setFuntionReportsToFuntionState] = useState(null);
   const [employeeFunctiontDescription, setEmployeeFunctiontDescription] = useState("");
   const [employeeFunctiontDescriptionState, setEmployeeFunctiontDescriptionState] = useState(null);
+  const [employeeFunctiontStatus, setEmployeeFunctiontStatus] = useState(false);
+  const [employeeFunctiontStatusState, setEmployeeFunctiontStatusState] = useState(null);
   const [employeeFunctionDataList, setEmployeeFunctionDataList] = useState([]);
   const handleEmployeeFunctionDataList = (employeeFunctionData) => {
     setEmployeeFunctionDataList(employeeFunctionData);
@@ -54,12 +56,10 @@ const useCreateEmployeeFunction = (handleShowRolesUserRegister) => {
         };
 
         if (employeeFunctiontDescription && employeeFunctiontDescription !== "") {
-          console.log(employeeFunctiontDescription);
           payload.description = employeeFunctiontDescription;
         }
 
         if (funtionReportsToFuntion && funtionReportsToFuntion !== "") {
-          console.log(funtionReportsToFuntion);
           payload.responsible = funtionReportsToFuntion;
         }
 
@@ -94,6 +94,8 @@ const useCreateEmployeeFunction = (handleShowRolesUserRegister) => {
     setFuntionReportsToFuntionState(null);
     setEmployeeFunctiontDescription("");
     setEmployeeFunctiontDescriptionState(null);
+    setEmployeeFunctiontStatus(false);
+    setEmployeeFunctiontStatusState(null);
   }
 
   return {
@@ -111,8 +113,13 @@ const useCreateEmployeeFunction = (handleShowRolesUserRegister) => {
     setEmployeeFunctiontDescription,
     employeeFunctiontDescriptionState,
     setEmployeeFunctiontDescriptionState,
+    employeeFunctiontStatus,
+    setEmployeeFunctiontStatus,
+    employeeFunctiontStatusState,
+    setEmployeeFunctiontStatusState,
     handleValidateAddEmployeeFunctionForm,
-    handleEmployeeFunctionDataList
+    handleEmployeeFunctionDataList,
+    reset
   };
 };
 

@@ -68,6 +68,7 @@ export const SweetAlertProvider = ({ children }) => {
     };
 
     const warningAlert = (
+        key,
         title,
         confirmBtnText,
         content,
@@ -80,6 +81,7 @@ export const SweetAlertProvider = ({ children }) => {
         };
         addAlert(
             <ReactBSAlert
+                key={key}
                 warning
                 style={{ display: "block", marginTop: "-100px" }}
                 title={title}

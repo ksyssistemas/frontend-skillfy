@@ -8,6 +8,8 @@ const useCreateDepartment = (handleShowDepartmentsUserRegister) => {
   const [departmentReportsToDepartmentState, setDepartmentReportsToDepartmentState] = useState(null);
   const [departmentDescription, setDepartmentDescription] = useState("");
   const [departmentDescriptionState, setDepartmentDescriptionState] = useState(null);
+  const [departmentStatus, setDepartmentStatus] = useState("");
+  const [departmentStatusState, setDepartmentStatusState] = useState(false);
   const [departmentDataList, setDepartmentDataList] = useState([]);
   const handleDepartmentDataList = (departmentData) => {
     setDepartmentDataList(departmentData);
@@ -90,6 +92,8 @@ const useCreateDepartment = (handleShowDepartmentsUserRegister) => {
     setDepartmentReportsToDepartmentState(null);
     setDepartmentDescription("");
     setDepartmentDescriptionState(null);
+    setDepartmentStatus(false);
+    setDepartmentStatusState(null);
   }
 
   return {
@@ -107,8 +111,13 @@ const useCreateDepartment = (handleShowDepartmentsUserRegister) => {
     setDepartmentDescription,
     departmentDescriptionState,
     setDepartmentDescriptionState,
+    departmentStatus,
+    setDepartmentStatus,
+    departmentStatusState,
+    setDepartmentStatusState,
     handleValidateAddDepartmentForm,
-    handleDepartmentDataList
+    handleDepartmentDataList,
+    reset
   };
 };
 

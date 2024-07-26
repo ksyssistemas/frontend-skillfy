@@ -8,11 +8,11 @@ import {
   Table,
   UncontrolledTooltip,
 } from 'reactstrap';
-import ModalAdm from "../../Modals/admin/ModalAdm"
 import { useFindAllAdmin } from "../../../hooks/RecordsHooks/admin/useFindAllAdmin"
 import { useDeleteAdmin } from "../../../hooks/RecordsHooks/admin/useDeleteAdmin"
 import { AdminContext } from '../../../contexts/RecordsContext/AdminContext';
 import { useSweetAlert } from '../../../contexts/SweetAlertContext';
+import ModalAdmin from '../../Modals/admin/ModalAdmin';
 
 function AdminList({ handleShowAdminUserRegister }) {
 
@@ -29,12 +29,12 @@ function AdminList({ handleShowAdminUserRegister }) {
 
   function handleAdminUpdate(adminId) {
     handleAdminIdToUpdate(adminId);
-    handleShowAdminUserRegister();
+    handleOpenAdminUpdateModal();
   }
 
   const [modalAdmOpen, setModalAdmOpen] = React.useState(false);
 
-  const toggleModalAdm = () => {
+  const handleOpenAdminUpdateModal = () => {
     setModalAdmOpen(!modalAdmOpen);
   };
 
@@ -56,6 +56,7 @@ function AdminList({ handleShowAdminUserRegister }) {
 
   const showWarningAlert = (adminId, adminName, adminLastName) => {
     warningAlert(
+      `${adminId}`,
       "Atenção",
       "Deletar",
       `Você deseja realmente excluir ${adminName} ${adminLastName}?`,
@@ -150,7 +151,7 @@ function AdminList({ handleShowAdminUserRegister }) {
                   className="table-action"
                   href="#pablo"
                   id="tooltipEditAdmin"
-                //onClick={(e) => { e.preventDefault(); handleAdminUpdate(admin.id); }}
+                  onClick={(e) => { e.preventDefault(); handleAdminUpdate(admin.id); }}
                 >
                   <i className="fas fa-user-edit" />
                 </a>
@@ -173,12 +174,9 @@ function AdminList({ handleShowAdminUserRegister }) {
           ))}
         </tbody>
       </Table>
-      <ModalAdm
-        isOpen={modalAdmOpen}
-        toggle={toggleModalAdm}
-        //handleSave={handleSave}
-        formData={userAdministratorAccountData}
-      //handleInputChange={handleInputChange}
+      <ModalAdmin
+        handleOpenAdminUpdateModal={handleOpenAdminUpdateModal}
+        modalOpen={modalAdmOpen}
       />
 
 

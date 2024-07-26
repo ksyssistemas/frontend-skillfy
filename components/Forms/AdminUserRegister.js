@@ -12,11 +12,6 @@ import { handleDateFormatting } from "../../util/handleDateFormatting";
 
 function AdminUserRegister({ handleShowAdminUserRegister }) {
 
-    const { adminIdToUpdate,
-        handleAdminIdStatusCleanupToUpdate,
-        handleAdminIdToUpdate
-    } = useContext(AdminContext);
-
     const {
         firstName,
         setFirstName,
@@ -51,57 +46,13 @@ function AdminUserRegister({ handleShowAdminUserRegister }) {
         adminStatusState,
         setAdminStatusState,
         adminPrivilege,
-        setadminPrivilege,
+        setAdminPrivilege,
         adminPrivilegeState,
-        setadminPrivilegeState,
+        setAdminPrivilegeState,
         handleValidateAddAdminForm,
         handleBirthdateChange,
         validateEmail
     } = useCreateAdmin(handleShowAdminUserRegister);
-
-    const [detailedAdminData, setDetailedAdminData] = useState([]);
-    function handleCleanDetailedAdminData() {
-        setDetailedAdminData([]);
-    };
-
-    function handleUpdateAdmin() {
-        handleValidateUpdateAdminForm(
-            handleCloseAddAdminModal,
-            cycleIdToUpdate,
-            cycleTitle,
-            cyclePeriod,
-            formattedStartDate,
-            formattedFinishDate,
-            cycleObjective,
-            handleCycleIdToUpdate,
-            handleCleanDetailedAdminData
-        )
-    }
-
-    const [formattedBirthdate, setFormattedBirthdate] = useState('');
-
-    useEffect(() => {
-        const fetchAdmin = async (adminIdToUpdate) => {
-            if (!detailedAdminData.length) {
-                const foundAdmin = await useFindAdmin(adminIdToUpdate);
-                console.log("foundAdmin: ", foundAdmin);
-                setDetailedAdminData(foundAdmin);
-                setFirstName(foundAdmin.name);
-                setLastName(foundAdmin.lastname);
-                setBirthdate(new Date(foundAdmin.birthdate));
-                setFormattedBirthdate(foundAdmin.birthdate);
-                setEmailAddress(foundAdmin.email);
-                //setPassword(foundAdmin.AdminDueDate);
-                setPhoneNumber(foundAdmin.phone);
-                setAdminStatus(foundAdmin.status);
-                setPhoneNumber(foundAdmin.privileges);
-            }
-        };
-
-        if (adminIdToUpdate) {
-            fetchAdmin(adminIdToUpdate);
-        }
-    }, [adminIdToUpdate]);
 
     return (
         <Card className="mb-4">
@@ -124,7 +75,6 @@ function AdminUserRegister({ handleShowAdminUserRegister }) {
                                 type="text"
                                 valid={firstNameState === "valid"}
                                 invalid={firstNameState === "invalid"}
-                                value={firstName}
                                 onChange={(e) => {
                                     setFirstName(e.target.value);
                                     if (e.target.value === "") {
@@ -151,7 +101,6 @@ function AdminUserRegister({ handleShowAdminUserRegister }) {
                                 type="text"
                                 valid={lastNameState === "valid"}
                                 invalid={lastNameState === "invalid"}
-                                value={lastName}
                                 onChange={(e) => {
                                     setLastName(e.target.value);
                                     if (e.target.value === "") {
@@ -181,7 +130,6 @@ function AdminUserRegister({ handleShowAdminUserRegister }) {
                                 type="email"
                                 valid={emailAddressState === "valid"}
                                 invalid={emailAddressState === "invalid"}
-                                value={emailAddress}
                                 onChange={(e) => {
                                     const email = e.target.value;
                                     setEmailAddress(email);
@@ -209,8 +157,7 @@ function AdminUserRegister({ handleShowAdminUserRegister }) {
                                         placeholder: "__/__/__",
                                     }}
                                     timeFormat={false}
-                                    value={adminIdToUpdate ? birthdate : null}
-                                    onChange={(e) => adminIdToUpdate ? handleDateFormatting(e, setBirthdate, setBirthdateState, setFormattedBirthdate) : handleDateFormatting(e, setBirthdate, setBirthdateState)}
+                                    onChange={(e) => handleDateFormatting(e, setBirthdate, setBirthdateState)}
                                 />
                                 {/* <div className="invalid-feedback">
                                     É necessário selecionar uma data.
@@ -284,7 +231,6 @@ function AdminUserRegister({ handleShowAdminUserRegister }) {
                                 placeholder="+55 (99) 9 9999-9999"
                                 mask="+55 (99) 9 9999-9999"
                                 maskChar=" "
-                                value={phoneNumber}
                                 onChange={(e) => {
                                     setPhoneNumber(e.target.value);
                                     if (e.target.value === "") {

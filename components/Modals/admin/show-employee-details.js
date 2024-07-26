@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 // reactstrap components
 import {
@@ -7,15 +7,42 @@ import {
   ModalFooter,
   Row,
   Col,
+  Button,
 } from "reactstrap";
 import { useFindEmployee } from "../../../hooks/RecordsHooks/employee/useFindEmployee";
 import { useFindEmployeeAddress } from "../../../hooks/RecordsHooks/employee/useFindEmployeeAddress";
 import { useFindEmployeeContractDetails } from "../../../hooks/RecordsHooks/featuresEmploymentContract/useFindEmployeeContractDetails";
+import { EmployeeContext } from "../../../contexts/RecordsContext/EmployeeContext";
+import EmployeeUserUpdate from "../../Forms/EmployeeUserUpdate";
 
-function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, idSelectedToShowEmployeeDetails, setIdSelectedToShowEmployeeDetails }) {
+function ShowEmployeeDetailsModal(
+  {
+    handleShowEmployeeDetailsModal,
+    idSelectedToShowEmployeeDetails,
+    handleCleaningSelectedIdToShowEmployeeDetails,
+    handleOpenEmployeeModal,
+    modalOpen,
+    employeeName,
+    handleCleaningEmployeeNameStatus
+  }
+) {
+
+  const {
+    employeeIdToUpdate,
+    handleEmployeeIdStatusCleanupToUpdate,
+    handleEmployeeIdToUpdate,
+    hasNewEmployeeRecordCreated,
+    handleCreatedEmployeeRecordStatusChange,
+    hasUpdatedEmployeeRecord,
+    handleUpdatedEmployeeRecordStatusChange,
+    isShouldUpdateEmployee,
+    handleIsShouldUpdateEmployee,
+    hasDeletedEmployeeRecord,
+    handleDeletedEmployeeRecordStatusChange,
+  } = useContext(EmployeeContext);
 
   const [detailsSelectedEmployee, setDetailsSelectedEmployee] = useState([]);
-  const [addressDetailsSelectedEmployee, setAddressDetailsSelectedEmployee] = useState([]);
+  // const [addressDetailsSelectedEmployee, setAddressDetailsSelectedEmployee] = useState([]);
   const [contractDetailsSelectedEmployee, setContractDetailsSelectedEmployee] = useState([]);
 
   function formatDate(dateString) {
@@ -28,57 +55,92 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
     return `${day}/${month}/${year}`;
   }
 
+  function handleCloseEmployeeDetailsModal() {
+    handleCleaningSelectedIdToShowEmployeeDetails();
+    handleCleaningEmployeeNameStatus();
+    handleOpenEmployeeModal();
+  }
+
+  function handleCloseEmployeeUpdateModal() {
+    handleEmployeeIdStatusCleanupToUpdate();
+    handleCleaningEmployeeNameStatus();
+    handleOpenEmployeeModal();
+  }
+
   useEffect(() => {
     const fetchData = async () => {
-      if (detailsSelectedEmployee.length === 0 && addressDetailsSelectedEmployee.length === 0 && contractDetailsSelectedEmployee.length === 0) {
-        console.log("ID: ", idSelectedToShowEmployeeDetails)
+      if (detailsSelectedEmployee.length === 0 &&
+        //  addressDetailsSelectedEmployee.length === 0 && 
+        contractDetailsSelectedEmployee.length === 0) {
         const foundEmployee = await useFindEmployee(idSelectedToShowEmployeeDetails);
-        setDetailsSelectedEmployee(foundEmployee || []);
-        const foundEmployeeAddress = await useFindEmployeeAddress(idSelectedToShowEmployeeDetails);
-        setAddressDetailsSelectedEmployee(foundEmployeeAddress.data[0] || []);
+        setDetailsSelectedEmployee(foundEmployee);
+        // const foundEmployeeAddress = await useFindEmployeeAddress(idSelectedToShowEmployeeDetails);
+        // setAddressDetailsSelectedEmployee(foundEmployeeAddress.data[0] || []);
         const foundEmployeeContractDetails = await useFindEmployeeContractDetails(idSelectedToShowEmployeeDetails);
-        setContractDetailsSelectedEmployee(foundEmployeeContractDetails || []);
+        console.log("foundEmployeeContractDetails: ", foundEmployeeContractDetails);
+        setContractDetailsSelectedEmployee(foundEmployeeContractDetails);
       }
     };
 
     fetchData();
-  }, [detailsSelectedEmployee, addressDetailsSelectedEmployee, contractDetailsSelectedEmployee, idSelectedToShowEmployeeDetails]);
+  }, [
+    detailsSelectedEmployee,
+    // addressDetailsSelectedEmployee, 
+    contractDetailsSelectedEmployee,
+    idSelectedToShowEmployeeDetails
+  ]);
 
-  function handleCloseModal() {
-    handleShowEmployeeDetailsModal();
-    setIdSelectedToShowEmployeeDetails('');
+  function handleUpdateEmployeeUserUpdate() {
+    handleIsShouldUpdateEmployee();
   }
+
+  const commonProps = {
+    handleShowEmployeeDetailsModal,
+    handleOpenEmployeeModal,
+    modalOpen,
+    employeeName,
+    handleCleaningEmployeeNameStatus,
+  };
 
   return (
     <Modal
       toggle={handleShowEmployeeDetailsModal}
       isOpen={modalOpen}
       size="xl"
-      key={`${detailsSelectedEmployee.id}.${addressDetailsSelectedEmployee.id}.${contractDetailsSelectedEmployee.id}`}
+      key={idSelectedToShowEmployeeDetails ? idSelectedToShowEmployeeDetails : employeeIdToUpdate}
+    //key={`${detailsSelectedEmployee.id}.${addressDetailsSelectedEmployee.id}.${contractDetailsSelectedEmployee.id}`}
     //fullscreen
     >
       <div className=" modal-header">
         <h5 className=" modal-title" id="exampleModalLabel">
           Informações de {detailsSelectedEmployee?.name || ''}
+          {
+            employeeName
+              ? `Informações de ${employeeName}`
+              : (
+                employeeIdToUpdate && employeeName
+                  ? `Informações de ${employeeName}`
+                  : 'Informações'
+              )
+          }
         </h5>
         <button
           aria-label="Close"
           className=" close"
           type="button"
-          onClick={handleCloseModal}
+          onClick={idSelectedToShowEmployeeDetails ? handleCloseEmployeeDetailsModal : handleCloseEmployeeUpdateModal}
         >
           <span aria-hidden={true}>×</span>
         </button>
       </div>
       <ModalBody>
-        <Row>
-          <div className="col">
-            <div className="card-wrapper">
-              <h6 className="heading-small text-muted mb-4">
-                Informações Pessoais
-              </h6>
-              <div className="form-row">
-                {/* <Col className="mb-3" md="4">
+        {
+          detailsSelectedEmployee && detailsSelectedEmployee.id ? (
+            <Row>
+              <div className="col">
+                <div className="card-wrapper">
+                  <div className="form-row">
+                    {/* <Col className="mb-3" md="4">
                   <label
                     className="form-control-label"
                     htmlFor="validationCustom01"
@@ -91,76 +153,76 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                     </span>
                   </div>
                 </Col> */}
-                <Col className="mb-3" md="4">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationCustom05"
-                  >
-                    Nome
-                  </label>
-                  <div className="mt-1 mb-3">
-                    <span className="name text-sm">
-                      {detailsSelectedEmployee?.name || ''}
-                    </span>
+                    <Col className="mb-3" md="6">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom05"
+                      >
+                        Nome
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {detailsSelectedEmployee?.name || ''}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="6">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Sobrenome
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {detailsSelectedEmployee?.lastName || ''}
+                        </span>
+                      </div>
+                    </Col>
                   </div>
-                </Col>
-                <Col className="mb-3" md="4">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationCustom02"
-                  >
-                    Sobrenome
-                  </label>
-                  <div className="mt-1 mb-3">
-                    <span className="name text-sm">
-                      {detailsSelectedEmployee?.lastName || ''}
-                    </span>
+                  <div className="form-row">
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom01"
+                      >
+                        Data de Nascimento
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {detailsSelectedEmployee?.birthdate ? formatDate(detailsSelectedEmployee.birthdate) : ''}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom05"
+                      >
+                        E-mail
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {detailsSelectedEmployee?.email || ''}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Número de Telefone
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {detailsSelectedEmployee?.phoneNumber || ''}
+                        </span>
+                      </div>
+                    </Col>
                   </div>
-                </Col>
-              </div>
-              <div className="form-row">
-                <Col className="mb-3" md="4">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationCustom01"
-                  >
-                    Data de Nascimento
-                  </label>
-                  <div className="mt-1 mb-3">
-                    <span className="name text-sm">
-                      {detailsSelectedEmployee?.birthdate ? formatDate(detailsSelectedEmployee.birthdate) : ''}
-                    </span>
-                  </div>
-                </Col>
-                <Col className="mb-3" md="4">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationCustom05"
-                  >
-                    E-mail
-                  </label>
-                  <div className="mt-1 mb-3">
-                    <span className="name text-sm">
-                      {detailsSelectedEmployee?.email || ''}
-                    </span>
-                  </div>
-                </Col>
-                <Col className="mb-3" md="4">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationCustom02"
-                  >
-                    Número de Telefone
-                  </label>
-                  <div className="mt-1 mb-3">
-                    <span className="name text-sm">
-                      {detailsSelectedEmployee?.phoneNumber || ''}
-                    </span>
-                  </div>
-                </Col>
-              </div>
-              <hr />
-              <h6 className="heading-small text-muted mb-4">
+                  <hr />
+                  {/* <h6 className="heading-small text-muted mb-4">
                 Informações de Endereço
               </h6>
               <div className="form-row">
@@ -260,163 +322,178 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
                   </div>
                 </Col>
               </div>
-              <hr />
-              <h6 className="heading-small text-muted mb-4">
-                Informações de Ocupação
-              </h6>
-              <div className="form-row">
-                <Col className="mb-3" md="4">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationCustom02"
-                  >
-                    Departamento
-                  </label>
-                  <div className="mt-1 mb-3">
-                    <span className="name text-sm">
-                      {contractDetailsSelectedEmployee?.department || ''}
-                    </span>
+              <hr /> */}
+                  <h6 className="heading-small text-muted mb-4">
+                    Informações de Ocupação
+                  </h6>
+                  <div className="form-row">
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Departamento
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {contractDetailsSelectedEmployee?.department || ''}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Cargo
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {contractDetailsSelectedEmployee?.roles || ''}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Função
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {contractDetailsSelectedEmployee?.employeeFunction || ''}
+                        </span>
+                      </div>
+                    </Col>
                   </div>
-                </Col>
-                <Col className="mb-3" md="4">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationCustom02"
-                  >
-                    Cargo
-                  </label>
-                  <div className="mt-1 mb-3">
-                    <span className="name text-sm">
-                      {contractDetailsSelectedEmployee?.roles || ''}
-                    </span>
+                  <div className="form-row">
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Tipo de Contrato
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {contractDetailsSelectedEmployee?.contractType || ''}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Modelo de Trabalho
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {contractDetailsSelectedEmployee?.contractModel || ''}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Data de Admissão
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {contractDetailsSelectedEmployee?.adimissionDate ? formatDate(contractDetailsSelectedEmployee.adimissionDate) : ''}
+                        </span>
+                      </div>
+                    </Col>
                   </div>
-                </Col>
-                <Col className="mb-3" md="4">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationCustom02"
-                  >
-                    Função
-                  </label>
-                  <div className="mt-1 mb-3">
-                    <span className="name text-sm">
-                      {contractDetailsSelectedEmployee?.employeeFunction || ''}
-                    </span>
+                  <div className="form-row">
+                    <Col className="mb-3" md="3">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Exerce líderança?
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {detailsSelectedEmployee?.isLead === true ? "Sim" : "Não"}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="3">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Hora de Entrada
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {contractDetailsSelectedEmployee?.entryTime || ''}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="3">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Intervalo
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {contractDetailsSelectedEmployee?.breakTime || ''}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="3">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Horário de Saída
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {contractDetailsSelectedEmployee?.departureTime || ''}
+                        </span>
+                      </div>
+                    </Col>
                   </div>
-                </Col>
+                </div>
               </div>
-              <div className="form-row">
-                <Col className="mb-3" md="4">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationCustom02"
-                  >
-                    Tipo de Contrato
-                  </label>
-                  <div className="mt-1 mb-3">
-                    <span className="name text-sm">
-                      {contractDetailsSelectedEmployee?.contractType || ''}
-                    </span>
-                  </div>
-                </Col>
-                <Col className="mb-3" md="4">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationCustom02"
-                  >
-                    Modelo de Trabalho
-                  </label>
-                  <div className="mt-1 mb-3">
-                    <span className="name text-sm">
-                      {contractDetailsSelectedEmployee?.contractModel || ''}
-                    </span>
-                  </div>
-                </Col>
-                <Col className="mb-3" md="4">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationCustom02"
-                  >
-                    Data de Admissão
-                  </label>
-                  <div className="mt-1 mb-3">
-                    <span className="name text-sm">
-                      {contractDetailsSelectedEmployee?.adimissionDate ? formatDate(contractDetailsSelectedEmployee.adimissionDate) : ''}
-                    </span>
-                  </div>
-                </Col>
-              </div>
-              <div className="form-row">
-                <Col className="mb-3" md="3">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationCustom02"
-                  >
-                    Exerce líderança?
-                  </label>
-                  <div className="mt-1 mb-3">
-                    <span className="name text-sm">
-                      {detailsSelectedEmployee?.isLead === true ? "Sim" : "Não"}
-                    </span>
-                  </div>
-                </Col>
-                <Col className="mb-3" md="3">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationCustom02"
-                  >
-                    Hora de Entrada
-                  </label>
-                  <div className="mt-1 mb-3">
-                    <span className="name text-sm">
-                      {contractDetailsSelectedEmployee?.entryTime || ''}
-                    </span>
-                  </div>
-                </Col>
-                <Col className="mb-3" md="3">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationCustom02"
-                  >
-                    Intervalo
-                  </label>
-                  <div className="mt-1 mb-3">
-                    <span className="name text-sm">
-                      {contractDetailsSelectedEmployee?.breakTime || ''}
-                    </span>
-                  </div>
-                </Col>
-                <Col className="mb-3" md="3">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationCustom02"
-                  >
-                    Horário de Saída
-                  </label>
-                  <div className="mt-1 mb-3">
-                    <span className="name text-sm">
-                      {contractDetailsSelectedEmployee?.departureTime || ''}
-                    </span>
-                  </div>
-                </Col>
-              </div>
-            </div>
-          </div>
-        </Row>
+            </Row>
+          ) : (
+            employeeIdToUpdate ? (
+              <EmployeeUserUpdate {...commonProps} />
+            ) : (
+              <div className="text-center">Dados não disponíveis</div>
+            )
+          )
+        }
       </ModalBody>
-      <ModalFooter />
-      {/* <ModalFooter>
-        <Button
-          color="secondary"
-          type="button"
-          onClick={handleShowEmployeeDetailsModal}
-        >
-          Fechar
-        </Button>
-        <Button color="primary" type="button">
-          Editar
-        </Button>
-      </ModalFooter> */}
+      {
+        employeeIdToUpdate ? (
+          <ModalFooter>
+            <Button
+              color="secondary"
+              type="button"
+              onClick={idSelectedToShowEmployeeDetails ? handleCloseEmployeeDetailsModal : handleCloseEmployeeUpdateModal}
+            >
+              Fechar
+            </Button>
+            <Button
+              color={'warning'}
+              type="button"
+              onClick={() => handleUpdateEmployeeUserUpdate()}
+            >
+              Editar Ciclo
+            </Button>
+          </ModalFooter>
+        ) : null
+      }
     </Modal >
   );
 
@@ -424,12 +501,20 @@ function ShowEmployeeDetailsModal({ handleShowEmployeeDetailsModal, modalOpen, i
 
 ShowEmployeeDetailsModal.defaultProps = {
   handleShowEmployeeDetailsModal: () => { },
+  idSelectedToShowEmployeeDetails: PropTypes.string,
+  handleCleaningSelectedIdToShowEmployeeDetails: () => { },
+  handleOpenEmployeeModal: () => { },
   modalOpen: false,
+  employeeName: '',
 };
 
 ShowEmployeeDetailsModal.propTypes = {
   handleShowEmployeeDetailsModal: PropTypes.func,
+  idSelectedToShowEmployeeDetails: PropTypes.string,
+  handleCleaningSelectedIdToShowEmployeeDetails: PropTypes.func,
+  handleOpenEmployeeModal: PropTypes.func,
   modalOpen: PropTypes.bool,
+  employeeName: PropTypes.string,
 };
 
 export default ShowEmployeeDetailsModal;

@@ -455,7 +455,7 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
                             </Col>
                         </div>
                         <hr />
-                        <div className="form-row">
+                        {/* <div className="form-row">
                             <Col className="mb-3" md="4">
                                 <label
                                     className="form-control-label"
@@ -642,7 +642,7 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
                                 </div>
                             </Col>
                         </div>
-                        <hr />
+                        <hr /> */}
                         <div className="form-row">
                             <Col className="mb-3" md="4">
                                 <label

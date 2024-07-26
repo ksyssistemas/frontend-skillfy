@@ -6,10 +6,8 @@ export async function useDeleteAdmin(adminId) {
     if (!response.ok) {
       throw new Error('Failed to delete admin.');
     }
-    console.log("Response useDelete: ", response);
     const data = await response.json();
 
-    console.log("Data useDelete: ", data);
     return data;
 
   } catch (error) {

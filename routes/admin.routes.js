@@ -44,14 +44,14 @@ const routes = [
         layout: "/records",
       },
       {
-        path: "/contact-persons",
-        name: "Contatos",
+        path: "/customers",
+        name: "Clientes",
         miniName: "C",
         layout: "/records",
       },
       {
-        path: "/customers",
-        name: "Clientes",
+        path: "/contact-persons",
+        name: "Contatos",
         miniName: "C",
         layout: "/records",
       },

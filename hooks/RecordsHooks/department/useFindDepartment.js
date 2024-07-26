@@ -1,15 +1,11 @@
-export async function useFindAdmin(adminId) {
-  `${process.env.NEXT_PUBLIC_ADMINISTRATOR}/${adminId}`
+export async function useFindDepartment(departmentId) {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_ADMINISTRATOR}/${adminId}`);
-    console.log(response);
-
+    const response = await fetch(`${process.env.NEXT_PUBLIC_DEPARTMENT}/${departmentId}`);
     if (!response.ok) {
       throw new Error('Network response was not ok.');
     }
 
     const data = await response.json();
-    console.log(data);
     return data;
 
   } catch (error) {
