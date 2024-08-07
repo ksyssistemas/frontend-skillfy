@@ -83,7 +83,6 @@ const useUpdateClientCompany = () => {
       || companyEmailAddress && companyEmailAddress !== ""
       || customerBusinessSector && customerBusinessSector !== ""
       || customerWebSite && customerWebSite !== ""
-      || customerStatus && customerStatus !== ""
       || customerIdToUpdate && customerIdToUpdate !== ""
     ) {
       try {
@@ -126,7 +125,6 @@ const useUpdateClientCompany = () => {
       || companyCity && companyCity !== ""
       || companyAddress && companyAddress !== ""
       || companyAddressNumber && companyAddressNumber !== ""
-      || companyAddressComplement && companyAddressComplement !== ""
       || companyDistrict && companyDistrict !== ""
       || companyCountry && companyCountry !== ""
       || customerIdToUpdate && customerIdToUpdate !== ""
@@ -142,10 +140,9 @@ const useUpdateClientCompany = () => {
           addressNumber: companyAddressNumber,
           isBranche: idHeadOfficeBranch === "Matriz" ? false : true,
           complement: companyAddressComplement,
-          customerId: customerIdToUpdate
+          // customerId: customerIdToUpdate
         };
-        console.log(`${process.env.NEXT_PUBLIC_CUSTOMER}-address`);
-        const response = await fetch(`${process.env.NEXT_PUBLIC_CUSTOMER}-address`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_CUSTOMER}-address/${customerIdToUpdate}/address`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',

@@ -7,7 +7,6 @@ export async function useFindAllAdmin() {
     }
 
     const data = await response.json();
-    console.log("Admin: ", data);
     return data;
 
   } catch (error) {

@@ -1,16 +1,25 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import useCEP from '../useCEP';
 import useCNPJ from '../useCNPJ';
 import useCreateCustomer from './useCreateCustomerAccountHolder';
+import { CustomerContext } from '../../../contexts/RecordsContext/CustomerContext';
+import { employmentContractDataSearchAndProcess } from '../../../util/employmentContractDataSearchAndProcess';
 
 const useCreateClientCompany = () => {
+
+  const {
+    idAccountHolderToLinkToCustomer,
+    handleIdAccountHolderToLinkToCustomer,
+    handleCleaningIdAccountHolderToLinkToCustomer
+  } = useContext(CustomerContext);
 
   const {
     brasilAPICNPJData,
     individualEmployerIdNumber,
     handleSaveCNPJ,
     individualEmployerIdNumberState,
-    setIndividualEmployerIdNumberState
+    setIndividualEmployerIdNumberState,
+    validateCnpj
   } = useCNPJ("");
 
   const {
@@ -217,23 +226,18 @@ const useCreateClientCompany = () => {
 
   function handleFormFieldsAutocompleteCEP(cep) {
     if (cep.cep) {
-      console.log(cep.cep);
       setCustomerZipCode(cep.cep);
     }
     if (cep.state) {
-      console.log(cep.state);
       setFederatedUnit(cep.state)
     }
     if (cep.city) {
-      console.log(cep.city);
       setCompanyCity(cep.city)
     }
     if (cep.neighborhood) {
-      console.log(cep.neighborhood);
       setCompanyDistrict(cep.neighborhood)
     }
     if (cep.street) {
-      console.log(cep.street);
       setCompanyAddress(cep.street);
     }
     handleValuesChangedWithAPIDataCEP();
@@ -289,6 +293,7 @@ const useCreateClientCompany = () => {
       const customerUserIdCreated = await handleSubmitCompany(individualEmployerIdNumber, companyName, registrationName, companyTypes, customerBusinessPhoneNumber, customerPhoneNumber, companyEmailAddress, customerBusinessSector, customerWebSite);
       //console.log("1", isClientCompanySaved);
       //setIsClientCompanySaved(!isClientCompanySaved);
+
       if (
         idHeadOfficeBranchState === "valid" &&
         customerZipCodeState === "valid" &&
@@ -302,6 +307,8 @@ const useCreateClientCompany = () => {
         await handleSubmitCompanyAddress(idHeadOfficeBranch, customerZipCode, federatedUnit, companyCity, companyAddress, companyAddressNumber, companyAddressComplement, companyDistrict, customerUserIdCreated);
         //console.log("1", isCompanyAddressSaved);
         //setIsCompanyAddressSaved(!isCompanyAddressSaved);
+        await handleLinkingAccountHolderToCustomer(customerUserIdCreated);
+
         goBackToCustomerUserList(handleShowCustomerUserRegister);
       }
     }
@@ -317,7 +324,6 @@ const useCreateClientCompany = () => {
   }
 
   const handleSubmitCompany = async (individualEmployerIdNumber, companyName, registrationName, companyTypes, customerBusinessPhoneNumber, customerPhoneNumber, companyEmailAddress, customerBusinessSector, customerWebSite) => {
-    console.log(individualEmployerIdNumber, companyName, registrationName, companyTypes, customerBusinessPhoneNumber, customerPhoneNumber, companyEmailAddress, customerBusinessSector, customerWebSite);
     if (individualEmployerIdNumber && companyName && registrationName && companyTypes && customerBusinessPhoneNumber && companyEmailAddress && customerBusinessSector) {
       try {
         const payload = {
@@ -351,7 +357,6 @@ const useCreateClientCompany = () => {
         if (response.ok) {
 
           const data = await response.json();
-
           console.log('Data sent successfully!');
 
           return data.id;
@@ -365,7 +370,6 @@ const useCreateClientCompany = () => {
   };
 
   const handleSubmitCompanyAddress = async (idHeadOfficeBranch, customerZipCode, federatedUnit, companyCity, companyAddress, companyAddressNumber, companyAddressComplement, companyDistrict, customerUserIdCreated) => {
-    console.log(idHeadOfficeBranch, customerZipCode, federatedUnit, companyCity, companyAddress, companyAddressNumber, companyAddressComplement, companyDistrict, customerUserIdCreated);
     if (idHeadOfficeBranch && customerZipCode && federatedUnit && companyCity && companyAddress && companyAddressNumber && companyDistrict && customerUserIdCreated) {
       try {
         const payload = {
@@ -398,6 +402,41 @@ const useCreateClientCompany = () => {
           console.error('Error in response:', response.status);
         }
       } catch (error) {
+        console.error('Error in request:', error);
+      }
+    }
+  };
+
+  const handleLinkingAccountHolderToCustomer = async (customerUserIdCreated) => {
+    console.log("Contato: ", idAccountHolderToLinkToCustomer);
+    console.log("Empresa: ", customerUserIdCreated);
+    if (idAccountHolderToLinkToCustomer && idAccountHolderToLinkToCustomer !== '' &&
+      customerUserIdCreated && customerUserIdCreated !== '') {
+
+      const payload = {
+        customerId: customerUserIdCreated
+      }
+
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_CONTACT_PERSON}/${idAccountHolderToLinkToCustomer}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (response.ok) {
+
+          const data = await response.json();
+          handleCleaningIdAccountHolderToLinkToCustomer();
+          console.log('Data sent successfully!\n', data);
+
+          return data.id;
+        } else {
+          console.error('Error in response:', response.status);
+        }
+      } catch {
         console.error('Error in request:', error);
       }
     }

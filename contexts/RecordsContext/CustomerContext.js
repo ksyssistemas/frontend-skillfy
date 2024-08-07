@@ -36,6 +36,14 @@ function CustomerProvider({ children }) {
         setHasDeletedCustomerRecord(!hasDeletedCustomerRecord);
     }
 
+    const [idAccountHolderToLinkToCustomer, setIdAccountHolderToLinkToCustomer] = useState('');
+    function handleIdAccountHolderToLinkToCustomer(accountId) {
+        setIdAccountHolderToLinkToCustomer(accountId);
+    }
+    function handleCleaningIdAccountHolderToLinkToCustomer() {
+        setIdAccountHolderToLinkToCustomer('');
+    }
+
     return (
         <CustomerContext.Provider
             value={{
@@ -50,6 +58,9 @@ function CustomerProvider({ children }) {
                 handleIsShouldUpdateClientCompany,
                 hasDeletedCustomerRecord,
                 handleDeletedCustomerRecordStatusChange,
+                idAccountHolderToLinkToCustomer,
+                handleIdAccountHolderToLinkToCustomer,
+                handleCleaningIdAccountHolderToLinkToCustomer,
             }}>
             {children}
         </CustomerContext.Provider>

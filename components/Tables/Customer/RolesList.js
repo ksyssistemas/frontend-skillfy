@@ -19,12 +19,16 @@ import ModalRole from "../../Modals/admin/ModalRole";
 import ModalEmployeeFunction from "../../Modals/admin/ModalEmployeeFunction";
 import { useSweetAlert } from "../../../contexts/SweetAlertContext";
 import { useDeleteEmployeeFunction } from "../../../hooks/RecordsHooks/employeeFunction/useDeleteEmployeeFunction";
-import { useDeleteRole } from "../../../hooks/RecordsHooks/role/useDeleteRole";
+import { useDeleteRole } from '../../../hooks/RecordsHooks/role/useDeleteRole';
+import { useFindRole } from "../../../hooks/RecordsHooks/role/useFindRole";
+import { useFindEmployeeFunction } from "../../../hooks/RecordsHooks/employeeFunction/useFindEmployeeFunction";
 
 function RolesList() {
 
   const {
     handleRoleIdToUpdate,
+    hasNewRoleRecordCreated,
+    handleCreatedRoleRecordStatusChange,
     hasUpdatedRoleRecord,
     handleUpdatedRoleRecordStatusChange,
     hasDeletedRoleRecord,
@@ -33,6 +37,8 @@ function RolesList() {
 
   const {
     handleEmployeeFunctionIdToUpdate,
+    hasNewEmployeeFunctionRecordCreated,
+    handleCreatedEmployeeFunctionRecordStatusChange,
     hasUpdatedEmployeeFunctionRecord,
     handleUpdatedEmployeeFunctionRecordStatusChange,
     hasDeletedEmployeeFunctionRecord,
@@ -154,48 +160,96 @@ function RolesList() {
     }
   };
 
+  const fetchRoleNames = async (roles, context = '') => {
+    const updatedRoles = await Promise.all(
+      roles.map(async (role) => {
+        if (role.responsible) {
+          try {
+            const roleData = await useFindRole(role.responsible);
+            return { ...role, responsible: roleData.roleName };
+          } catch (error) {
+            console.error(`Error fetching ${context} data for responsible ${role.id}:`, error);
+            return { ...role, responsible: 'Não reporta' };
+          }
+        } else {
+          console.warn(`No responsible value for role ${role.id}`);
+          return { ...role, responsible: 'Não reporta' };
+        }
+      })
+    );
+    if (context === 'role') {
+      setDetailedRoleData(updatedRoles);
+    } else if (context === 'employeeFunction') {
+      setDetailedEmployeeFunctionData(updatedRoles);
+    }
+  };
+
   useEffect(() => {
-    const fetchRolesAndEmployeeFunctions = async () => {
-      if (detailedRoleData && detailedRoleData.length === 0) {
+    const fetchRoles = async () => {
+      if (detailedRoleData.length <= 0 || hasUpdatedRoleRecord || hasDeletedRoleRecord) {
         try {
           const foundRole = await useFindAllRoles();
-          setDetailedRoleData(foundRole);
+          if (foundRole) {
+            await fetchRoleNames(foundRole, 'role');
+          } else {
+            console.error('Invalid data format:', foundRole);
+          }
         } catch (error) {
-          console.error('Error fetching roles:', error);
+          console.error('Error fetching role:', error);
         }
       }
-      if (detailedEmployeeFunctionData && detailedEmployeeFunctionData.length === 0) {
+    };
+    fetchRoles();
+    if (hasNewRoleRecordCreated) {
+      handleCreatedRoleRecordStatusChange();
+    }
+    if (hasUpdatedRoleRecord) {
+      handleUpdatedRoleRecordStatusChange();
+    }
+    if (hasDeletedRoleRecord) {
+      handleDeletedRoleRecordStatusChange();
+    }
+
+  }, [
+    detailedRoleData.length,
+    hasNewRoleRecordCreated,
+    hasUpdatedRoleRecord,
+    hasDeletedRoleRecord
+  ]);
+
+  useEffect(() => {
+    const fetchEmployeeFunctions = async () => {
+      if (detailedEmployeeFunctionData.length <= 0 || hasUpdatedEmployeeFunctionRecord || hasDeletedEmployeeFunctionRecord) {
         try {
           const foundEmployeeFunction = await useFindAllFunctions();
-          setDetailedEmployeeFunctionData(foundEmployeeFunction);
+          if (foundEmployeeFunction) {
+            await fetchRoleNames(foundEmployeeFunction, 'employeeFunction');
+          } else {
+            console.error('Invalid data format:', foundEmployeeFunction);
+          }
         } catch (error) {
-          console.error('Error fetching employee functions:', error);
+          console.error('Error fetching employee function:', error);
         }
       }
 
     };
 
-    fetchRolesAndEmployeeFunctions();
-    if (hasUpdatedRoleRecord) {
-      handleUpdatedRoleRecordStatusChange();
+    fetchEmployeeFunctions();
+    if (hasNewEmployeeFunctionRecordCreated) {
+      handleCreatedEmployeeFunctionRecordStatusChange();
     }
     if (hasUpdatedEmployeeFunctionRecord) {
       handleUpdatedEmployeeFunctionRecordStatusChange();
-    }
-    if (hasDeletedRoleRecord) {
-      handleDeletedRoleRecordStatusChange();
     }
     if (hasDeletedEmployeeFunctionRecord) {
       handleDeletedEmployeeFunctionRecordStatusChange();
     }
 
   }, [
-    detailedRoleData,
-    hasUpdatedRoleRecord,
+    detailedEmployeeFunctionData.length,
+    hasNewEmployeeFunctionRecordCreated,
     hasUpdatedEmployeeFunctionRecord,
-    hasDeletedRoleRecord,
-    hasDeletedEmployeeFunctionRecord,
-    detailedEmployeeFunctionData
+    hasDeletedEmployeeFunctionRecord
   ]);
 
   return (
@@ -219,29 +273,41 @@ function RolesList() {
           <tbody>
             {detailedRoleData && detailedRoleData.length > 0 ? (
               detailedRoleData.map((role) => (
-                <tr className="table-" key={role.ID_Roles}>
+                <tr className="table-" key={role.id}>
                   <td className="table-user">
-                    <b>{role.RoleName}</b>
+                    <b>{role.roleName}</b>
                   </td>
                   <td>
                     <span className="text-muted">
-                      {formatDate(role.CreatedAt)}
+                      {formatDate(role.createdAt)}
                     </span>
                   </td>
                   <td>
-                    <span className="name mb-0 text-sm">
-                      {role.Responsible}
-                    </span>
+                    {
+                      role.responsible === 'Não reporta' ? (
+                        <span className="name mb-0 text-sm">
+                          {role.responsible}
+                        </span>
+                      ) : (
+                        <span className="name mb-0 text-sm font-weight-bold">
+                          {role.responsible}
+                        </span>
+                      )
+                    }
                   </td>
                   <td className="text-muted">
                     {
-                      role.Description ? (
+                      role.description ? (
                         <Nav navbar>
                           <NavItem>
                             <NavLink target="_blank">
-                              <a href="#" className="text-underline">
+                              <a
+                                href="#"
+                                className="text-underline"
+                                id="showDescription"
+                              >
                                 <span
-                                  onClick={() => handleShowRoleModal(role.RoleName, role.Description)}
+                                  onClick={() => handleShowRoleModal(role.roleName, role.description)}
                                   className="name mb-0 text-sm"
                                 >
                                   Ver
@@ -261,13 +327,13 @@ function RolesList() {
                   </td>
                   <td>
                     {
-                      role.status === true
+                      role.status === 1
                         ? (
                           <Badge color="success" pill>
                             Ativo
                           </Badge>
                         ) : (
-                          role.status === false
+                          role.status === 0
                             ? (
                               <Badge color="danger" pill>
                                 Inativo
@@ -285,7 +351,7 @@ function RolesList() {
                       className="table-action"
                       href="#pablo"
                       id="tooltipEditRole"
-                      onClick={(e) => { e.preventDefault(); handleRoleUpdate(role.ID_Roles); }}
+                      onClick={(e) => { e.preventDefault(); handleRoleUpdate(role.id); }}
                     >
                       <i className="fas fa-user-edit" />
                     </a>
@@ -296,7 +362,7 @@ function RolesList() {
                       className="table-action table-action-delete"
                       href="#pablo"
                       id="tooltipDeleteRole"
-                      onClick={(e) => { e.preventDefault(); showWarningAlert(role.ID_Roles, role.RoleName, 'role'); }}
+                      onClick={(e) => { e.preventDefault(); showWarningAlert(role.id, role.roleName, 'role'); }}
                     >
                       <i className="fas fa-trash" />
                     </a>
@@ -344,9 +410,17 @@ function RolesList() {
                     </span>
                   </td>
                   <td>
-                    <span className="name mb-0 text-sm">
-                      {employeeFunction.responsible}
-                    </span>
+                    {
+                      employeeFunction.responsible === 'Não reporta' ? (
+                        <span className="name mb-0 text-sm">
+                          {employeeFunction.responsible}
+                        </span>
+                      ) : (
+                        <span className="name mb-0 text-sm font-weight-bold">
+                          {employeeFunction.responsible}
+                        </span>
+                      )
+                    }
                   </td>
                   <td className="text-muted ">
                     {
@@ -376,13 +450,13 @@ function RolesList() {
                   </td>
                   <td>
                     {
-                      employeeFunction.status === true
+                      employeeFunction.status == 1
                         ? (
                           <Badge color="success" pill>
                             Ativo
                           </Badge>
                         ) : (
-                          employeeFunction.status === false
+                          employeeFunction.status == 0
                             ? (
                               <Badge color="danger" pill>
                                 Inativo

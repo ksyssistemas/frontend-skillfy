@@ -36,10 +36,7 @@ function ContactPersonsRecords() {
             <>
               <AdminHeader name="Contatos" parentName="Registros" newRegistrationButtonText="Adicionar Pessoa de Contato" handleShowContactPersonsUserRegister={handleShowContactPersonsUserRegister} />
               <Container className="mt--6" fluid>
-                <ContactPersonsList
-                // admins={fakeAdmins}
-                // deleteAdmin={deleteAdmin}
-                />
+                <ContactPersonsList />
               </Container>
             </>
           )

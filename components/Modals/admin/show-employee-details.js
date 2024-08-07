@@ -9,11 +9,18 @@ import {
   Col,
   Button,
 } from "reactstrap";
+import EmployeeUserUpdate from "../../Forms/EmployeeUserUpdate";
+import { EmployeeContext } from "../../../contexts/RecordsContext/EmployeeContext";
 import { useFindEmployee } from "../../../hooks/RecordsHooks/employee/useFindEmployee";
 import { useFindEmployeeAddress } from "../../../hooks/RecordsHooks/employee/useFindEmployeeAddress";
+import { useFindClientCompany } from "../../../hooks/RecordsHooks/customer/useFindClientCompany";
+import { useFindDepartment } from '../../../hooks/RecordsHooks/department/useFindDepartment';
+import { useFindRole } from '../../../hooks/RecordsHooks/role/useFindRole';
+import { useFindEmployeeFunction } from '../../../hooks/RecordsHooks/employeeFunction/useFindEmployeeFunction';
 import { useFindEmployeeContractDetails } from "../../../hooks/RecordsHooks/featuresEmploymentContract/useFindEmployeeContractDetails";
-import { EmployeeContext } from "../../../contexts/RecordsContext/EmployeeContext";
-import EmployeeUserUpdate from "../../Forms/EmployeeUserUpdate";
+import { useFindContractType } from "../../../hooks/RecordsHooks/featuresEmploymentContract/useFindContractType";
+import { useFindWorkModels } from "../../../hooks/RecordsHooks/featuresEmploymentContract/useFindWorkModels";
+import { useFindWorkplaces } from "../../../hooks/RecordsHooks/featuresEmploymentContract/useFindWorkplaces";
 
 function ShowEmployeeDetailsModal(
   {
@@ -23,7 +30,8 @@ function ShowEmployeeDetailsModal(
     handleOpenEmployeeModal,
     modalOpen,
     employeeName,
-    handleCleaningEmployeeNameStatus
+    handleCleaningEmployeeNameStatus,
+    companyNameToModalDetails
   }
 ) {
 
@@ -58,6 +66,14 @@ function ShowEmployeeDetailsModal(
   function handleCloseEmployeeDetailsModal() {
     handleCleaningSelectedIdToShowEmployeeDetails();
     handleCleaningEmployeeNameStatus();
+    setDetailsSelectedEmployee('');
+    setContractDetailsSelectedEmployee('');
+    setDepartmentName('');
+    setRoleName('');
+    setFunctionName('');
+    setContractTypeName('');
+    setWorkModelName('');
+    setWorkplaceName('');
     handleOpenEmployeeModal();
   }
 
@@ -67,18 +83,64 @@ function ShowEmployeeDetailsModal(
     handleOpenEmployeeModal();
   }
 
+  const [departmentName, setDepartmentName] = useState('');
+  const [roleName, setRoleName] = useState('');
+  const [functionName, setFunctionName] = useState('');
+  const [contractTypeName, setContractTypeName] = useState('');
+  const [workModelName, setWorkModelName] = useState('');
+  const [workplaceName, setWorkplaceName] = useState('');
+
   useEffect(() => {
+    const fetchCompanyNames = async (employee) => {
+      try {
+        const companyData = await useFindClientCompany(employee.customerId);
+        return { ...employee, companyName: companyData.companyName };
+      } catch (error) {
+        console.error(`Error fetching employee data for customerId ${employee.customerId}:`, error);
+        return { ...employee, companyName: 'Unknown' };
+      }
+    };
+
     const fetchData = async () => {
-      if (detailsSelectedEmployee.length === 0 &&
-        //  addressDetailsSelectedEmployee.length === 0 && 
-        contractDetailsSelectedEmployee.length === 0) {
-        const foundEmployee = await useFindEmployee(idSelectedToShowEmployeeDetails);
-        setDetailsSelectedEmployee(foundEmployee);
-        // const foundEmployeeAddress = await useFindEmployeeAddress(idSelectedToShowEmployeeDetails);
-        // setAddressDetailsSelectedEmployee(foundEmployeeAddress.data[0] || []);
-        const foundEmployeeContractDetails = await useFindEmployeeContractDetails(idSelectedToShowEmployeeDetails);
-        console.log("foundEmployeeContractDetails: ", foundEmployeeContractDetails);
-        setContractDetailsSelectedEmployee(foundEmployeeContractDetails);
+      try {
+        if (detailsSelectedEmployee.length <= 0) {
+          const foundEmployee = await useFindEmployee(idSelectedToShowEmployeeDetails);
+          const updatedEmployee = await fetchCompanyNames(foundEmployee)
+          setDetailsSelectedEmployee(updatedEmployee);
+          // const foundEmployeeAddress = await useFindEmployeeAddress(idSelectedToShowEmployeeDetails);
+          // setAddressDetailsSelectedEmployee(foundEmployeeAddress.data[0] || []);
+
+          const foundEmployeeContractDetails = await useFindEmployeeContractDetails(idSelectedToShowEmployeeDetails);
+          setContractDetailsSelectedEmployee(foundEmployeeContractDetails);
+          if (foundEmployeeContractDetails) {
+            const foundDepartmentName = await useFindDepartment(foundEmployeeContractDetails.departmentId);
+            setDepartmentName(foundDepartmentName.departmentName);
+            const foundRoleName = await useFindRole(foundEmployeeContractDetails.rolesId);
+            setRoleName(foundRoleName.roleName);
+            const foundFunctionName = await useFindEmployeeFunction(foundEmployeeContractDetails.departmentId);
+            if (foundFunctionName && foundFunctionName.name) {
+              setFunctionName(foundFunctionName.name);
+            }
+            const foundEmployeeContract = await useFindEmployeeContractDetails(idSelectedToShowEmployeeDetails);
+            if (foundEmployeeContract) {
+              const foundContractType = await useFindContractType(foundEmployeeContract.contractTypeId);
+              const foundWorkModels = await useFindWorkModels(foundEmployeeContract.contractModelId);
+              const foundWorkplaces = await useFindWorkplaces(foundEmployeeContract.workplaceId);
+              if (foundContractType) {
+                setContractTypeName(foundContractType.name);
+              }
+              if (foundWorkModels) {
+                setWorkModelName(foundWorkModels.name);
+              }
+              if (foundWorkplaces) {
+                setWorkplaceName(foundWorkplaces.name);
+              }
+            }
+          }
+
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
       }
     };
 
@@ -100,6 +162,7 @@ function ShowEmployeeDetailsModal(
     modalOpen,
     employeeName,
     handleCleaningEmployeeNameStatus,
+    companyNameToModalDetails
   };
 
   return (
@@ -140,20 +203,20 @@ function ShowEmployeeDetailsModal(
               <div className="col">
                 <div className="card-wrapper">
                   <div className="form-row">
-                    {/* <Col className="mb-3" md="4">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationCustom01"
-                  >
-                    Número de Identificação do Colaborador
-                  </label>
-                  <div className="mt-1 mb-3">
-                    <span className="name text-sm">
-                      {detailsSelectedEmployee.EmployeeIdNumber}
-                    </span>
-                  </div>
-                </Col> */}
-                    <Col className="mb-3" md="6">
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom01"
+                      >
+                        Nome da Empresa
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {detailsSelectedEmployee?.companyName}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="4">
                       <label
                         className="form-control-label"
                         htmlFor="validationCustom05"
@@ -166,7 +229,7 @@ function ShowEmployeeDetailsModal(
                         </span>
                       </div>
                     </Col>
-                    <Col className="mb-3" md="6">
+                    <Col className="mb-3" md="4">
                       <label
                         className="form-control-label"
                         htmlFor="validationCustom02"
@@ -336,7 +399,7 @@ function ShowEmployeeDetailsModal(
                       </label>
                       <div className="mt-1 mb-3">
                         <span className="name text-sm">
-                          {contractDetailsSelectedEmployee?.department || ''}
+                          {departmentName}
                         </span>
                       </div>
                     </Col>
@@ -349,7 +412,7 @@ function ShowEmployeeDetailsModal(
                       </label>
                       <div className="mt-1 mb-3">
                         <span className="name text-sm">
-                          {contractDetailsSelectedEmployee?.roles || ''}
+                          {roleName}
                         </span>
                       </div>
                     </Col>
@@ -362,7 +425,7 @@ function ShowEmployeeDetailsModal(
                       </label>
                       <div className="mt-1 mb-3">
                         <span className="name text-sm">
-                          {contractDetailsSelectedEmployee?.employeeFunction || ''}
+                          {functionName || 'Não possuí'}
                         </span>
                       </div>
                     </Col>
@@ -373,11 +436,11 @@ function ShowEmployeeDetailsModal(
                         className="form-control-label"
                         htmlFor="validationCustom02"
                       >
-                        Tipo de Contrato
+                        Exerce líderança?
                       </label>
                       <div className="mt-1 mb-3">
                         <span className="name text-sm">
-                          {contractDetailsSelectedEmployee?.contractType || ''}
+                          {detailsSelectedEmployee?.isLead === true ? "Sim" : "Não"}
                         </span>
                       </div>
                     </Col>
@@ -386,11 +449,11 @@ function ShowEmployeeDetailsModal(
                         className="form-control-label"
                         htmlFor="validationCustom02"
                       >
-                        Modelo de Trabalho
+                        Liderado por
                       </label>
                       <div className="mt-1 mb-3">
                         <span className="name text-sm">
-                          {contractDetailsSelectedEmployee?.contractModel || ''}
+                          {detailsSelectedEmployee?.LeaderName ? detailsSelectedEmployee?.LeaderName : "Não possuí"}
                         </span>
                       </div>
                     </Col>
@@ -409,19 +472,48 @@ function ShowEmployeeDetailsModal(
                     </Col>
                   </div>
                   <div className="form-row">
-                    <Col className="mb-3" md="3">
+                    <Col className="mb-3" md="4">
                       <label
                         className="form-control-label"
                         htmlFor="validationCustom02"
                       >
-                        Exerce líderança?
+                        Tipo de Contrato
                       </label>
                       <div className="mt-1 mb-3">
                         <span className="name text-sm">
-                          {detailsSelectedEmployee?.isLead === true ? "Sim" : "Não"}
+                          {contractTypeName}
                         </span>
                       </div>
                     </Col>
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Modelo de Trabalho
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {workModelName}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Local de Trabalho
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {workplaceName}
+                        </span>
+                      </div>
+                    </Col>
+
+                  </div>
+                  <div className="form-row">
                     <Col className="mb-3" md="3">
                       <label
                         className="form-control-label"
@@ -460,6 +552,20 @@ function ShowEmployeeDetailsModal(
                           {contractDetailsSelectedEmployee?.departureTime || ''}
                         </span>
                       </div>
+                    </Col>
+                    <Col className="mb-3" md="3">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Estado Ativo
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {detailsSelectedEmployee.status ? "Sim" : "Não"}
+                        </span>
+                      </div>
+                      <div className="valid-feedback">Looks good!</div>
                     </Col>
                   </div>
                 </div>
@@ -506,6 +612,7 @@ ShowEmployeeDetailsModal.defaultProps = {
   handleOpenEmployeeModal: () => { },
   modalOpen: false,
   employeeName: '',
+  companyNameToModalDetails: '',
 };
 
 ShowEmployeeDetailsModal.propTypes = {
@@ -515,6 +622,7 @@ ShowEmployeeDetailsModal.propTypes = {
   handleOpenEmployeeModal: PropTypes.func,
   modalOpen: PropTypes.bool,
   employeeName: PropTypes.string,
+  employeeNcompanyNameToModalDetailsame: PropTypes.string,
 };
 
 export default ShowEmployeeDetailsModal;

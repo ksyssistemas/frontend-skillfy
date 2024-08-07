@@ -1,6 +1,11 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import { RoleContext } from '../../../contexts/RecordsContext/RoleContext';
 
 const useCreateRole = (handleShowRolesUserRegister) => {
+
+  const {
+    handleCreatedRoleRecordStatusChange,
+  } = useContext(RoleContext);
 
   const [employeeRoleName, setEmployeeRoleName] = useState("");
   const [employeeRoleNameState, setEmployeeRoleNameState] = useState(null);
@@ -48,19 +53,19 @@ const useCreateRole = (handleShowRolesUserRegister) => {
   }
 
   const handleSubmit = async (employeeRoleName, employeeRoleDescription, roleReportsToRole) => {
+    console.log(employeeRoleName, employeeRoleDescription, roleReportsToRole);
     if (employeeRoleName && employeeRoleName !== "") {
       try {
         const payload = {
-          RoleName: employeeRoleName,
-          Status: 1
+          roleName: employeeRoleName,
         };
 
         if (employeeRoleDescription && employeeRoleDescription !== "") {
-          payload.Description = employeeRoleDescription;
+          payload.description = employeeRoleDescription;
         }
 
-        if (roleReportsToRole && roleReportsToRole !== "") {
-          payload.Responsible = roleReportsToRole;
+        if (roleReportsToRole) {
+          payload.responsible = roleReportsToRole;
         }
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE_ROLE}`, {
@@ -74,6 +79,7 @@ const useCreateRole = (handleShowRolesUserRegister) => {
         if (response.ok) {
           reset();
           handleShowRolesUserRegister();
+          handleCreatedRoleRecordStatusChange();
           console.log('Data sent successfully!');
         } else {
           console.error('Erro na resposta:', response.status);

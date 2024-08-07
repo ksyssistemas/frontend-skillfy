@@ -116,12 +116,12 @@ const useCreateAdmin = (handleShowAdminUserRegister) => {
         setEmailAddressState(null);
         setBirthdate("");
         setBirthdateState(null);
-        setPassword("");
-        setPasswordState(null);
-        setConfirmPassword("");
-        setConfirmPasswordState(null);
         setPhoneNumber("");
         setPhoneNumberState(null);
+        setAdminStatus("");
+        setAdminStatusState(null);
+        setAdminPrivilege("");
+        setAdminPrivilegeState(null);
     }
 
     const validateEmail = (email) => {
@@ -187,7 +187,8 @@ const useCreateAdmin = (handleShowAdminUserRegister) => {
         setAdminPrivilegeState,
         handleValidateAddAdminForm,
         handleBirthdateChange,
-        validateEmail
+        validateEmail,
+        reset
     };
 };
 

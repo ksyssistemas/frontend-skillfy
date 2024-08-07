@@ -1,7 +1,7 @@
-export async function useFindContactPerson(contactId) {
+export async function useFindContractType(contractType) {
 
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_CONTACT_PERSON}/${contactId}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE_CONTRACT_TYPE}/${contractType}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

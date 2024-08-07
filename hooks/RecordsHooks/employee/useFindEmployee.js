@@ -8,7 +8,6 @@ export async function useFindEmployee(employeeId) {
     }
 
     const data = await response.json();
-
     return data;
 
   } catch (error) {

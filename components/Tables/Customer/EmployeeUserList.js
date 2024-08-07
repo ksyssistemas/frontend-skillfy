@@ -21,6 +21,10 @@ import { useFindAllEmployee } from "../../../hooks/RecordsHooks/employee/useFind
 import { EmployeeContext } from '../../../contexts/RecordsContext/EmployeeContext';
 import { useSweetAlert } from '../../../contexts/SweetAlertContext';
 import { useDeleteEmployee } from '../../../hooks/RecordsHooks/employee/useDeleteEmployee';
+import { useFindClientCompany } from '../../../hooks/RecordsHooks/customer/useFindClientCompany';
+import { useFindEmployeeContractDetails } from '../../../hooks/RecordsHooks/featuresEmploymentContract/useFindEmployeeContractDetails';
+import { useFindRole } from '../../../hooks/RecordsHooks/role/useFindRole';
+import { useDeleteEmployeeContract } from '../../../hooks/RecordsHooks/featuresEmploymentContract/useDeleteEmployeeContract';
 
 const EmployeeUserList = () => {
 
@@ -64,7 +68,8 @@ const EmployeeUserList = () => {
 
   function handleShowEmployeeDetailsModal(employeeId, employeeName, employeeLastName) {
     const name = `${employeeName} ${employeeLastName}`;
-    setIdSelectedToShowEmployeeDetails(employeeId);
+    const employeeIdString = String(employeeId);
+    setIdSelectedToShowEmployeeDetails(employeeIdString);
     setEmployeeName(name);
     handleOpenEmployeeModal();
   }
@@ -75,7 +80,8 @@ const EmployeeUserList = () => {
     setEmployeeName('');
   }
 
-  function handleOpenEmployeeUpdateModal(employeeId, employeeName, employeeLastName) {
+  function handleOpenEmployeeUpdateModal(employeeId, employeeName, employeeLastName, companyName) {
+    setCompanyNameToModalDetails(companyName);
     const name = `${employeeName} ${employeeLastName}`;
     handleEmployeeIdToUpdate(employeeId);
     setEmployeeName(name);
@@ -98,13 +104,19 @@ const EmployeeUserList = () => {
 
   const handleDeleteClientEmployee = async (employeeId, employeeName, employeeLastName) => {
     try {
-      const deleteResponse = await useDeleteEmployee(employeeId);
+      const deleteEmployee = await useDeleteEmployee(employeeId);
+      const deleteContract = await useDeleteEmployeeContract(employeeId);
 
-      if (deleteResponse !== null) {
-        console.log('Data sent successfully!', deleteResponse);
-        handleDeletedEmployeeRecordStatusChange();
+      if (deleteEmployee !== null) {
+        console.log('Data sent successfully!', deleteEmployee);
+        if (deleteContract !== null) {
+          console.log('Data sent successfully!', deleteContract);
+          handleDeletedEmployeeRecordStatusChange();
+        } else {
+          console.error('Failed to delete employee contract with ID:', employeeId, '. Response Status: ', deleteContract.status);
+        }
       } else {
-        console.error('Failed to delete employee with ID:', employeeId, '. Response Status: ', deleteResponse.status);
+        console.error('Failed to delete employee with ID:', employeeId, '. Response Status: ', deleteEmployee.status);
       }
     } catch (error) {
       console.error('Error in request:', error);
@@ -123,13 +135,56 @@ const EmployeeUserList = () => {
     );
   };
 
+  const [companyNameToModalDetails, setCompanyNameToModalDetails] = useState(null);
+  function handleCleaningCompanyNameToModalDetails() {
+    setCompanyNameToModalDetails(null)
+  }
+
+  const [contractDetailsSelectedEmployee, setContractDetailsSelectedEmployee] = useState([]);
+
+
   useEffect(() => {
+    const fetchCompanyNamesAndRoles = async (employees) => {
+      const updatedEmployees = await Promise.all(
+        employees.map(async (employee) => {
+          try {
+            const companyData = await useFindClientCompany(employee.customerId);
+            const foundEmployeeContract = await useFindEmployeeContractDetails(employee.id);
+            const foundRoleName = await useFindRole(foundEmployeeContract.rolesId);
+            return {
+              ...employee,
+              companyName: companyData.companyName,
+              roleName: foundRoleName.roleName,
+              adimissionDate: foundEmployeeContract.adimissionDate
+            };
+          } catch (error) {
+            console.error(`Error fetching employee data for customerId ${employee.customerId}:`, error);
+            return {
+              ...employee,
+              companyName: 'Unknown',
+              roleName: 'Unknown',
+              adimissionDate: 'N/A'
+            };
+          }
+        })
+      );
+      setDetailedEmployeeData(updatedEmployees);
+    };
+
+
     const fetchEmployees = async () => {
-      try {
-        const foundEmployees = await useFindAllEmployee();
-        setDetailedEmployeeData(foundEmployees);
-      } catch (error) {
-        console.error('Error fetching employees:', error);
+      if (detailedEmployeeData &&
+        detailedEmployeeData.length === 0 ||
+        hasUpdatedEmployeeRecord ||
+        hasDeletedEmployeeRecord
+
+      ) {
+        try {
+          const foundEmployees = await useFindAllEmployee();
+          await fetchCompanyNamesAndRoles(foundEmployees);
+        } catch (error) {
+          console.error('Error fetching employees:', error);
+        }
       }
     };
 
@@ -217,28 +272,22 @@ const EmployeeUserList = () => {
                   </div>
                 </th>
                 <td className="table-user">
-                  <img
+                  {/* <img
                     alt="..."
                     className="avatar rounded-circle mr-3"
                     src={require("assets/img/theme/team-1.jpg")}
-                  />
+                  /> */}
                   <b>{employee.name} {employee.lastName}</b>
                 </td>
                 <td className="table-user">
-                  <b>Nome da Empresa</b>
+                  <b>{employee.companyName}</b>
                 </td>
                 <td>
-                  <a
-                    className="font-weight-bold"
-                    href="#pablo"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    {employee.roleId}
-                  </a>
+                  {employee.roleName}
                 </td>
                 <td>
                   <span className="text-muted">
-                    {formatDate(employee.createdAt)}
+                    {formatDate(employee.adimissionDate)}
                   </span>
                 </td>
                 <td className="text-left">
@@ -275,7 +324,7 @@ const EmployeeUserList = () => {
                     <DropdownMenu className="dropdown-menu-arrow" right>
                       <DropdownItem
                         href="#pablo"
-                        onClick={(e) => { e.preventDefault(); handleShowEmployeeDetailsModal(employee.id, employee.name, employee.lastName) }}
+                        onClick={(e) => { e.preventDefault(); handleShowEmployeeDetailsModal(employee.id, employee.name, employee.lastName, companyNameToModalDetails) }}
                       >
                         Detalhes
                       </DropdownItem>

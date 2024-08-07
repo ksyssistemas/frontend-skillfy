@@ -66,15 +66,20 @@ function ModalRole({ handleOpenRoleUpdateModal, modalOpen }) {
   const [selectedRole, setSelectedRole] = useState('');
 
   useEffect(() => {
-    if (employeeRoleDataList.length === 0) {
+    if (employeeRoleDataList.length <= 0) {
       employmentContractDataSearchAndProcess(useFindAllRoles, handleEmployeeRoleDataList, 'role', 'EmployeeUserRegister');
     }
-  }, []);
+  }, [employeeRoleDataList]);
 
   const handleCloseRoleUpdateModal = () => {
     handleOpenRoleUpdateModal();
+    setEmployeeRoleDataList([]);
     reset();
     setSelectedRole('');
+    setRoleReportsToRole('');
+    setRoleReportsToRoleState(null);
+    handleCleanDetailedRoleData();
+    handleRoleIdStatusCleanupToUpdate();
   };
 
   const [detailedRoleData, setDetailedRoleData] = useState([]);
@@ -83,11 +88,23 @@ function ModalRole({ handleOpenRoleUpdateModal, modalOpen }) {
   };
 
   function handleUpdateRole() {
+    let roleReportsToRoleId = null;
+
+    if (!isRoleInputTouched) {
+
+      const role = employeeRoleDataList.find(
+        (item) => item.text === roleReportsToRole
+      );
+      roleReportsToRoleId = role ? role.id : null;
+    } else {
+      roleReportsToRoleId = roleReportsToRole;
+    }
+
     handleValidateUpdateEmployeeRoleForm(
       handleCloseRoleUpdateModal,
       roleIdToUpdate,
       employeeRoleName,
-      roleReportsToRole,
+      roleReportsToRoleId,
       employeeRoleDescription,
       employeeRoleStatus,
       handleRoleIdToUpdate,
@@ -95,11 +112,26 @@ function ModalRole({ handleOpenRoleUpdateModal, modalOpen }) {
     );
   }
 
-  const handleSelectionRoleReports = (roleName) => {
-    const role = employeeRoleDataList.find(p => p.text === roleName);
-    if (role) {
-      setSelectedRole(role.id);
-      handleSelectionEmploymentContractData(role.id, employeeRoleDataList, setSelectedRole, setRoleReportsToRole, setRoleReportsToRoleState);
+  const handleSelectionRoleReports = (roleId) => {
+    if (roleId && roleId !== null) {
+      const role = employeeRoleDataList.find(p => p.id === roleId);
+      if (role) {
+        setSelectedRole(role.id);
+        handleSelectionEmploymentContractData(
+          role.id,
+          employeeRoleDataList,
+          setSelectedRole,
+          setRoleReportsToRole,
+          setRoleReportsToRoleState,
+          null,
+          null,
+          'text'
+        );
+      } else {
+        console.error(`Employee role with ID ${roleId} not found in employeeRoleDataList.`);
+      }
+    } else {
+      console.error('Invalid roleId provided:', roleId);
     }
   };
 
@@ -114,19 +146,28 @@ function ModalRole({ handleOpenRoleUpdateModal, modalOpen }) {
     }
   };
 
+  const [isRoleInputTouched, setIsRoleInputTouched] = useState(false);
+
+
   useEffect(() => {
     const fetchRoleById = async () => {
-      if (!detailedRoleData.length) {
-        const foundRole = await useFindRole(roleIdToUpdate);
-        console.log(foundRole);
-        setDetailedRoleData(foundRole);
-        setEmployeeRoleName(foundRole.RoleName);
-        setEmployeeRoleDescription(foundRole.Description);
-        setEmployeeRoleStatus(foundRole.Status === null ? false : true);
-        handleSelectionRoleReports(foundRole.Responsible);
+      if (roleIdToUpdate) {
+        try {
+          const foundRole = await useFindRole(roleIdToUpdate);
+          setDetailedRoleData(foundRole);
+          setEmployeeRoleName(foundRole.roleName);
+          setEmployeeRoleDescription(foundRole.description);
+          if (foundRole.status === null || foundRole.status === 0) {
+            setEmployeeRoleStatus(0);
+          } else {
+            setEmployeeRoleStatus(1);
+          }
+          handleSelectionRoleReports(foundRole.responsible);
+        } catch (error) {
+          console.error(`Error fetching role data for ${roleIdToUpdate}:`, error);
+        }
       }
     };
-
     if (roleIdToUpdate) {
       fetchRoleById();
     }
@@ -143,7 +184,7 @@ function ModalRole({ handleOpenRoleUpdateModal, modalOpen }) {
           aria-label="Close"
           className=" close"
           type="button"
-          onClick={handleOpenRoleUpdateModal}
+          onClick={handleCloseRoleUpdateModal}
         >
           <span aria-hidden={true}>×</span>
         </button>
@@ -195,7 +236,19 @@ function ModalRole({ handleOpenRoleUpdateModal, modalOpen }) {
                     value={selectedRole}
                     onChange={(e) => setSelectedRole(e.target.value)}
                     data={employeeRoleDataList}
-                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, employeeRoleDataList, setSelectedRole, setRoleReportsToRole, setRoleReportsToRoleState)}
+                    onSelect={(e) => {
+                      handleSelectionEmploymentContractData(
+                        e.target.value,
+                        employeeRoleDataList,
+                        setSelectedRole,
+                        setRoleReportsToRole,
+                        setRoleReportsToRoleState,
+                        null,
+                        null,
+                        'id'
+                      );
+                      setIsRoleInputTouched(true);
+                    }}
                   />
                 </Col>
               </div>
@@ -254,7 +307,7 @@ function ModalRole({ handleOpenRoleUpdateModal, modalOpen }) {
         <Button
           color="secondary"
           type="button"
-          onClick={handleOpenRoleUpdateModal}
+          onClick={handleCloseRoleUpdateModal}
         >
           Fechar
         </Button>

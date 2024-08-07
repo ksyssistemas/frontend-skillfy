@@ -16,11 +16,14 @@ import ModalAdmin from '../../Modals/admin/ModalAdmin';
 
 function AdminList({ handleShowAdminUserRegister }) {
 
-  const { adminIdToUpdate,
+  const {
+    adminIdToUpdate,
     handleAdminIdStatusCleanupToUpdate,
     handleAdminIdToUpdate,
+    hasUpdatedAdminRecord,
+    handleUpdatedAdminRecordStatusChange,
     hasDeletedAdminRecord,
-    handleDeletedAdminRecordStatusChange
+    handleDeletedAdminRecordStatusChange,
   } = useContext(AdminContext);
 
   const { warningAlert } = useSweetAlert();
@@ -65,16 +68,31 @@ function AdminList({ handleShowAdminUserRegister }) {
     );
   };
 
-  useEffect(async () => {
-    if (userAdministratorAccountData.length === 0 || hasDeletedAdminRecord) {
-      const foundAdministrators = await useFindAllAdmin();
-      setUserAdministratorAccountData(foundAdministrators);
+  useEffect(() => {
+    const fetchAdmins = async () => {
+      if (userAdministratorAccountData.length <= 0 || hasUpdatedAdminRecord || hasDeletedAdminRecord) {
+        try {
+          const foundAdministrators = await useFindAllAdmin();
+          setUserAdministratorAccountData(foundAdministrators);
+        } catch (error) {
+          console.error('Error fetching admins:', error);
+        }
+      }
+    };
+
+    fetchAdmins();
+    if (hasUpdatedAdminRecord) {
+      handleUpdatedAdminRecordStatusChange();
     }
     if (hasDeletedAdminRecord) {
       handleAdminIdStatusCleanupToUpdate();
       handleDeletedAdminRecordStatusChange();
     }
-  }, [userAdministratorAccountData, hasDeletedAdminRecord])
+  }, [
+    userAdministratorAccountData,
+    hasUpdatedAdminRecord,
+    hasDeletedAdminRecord
+  ])
 
   return (
     <Card>

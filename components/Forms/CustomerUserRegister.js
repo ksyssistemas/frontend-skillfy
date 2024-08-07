@@ -156,6 +156,7 @@ function CustomerUserRegister({ handleShowCustomerUserRegister }) {
         hasValuesChangedWithAPIData,
         handleValuesChangedWithAPIData,
         validateAddClientCompanyForm,
+        validateAddCustomerAddressForm,
         handleValidateAddClientCompanyForm,
         isCustomerCompanyFormValidated,
         validatePhoneNumber,
@@ -247,6 +248,7 @@ function CustomerUserRegister({ handleShowCustomerUserRegister }) {
         if (hasValuesChangedWithAPIData) {
             handleValuesChangedWithAPIData(!hasValuesChangedWithAPIData);
             validateAddClientCompanyForm();
+            validateAddCustomerAddressForm();
         }
     }, [hasValuesChangedWithAPIData, validateAddClientCompanyForm]);
 

@@ -3,9 +3,12 @@ export async function useDeleteDepartment(departmentId) {
     const response = await fetch(`${process.env.NEXT_PUBLIC_DEPARTMENT}/${departmentId}`, {
       method: 'DELETE',
     });
+
+    console.log(response);
     if (!response.ok) {
       throw new Error('Failed to delete department.');
     }
+    console.log(data);
     const data = await response.json();
 
     return data;

@@ -82,7 +82,6 @@ function CustomersUserList() {
       const deleteResponse = await useDeleteCustomerAccount(companyId);
 
       if (deleteResponse !== null) {
-        console.log('Data sent successfully!', deleteResponse);
         handleDeletedCustomerRecordStatusChange();
       } else {
         console.error('Failed to delete cycle with ID:', companyId, '. Response Status: ', deleteResponse.status);

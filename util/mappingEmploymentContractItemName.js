@@ -42,9 +42,9 @@ export function mappingEmploymentContractItemName(item, employmentContractItemNa
             case 'client-company':
                 return item.companyName;
             case 'department':
-                return item.DepartmentName;
+                return item.departmentName;
             case 'role':
-                return item.RoleName;
+                return item.roleName;
             case 'function':
                 return item.name;
             case 'contractType':

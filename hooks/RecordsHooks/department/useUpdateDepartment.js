@@ -48,6 +48,7 @@ const useUpdateDepartment = () => {
     //   departmentDescriptionState !== "") {
     //   handleSubmit(departmentName, departmentDescription, departmentReportsToDepartment);
     // }
+    console.log(departmentIdToUpdate, departmentName, departmentReportsToDepartment, departmentDescription, departmentStatus);
     await handleSubmit(departmentIdToUpdate, departmentName, departmentReportsToDepartment, departmentDescription, departmentStatus);
     goBackToDepartmentList(handleCloseDepartmentUpdateModal, handleDepartmentIdToUpdate, handleCleanDetailedDepartmentData);
   }
@@ -65,19 +66,19 @@ const useUpdateDepartment = () => {
         const payload = {};
 
         if (departmentName && departmentName !== "") {
-          payload.DepartmentName = departmentName;
+          payload.departmentName = departmentName;
         }
 
         if (departmentReportsToDepartment && departmentReportsToDepartment !== "") {
-          payload.Responsible = departmentReportsToDepartment;
+          payload.responsible = String(departmentReportsToDepartment);
         }
 
         if (departmentDescription && departmentDescription !== "") {
-          payload.Description = departmentDescription;
+          payload.description = departmentDescription;
         }
 
-        if (departmentStatus && departmentStatus !== "") {
-          payload.Status = departmentStatus;
+        if (departmentStatus) {
+          payload.status = departmentStatus;
         }
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_DEPARTMENT}/${departmentIdToUpdate}`, {

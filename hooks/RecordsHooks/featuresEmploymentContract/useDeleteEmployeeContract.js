@@ -1,4 +1,4 @@
-export async function useFindEmployeeContractDetails(employeeId) {
+export async function useDeleteEmployeeContract(employeeId) {
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_CONTRACT_DETAILS}/employee/${employeeId}`);
         if (!response.ok) {

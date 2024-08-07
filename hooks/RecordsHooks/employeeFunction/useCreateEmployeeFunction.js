@@ -48,11 +48,11 @@ const useCreateEmployeeFunction = (handleShowRolesUserRegister) => {
   }
 
   const handleSubmit = async (employeeFunctionName, employeeFunctiontDescription, funtionReportsToFuntion) => {
+
     if (employeeFunctionName && employeeFunctionName !== "") {
       try {
         const payload = {
           name: employeeFunctionName,
-          status: true
         };
 
         if (employeeFunctiontDescription && employeeFunctiontDescription !== "") {
@@ -63,7 +63,7 @@ const useCreateEmployeeFunction = (handleShowRolesUserRegister) => {
           payload.responsible = funtionReportsToFuntion;
         }
 
-        console.log("PAYLOAD: ", payload);
+        console.log("Dados para a API: ", payload);
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE_FUNCTION}`, {
           method: 'POST',
@@ -74,7 +74,7 @@ const useCreateEmployeeFunction = (handleShowRolesUserRegister) => {
         });
 
         if (response.ok) {
-          reset();
+          resetFunction();
           handleShowRolesUserRegister();
           console.log('Data sent successfully!');
         } else {
@@ -86,7 +86,7 @@ const useCreateEmployeeFunction = (handleShowRolesUserRegister) => {
     }
   };
 
-  function reset() {
+  function resetFunction() {
     setEmployeeFunctionName("");
     setEmployeeFunctionNameState(null);
     setEmployeeFunctionDataList([]);
@@ -119,7 +119,7 @@ const useCreateEmployeeFunction = (handleShowRolesUserRegister) => {
     setEmployeeFunctiontStatusState,
     handleValidateAddEmployeeFunctionForm,
     handleEmployeeFunctionDataList,
-    reset
+    resetFunction
   };
 };
 

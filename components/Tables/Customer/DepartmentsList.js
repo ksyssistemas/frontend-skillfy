@@ -15,6 +15,7 @@ import ModalDepartment from '../../Modals/admin/ModalDepartment';
 import { DepartmentContext } from '../../../contexts/RecordsContext/DepartmentContext';
 import { useSweetAlert } from '../../../contexts/SweetAlertContext';
 import { useDeleteDepartment } from '../../../hooks/RecordsHooks/department/useDeleteDepartment';
+import { useFindDepartment } from '../../../hooks/RecordsHooks/department/useFindDepartment';
 
 function DepartmentsList() {
 
@@ -72,6 +73,7 @@ function DepartmentsList() {
   const handleDeleteDepartment = async (departmentId, departmentName) => {
     try {
       const deleteResponse = await useDeleteDepartment(departmentId);
+      console.log(deleteResponse);
       if (deleteResponse !== null) {
         handleDeletedDepartmentRecordStatusChange();
       } else {
@@ -94,12 +96,44 @@ function DepartmentsList() {
   };
 
   useEffect(() => {
+    const fetchDepartmentNames = async (departments) => {
+      const updatedDepartments = await Promise.all(
+        departments.map(async (department) => {
+          if (department.responsible) {
+            try {
+              const departmentData = await useFindDepartment(department.responsible);
+              return { ...department, responsible: departmentData.departmentName };
+            } catch (error) {
+              console.error(`Error fetching department data for responsible ${department.id}:`, error);
+              return { ...department, responsible: 'Não reporta' };
+            }
+          } else {
+            console.warn(`No responsible value for department ${department.id}`);
+            return { ...department, responsible: 'Não reporta' };
+          }
+        })
+      );
+      setDetailedDepartmentData(updatedDepartments);
+    };
+
     const fetchDepartments = async () => {
-      if (detailedDepartmentData && detailedDepartmentData.length === 0) {
-        const foundDepartment = await useFindAllDepartments();
-        setDetailedDepartmentData(foundDepartment);
+      if (detailedDepartmentData.length <= 0 ||
+        hasUpdatedDepartmentRecord ||
+        hasDeletedDepartmentRecord
+      ) {
+        try {
+          const foundDepartment = await useFindAllDepartments();
+          if (foundDepartment) {
+            await fetchDepartmentNames(foundDepartment);
+          } else {
+            console.error('Invalid data format:', foundDepartment);
+          }
+        } catch (error) {
+          console.error('Error fetching department:', error);
+        }
       }
     };
+
     fetchDepartments();
     if (hasUpdatedDepartmentRecord) {
       handleUpdatedDepartmentRecordStatusChange();
@@ -107,7 +141,7 @@ function DepartmentsList() {
     if (hasDeletedDepartmentRecord) {
       handleDeletedDepartmentRecordStatusChange();
     }
-  }, [detailedDepartmentData,
+  }, [detailedDepartmentData.length,
     hasUpdatedDepartmentRecord,
     hasDeletedDepartmentRecord,
   ]);
@@ -133,29 +167,37 @@ function DepartmentsList() {
           <tbody>
             {detailedDepartmentData && detailedDepartmentData.length > 0 ? (
               detailedDepartmentData.map((department) => (
-                <tr className="table-" key={department.ID_Department}>
+                <tr className="table-" key={department.id}>
                   <td className="table-user">
-                    <b>{department.DepartmentName}</b>
+                    <b>{department.departmentName}</b>
                   </td>
                   <td>
                     <span className="text-muted">
-                      {formatDate(department.CreatedAt)}
+                      {formatDate(department.createdAt)}
                     </span>
                   </td>
                   <td>
-                    <span className="name mb-0 text-sm">
-                      {department.Responsible}
-                    </span>
+                    {
+                      department.responsible === 'Não reporta' ? (
+                        <span className="name mb-0 text-sm">
+                          {department.responsible}
+                        </span>
+                      ) : (
+                        <span className="name mb-0 text-sm font-weight-bold">
+                          {department.responsible}
+                        </span>
+                      )
+                    }
                   </td>
                   <td className="text-muted">
                     {
-                      department.Description ? (
+                      department.description ? (
                         <Nav navbar>
                           <NavItem>
                             <NavLink target="_blank">
                               <a href="#" className="text-underline">
                                 <span
-                                  onClick={() => handleShowModal(department.DepartmentName, department.Description)}
+                                  onClick={() => handleShowModal(department.departmentName, department.description)}
                                   className="name mb-0 text-sm"
                                 >
                                   Ver
@@ -199,7 +241,7 @@ function DepartmentsList() {
                       className="table-action"
                       href="#pablo"
                       id="tooltipEditDepartment"
-                      onClick={(e) => { e.preventDefault(); handleDepartmentUpdate(department.ID_Department); }}
+                      onClick={(e) => { e.preventDefault(); handleDepartmentUpdate(department.id); }}
                     >
                       <i className="fas fa-user-edit" />
                     </a>
@@ -210,7 +252,7 @@ function DepartmentsList() {
                       className="table-action table-action-delete"
                       href="#pablo"
                       id="tooltipDeleteDepartment"
-                      onClick={(e) => { e.preventDefault(); showWarningAlert(department.ID_Department, department.DepartmentName); }}
+                      onClick={(e) => { e.preventDefault(); showWarningAlert(department.id, department.departmentName); }}
                     >
                       <i className="fas fa-trash" />
                     </a>

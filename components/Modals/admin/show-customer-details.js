@@ -79,11 +79,11 @@ function ShowCustomerDetailsModal(
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (!userCustomerAccountData.length) {
+        if (userCustomerAccountData.length <= 0) {
           const foundCustomer = await useFindClientCompany(selectedIdToShowCompanyDetails);
           setUserCustomerAccountData(foundCustomer);
         }
-        if (!userCustomerAddressData.length) {
+        if (userCustomerAddressData.length <= 0) {
           const foundCustomerAddress = await useFindEmployeeAddress(selectedIdToShowCompanyDetails);
           setUserCustomerAddressData(foundCustomerAddress[0]);
         }
@@ -112,17 +112,17 @@ function ShowCustomerDetailsModal(
       toggle={handleShowCustomerDetailsModal}
       isOpen={modalOpen}
       size="xl"
-      key={selectedIdToShowCompanyDetails ? selectedIdToShowCompanyDetails : customerIdToUpdate.id}
+      key={selectedIdToShowCompanyDetails ? selectedIdToShowCompanyDetails : customerIdToUpdate}
     //fullscreen
     >
       <div className=" modal-header">
         <h5 className=" modal-title" id="exampleModalLabel">
           {
-            companyName
+            !customerIdToUpdate
               ? `Informações de ${companyName}`
               : (
-                customerIdToUpdate && companyNameToUpdate
-                  ? `Informações de ${companyNameToUpdate}`
+                customerIdToUpdate && companyName
+                  ? `Editar informações de ${companyName}`
                   : 'Informações'
               )
           }
@@ -458,7 +458,7 @@ function ShowCustomerDetailsModal(
                       <div className="valid-feedback">Looks good!</div>
                     </Col>
                   </div>
-                  <div className="form-row">
+                  {/* <div className="form-row">
                     <Col className="mb-3" md="4">
                       <label
                         className="form-control-label"
@@ -473,7 +473,7 @@ function ShowCustomerDetailsModal(
                       </div>
                       <div className="valid-feedback">Looks good!</div>
                     </Col>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </Row>
@@ -501,7 +501,7 @@ function ShowCustomerDetailsModal(
               type="button"
               onClick={() => handleUpdateCustomerUserUpdate()}
             >
-              Editar Ciclo
+              Editar Cliente
             </Button>
           </ModalFooter>
         ) : null

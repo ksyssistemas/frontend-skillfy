@@ -1,8 +1,15 @@
 // Hook para gerenciar o formulário
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import useCEP from '../useCEP';
+import { EmployeeContext } from '../../../contexts/RecordsContext/EmployeeContext';
 
 const useCreateEmployee = () => {
+
+    const {
+        customerIdToLinkToEmployee,
+        handleCustomerIdStatusCleanup,
+        handleCustomerIdToLinkToEmployee,
+    } = useContext(EmployeeContext);
 
     const {
         brasilAPICEPData,
@@ -279,6 +286,10 @@ const useCreateEmployee = () => {
                 phoneNumber,
                 isLead,
                 employeeLeaderName,
+                customerIdToLinkToEmployee,
+                departmentWhichEmployeeReports,
+                employeeRole,
+                employeeFunction
             );
             console.log(
                 departmentWhichEmployeeReports,
@@ -296,7 +307,7 @@ const useCreateEmployee = () => {
             if (
                 departmentWhichEmployeeReportsState === "valid" &&
                 employeeRoleState === "valid" &&
-                employeeFunctionState === "valid" &&
+                //employeeFunctionState === "valid" &&
                 employeeContractTypeState === "valid" &&
                 employeeWorkModelState === "valid" &&
                 employeeWorkplaceState === "valid" &&
@@ -357,40 +368,47 @@ const useCreateEmployee = () => {
         phoneNumber,
         isLead,
         employeeLeaderName,
+        customerIdToLinkToEmployee,
+        departmentWhichEmployeeReports,
+        employeeRole,
+        employeeFunction
     ) => {
-        console.log(
-            firstName,
-            lastName,
-            emailAddress,
-            birthdate,
-            phoneNumber,
-            isLead,
-            employeeLeaderName
-        );
         if (firstName,
             lastName,
             emailAddress,
             birthdate,
-            phoneNumber
+            phoneNumber,
+            customerIdToLinkToEmployee,
+            departmentWhichEmployeeReports,
+            employeeRole
         ) {
             try {
+
+                const payload = {
+                    name: firstName,
+                    lastName: lastName,
+                    birthdate: birthdate,
+                    email: emailAddress,
+                    phoneNumber: phoneNumber,
+                    status: true,
+                    isLead: isLead,
+                    LeaderName: employeeLeaderName,
+                    customerId: customerIdToLinkToEmployee,
+                    departmentId: Number(departmentWhichEmployeeReports),
+                    rolesId: Number(employeeRole),
+                };
+
+                if (employeeFunction && employeeFunction !== "") {
+                    payload.functionId = Number(employeeFunction);
+                }
+
                 const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        name: firstName,
-                        lastName: lastName,
-                        birthdate: birthdate,
-                        email: emailAddress,
-                        phoneNumber: phoneNumber,
-                        status: true,
-                        isLead: isLead,
-                        LeaderName: employeeLeaderName,
-                    }),
+                    body: JSON.stringify(payload),
                 });
-                console.log(response);
                 if (response.ok) {
                     console.log('Data sent successfully!');
                     const data = await response.json();
@@ -417,19 +435,6 @@ const useCreateEmployee = () => {
         employeeDepartureTime,
         userIdCreated
     ) => {
-        console.log(
-            departmentWhichEmployeeReports,
-            employeeRole,
-            employeeFunction,
-            employeeContractType,
-            employeeWorkModel,
-            employeeWorkplace,
-            employeetAdmissionDate,
-            employeeEntryTime,
-            employeeBreakTime,
-            employeeDepartureTime,
-            userIdCreated
-        );
         if (departmentWhichEmployeeReports,
             employeeRole,
             employeeFunction,
@@ -443,30 +448,35 @@ const useCreateEmployee = () => {
             userIdCreated
         ) {
             try {
+
+                const payload = {
+                    employeeId: userIdCreated,
+                    departmentId: Number(departmentWhichEmployeeReports),
+                    rolesId: Number(employeeRole),
+                    contractTypeId: Number(employeeContractType),
+                    contractModelId: Number(employeeWorkModel),
+                    workplaceId: Number(employeeWorkplace),
+                    adimissionDate: employeetAdmissionDate,
+                    entryTime: employeeEntryTime,
+                    breakTime: employeeBreakTime,
+                    departureTime: employeeDepartureTime,
+                };
+
+                if (employeeFunction && employeeFunction !== "") {
+                    payload.employeeFunctionId = Number(employeeFunction);
+                }
+
                 const response = await fetch(`${process.env.NEXT_PUBLIC_CONTRACT_DETAILS}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        employeeId: userIdCreated,
-                        department: departmentWhichEmployeeReports,
-                        roles: employeeRole,
-                        employeeFunction: employeeFunction,
-                        contractType: employeeContractType,
-                        contractModel: employeeWorkModel,
-                        workplace: employeeWorkplace,
-                        adimissionDate: employeetAdmissionDate,
-                        entryTime: employeeEntryTime,
-                        breakTime: employeeBreakTime,
-                        departureTime: employeeDepartureTime,
-                    }),
+                    body: JSON.stringify(payload),
                 });
 
                 if (response.ok) {
                     console.log('Data sent successfully!');
                 } else {
-                    const textData = await response.text();
                     console.error('Error in response:', response.status);
                 }
             } catch (error) {

@@ -12,10 +12,10 @@ export async function employmentContractDataSearchAndProcess(apiCall, setData, e
                             id = item.id;
                             break;
                         case 'department':
-                            id = item.ID_Department;
+                            id = item.id;
                             break;
                         case 'role':
-                            id = item.ID_Roles;
+                            id = item.id;
                             break;
                         case 'function':
                             id = item.id;
@@ -46,7 +46,6 @@ export async function employmentContractDataSearchAndProcess(apiCall, setData, e
                         text: mappingEmploymentContractItemName(item, employmentContractItemName),
                     }
                 });
-                console.log(dataObject)
                 setData(dataObject);
             } else {
                 const noDataText = mappingEmploymentContractItemName({}, employmentContractItemName, true, context);

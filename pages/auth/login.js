@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 // nodejs library that concatenates classes
 import classnames from "classnames";
 // reactstrap components
@@ -25,8 +25,12 @@ import Auth from "layouts/Auth.js";
 import AuthHeader from "components/Headers/AuthHeader.js";
 import { useAuth } from '../../hooks/useAuth';
 import { useRouter } from 'next/router';
+import { EmployeeContext } from "../../contexts/RecordsContext/EmployeeContext";
 
 function Login() {
+
+  const { handleCustomerIdToLinkToEmployee } = useContext(EmployeeContext);
+
   const router = useRouter();
 
   const [formData, setFormData] = useState({
@@ -58,7 +62,7 @@ function Login() {
       if (response.ok) {
         const data = await response.json();
         handleSaveAuthenticationDataLoggedInUser(data);
-        // console.log('Data from API:', data); // Adicione esta linha
+        handleCustomerIdToLinkToEmployee(data.data.id);
 
         let redirectUrl = `${process.env.NEXT_PUBLIC_HOME_PAGE}`;
 

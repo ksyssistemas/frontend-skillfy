@@ -163,6 +163,7 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
         customerBusinessSector: { value: "", touched: false, state: null },
         customerWebSite: { value: "", touched: false, state: null },
         customerStatus: { value: false, touched: false, state: null },
+        privileges: { value: false, touched: false, state: null },
 
         customerZipCode: { value: "", touched: false, state: null },
         companyAddress: { value: "", touched: false, state: null },
@@ -277,6 +278,25 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
         setCompanyTypesDataList(companyTypes);
     }
 
+    const [companyPrivileges, setCompanyPrivileges] = useState('');
+    const [companyPrivilegesState, setCompanyPrivilegesState] = useState(null);
+
+    const [selectedCompanyPrivileges, setSelectedCompanyPrivileges] = useState('');
+    const [companyPrivilegesDataList, setCompanyPrivilegesDataList] = useState([
+        { id: "0", text: "Todos" },
+        { id: "1", text: "Titular da Conta" },
+        { id: "2", text: "Administrador" },
+        { id: "3", text: "Finanças" },
+        { id: "4", text: "Acesso a Relátorios" },
+        { id: "5", text: "Vendas" },
+        { id: "6", text: "Desenvolvedor" },
+        { id: "7", text: "Suporte ao Cliente" },
+        { id: "8", text: "Marketing" },
+    ]);
+    const handleCompanyPrivilegesDataList = (companyPrivileges) => {
+        setCompanyPrivilegesDataList(companyPrivileges);
+    }
+
     const selectedListItemToUpdate = (item, list, setSelectedItem, setItem, setItemState) => {
         const selectedItem = list.find(p => p.text === item);
         if (selectedItem) {
@@ -313,10 +333,6 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
 
 
     useEffect(() => {
-        console.log("brasilAPICEPData", brasilAPICEPData);
-        console.log("errorCEPValidation", errorCEPValidation);
-        console.log("loadingCEPValidation", loadingCEPValidation);
-        console.log("hasValuesChangedWithAPIDataCEP", hasValuesChangedWithAPIDataCEP);
         if (brasilAPICEPData !== null) {
             handleFormFieldsAutocompleteCEP(brasilAPICEPData);
             handleCEPValidationLoading();
@@ -363,6 +379,7 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                     customerPhoneNumber: { ...prev.customerPhoneNumber, value: foundCustomer.phone },
                     customerWebSite: { ...prev.customerWebSite, value: foundCustomer.webSite },
                     customerStatus: { ...prev.customerStatus, value: foundCustomer.status },
+                    privileges: { ...prev.privileges, value: foundCustomer.privileges },
                 }));
                 handleSaveCNPJ(foundCustomer.identificationNumber);
                 selectedListItemToUpdate(foundCustomer.type, companyTypesDataList, setSelectedCompanyTypes, setCompanyTypes, setCompanyTypesState);
@@ -614,7 +631,14 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 value={selectedCompanyTypes}
                                 onChange={(e) => setSelectedCompanyTypes(e.target.value)}
                                 data={companyTypesDataList}
-                                onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, companyTypesDataList, setSelectedCompanyTypes, setCompanyTypes, setCompanyTypesState, null)}
+                                onSelect={(e) => handleSelectionEmploymentContractData(
+                                    e.target.value,
+                                    companyTypesDataList,
+                                    setSelectedCompanyTypes,
+                                    setCompanyTypes,
+                                    setCompanyTypesState,
+                                    null
+                                )}
                             />
                         </Col>
                         <Col className="mb-3" md="4">
@@ -945,7 +969,7 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                             </div>
                         </Col>
                     </div>
-                    <div className="form-row">
+                    {/* <div className="form-row">
                         <Col className="mb-3" md="4">
                             <label
                                 className="form-control-label"
@@ -967,7 +991,27 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 É necessário preencher este campo.
                             </div>
                         </Col>
-                    </div>
+                        <Col className="mb-3" md="4">
+                            <label
+                                className="form-control-label"
+                                htmlFor="validationCustomerCompanyTypes"
+                            >
+                                Privilégio
+                            </label>
+                            <Select2
+                                id="validationCustomerCompanyTypes"
+                                className="form-control"
+                                data-minimum-results-for-search="Infinity"
+                                options={{
+                                    placeholder: "Selecione o privilégio",
+                                }}
+                                value={selectedCompanyPrivileges}
+                                onChange={(e) => setSelectedCompanyPrivileges(e.target.value)}
+                                data={companyPrivilegesDataList}
+                                onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, companyPrivilegesDataList, setSelectedCompanyPrivileges, setCompanyPrivileges, setCompanyPrivilegesState, null)}
+                            />
+                        </Col>
+                    </div> */}
                 </div>
             </div>
         </Row>
@@ -975,11 +1019,11 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
 }
 
 CustomerUserUpdate.defaultProps = {
-    handleCompanyNameStatusCleanupToUpdate: () => { }
+    handleOpenCustomerModal: () => { }
 };
 
 CustomerUserUpdate.propTypes = {
-    handleCompanyNameStatusCleanupToUpdate: PropTypes.func
+    handleOpenCustomerModal: PropTypes.func
 };
 
 export default CustomerUserUpdate;

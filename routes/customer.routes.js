@@ -79,15 +79,15 @@ const routes = () => {
           layout: "/records",
         },
         {
-          path: employeesPath,
-          name: employeesName,
-          miniName: employeesMiniName,
-          layout: "/records",
-        },
-        {
           path: "/roles",
           name: "Cargos e Funçôes",
           miniName: "C",
+          layout: "/records",
+        },
+        {
+          path: employeesPath,
+          name: employeesName,
+          miniName: employeesMiniName,
           layout: "/records",
         },
       ],

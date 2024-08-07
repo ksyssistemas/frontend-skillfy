@@ -122,7 +122,16 @@ function RolesRegister({ handleShowRolesUserRegister }) {
                                     value={selectedRole}
                                     onChange={(e) => setSelectedRole(e.target.value)}
                                     data={employeeRoleDataList}
-                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, employeeRoleDataList, setSelectedRole, setRoleReportsToRole, setRoleReportsToRoleState)}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(
+                                        e.target.value,
+                                        employeeRoleDataList,
+                                        setSelectedRole,
+                                        setRoleReportsToRole,
+                                        setRoleReportsToRoleState,
+                                        null,
+                                        null,
+                                        'id'
+                                    )}
                                 />
                             </FormGroup>
                         </Col>
@@ -210,7 +219,16 @@ function RolesRegister({ handleShowRolesUserRegister }) {
                                 value={selectedFunction}
                                 onChange={(e) => setSelectedFunction(e.target.value)}
                                 data={employeeFunctionDataList}
-                                onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, employeeFunctionDataList, setSelectedFunction, setFuntionReportsToFuntion, setFuntionReportsToFuntionState)}
+                                onSelect={(e) => handleSelectionEmploymentContractData(
+                                    e.target.value,
+                                    employeeFunctionDataList,
+                                    setSelectedFunction,
+                                    setFuntionReportsToFuntion,
+                                    setFuntionReportsToFuntionState,
+                                    null,
+                                    null,
+                                    'id'
+                                )}
                             />
                         </Col>
                         <Col className="mb-3" md="12">

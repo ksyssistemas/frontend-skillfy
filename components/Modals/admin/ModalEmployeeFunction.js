@@ -22,6 +22,8 @@ import useCreateEmployeeFunction from "../../../hooks/RecordsHooks/employeeFunct
 import { useFindEmployeeFunction } from "../../../hooks/RecordsHooks/employeeFunction/useFindEmployeeFunction";
 import { useFindAllFunctions } from "../../../hooks/RecordsHooks/employeeFunction/useFindAllFunctions";
 import useUpdateEmployeeFunction from "../../../hooks/RecordsHooks/employeeFunction/useUpdateEmployeeFunction";
+import { useFindAllRoles } from "../../../hooks/RecordsHooks/role/useFindAllRoles";
+import useCreateRole from "../../../hooks/RecordsHooks/role/useCreateRole";
 
 function ModalEmployeeFunction({ handleOpenEmployeeFunctionUpdateModal, modalOpen }) {
 
@@ -58,7 +60,7 @@ function ModalEmployeeFunction({ handleOpenEmployeeFunctionUpdateModal, modalOpe
     setEmployeeFunctiontStatusState,
     handleValidateAddEmployeeFunctionForm,
     handleEmployeeFunctionDataList,
-    reset
+    resetFunction
   } = useCreateEmployeeFunction();
 
   const { handleValidateUpdateEmployeeFunctionForm } = useUpdateEmployeeFunction();
@@ -66,15 +68,20 @@ function ModalEmployeeFunction({ handleOpenEmployeeFunctionUpdateModal, modalOpe
   const [selectedEmployeeFunction, setSelectedEmployeeFunction] = useState('');
 
   useEffect(() => {
-    if (employeeFunctionDataList.length === 0) {
-      employmentContractDataSearchAndProcess(useFindAllFunctions, handleEmployeeFunctionDataList, 'function', 'EmployeeUserRegister');
+    if (employeeFunctionDataList.length <= 0) {
+      employmentContractDataSearchAndProcess(useFindAllRoles, handleEmployeeFunctionDataList, 'role', 'EmployeeUserRegister');
     }
   }, []);
 
   const handleCloseEmployeeFunctionUpdateModal = () => {
     handleOpenEmployeeFunctionUpdateModal();
-    reset();
+    resetFunction();
+    setEmployeeFunctionDataList([]);
     setSelectedEmployeeFunction('');
+    setFuntionReportsToFuntion('');
+    setFuntionReportsToFuntionState(null);
+    handleCleanDetailedEmployeeFunctionData();
+    handleEmployeeFunctionIdStatusCleanupToUpdate();
   };
 
   const [detailedEmployeeFunctionData, setDetailedEmployeeFunctionData] = useState([]);
@@ -83,11 +90,23 @@ function ModalEmployeeFunction({ handleOpenEmployeeFunctionUpdateModal, modalOpe
   };
 
   function handleUpdateEmployeeFunction() {
+    let functionReportsToRoleId = null;
+    console.log(!isEmployeeFunctionInputTouched);
+    if (!isEmployeeFunctionInputTouched) {
+
+      const employeFunction = employeeFunctionDataList.find(
+        (item) => item.text === funtionReportsToFuntion
+      );
+      functionReportsToRoleId = employeFunction ? employeFunction.id : null;
+    } else {
+      functionReportsToRoleId = funtionReportsToFuntion;
+    }
+    console.log(functionReportsToRoleId);
     handleValidateUpdateEmployeeFunctionForm(
       handleCloseEmployeeFunctionUpdateModal,
       employeeFunctionIdToUpdate,
       employeeFunctionName,
-      funtionReportsToFuntion,
+      functionReportsToRoleId,
       employeeFunctiontDescription,
       employeeFunctiontStatus,
       handleEmployeeFunctionIdToUpdate,
@@ -95,11 +114,28 @@ function ModalEmployeeFunction({ handleOpenEmployeeFunctionUpdateModal, modalOpe
     );
   }
 
-  const handleSelectionEmployeeFunctionReports = (employeeFunctionName) => {
-    const employeeFunction = employeeFunctionDataList.find(p => p.text === employeeFunctionName);
-    if (employeeFunction) {
-      setSelectedEmployeeFunction(employeeFunction.id);
-      handleSelectionEmploymentContractData(employeeFunction.id, employeeRoleDataList, setSelectedEmployeeFunction, setFuntionReportsToFuntion, setFuntionReportsToFuntionState);
+  const handleSelectionEmployeeFunctionReports = (employeeFunctionId) => {
+    console.log(employeeFunctionId);
+    console.log(employeeFunctionDataList);
+    if (employeeFunctionId && employeeFunctionId !== null) {
+      const employeeFunction = employeeFunctionDataList.find(p => p.id === employeeFunctionId);
+      if (employeeFunction) {
+        setSelectedEmployeeFunction(employeeFunction.id);
+        handleSelectionEmploymentContractData(
+          employeeFunction.id,
+          employeeFunctionDataList,
+          setSelectedEmployeeFunction,
+          setFuntionReportsToFuntion,
+          setFuntionReportsToFuntionState,
+          null,
+          null,
+          'text'
+        );
+      } else {
+        console.error(`Employee function with ID ${employeeFunctionId} not found in employeeFunctionDataList.`);
+      }
+    } else {
+      console.error('Invalid employeeFunctionId provided:', employeeFunctionId);
     }
   };
 
@@ -114,22 +150,29 @@ function ModalEmployeeFunction({ handleOpenEmployeeFunctionUpdateModal, modalOpe
     }
   };
 
+  const [isEmployeeFunctionInputTouched, setIsEmployeeFunctionInputTouched] = useState(false);
+
   useEffect(() => {
     const fetchEmployeeFunctionById = async () => {
-      if (!detailedEmployeeFunctionData.length) {
-        const foundEmployeeFunction = await useFindEmployeeFunction(employeeFunctionIdToUpdate);
-        console.log(foundEmployeeFunction);
-        setDetailedEmployeeFunctionData(foundEmployeeFunction);
-        setEmployeeFunctionName(foundEmployeeFunction.name);
-        setEmployeeFunctiontDescription(foundEmployeeFunction.description);
-        setEmployeeFunctiontStatus(foundEmployeeFunction.status === null ? false : true);
-        handleSelectionEmployeeFunctionReports(foundEmployeeFunction.responsible);
+      if (employeeFunctionDataList.length > 0 && employeeFunctionIdToUpdate) {
+        try {
+          const foundEmployeeFunction = await useFindEmployeeFunction(employeeFunctionIdToUpdate);
+          setDetailedEmployeeFunctionData(foundEmployeeFunction);
+          setEmployeeFunctionName(foundEmployeeFunction.name);
+          setEmployeeFunctiontDescription(foundEmployeeFunction.description);
+          if (foundEmployeeFunction.status === null || foundEmployeeFunction.status === 0) {
+            setEmployeeFunctiontStatus(0);
+          } else {
+            setEmployeeFunctiontStatus(1);
+          }
+          handleSelectionEmployeeFunctionReports(foundEmployeeFunction.responsible);
+        } catch (error) {
+          console.error(`Error fetching employeeFunction data for ${employeeFunctionIdToUpdate}:`, error);
+        }
       }
     };
 
-    if (employeeFunctionIdToUpdate) {
-      fetchEmployeeFunctionById();
-    }
+    fetchEmployeeFunctionById();
   }, [employeeFunctionIdToUpdate]);
 
 
@@ -185,7 +228,7 @@ function ModalEmployeeFunction({ handleOpenEmployeeFunctionUpdateModal, modalOpe
                     className="form-control-label"
                     htmlFor="validationReportToRole"
                   >
-                    Reporta ao Departamento
+                    Reporta ao Cargo
                   </label>
                   <Select2
                     id="validationReportToRole"
@@ -195,7 +238,19 @@ function ModalEmployeeFunction({ handleOpenEmployeeFunctionUpdateModal, modalOpe
                     value={selectedEmployeeFunction}
                     onChange={(e) => setSelectedEmployeeFunction(e.target.value)}
                     data={employeeFunctionDataList}
-                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, employeeFunctionDataList, setSelectedEmployeeFunction, setFuntionReportsToFuntion, setFuntionReportsToFuntionState)}
+                    onSelect={(e) => {
+                      handleSelectionEmploymentContractData(
+                        e.target.value,
+                        employeeFunctionDataList,
+                        setSelectedEmployeeFunction,
+                        setFuntionReportsToFuntion,
+                        setFuntionReportsToFuntionState,
+                        null,
+                        null,
+                        'id'
+                      );
+                      setIsEmployeeFunctionInputTouched(true);
+                    }}
                   />
                 </Col>
               </div>
@@ -234,7 +289,7 @@ function ModalEmployeeFunction({ handleOpenEmployeeFunctionUpdateModal, modalOpe
                     <label className="custom-toggle ml-auto">
                       <input
                         type="checkbox"
-                        checked={employeeFunctiontStatusState}
+                        checked={employeeFunctiontStatus}
                         onChange={handleCheckboxChange}
                       />
                       <span

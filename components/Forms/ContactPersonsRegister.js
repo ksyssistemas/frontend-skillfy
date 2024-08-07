@@ -14,41 +14,54 @@ import { handleSelectionEmploymentContractData } from '../../util/handleSelectio
 function ContactPersonsRegister({ handleShowContactPersonsUserRegister }) {
 
     const {
-        firstNameState,
-        lastNameState,
-        taxIdentificationNumber,
-        taxIdentificationNumberState,
-        emailAddressState,
-        birthdateState,
-        password,
-        passwordState,
-        confirmPasswordState,
-        phoneNumber,
-        phoneNumberState,
-        checkbox,
-        checkboxState,
-        setCheckbox,
-        setCheckboxState,
+        firstName,
         setFirstName,
+        firstNameState,
         setFirstNameState,
+        lastName,
         setLastName,
+        lastNameState,
         setLastNameState,
+        taxIdentificationNumber,
         setTaxIdentificationNumber,
+        taxIdentificationNumberState,
         setTaxIdentificationNumberState,
+        emailAddress,
         setEmailAddress,
+        emailAddressState,
         setEmailAddressState,
+        birthdate,
+        setBirthdate,
+        birthdateState,
+        setBirthdateState,
+        password,
         setPassword,
+        passwordState,
         setPasswordState,
+        confirmPassword,
         setConfirmPassword,
+        confirmPasswordState,
         setConfirmPasswordState,
+        phoneNumber,
         setPhoneNumber,
+        phoneNumberState,
         setPhoneNumberState,
-        handleValidateAddCustomerAccountHolderForm,
-        handleBirthdateChange,
-        validateEmail,
-        handleChangeCPF,
-        validateCheckboxIsChecked,
+        contactStatus,
+        setContactStatus,
+        contactStatusState,
+        setContactStatusState,
+        checkbox,
+        setCheckbox,
+        checkboxState,
+        setCheckboxState,
         isCustomerAccountHolderFormValidated,
+        setIsCustomerAccountHolderFormValidated,
+        validateCheckboxIsChecked,
+        handleBirthdateChange,
+        handleChangeCPF,
+        validateEmail,
+        handleValidateAddCustomerAccountHolderForm,
+        resetCreateCustomer,
         contactPersonOccupation,
         setContactPersonOccupation,
         contactPersonOccupationState,
@@ -56,7 +69,7 @@ function ContactPersonsRegister({ handleShowContactPersonsUserRegister }) {
         contactPersonBelongsToClientCompany,
         setContactPersonBelongsToClientCompany,
         contactPersonBelongsToClientCompanyState,
-        setContactPersonBelongsToClientCompanyState
+        setContactPersonBelongsToClientCompanyState,
     } = useCreateCustomerAccountHolder(handleShowContactPersonsUserRegister);
 
     const [selectedBelongingToClientCompany, setSelectedBelongingToClientCompany] = useState('');
@@ -80,7 +93,7 @@ function ContactPersonsRegister({ handleShowContactPersonsUserRegister }) {
                 <CardBody>
                     <Form className="needs-validation" noValidate>
                         <div className="form-row">
-                            <Col className="mb-3" md="6">
+                            <Col className="mb-3" md="4">
                                 <label
                                     className="form-control-label"
                                     htmlFor="validationContactPersonFirstName"
@@ -106,7 +119,7 @@ function ContactPersonsRegister({ handleShowContactPersonsUserRegister }) {
                                     É necessário preencher este campo.
                                 </div>
                             </Col>
-                            <Col className="mb-3" md="6">
+                            <Col className="mb-3" md="4">
                                 <label
                                     className="form-control-label"
                                     htmlFor="validationContactPersonLastName"
@@ -132,9 +145,7 @@ function ContactPersonsRegister({ handleShowContactPersonsUserRegister }) {
                                     É necessário preencher este campo.
                                 </div>
                             </Col>
-                        </div>
-                        <div className="form-row">
-                            <Col className="mb-3" md="6">
+                            <Col className="mb-3" md="4">
                                 <label
                                     className="form-control-label"
                                     htmlFor="validationContactPersonTaxIdNumber"
@@ -154,7 +165,9 @@ function ContactPersonsRegister({ handleShowContactPersonsUserRegister }) {
                                     {taxIdentificationNumberState === "invalid" && "Forneça um número de CPF válido."}
                                 </div>
                             </Col>
-                            <Col className="mb-3" md="6">
+                        </div>
+                        <div className="form-row">
+                            <Col className="mb-3" md="4">
                                 <label
                                     className="form-control-label"
                                     htmlFor="validationContactPersonBirthdate"
@@ -170,14 +183,12 @@ function ContactPersonsRegister({ handleShowContactPersonsUserRegister }) {
 
                                 />
                             </Col>
-                        </div>
-                        <div className="form-row">
-                            <Col className="mb-3" md="6">
+                            <Col className="mb-3" md="4">
                                 <label
                                     className="form-control-label"
                                     htmlFor="validationContactPersonPhoneNumber"
                                 >
-                                    Número de Telefone
+                                    Celular
                                 </label>
                                 <InputMask
                                     placeholder='+55 (99) 9 9999-9999'
@@ -199,6 +210,34 @@ function ContactPersonsRegister({ handleShowContactPersonsUserRegister }) {
                                     É necessário preencher este campo.
                                 </div>
                             </Col>
+                            <Col className="mb-3" md="4">
+                                <label
+                                    className="form-control-label"
+                                    htmlFor="validationContactPersonOccupation"
+                                >
+                                    Ocupação
+                                </label>
+                                <Input
+                                    id="validationContactPersonOccupation"
+                                    placeholder="Ocupação"
+                                    type="text"
+                                    valid={contactPersonOccupationState === "valid"}
+                                    invalid={contactPersonOccupationState === "invalid"}
+                                    onChange={(e) => {
+                                        setContactPersonOccupation(e.target.value);
+                                        if (e.target.value === "") {
+                                            setContactPersonOccupationState("invalid");
+                                        } else {
+                                            setContactPersonOccupationState("valid");
+                                        }
+                                    }}
+                                />
+                                <div className="invalid-feedback">
+                                    É necessário preencher este campo.
+                                </div>
+                            </Col>
+                        </div>
+                        <div className="form-row">
                             <Col className="mb-4" md="6">
                                 <label
                                     className="form-control-label"
@@ -227,8 +266,6 @@ function ContactPersonsRegister({ handleShowContactPersonsUserRegister }) {
                                     {emailAddressState === "invalid" && "Forneça um endereço de e-mail válido."}
                                 </div>
                             </Col>
-                        </div>
-                        {/* <div className="form-row">
                             <Col className="mb-3" md="6">
                                 <label className="form-control-label" htmlFor="validationContactPersonBelonging">
                                     Cliente
@@ -243,36 +280,19 @@ function ContactPersonsRegister({ handleShowContactPersonsUserRegister }) {
                                     value={selectedBelongingToClientCompany}
                                     onChange={(e) => setSelectedBelongingToClientCompany(e.target.value)}
                                     data={clientCompanyDataList}
-                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, clientCompanyDataList, setSelectedBelongingToClientCompany, setContactPersonBelongsToClientCompany, setContactPersonBelongsToClientCompanyState)}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(
+                                        e.target.value,
+                                        clientCompanyDataList,
+                                        setSelectedBelongingToClientCompany,
+                                        setContactPersonBelongsToClientCompany,
+                                        setContactPersonBelongsToClientCompanyState,
+                                        null,
+                                        null,
+                                        'id'
+                                    )}
                                 />
                             </Col>
-                            <Col className="mb-3" md="6">
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="validationContactPersonOccupation"
-                                >
-                                    Ocupação
-                                </label>
-                                <Input
-                                    id="validationContactPersonOccupation"
-                                    placeholder="Ocupação"
-                                    type="text"
-                                    valid={contactPersonOccupationState === "valid"}
-                                    invalid={contactPersonOccupationState === "invalid"}
-                                    onChange={(e) => {
-                                        setContactPersonOccupation(e.target.value);
-                                        if (e.target.value === "") {
-                                            setContactPersonOccupationState("invalid");
-                                        } else {
-                                            setContactPersonOccupationState("valid");
-                                        }
-                                    }}
-                                />
-                                <div className="invalid-feedback">
-                                    É necessário preencher este campo.
-                                </div>
-                            </Col>
-                        </div> */}
+                        </div>
                         <Row>
                             <Col md="4" />
                             <Col className="d-flex justify-content-end align-items-center" md="8" >

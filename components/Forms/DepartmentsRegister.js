@@ -85,7 +85,16 @@ function DepartmentsRegister({ handleShowDepartmentsUserRegister }) {
                                 value={selectedDepartment}
                                 onChange={(e) => setSelectedDepartment(e.target.value)}
                                 data={departmentDataList}
-                                onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, departmentDataList, setSelectedDepartment, setDepartmentReportsToDepartment, setDepartmentReportsToDepartmentState)}
+                                onSelect={(e) => handleSelectionEmploymentContractData(
+                                    e.target.value,
+                                    departmentDataList,
+                                    setSelectedDepartment,
+                                    setDepartmentReportsToDepartment,
+                                    setDepartmentReportsToDepartmentState,
+                                    null,
+                                    null,
+                                    'id'
+                                )}
                             />
                         </Col>
                         <Col className="mb-3" md="12">

@@ -28,57 +28,80 @@ import { employmentContractDataSearchAndProcess } from '../../../util/employment
 import { handleSelectionEmploymentContractData } from '../../../util/handleSelectionEmploymentContractData';
 import { ContactPersonContext } from "../../../contexts/RecordsContext/ContactPersonContext";
 import { useFindContactPerson } from "../../../hooks/RecordsHooks/contactPerson/useFindContactPerson";
+import useUpdateContactPerson from "../../../hooks/RecordsHooks/contactPerson/useUpdateContactPerson";
+import ContactPersonUpdate from "../../Forms/ContactPersonUpdate";
 
-function ModalContactPerson({ handleOpenContactUpdateModal, modalOpen }) {
+function ModalContactPerson(
+  {
+    handleShowContactPersonDetailsModal,
+    selectedIdToShowContactPersonDetails,
+    handleCleaningSelectedIdToShowContactPersonDetails,
+    handleOpenContactModal,
+    modalOpen,
+    contactPersonName,
+    handleCleaningContactPersonNameStatus,
+    companyNameToModalDetails,
+    handleCleaningCompanyNameToModalDetails
+  }
+) {
 
   const {
     contactPersonIdToUpdate,
     handleContactIdStatusCleanupToUpdate,
     handleContactPersonIdToUpdate,
-    hasNewContactRecordCreated,
-    handleCreatedContactRecordStatusChange,
-    hasUpdatedContactRecord,
-    handleUpdatedContactRecordStatusChange,
-    hasDeletedContactRecord,
-    handleDeletedContactRecordStatusChange,
+    isShouldUpdateContactPerson,
+    handleIsShouldUpdateContactPerson,
   } = useContext(ContactPersonContext);
 
   const {
-    firstNameState,
-    lastNameState,
-    taxIdentificationNumber,
-    taxIdentificationNumberState,
-    emailAddressState,
-    birthdateState,
-    password,
-    passwordState,
-    confirmPasswordState,
-    phoneNumber,
-    phoneNumberState,
-    checkbox,
-    checkboxState,
-    setCheckbox,
-    setCheckboxState,
+    firstName,
     setFirstName,
+    firstNameState,
     setFirstNameState,
+    lastName,
     setLastName,
+    lastNameState,
     setLastNameState,
+    taxIdentificationNumber,
     setTaxIdentificationNumber,
+    taxIdentificationNumberState,
     setTaxIdentificationNumberState,
+    emailAddress,
     setEmailAddress,
+    emailAddressState,
     setEmailAddressState,
+    birthdate,
+    setBirthdate,
+    birthdateState,
+    setBirthdateState,
+    password,
     setPassword,
+    passwordState,
     setPasswordState,
+    confirmPassword,
     setConfirmPassword,
+    confirmPasswordState,
     setConfirmPasswordState,
+    phoneNumber,
     setPhoneNumber,
+    phoneNumberState,
     setPhoneNumberState,
-    handleValidateAddCustomerAccountHolderForm,
-    handleBirthdateChange,
-    validateEmail,
-    handleChangeCPF,
-    validateCheckboxIsChecked,
+    contactStatus,
+    setContactStatus,
+    contactStatusState,
+    setContactStatusState,
+    checkbox,
+    setCheckbox,
+    checkboxState,
+    setCheckboxState,
     isCustomerAccountHolderFormValidated,
+    setIsCustomerAccountHolderFormValidated,
+    validateCheckboxIsChecked,
+    handleBirthdateChange,
+    handleChangeCPF,
+    validateEmail,
+    handleValidateAddCustomerAccountHolderForm,
+    resetCreateCustomer,
     contactPersonOccupation,
     setContactPersonOccupation,
     contactPersonOccupationState,
@@ -86,25 +109,14 @@ function ModalContactPerson({ handleOpenContactUpdateModal, modalOpen }) {
     contactPersonBelongsToClientCompany,
     setContactPersonBelongsToClientCompany,
     contactPersonBelongsToClientCompanyState,
-    setContactPersonBelongsToClientCompanyState
+    setContactPersonBelongsToClientCompanyState,
   } = useCreateCustomerAccountHolder();
 
-  const [selectedBelongingToClientCompany, setSelectedBelongingToClientCompany] = useState('');
-  // const [clientCompanyDataList, setClientCompanyDataList] = useState([]);
-  // const handleClientCompanyDataList = (customerUser) => {
-  //   setClientCompanyDataList(customerUser);
-  // }
-
-  // useEffect(() => {
-  //   if (clientCompanyDataList.length === 0) {
-  //     employmentContractDataSearchAndProcess(useFindAllClientCompany, handleClientCompanyDataList, 'client-company', 'EmployeeUserRegister');
-  //   }
-  // }, []);
+  const { handleValidateUpdateCustomerAccountHolderForm } = useUpdateContactPerson();
 
   const handleCloseAddAppraisalCycleModal = () => {
-    handleOpenAddAppraisalCycleModal();
-    reset();
-    setSelectePeriod('');
+    handleOpenContactModal();
+    resetCreateCustomer();
   };
 
   const [detailedContactPersonData, setDetailedContactPersonData] = useState([]);
@@ -112,258 +124,271 @@ function ModalContactPerson({ handleOpenContactUpdateModal, modalOpen }) {
     setDetailedContactPersonData([]);
   };
 
-  // function handleUpdateAppraisalCycle() {
-  //   handleValidateUpdateAppraisalCycleForm(
-  //     handleCloseAddAppraisalCycleModal,
-  //     cycleIdToUpdate,
-  //     cycleTitle,
-  //     cyclePeriod,
-  //     formattedStartDate,
-  //     formattedFinishDate,
-  //     cycleObjective,
-  //     handleCycleIdToUpdate,
-  //     handleCleanDetailedContactPersonData
-  //   )
-  // }
+  function handleCloseContactDetailsModal() {
+    handleCleaningSelectedIdToShowContactPersonDetails();
+    handleCleaningContactPersonNameStatus();
+    handleOpenContactModal();
+    handleCleaningCompanyNameToModalDetails();
+  }
 
-  const [formattedStartDate, setFormattedStartDate] = useState('');
-  const [formattedFinishDate, setFormattedFinishDate] = useState('');
+  function handleCloseContactUpdateModal() {
+    handleContactIdStatusCleanupToUpdate();
+    handleCleaningContactPersonNameStatus();
+    handleOpenContactModal();
+  }
+
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    const adjustedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+
+    const day = String(adjustedDate.getDate()).padStart(2, '0');
+    const month = String(adjustedDate.getMonth() + 1).padStart(2, '0');
+    const year = adjustedDate.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  }
 
   useEffect(() => {
-    const fetchAppraisalCycleById = async () => {
-      if (!detailedContactPersonData.length) {
-        const foundContact = await useFindContactPerson(contactPersonIdToUpdate);
-        //console.log(foundContact);
-        // setDetailedContactPersonData(foundContact);s
-        // setCycleTitle(foundContact.appraisalNameCycle);
-        // updateSelectedPeriod(foundContact.cyclePeriod);
-        // setStartDate(new Date(foundContact.appraisalCycleFromDate));
-        // setFinishDate(new Date(foundContact.appraisalCycleDueDate));
-        // setFormattedStartDate(foundContact.appraisalCycleFromDate);
-        // setFormattedFinishDate(foundContact.appraisalCycleDueDate);
-        // setCycleObjective(foundContact.cycleAim);
+    const fetchData = async () => {
+      try {
+        if (detailedContactPersonData.length <= 0) {
+          const foundContact = await useFindContactPerson(selectedIdToShowContactPersonDetails);
+          setDetailedContactPersonData(foundContact);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
       }
     };
 
-    if (contactPersonIdToUpdate) {
-      fetchAppraisalCycleById(contactPersonIdToUpdate);
-    }
-  }, [contactPersonIdToUpdate]);
+    fetchData();
+  }, [selectedIdToShowContactPersonDetails]);
 
+  function handleUpdateContactPersonUpdate() {
+    handleIsShouldUpdateContactPerson();
+  }
+
+  const commonProps = {
+    handleShowContactPersonDetailsModal,
+    handleOpenContactModal,
+    modalOpen,
+    contactPersonName,
+    handleCleaningContactPersonNameStatus,
+    companyNameToModalDetails,
+    handleCleaningCompanyNameToModalDetails
+  };
 
   return (
-    <Modal toggle={handleOpenContactUpdateModal} isOpen={modalOpen} size="xl">
+    <Modal
+      toggle={handleOpenContactModal}
+      isOpen={modalOpen}
+      size="xl"
+      key={selectedIdToShowContactPersonDetails ? selectedIdToShowContactPersonDetails : contactPersonIdToUpdate}
+    >
       <div className=" modal-header">
         <h5 className=" modal-title" id="exampleModalLabel">
-          Editar Pessoa de Contato
+          {
+            contactPersonName
+              ? `Informações de ${contactPersonName}`
+              : (
+                contactPersonIdToUpdate && contactPersonName
+                  ? `Editar informações de ${contactPersonName}`
+                  : 'Informações'
+              )
+          }
         </h5>
         <button
           aria-label="Close"
           className=" close"
           type="button"
-          onClick={handleOpenContactUpdateModal}
+          onClick={selectedIdToShowContactPersonDetails ? handleCloseContactDetailsModal : handleCloseContactUpdateModal}
         >
           <span aria-hidden={true}>×</span>
         </button>
       </div>
       <ModalBody>
-        <Form className="needs-validation" noValidate>
-          <Card>
-            <CardBody>
-              <div className="form-row">
-                <Col className="mb-3" md="6">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationContactPersonFirstName"
-                  >
-                    Nome
-                  </label>
-                  <Input
-                    id="validationContactPersonFirstName"
-                    placeholder="Nome"
-                    type="text"
-                    valid={firstNameState === "valid"}
-                    invalid={firstNameState === "invalid"}
-                    onChange={(e) => {
-                      setFirstName(e.target.value);
-                      if (e.target.value === "") {
-                        setFirstNameState("invalid");
-                      } else {
-                        setFirstNameState("valid");
-                      }
-                    }}
-                  />
-                  <div className="invalid-feedback">
-                    É necessário preencher este campo.
+        {
+          detailedContactPersonData && detailedContactPersonData.id ? (
+            <Form className="needs-validation" noValidate>
+              <Card>
+                <CardBody>
+                  <div className="form-row">
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationContactPersonFirstName"
+                      >
+                        Nome
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {detailedContactPersonData.name}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationContactPersonLastName"
+                      >
+                        Sobrenome
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {detailedContactPersonData.lastname}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationContactPersonTaxIdNumber"
+                      >
+                        CPF
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {detailedContactPersonData.cpf}
+                        </span>
+                      </div>
+                    </Col>
                   </div>
-                </Col>
-                <Col className="mb-3" md="6">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationContactPersonLastName"
-                  >
-                    Sobrenome
-                  </label>
-                  <Input
-                    id="validationContactPersonLastName"
-                    placeholder="Sobrenome"
-                    type="text"
-                    valid={lastNameState === "valid"}
-                    invalid={lastNameState === "invalid"}
-                    onChange={(e) => {
-                      setLastName(e.target.value);
-                      if (e.target.value === "") {
-                        setLastNameState("invalid");
-                      } else {
-                        setLastNameState("valid");
-                      }
-                    }}
-                  />
-                  <div className="invalid-feedback">
-                    É necessário preencher este campo.
+                  <div className="form-row">
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationContactPersonBirthdate"
+                      >
+                        Data de Nascimento
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {formatDate(detailedContactPersonData.birthdate)}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationContactPersonPhoneNumber"
+                      >
+                        Número de Telefone
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {detailedContactPersonData.phone}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-4" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationContactPersonEmailAddress"
+                      >
+                        Ocupação
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {detailedContactPersonData.occupation ? detailedContactPersonData.occupation : "Não registrado"}
+                        </span>
+                      </div>
+                    </Col>
                   </div>
-                </Col>
-              </div>
-              <div className="form-row">
-                <Col className="mb-3" md="6">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationContactPersonTaxIdNumber"
-                  >
-                    CPF
-                  </label>
-                  <InputMask
-                    placeholder='999.999.999-99'
-                    mask="999.999.999-99"
-                    maskChar="_"
-                    value={taxIdentificationNumber}
-                    onChange={(e) => handleChangeCPF(e.target.value)}
-                  >
-                    {(inputProps) => <Input {...inputProps} id="validationContactPersonTaxIdNumber" invalid={taxIdentificationNumberState === "invalid"} />}
-                  </InputMask>
-                  <div className="invalid-feedback">
-                    {taxIdentificationNumberState === "invalid" && "Forneça um número de CPF válido."}
+                  <div className="form-row">
+                    <Col className="mb-4" md="6">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationContactPersonEmailAddress"
+                      >
+                        E-mail
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {detailedContactPersonData.email}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="4">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationContactPersonFirstName"
+                      >
+                        Empresa
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {companyNameToModalDetails}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="2">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationCustom02"
+                      >
+                        Estado Ativo
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {detailedContactPersonData.status ? "Sim" : "Não"}
+                        </span>
+                      </div>
+                    </Col>
                   </div>
-                </Col>
-                <Col className="mb-3" md="6">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationContactPersonBirthdate"
-                  >
-                    Data de Nascimento
-                  </label>
-                  <ReactDatetime
-                    inputProps={{
-                      placeholder: "__/__/__",
-                    }}
-                    timeFormat={false}
-                    onChange={handleBirthdateChange}
-
-                  />
-                </Col>
-              </div>
-              <div className="form-row">
-                <Col className="mb-3" md="6">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationContactPersonPhoneNumber"
-                  >
-                    Número de Telefone
-                  </label>
-                  <InputMask
-                    placeholder='+55 (99) 9 9999-9999'
-                    mask="+55 (99) 9 9999-9999"
-                    maskChar=" "
-                    value={phoneNumber}
-                    onChange={(e) => {
-                      setPhoneNumber(e.target.value);
-                      if (e.target.value === "") {
-                        setPhoneNumberState("invalid");
-                      } else {
-                        setPhoneNumberState("valid");
-                      }
-                    }}
-                  >
-                    {(inputProps) => <Input {...inputProps} id="validationContactPersonPhoneNumber" type="text" valid={phoneNumberState === "valid"} invalid={phoneNumberState === "invalid"} />}
-                  </InputMask>
-                  <div className="invalid-feedback">
-                    É necessário preencher este campo.
-                  </div>
-                </Col>
-                <Col className="mb-4" md="6">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationContactPersonEmailAddress"
-                  >
-                    E-mail
-                  </label>
-                  <Input
-                    aria-describedby="inputGroupPrepend"
-                    id="validationContactPersonEmailAddress"
-                    placeholder="Endereço de e-mail"
-                    type="email"
-                    valid={emailAddressState === "valid"}
-                    invalid={emailAddressState === "invalid"}
-                    onChange={(e) => {
-                      const email = e.target.value;
-                      setEmailAddress(email);
-                      if (validateEmail(email)) {
-                        setEmailAddressState("valid");
-                      } else {
-                        setEmailAddressState("invalid");
-                      }
-                    }}
-                  />
-                  <div className="invalid-feedback">
-                    {emailAddressState === "invalid" && "Forneça um endereço de e-mail válido."}
-                  </div>
-                </Col>
-              </div>
-              {/* <Row>
-                <Col md="4" />
-                <Col className="d-flex justify-content-end align-items-center" md="8" >
-                  <Button className="px-5" color="primary" size="lg" type="button" onClick={() => handleValidateAddCustomerAccountHolderForm(true)}>
-                    <span className="btn-inner--text">Adicionar</span>
-                  </Button>
-                </Col>
-              </Row> */}
-            </CardBody>
-          </Card>
-        </Form>
+                </CardBody>
+              </Card>
+            </Form>
+          ) : (
+            contactPersonIdToUpdate ? (
+              <ContactPersonUpdate {...commonProps} />
+            ) : (
+              <div className="text-center">Dados não disponíveis</div>
+            )
+          )
+        }
       </ModalBody>
-      <ModalFooter>
-        <Button
-          color="secondary"
-          type="button"
-        //onClick={handleOpenAddAppraisalCycleModal}
-        >
-          Fechar
-        </Button>
-        <Button
-          color={'warning'}
-          type="button"
-        // onClick={
-        //   cycleIdToUpdate
-        //     ? () => handleUpdateAppraisalCycle()
-        //     : () => handleValidateAddAppraisalCycleForm(handleCloseAddAppraisalCycleModal)
-        // }
-        >
-          {'Editar Contato'}
-        </Button>
-      </ModalFooter>
+      {
+        contactPersonIdToUpdate ? (
+          <ModalFooter>
+            <Button
+              color="secondary"
+              type="button"
+              onClick={selectedIdToShowContactPersonDetails ? handleCloseContactDetailsModal : handleCloseContactUpdateModal}
+            >
+              Fechar
+            </Button>
+            <Button
+              color={'warning'}
+              type="button"
+              onClick={handleUpdateContactPersonUpdate}
+            >
+              Editar Contato
+            </Button>
+          </ModalFooter>
+        ) : null
+      }
     </Modal>
 
   );
 }
 
 ModalContactPerson.defaultProps = {
-  handleOpenContactUpdateModal: () => { },
+  handleShowContactPersonDetailsModal: () => { },
+  selectedIdToShowContactPersonDetails: null,
+  handleCleaningSelectedIdToShowContactPersonDetails: () => { },
+  handleOpenContactModal: () => { },
   modalOpen: false,
+  contactPersonName: '',
+  handleCleaningContactPersonNameStatus: () => { },
 };
 
 ModalContactPerson.propTypes = {
-  handleOpenContactUpdateModal: PropTypes.func,
+  handleShowContactPersonDetailsModal: PropTypes.func,
+  selectedIdToShowContactPersonDetails: PropTypes.string,
+  handleCleaningSelectedIdToShowContactPersonDetails: PropTypes.func,
+  handleOpenContactModal: PropTypes.func,
   modalOpen: PropTypes.bool,
+  contactPersonName: PropTypes.string,
+  handleCleaningContactPersonNameStatus: PropTypes.func,
 };
 
 

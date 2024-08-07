@@ -25,6 +25,11 @@ function ContactPersonProvider({ children }) {
         setHasUpdatedContactRecord(!hasUpdatedContactRecord);
     }
 
+    const [isShouldUpdateContactPerson, setIsShouldUpdateContactPerson] = useState(false);
+    function handleIsShouldUpdateContactPerson() {
+        setIsShouldUpdateContactPerson(!isShouldUpdateContactPerson);
+    }
+
 
     const [hasDeletedContactRecord, setHasDeletedContactRecord] = useState(false);
     function handleDeletedContactRecordStatusChange() {
@@ -41,6 +46,8 @@ function ContactPersonProvider({ children }) {
                 handleCreatedContactRecordStatusChange,
                 hasUpdatedContactRecord,
                 handleUpdatedContactRecordStatusChange,
+                isShouldUpdateContactPerson,
+                handleIsShouldUpdateContactPerson,
                 hasDeletedContactRecord,
                 handleDeletedContactRecordStatusChange,
             }}>

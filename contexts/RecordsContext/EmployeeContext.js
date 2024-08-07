@@ -5,6 +5,16 @@ export const EmployeeContext = createContext({});
 
 function EmployeeProvider({ children }) {
 
+    const [customerIdToLinkToEmployee, setCustomerIdToLinkToEmployee] = useState(0);
+
+    function handleCustomerIdStatusCleanup() {
+        setCustomerIdToLinkToEmployee(0);
+    }
+
+    function handleCustomerIdToLinkToEmployee(customerId) {
+        setCustomerIdToLinkToEmployee(customerId);
+    }
+
     const [employeeIdToUpdate, setEmployeeIdToUpdate] = useState(0);
 
     function handleEmployeeIdStatusCleanupToUpdate() {
@@ -38,6 +48,9 @@ function EmployeeProvider({ children }) {
     return (
         <EmployeeContext.Provider
             value={{
+                customerIdToLinkToEmployee,
+                handleCustomerIdStatusCleanup,
+                handleCustomerIdToLinkToEmployee,
                 employeeIdToUpdate,
                 handleEmployeeIdStatusCleanupToUpdate,
                 handleEmployeeIdToUpdate,

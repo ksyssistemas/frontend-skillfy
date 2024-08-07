@@ -229,9 +229,7 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
             setData([{ id: "0", text: "Não há líderes, é necessário cadastrar colaboradores que exercem liderança." }])
         } else {
             try {
-                console.log("departamentId", departamentId)
                 const response = await apiCall(departamentId);
-                console.log("Response: ", response);
                 if (response) {
                     if (response && response.length > 0) {
                         const dataObject = response.map((employee, index) => {
@@ -661,7 +659,16 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
                                     value={selectedDepartment}
                                     onChange={(e) => setSelectedDepartment(e.target.value)}
                                     data={departmentDataList}
-                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, departmentDataList, setSelectedDepartment, setDepartmentWhichEmployeeReports, setDepartmentWhichEmployeeReportsState, handleSelectedDepartmentId, setHasDepartmentSelected)}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(
+                                        e.target.value,
+                                        departmentDataList,
+                                        setSelectedDepartment,
+                                        setDepartmentWhichEmployeeReports,
+                                        setDepartmentWhichEmployeeReportsState,
+                                        handleSelectedDepartmentId,
+                                        setHasDepartmentSelected,
+                                        'id'
+                                    )}
                                 />
                             </Col>
                             <Col className="mb-3" md="4">
@@ -681,7 +688,16 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
                                     value={selectedRole}
                                     onChange={(e) => setSelectedRole(e.target.value)}
                                     data={roleDataList}
-                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, roleDataList, setSelectedRole, setEmployeeRole, setEmployeeRoleState, null)}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(
+                                        e.target.value,
+                                        roleDataList,
+                                        setSelectedRole,
+                                        setEmployeeRole,
+                                        setEmployeeRoleState,
+                                        null,
+                                        null,
+                                        'id'
+                                    )}
                                 />
                             </Col>
                             <Col className="mb-3" md="4">
@@ -701,7 +717,16 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
                                     value={selectedFunction}
                                     onChange={(e) => setSelectedFunction(e.target.value)}
                                     data={functionDataList}
-                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, functionDataList, setSelectedFunction, setEmployeeFunction, setEmployeeFunctionState, null)}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(
+                                        e.target.value,
+                                        functionDataList,
+                                        setSelectedFunction,
+                                        setEmployeeFunction,
+                                        setEmployeeFunctionState,
+                                        null,
+                                        null,
+                                        'id'
+                                    )}
                                 />
                             </Col>
                         </div>
@@ -815,7 +840,16 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
                                     value={selectedContractType}
                                     onChange={(e) => setSelectedContractType(e.target.value)}
                                     data={contractTypeDataList}
-                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, contractTypeDataList, setSelectedContractType, setEmployeeContractType, setEmployeeContractTypeState, null)}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(
+                                        e.target.value,
+                                        contractTypeDataList,
+                                        setSelectedContractType,
+                                        setEmployeeContractType,
+                                        setEmployeeContractTypeState,
+                                        null,
+                                        null,
+                                        'id'
+                                    )}
                                 />
                             </Col>
                             <Col className="mb-3" md="4">
@@ -835,7 +869,16 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
                                     value={selectedWorkModel}
                                     onChange={(e) => setSelectedWorkModel(e.target.value)}
                                     data={workModelDataList}
-                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, workModelDataList, setSelectedWorkModel, setEmployeeWorkModel, setEmployeeWorkModelState, null)}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(
+                                        e.target.value,
+                                        workModelDataList,
+                                        setSelectedWorkModel,
+                                        setEmployeeWorkModel,
+                                        setEmployeeWorkModelState,
+                                        null,
+                                        null,
+                                        'id'
+                                    )}
                                 />
                             </Col>
                             <Col className="mb-3" md="4">
@@ -873,7 +916,16 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
                                     value={selectedWorkplace}
                                     onChange={(e) => setSelectedWorkplace(e.target.value)}
                                     data={workplaceDataList}
-                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, workplaceDataList, setSelectedWorkplace, setEmployeeWorkplace, setEmployeeWorkplaceState, null)}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(
+                                        e.target.value,
+                                        workplaceDataList,
+                                        setSelectedWorkplace,
+                                        setEmployeeWorkplace,
+                                        setEmployeeWorkplaceState,
+                                        null,
+                                        null,
+                                        'id'
+                                    )}
                                 />
                             </Col>
                             <Col className="mb-3" md="2">

@@ -4,8 +4,12 @@ import {
   Card,
   CardHeader,
   Col,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
   Row,
   Table,
+  UncontrolledDropdown,
   UncontrolledTooltip
 } from 'reactstrap';
 import { ContactPersonContext } from '../../../contexts/RecordsContext/ContactPersonContext';
@@ -13,6 +17,7 @@ import { useFindAllContactPerson } from '../../../hooks/RecordsHooks/contactPers
 import ModalContactPerson from '../../Modals/admin/ModalContactPerson';
 import { useSweetAlert } from '../../../contexts/SweetAlertContext';
 import { useDeleteContactPerson } from '../../../hooks/RecordsHooks/contactPerson/useDeleteContactPerson';
+import { useFindClientCompany } from '../../../hooks/RecordsHooks/customer/useFindClientCompany';
 
 function ContactPersonsList() {
 
@@ -31,16 +36,40 @@ function ContactPersonsList() {
   const { warningAlert } = useSweetAlert();
 
   const [userContactAccountData, setUserContactAccountData] = useState([]);
+  const [selectedIdToShowContactPersonDetails, setSelectedIdToShowContactPersonDetails] = useState(null);
+  function handleCleaningSelectedIdToShowContactPersonDetails() {
+    setSelectedIdToShowContactPersonDetails(null)
+  }
 
-  function handleContactPersonUpdate(contactId) {
-    handleContactPersonIdToUpdate(contactId);
-    handleOpenContactUpdateModal();
+  const [companyNameToModalDetails, setCompanyNameToModalDetails] = useState(null);
+  function handleCleaningCompanyNameToModalDetails() {
+    setCompanyNameToModalDetails(null)
   }
 
   const [modalOpen, setModalOpen] = React.useState(false);
 
-  function handleOpenContactUpdateModal() {
+  function handleOpenContactModal() {
     setModalOpen(!modalOpen)
+  }
+
+  function handleShowContactPersonDetailsModal(contactId, contactName, contactLastName) {
+    const name = `${contactName} ${contactLastName}`
+    setSelectedIdToShowContactPersonDetails(contactId);
+    setContactPersonName(name);
+    handleOpenContactModal();
+  }
+
+  const [contactPersonName, setContactPersonName] = useState('');
+
+  function handleCleaningContactPersonNameStatus() {
+    setContactPersonName('');
+  }
+
+  function handleContactPersonUpdate(contactId, contactName, contactLastName) {
+    const name = `${contactName} ${contactLastName}`
+    setContactPersonName(name);
+    handleContactPersonIdToUpdate(contactId);
+    handleOpenContactModal();
   }
 
   const handleDeleteAdmin = async (contactId, contactName, contactLastName) => {
@@ -70,23 +99,72 @@ function ContactPersonsList() {
     );
   };
 
+  const commonProps = {
+    handleShowContactPersonDetailsModal,
+    selectedIdToShowContactPersonDetails,
+    handleCleaningSelectedIdToShowContactPersonDetails,
+    handleOpenContactModal,
+    modalOpen,
+    contactPersonName,
+    handleCleaningContactPersonNameStatus,
+    companyNameToModalDetails,
+    handleCleaningCompanyNameToModalDetails
+  };
+
+  const shouldShowModal =
+    (selectedIdToShowContactPersonDetails && selectedIdToShowContactPersonDetails !== 0) ||
+    (contactPersonIdToUpdate && contactPersonIdToUpdate !== 0);
+
   useEffect(() => {
+    const fetchCompanyNames = async (contactPersons) => {
+      const updatedContactPersons = await Promise.all(
+        contactPersons.map(async (contactPerson) => {
+          try {
+            const companyData = await useFindClientCompany(contactPerson.customerId);
+            setCompanyNameToModalDetails(companyData.companyName);
+            return { ...contactPerson, companyName: companyData.companyName };
+          } catch (error) {
+            console.error(`Error fetching company data for customerId ${contactPerson.customerId}:`, error);
+            return { ...contactPerson, companyName: 'Unknown' };
+          }
+        })
+      );
+      setUserContactAccountData(updatedContactPersons);
+    };
+
+
     const fetchData = async () => {
-      if (userContactAccountData.length === 0) {
-        const foundContactPersonistrators = await useFindAllContactPerson();
-        setUserContactAccountData(foundContactPersonistrators);
+      if (!userContactAccountData || userContactAccountData.length === 0 || hasUpdatedContactRecord || hasDeletedContactRecord) {
+        try {
+          const foundContactPersons = await useFindAllContactPerson();
+          if (foundContactPersons && Array.isArray(foundContactPersons)) {
+            await fetchCompanyNames(foundContactPersons);
+          } else {
+            console.error('Invalid data format:', foundContactPersons);
+          }
+        } catch (error) {
+          console.error('Error fetching contact persons:', error);
+        }
       }
     };
 
     fetchData();
-  }, [userContactAccountData]);
+    if (hasUpdatedContactRecord) {
+      console.log("Update: ", hasUpdatedContactRecord);
+      handleUpdatedContactRecordStatusChange();
+    }
+    if (hasDeletedContactRecord) {
+      handleDeletedContactRecordStatusChange();
+    }
+
+  }, [userContactAccountData, hasUpdatedContactRecord, hasDeletedContactRecord]);
 
   return (
     <Card>
       <CardHeader className="border-0">
         <Row className="align-items-center">
           <Col xs="6">
-            <h3 className="mb-0">Lista de Contatos</h3>
+            <h3 className="mb-0">Dados de Contato</h3>
           </Col>
         </Row>
       </CardHeader>
@@ -96,10 +174,9 @@ function ContactPersonsList() {
           <tr>
             <th className="text-left">Empresa</th>
             <th className="text-left">Nome</th>
+            <th className="text-left">Ocupação</th>
             <th className="text-left">Email</th>
             <th className="text-left">Celular</th>
-            <th className="text-left">CPF</th>
-            <th className="text-left">Estado</th>
             <th className="text-left">Ações</th>
           </tr>
         </thead>
@@ -108,10 +185,13 @@ function ContactPersonsList() {
             userContactAccountData.map((contactPerson) => (
               <tr key={contactPerson.id}>
                 <td className="table-user">
-                  <b className="text-left">Nome da emrpesa</b>
+                  <b className="text-left">{contactPerson.companyName}</b>
                 </td>
                 <td className="table-user">
                   <b className="text-left">{contactPerson.name}  {contactPerson.lastname}</b>
+                </td>
+                <td>
+                  <span className="text-muted">{contactPerson.occupation}</span>
                 </td>
                 <td className="text-left">
                   <span className="text-muted">{contactPerson.email}</span>
@@ -119,55 +199,37 @@ function ContactPersonsList() {
                 <td className="text-left">
                   <span className="text-muted">{contactPerson.phone}</span>
                 </td>
-                <td className="text-left">
-                  <span className="text-muted">
-                    {contactPerson.cpf}
-                  </span>
-                </td>
-                <td>
-                  {
-                    contactPerson.status === true
-                      ? (
-                        <Badge color="success" pill>
-                          Ativo
-                        </Badge>
-                      ) : (
-                        contactPerson.status === false
-                          ? (
-                            <Badge color="danger" pill>
-                              Inativo
-                            </Badge>
-                          ) : (
-                            <Badge color="primary" pill>
-                              N/A
-                            </Badge>
-                          )
-                      )
-                  }
-                </td>
-                <td className="table-actions text-left">
-                  <a
-                    className="table-action"
-                    href="#pablo"
-                    id="tooltipEditcontactPerson"
-                    onClick={(e) => { e.preventDefault(); handleContactPersonUpdate(contactPerson.id); }}
-                  >
-                    <i className="fas fa-user-edit" />
-                  </a>
-                  <UncontrolledTooltip delay={0} target="tooltipEditcontactPerson">
-                    Editar
-                  </UncontrolledTooltip>
-                  <a
-                    className="table-action table-action-delete"
-                    href="#pablo"
-                    id={`delete${contactPerson.id}`}
-                    onClick={(e) => { e.preventDefault(); showWarningAlert(contactPerson.id, contactPerson.name, contactPerson.lastname); }}
-                  >
-                    <i className="fas fa-trash" />
-                  </a>
-                  <UncontrolledTooltip delay={0} target={`delete${contactPerson.id}`}>
-                    Deletar
-                  </UncontrolledTooltip>
+                <td className="text-left" >
+                  <UncontrolledDropdown>
+                    <DropdownToggle
+                      className="btn-icon-only text-light"
+                      color=""
+                      role="button"
+                      size="sm"
+                    >
+                      <i className="fas fa-ellipsis-v" />
+                    </DropdownToggle>
+                    <DropdownMenu className="dropdown-menu-arrow" right>
+                      <DropdownItem
+                        href="#pablo"
+                        onClick={(e) => { e.preventDefault(); handleShowContactPersonDetailsModal(contactPerson.id, contactPerson.name, contactPerson.lastname) }}
+                      >
+                        Detalhes
+                      </DropdownItem>
+                      <DropdownItem
+                        href="#pablo"
+                        onClick={(e) => { e.preventDefault(); handleContactPersonUpdate(contactPerson.id, contactPerson.name, contactPerson.lastname); }}
+                      >
+                        Editar
+                      </DropdownItem>
+                      <DropdownItem
+                        href="#pablo"
+                        onClick={(e) => { e.preventDefault(); showWarningAlert(contactPerson.id, contactPerson.name, contactPerson.lastname); }}
+                      >
+                        Deletar
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
                 </td>
               </tr>
             ))
@@ -178,10 +240,10 @@ function ContactPersonsList() {
           )}
         </tbody>
       </Table>
-      <ModalContactPerson
-        handleOpenContactUpdateModal={handleOpenContactUpdateModal}
-        modalOpen={modalOpen}
-      />
+
+      {shouldShowModal ? (
+        <ModalContactPerson {...commonProps} />
+      ) : null}
 
     </Card>
   );

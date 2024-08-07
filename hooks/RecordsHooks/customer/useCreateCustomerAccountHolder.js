@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import useCPF from '../useCPF';
+import { CustomerContext } from '../../../contexts/RecordsContext/CustomerContext';
 
 const useCreateCustomer = (handleShowContactPersonsUserRegister) => {
+
+  const {
+    handleIdAccountHolderToLinkToCustomer,
+  } = useContext(CustomerContext);
 
   const {
     validateCPF
@@ -23,6 +28,8 @@ const useCreateCustomer = (handleShowContactPersonsUserRegister) => {
   const [confirmPasswordState, setConfirmPasswordState] = React.useState(null);
   const [phoneNumber, setPhoneNumber] = React.useState("");
   const [phoneNumberState, setPhoneNumberState] = React.useState(null);
+  const [contactStatus, setContactStatus] = React.useState("");
+  const [contactStatusState, setContactStatusState] = React.useState(null);
   const [checkbox, setCheckbox] = React.useState(false);
   const [checkboxState, setCheckboxState] = React.useState(null);
   const [isCustomerAccountHolderFormValidated, setIsCustomerAccountHolderFormValidated] = React.useState(false);
@@ -102,9 +109,10 @@ const useCreateCustomer = (handleShowContactPersonsUserRegister) => {
         taxIdentificationNumberState === "valid" &&
         emailAddressState === "valid" &&
         phoneNumberState === "valid" &&
-        birthdateState === "valid"
+        birthdateState === "valid" &&
+        contactPersonOccupationState === "valid"
       ) {
-        handleSubmitContractPerson(firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber);
+        handleSubmitContractPerson(firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, contactPersonOccupation, contactPersonBelongsToClientCompany);
       }
     } else if (
       firstNameState === "valid" &&
@@ -142,7 +150,8 @@ const useCreateCustomer = (handleShowContactPersonsUserRegister) => {
         });
 
         if (response.ok) {
-          console.log(response);
+          const data = await response.json();
+          handleIdAccountHolderToLinkToCustomer(data.id);
           console.log('Data sent successfully!');
         } else {
           console.error('Error in response:', response.status);
@@ -153,8 +162,8 @@ const useCreateCustomer = (handleShowContactPersonsUserRegister) => {
     }
   };
 
-  const handleSubmitContractPerson = async (firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, terms = true) => {
-    console.log(firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, terms);
+  const handleSubmitContractPerson = async (firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, contactPersonOccupation, contactPersonBelongsToClientCompany, terms = true) => {
+    console.log(firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, contactPersonOccupation, contactPersonBelongsToClientCompany, terms);
 
     if (firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, terms) {
       try {
@@ -170,6 +179,8 @@ const useCreateCustomer = (handleShowContactPersonsUserRegister) => {
             birthdate: birthdate,
             email: emailAddress,
             phone: phoneNumber,
+            occupation: contactPersonOccupation,
+            customerId: Number(contactPersonBelongsToClientCompany),
             terms: terms
           }),
         });
@@ -200,8 +211,16 @@ const useCreateCustomer = (handleShowContactPersonsUserRegister) => {
     setBirthdateState(null);
     setPhoneNumber("");
     setPhoneNumberState(null);
+    setContactStatus("");
+    setContactStatusState(null);
     setCheckbox(null);
     setCheckboxState(null);
+    setContactPersonOccupation('');
+    setContactPersonOccupationState(null);
+    setContactPersonBelongsToClientCompany('');
+    setContactPersonBelongsToClientCompanyState(null);
+    setContactStatus('');
+    setContactStatusState(null);
   }
 
   const handleChangeCPF = (cpf) => {
@@ -241,42 +260,54 @@ const useCreateCustomer = (handleShowContactPersonsUserRegister) => {
   }
 
   return {
-    firstNameState,
-    lastNameState,
-    taxIdentificationNumber,
-    taxIdentificationNumberState,
-    emailAddressState,
-    birthdateState,
-    password,
-    passwordState,
-    confirmPasswordState,
-    phoneNumber,
-    phoneNumberState,
-    checkbox,
-    checkboxState,
-    setCheckbox,
-    setCheckboxState,
+    firstName,
     setFirstName,
+    firstNameState,
     setFirstNameState,
+    lastName,
     setLastName,
+    lastNameState,
     setLastNameState,
+    taxIdentificationNumber,
     setTaxIdentificationNumber,
+    taxIdentificationNumberState,
     setTaxIdentificationNumberState,
+    emailAddress,
     setEmailAddress,
+    emailAddressState,
     setEmailAddressState,
+    birthdate,
+    setBirthdate,
+    birthdateState,
+    setBirthdateState,
+    password,
     setPassword,
+    passwordState,
     setPasswordState,
+    confirmPassword,
     setConfirmPassword,
+    confirmPasswordState,
     setConfirmPasswordState,
+    phoneNumber,
     setPhoneNumber,
+    phoneNumberState,
     setPhoneNumberState,
+    contactStatus,
+    setContactStatus,
+    contactStatusState,
+    setContactStatusState,
+    checkbox,
+    setCheckbox,
+    checkboxState,
+    setCheckboxState,
+    isCustomerAccountHolderFormValidated,
+    setIsCustomerAccountHolderFormValidated,
     validateCheckboxIsChecked,
     handleBirthdateChange,
     handleChangeCPF,
     validateEmail,
     handleValidateAddCustomerAccountHolderForm,
     resetCreateCustomer,
-    isCustomerAccountHolderFormValidated,
     contactPersonOccupation,
     setContactPersonOccupation,
     contactPersonOccupationState,

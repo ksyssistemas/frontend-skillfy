@@ -52,15 +52,15 @@ const useCreateDepartment = (handleShowDepartmentsUserRegister) => {
     if (departmentName && departmentName !== "") {
       try {
         const payload = {
-          DepartmentName: departmentName,
+          departmentName: departmentName,
         };
 
         if (departmentDescription && departmentDescription !== "") {
-          payload.Description = departmentDescription;
+          payload.description = departmentDescription;
         }
 
         if (departmentReportsToDepartment && departmentReportsToDepartment !== "") {
-          payload.Responsible = departmentReportsToDepartment;
+          payload.responsible = departmentReportsToDepartment;
         }
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_DEPARTMENT}`, {

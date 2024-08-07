@@ -5,14 +5,21 @@ export function handleSelectionEmploymentContractData(
     setItem,
     setItemState,
     setSelectedDepartmentId = null,
-    setHasDepartmentSelected = null
+    setHasDepartmentSelected = null,
+    savedDataType = ''
 ) {
     if (dataList && dataList.length !== 0) {
         const optionType = dataList.filter(option => option.id === selectedId);
         setSelectedItem(selectedId);
-        console.log(optionType[0]?.text);
-        setItem(optionType[0]?.text);
+
+        if (savedDataType === 'id') {
+            setItem(optionType[0]?.id);
+        } else {
+            setItem(optionType[0]?.text);
+        }
+
         setItemState(optionType.length === 0 ? "invalid" : "valid");
+
         if (setSelectedDepartmentId) {
             setSelectedDepartmentId(selectedId);
         }

@@ -22,13 +22,32 @@ import useCreateWorkplace from "../../hooks/RecordsHooks/featuresEmploymentContr
 import { useFindEmployee } from "../../hooks/RecordsHooks/employee/useFindEmployee";
 import { useFindEmployeeContractDetails } from "../../hooks/RecordsHooks/featuresEmploymentContract/useFindEmployeeContractDetails";
 import { handleDateFormatting } from "../../util/handleDateFormatting";
+import { useFindClientCompany } from "../../hooks/RecordsHooks/customer/useFindClientCompany";
+import { useFindAllEmployeeAndRole } from "../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllEmployeeAndRole";
+import { useFindAllTypeContract } from "../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllTypeContract";
+import { useFindAllWorkModels } from "../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllWorkModels";
+import { useFindAllWorkplaces } from "../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllWorkplaces";
+import { useFindAllDepartments } from "../../hooks/RecordsHooks/department/useFindAllDepartments";
+import { useFindAllRoles } from "../../hooks/RecordsHooks/role/useFindAllRoles";
+import { useFindAllFunctions } from "../../hooks/RecordsHooks/employeeFunction/useFindAllFunctions";
+import { employmentContractDataSearchAndProcess } from "../../util/employmentContractDataSearchAndProcess";
+import useUpdateEmployee from "../../hooks/RecordsHooks/employee/useUpdateEmployee";
 
-function EmployeeUserUpdate({ handleOpenCustomerModal }) {
+function EmployeeUserUpdate(
+    {
+        handleShowEmployeeDetailsModal,
+        handleOpenEmployeeModal,
+        modalOpen,
+        employeeName,
+        handleCleaningEmployeeNameStatus,
+        companyNameToModalDetails
+    }
+) {
 
     const {
         employeeIdToUpdate,
-        handleEmployeeIdStatusCleanupToUpdate,
         handleEmployeeIdToUpdate,
+        handleEmployeeIdStatusCleanupToUpdate,
         hasNewEmployeeRecordCreated,
         handleCreatedEmployeeRecordStatusChange,
         hasUpdatedEmployeeRecord,
@@ -39,9 +58,9 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
         handleDeletedEmployeeRecordStatusChange
     } = useContext(EmployeeContext);
 
-    // const {
-    //     handleValidateUpdateClientCompanyForm
-    // } = useUpdateClientCompany();
+    const {
+        handleValidateUpdateEmployeeForm
+    } = useUpdateEmployee();
 
     const {
         employeeIdNumber,
@@ -183,6 +202,8 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
         handleWorkplaceDataList
     } = useCreateWorkplace();
 
+    const [dataLoaded, setDataLoaded] = useState(false);
+
     const [fieldTouchStatus, setFieldTouchStatus] = useState({
 
         firstName: { value: "", touched: false, state: null },
@@ -199,10 +220,7 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
         employeeDepartureTime: { value: "", touched: false, state: null },
     });
 
-    const [cnpjTouched, setCnpjTouched] = useState(false);
     const [cepTouched, setCepTouched] = useState(false);
-    const [customerBusinessPhoneTouched, setCustomerBusinessPhoneTouched] = useState(false);
-    const [customerPhoneTouched, setCustomerPhoneTouched] = useState(false);
 
     const handleTouchStart = (field) => {
         setFieldTouchStatus((prev) => ({
@@ -251,9 +269,9 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
     const handleToggleChange = () => {
         setFieldTouchStatus((prev) => ({
             ...prev,
-            customerStatus: {
-                ...prev.customerStatus,
-                value: !prev.customerStatus.value,
+            employeeStatus: {
+                ...prev.employeeStatus,
+                value: !prev.employeeStatus.value,
                 touched: true,
                 state: "valid"
             }
@@ -273,11 +291,41 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
         }
     };
 
-    const updateFieldsWithHandleChange = (fields) => {
-        Object.keys(fields).forEach((field) => {
-            handleChange({ target: { value: fields[field] } }, field);
+    const handleCloseEmployeeUpdateModal = () => {
+        setFieldTouchStatus({
+            firstName: { value: "", touched: false, state: null },
+            lastName: { value: "", touched: false, state: null },
+            emailAddress: { value: "", touched: false, state: null },
+            phoneNumber: { value: "", touched: false, state: null },
+            employeeLeaderName: { value: "", touched: false, state: null },
+            isEmployeeLeader: { value: "", touched: false, state: null },
+            employeeStatus: { value: "", touched: false, state: null },
+
+            employeetAdmissionDate: { value: "", touched: false, state: null },
+            employeeEntryTime: { value: "", touched: false, state: null },
+            employeeBreakTime: { value: false, touched: false, state: null },
+            employeeDepartureTime: { value: "", touched: false, state: null },
         });
-    };
+        setCepTouched(false);
+        setDataLoaded(false);
+        setSelectedDepartment('');
+        setSelectedRole('');
+        setSelectedFunction('');
+        setSelectedContractType('');
+        setSelectedWorkModel('');
+        setSelectedWorkplace('');
+        setSelectedDepartmentId('');
+        setHasDepartmentSelected(false);
+        setDepartmentDataList([]);
+        setRoleDataList([]);
+        setFunctionDataList([]);
+        setEmployeeAndRoleDataList([]);
+        setDetailedEmployeeData([]);
+        setDetailedContractDetailsData([]);
+        setFormattedBirthdate('');
+        setFormattedAdmissionDate('');
+
+    }
 
     const [selectedDepartment, setSelectedDepartment] = useState('');
     const [selectedRole, setSelectedRole] = useState('');
@@ -285,6 +333,15 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
     const [selectedContractType, setSelectedContractType] = useState('');
     const [selectedWorkModel, setSelectedWorkModel] = useState('');
     const [selectedWorkplace, setSelectedWorkplace] = useState('');
+
+    const [selectedDepartmentId, setSelectedDepartmentId] = useState('');
+    const handleSelectedDepartmentId = (id) => {
+        setSelectedDepartmentId(id);
+    };
+    const [hasDepartmentSelected, setHasDepartmentSelected] = useState(false);
+    const handleHasDepartmentSelected = (departmentSelectedStatus) => {
+        setHasDepartmentSelected(departmentSelectedStatus);
+    };
 
     const [departmentDataList, setDepartmentDataList] = useState([]);
     const handleDepartmentDataList = (departmentData) => {
@@ -301,11 +358,41 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
         setFunctionDataList(functionData);
     }
 
+    const [employeeAndRoleDataList, setEmployeeAndRoleDataList] = useState([]);
+    const handleEmployeeAndRoleDataList = (employeeAndRole) => {
+        setEmployeeAndRoleDataList(employeeAndRole);
+    }
+
+    useEffect(() => {
+        const fetchAllData = async () => {
+            //     employeeAndRoleDataSearchAndProcess(useFindAllEmployeeAndRole, handleEmployeeAndRoleDataList, selectedDepartmentId, handleHasDepartmentSelected, setSelectedDepartmentId);
+            await employmentContractDataSearchAndProcess(useFindAllTypeContract, handleContractTypeDataList, 'contractType', 'EmployeeUserRegister');
+            await employmentContractDataSearchAndProcess(useFindAllWorkModels, handleWorkModelDataList, 'workModel', 'EmployeeUserRegister');
+            await employmentContractDataSearchAndProcess(useFindAllWorkplaces, handleWorkplaceDataList, 'workplace', 'EmployeeUserRegister');
+            await employmentContractDataSearchAndProcess(useFindAllDepartments, handleDepartmentDataList, 'department', 'EmployeeUserRegister');
+            await employmentContractDataSearchAndProcess(useFindAllRoles, handleRoleDataList, 'role', 'EmployeeUserRegister');
+            await employmentContractDataSearchAndProcess(useFindAllFunctions, handleFunctionDataList, 'function', 'EmployeeUserRegister');
+            setDataLoaded(true);
+        };
+
+        fetchAllData();
+    }, []);
+
     const selectedListItemToUpdate = (item, list, setSelectedItem, setItem, setItemState) => {
-        const selectedItem = list.find(p => p.text === item);
+        const selectedItem = list.find(p => p.id === String(item));
+        console.log(selectedItem);
         if (selectedItem) {
             setSelectedItem(selectedItem.id);
-            handleSelectionEmploymentContractData(selectedItem.id, list, setSelectedItem, setItem, setItemState);
+            handleSelectionEmploymentContractData(
+                selectedItem.id,
+                list,
+                setSelectedItem,
+                setItem,
+                setItemState,
+                null,
+                null,
+                'id'
+            );
         }
     };
 
@@ -320,13 +407,25 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
     };
 
     const [formattedBirthdate, setFormattedBirthdate] = useState('');
+    const [formattedAdmissionDate, setFormattedAdmissionDate] = useState('');
 
     useEffect(() => {
+
+        const fetchCompanyNames = async (employee) => {
+            try {
+                const companyData = await useFindClientCompany(employee.customerId);
+                return { ...employee, companyName: companyData.companyName };
+            } catch (error) {
+                console.error(`Error fetching employee data for customerId ${employee.customerId}:`, error);
+                return { ...employee, companyName: 'Unknown' };
+            }
+        };
+
         const fetchEmployeeAndContractDetailsById = async () => {
             if (!detailedEmployeeData.length) {
                 const foundEmployee = await useFindEmployee(employeeIdToUpdate);
-                setDetailedEmployeeData(foundEmployee);
-                console.log(foundEmployee);
+                const employeeWithCompanyName = await fetchCompanyNames(foundEmployee);
+                setDetailedEmployeeData(employeeWithCompanyName);
                 setFieldTouchStatus((prev) => ({
                     ...prev,
                     firstName: { ...prev.firstName, value: foundEmployee.name },
@@ -335,67 +434,75 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
                     phoneNumber: { ...prev.phoneNumber, value: foundEmployee.phoneNumber },
 
                     employeeLeaderName: { ...prev.employeeLeaderName, value: foundEmployee.LeaderName },
-                    isEmployeeLeader: { ...prev.isEmployeeLeader, value: foundEmployee.isLead },
                     employeeStatus: { ...prev.employeeStatus, value: foundEmployee.status },
                 }));
+                if (foundEmployee.isLead === true) {
+                    setIsEmployeeLeader(true);
+                    setHasEmployeeLeader(false);
+                } else if (foundEmployee.isLead === false) {
+                    setIsEmployeeLeader(false);
+                    setHasEmployeeLeader(true);
+                }
                 setBirthdate(new Date(foundEmployee.birthdate));
                 setFormattedBirthdate(foundEmployee.birthdate);
             }
             if (!detailedContractDetailsData.length) {
-                const foundContractDatails = await useFindEmployeeContractDetails(employeeIdToUpdate);
-                setDetailedContractDetailsData(foundContractDatails);
-                console.log(foundContractDatails);
-                // setFieldTouchStatus((prev) => ({
-                //     ...prev,
-                //     employeetAdmissionDate: { ...prev.employeetAdmissionDate, value: foundContractDatails.employeetAdmissionDate },
-                //     employeeEntryTime: { ...prev.employeeEntryTime, value: foundContractDatails.employeeEntryTime },
-                //     employeeBreakTime: { ...prev.employeeBreakTime, value: foundContractDatails.employeeBreakTime },
-                //     employeeDepartureTime: { ...prev.employeeDepartureTime, value: foundContractDatails.employeeDepartureTime },
-                // }));
-                // selectedListItemToUpdate(foundCustomer.departmentWhichEmployeeReports, contractTypeDataList, setSelectedDepartment, setDepartmentWhichEmployeeReports, setDepartmentWhichEmployeeReportsState);
-                // selectedListItemToUpdate(foundCustomer.employeeRole, companySectorDataList, setSelectedRole, setEmployeeRole, setEmployeeRoleState);
-                // selectedListItemToUpdate(foundCustomer.employeeFunction, companyTypesDataList, setSelectedFunction, setEmployeeFunction, setEmployeeFunctionState);
-
-                // selectedListItemToUpdate(foundCustomer.employeeContractType, contractTypeDataList, setSelectedContractType, setEmployeeContractType, setEmployeeContractTypeState);
-                // selectedListItemToUpdate(foundCustomer.employeeWorkModel, workModelDataList, setSelectedWorkModel, setEmployeeWorkModel, setEmployeeWorkModelState);
-                // selectedListItemToUpdate(foundCustomer.employeeWorkplace, workplaceDataList, setSelectedWorkplace, setEmployeeWorkplace, setEmployeeWorkplaceState);
+                const foundContractDetails = await useFindEmployeeContractDetails(employeeIdToUpdate);
+                setDetailedContractDetailsData(foundContractDetails);
+                setFieldTouchStatus((prev) => ({
+                    ...prev,
+                    employeeEntryTime: { ...prev.employeeEntryTime, value: foundContractDetails.entryTime },
+                    employeeBreakTime: { ...prev.employeeBreakTime, value: foundContractDetails.breakTime },
+                    employeeDepartureTime: { ...prev.employeeDepartureTime, value: foundContractDetails.departureTime },
+                }));
+                selectedListItemToUpdate(foundContractDetails.departmentId, departmentDataList, setSelectedDepartment, setDepartmentWhichEmployeeReports, setDepartmentWhichEmployeeReportsState);
+                selectedListItemToUpdate(foundContractDetails.rolesId, roleDataList, setSelectedRole, setEmployeeRole, setEmployeeRoleState);
+                selectedListItemToUpdate(foundContractDetails.employeeFunctionId, functionDataList, setSelectedFunction, setEmployeeFunction, setEmployeeFunctionState);
+                selectedListItemToUpdate(foundContractDetails.contractTypeId, contractTypeDataList, setSelectedContractType, setEmployeeContractType, setEmployeeContractTypeState);
+                selectedListItemToUpdate(foundContractDetails.contractModelId, workModelDataList, setSelectedWorkModel, setEmployeeWorkModel, setEmployeeWorkModelState);
+                selectedListItemToUpdate(foundContractDetails.workplaceId, workplaceDataList, setSelectedWorkplace, setEmployeeWorkplace, setEmployeeWorkplaceState);
+                setEmployeetAdmissionDate(new Date(foundContractDetails.adimissionDate));
+                setFormattedAdmissionDate(foundContractDetails.adimissionDate);
             }
         };
 
-        fetchEmployeeAndContractDetailsById();
-    }, [employeeIdToUpdate]);
+        if (dataLoaded && employeeIdToUpdate) {
+            fetchEmployeeAndContractDetailsById();
+        }
 
-    // useEffect(() => {
-    //     if (isShouldUpdateEmployee) {
-    //         handleValidateUpdateClientCompanyForm(
-    //             handleOpenCustomerModal,
-    //             customerIdToUpdate,
-    //             individualEmployerIdNumber,
-    //             fieldTouchStatus.companyName.value,
-    //             fieldTouchStatus.registrationName.value,
-    //             companyTypes,
-    //             fieldTouchStatus.customerBusinessPhoneNumber.value,
-    //             fieldTouchStatus.customerPhoneNumber.value,
-    //             fieldTouchStatus.companyEmailAddress.value,
-    //             customerBusinessSector,
-    //             fieldTouchStatus.customerWebSite.value,
-    //             fieldTouchStatus.customerStatus.value,
-    //             formattedAccessionDate,
-    //             fieldTouchStatus.idHeadOfficeBranch.value,
-    //             fieldTouchStatus.customerZipCode.value,
-    //             fieldTouchStatus.federatedUnit.value,
-    //             fieldTouchStatus.companyCity.value,
-    //             fieldTouchStatus.companyAddress.value,
-    //             fieldTouchStatus.companyAddressNumber.value,
-    //             fieldTouchStatus.companyAddressComplement.value,
-    //             fieldTouchStatus.companyDistrict.value,
-    //             fieldTouchStatus.companyCountry.value,
-    //             handleCustomerIdToUpdate,
-    //             handleCustomerIdStatusCleanupToUpdate
-    //         )
-    //         handleIsShouldUpdateEmployee();
-    //     }
-    // }, [isShouldUpdateEmployee, fieldTouchStatus, formattedAccessionDate]);
+    }, [dataLoaded, employeeIdToUpdate]);
+
+    useEffect(() => {
+        if (isShouldUpdateEmployee) {
+            handleValidateUpdateEmployeeForm(
+                handleOpenEmployeeModal,
+                fieldTouchStatus.firstName.value,
+                fieldTouchStatus.lastName.value,
+                formattedBirthdate,
+                fieldTouchStatus.emailAddress.value,
+                fieldTouchStatus.phoneNumber.value,
+                fieldTouchStatus.employeeLeaderName.value,
+                isEmployeeLeader,
+                hasEmployeeLeader,
+                fieldTouchStatus.employeeStatus.value,
+
+                departmentWhichEmployeeReports,
+                employeeRole,
+                employeeFunction,
+                employeeContractType,
+                employeeWorkModel,
+                employeeWorkplace,
+                formattedAdmissionDate,
+                fieldTouchStatus.employeeEntryTime.value,
+                fieldTouchStatus.employeeBreakTime.value,
+                fieldTouchStatus.employeeDepartureTime.value,
+                handleEmployeeIdToUpdate,
+                handleEmployeeIdStatusCleanupToUpdate,
+                handleCloseEmployeeUpdateModal
+            )
+            handleIsShouldUpdateEmployee();
+        }
+    }, [isShouldUpdateEmployee, fieldTouchStatus, formattedBirthdate, formattedAdmissionDate]);
 
     return (
 
@@ -403,24 +510,27 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
             <div className="col">
                 <div className="card-wrapper">
                     <div className="form-row">
-                        {/* <Col className="mb-3" md="4">
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="validationEmployeeIdNumber"
-                                >
-                                    Identificação do Colaborador (opcional)
-                                </label>
-                                <Input
-                                    id="validationEmployeeIdNumber"
-                                    placeholder="Código ou ID do colaborador"
-                                    onChange={(e) => {
-                                        setEmployeeIdNumber(e.target.value);
+                        <Col className="mb-3" md="4">
+                            <label
+                                className="form-control-label"
+                                htmlFor="validationEmployeeIdNumber"
+                            >
+                                Nome da Empresa
+                            </label>
+                            <Input
+                                id="validationEmployeeIdNumber"
+                                placeholder="Nome da Empresa"
+                                type="text"
+                                value={detailedEmployeeData.companyName}
+                                onChange={(e) => {
+                                    setEmployeeIdNumber(e.target.value);
 
-                                    }}
-                                />
+                                }}
+                                disabled
+                            />
 
-                            </Col> */}
-                        <Col className="mb-3" md="6">
+                        </Col>
+                        <Col className="mb-3" md="4">
                             <label
                                 className="form-control-label"
                                 htmlFor="validationEmployeeFirstName"
@@ -441,7 +551,7 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
                                 É necessário preencher este campo.
                             </div>
                         </Col>
-                        <Col className="mb-3" md="6">
+                        <Col className="mb-3" md="4">
                             <label
                                 className="form-control-label"
                                 htmlFor="validationEmployeeLastName"
@@ -736,7 +846,16 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
                                 value={selectedDepartment}
                                 onChange={(e) => setSelectedDepartment(e.target.value)}
                                 data={departmentDataList}
-                                onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, departmentDataList, setSelectedDepartment, setDepartmentWhichEmployeeReports, setDepartmentWhichEmployeeReportsState, handleSelectedDepartmentId, setHasDepartmentSelected)}
+                                onSelect={(e) => handleSelectionEmploymentContractData(
+                                    e.target.value,
+                                    departmentDataList,
+                                    setSelectedDepartment,
+                                    setDepartmentWhichEmployeeReports,
+                                    setDepartmentWhichEmployeeReportsState,
+                                    handleSelectedDepartmentId,
+                                    setHasDepartmentSelected,
+                                    'id'
+                                )}
                             />
                         </Col>
                         <Col className="mb-3" md="4">
@@ -756,7 +875,16 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
                                 value={selectedRole}
                                 onChange={(e) => setSelectedRole(e.target.value)}
                                 data={roleDataList}
-                                onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, roleDataList, setSelectedRole, setEmployeeRole, setEmployeeRoleState, null)}
+                                onSelect={(e) => handleSelectionEmploymentContractData(
+                                    e.target.value,
+                                    roleDataList,
+                                    setSelectedRole,
+                                    setEmployeeRole,
+                                    setEmployeeRoleState,
+                                    null,
+                                    null,
+                                    'id'
+                                )}
                             />
                         </Col>
                         <Col className="mb-3" md="4">
@@ -776,7 +904,16 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
                                 value={selectedFunction}
                                 onChange={(e) => setSelectedFunction(e.target.value)}
                                 data={functionDataList}
-                                onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, functionDataList, setSelectedFunction, setEmployeeFunction, setEmployeeFunctionState, null)}
+                                onSelect={(e) => handleSelectionEmploymentContractData(
+                                    e.target.value,
+                                    functionDataList,
+                                    setSelectedFunction,
+                                    setEmployeeFunction,
+                                    setEmployeeFunctionState,
+                                    null,
+                                    null,
+                                    'id'
+                                )}
                             />
                         </Col>
                     </div>
@@ -843,20 +980,19 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
                                 id="validationSelectLeader"
                                 placeholder="Nome do líder"
                                 type="text"
-                                valid={employeeLeaderNameState === "valid"}
-                                invalid={employeeLeaderNameState === "invalid"}
-                                onChange={(e) => {
-                                    setEmployeeLeaderName(e.target.value);
-                                    if (e.target.value === "") {
-                                        setEmployeeLeaderNameState("invalid");
-                                    } else {
-                                        setEmployeeLeaderNameState("valid");
-                                    }
-                                }}
+                                ///valid={fieldTouchStatus.employeeLeaderName.touched && fieldTouchStatus.employeeLeaderName.state === "valid"}
+                                //invalid={fieldTouchStatus.employeeLeaderName.touched && fieldTouchStatus.employeeLeaderName.state === "invalid"}
+                                value={fieldTouchStatus.employeeLeaderName.value}
+                                onChange={(e) => handleChange(e, "employeeLeaderName")}
+                                onTouchStart={() => handleTouchStart("employeeLeaderName")}
                             />
-                            <div className="invalid-feedback">
-                                É necessário preencher este campo.
-                            </div>
+                            {
+                                hasEmployeeLeader && fieldTouchStatus.employeeLeaderName.value === "" ? (
+                                    <div className="invalid-feedback">
+                                        É necessário preencher este campo.
+                                    </div>
+                                ) : null
+                            }
                             {/* <Select2
                                     id="validationSelectLeader"
                                     className="form-control"
@@ -890,7 +1026,15 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
                                 value={selectedContractType}
                                 onChange={(e) => setSelectedContractType(e.target.value)}
                                 data={contractTypeDataList}
-                                onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, contractTypeDataList, setSelectedContractType, setEmployeeContractType, setEmployeeContractTypeState, null)}
+                                onSelect={(e) => handleSelectionEmploymentContractData(
+                                    e.target.value,
+                                    contractTypeDataList,
+                                    setSelectedContractType,
+                                    setEmployeeContractType,
+                                    setEmployeeContractTypeState,
+                                    null,
+                                    null,
+                                    'id')}
                             />
                         </Col>
                         <Col className="mb-3" md="4">
@@ -910,7 +1054,16 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
                                 value={selectedWorkModel}
                                 onChange={(e) => setSelectedWorkModel(e.target.value)}
                                 data={workModelDataList}
-                                onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, workModelDataList, setSelectedWorkModel, setEmployeeWorkModel, setEmployeeWorkModelState, null)}
+                                onSelect={(e) => handleSelectionEmploymentContractData(
+                                    e.target.value,
+                                    workModelDataList,
+                                    setSelectedWorkModel,
+                                    setEmployeeWorkModel,
+                                    setEmployeeWorkModelState,
+                                    null,
+                                    null,
+                                    'id'
+                                )}
                             />
                         </Col>
                         <Col className="mb-3" md="4">
@@ -925,13 +1078,13 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
                                     placeholder: "__/__/__",
                                 }}
                                 timeFormat={false}
-                                onChange={handleAdmissionDateChange}
-
+                                value={employeetAdmissionDate}
+                                onChange={(e) => handleDateFormatting(e, setEmployeetAdmissionDate, setEmployeetAdmissionDateState, setFormattedAdmissionDate)}
                             />
                         </Col>
                     </div>
                     <div className="form-row">
-                        <Col className="mb-3" md="6">
+                        <Col className="mb-3" md="4">
                             <label
                                 className="form-control-label"
                                 htmlFor="validationWorkplace"
@@ -948,7 +1101,16 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
                                 value={selectedWorkplace}
                                 onChange={(e) => setSelectedWorkplace(e.target.value)}
                                 data={workplaceDataList}
-                                onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, workplaceDataList, setSelectedWorkplace, setEmployeeWorkplace, setEmployeeWorkplaceState, null)}
+                                onSelect={(e) => handleSelectionEmploymentContractData(
+                                    e.target.value,
+                                    workplaceDataList,
+                                    setSelectedWorkplace,
+                                    setEmployeeWorkplace,
+                                    setEmployeeWorkplaceState,
+                                    null,
+                                    null,
+                                    'id'
+                                )}
                             />
                         </Col>
                         <Col className="mb-3" md="2">
@@ -961,17 +1123,16 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
                             <InputMask
                                 mask="99:99:99"
                                 placeholder="08:00:00"
-                                value={employeeEntryTime}
-                                onChange={(e) => {
-                                    setEmployeeEntryTime(e.target.value);
-                                    if (e.target.value === "" || e.target.value.includes("_")) {
-                                        setEmployeeEntryTimeState("invalid");
-                                    } else {
-                                        setEmployeeEntryTimeState("valid");
-                                    }
-                                }}
+                                value={fieldTouchStatus.employeeEntryTime.value}
+                                onChange={(e) => handleChange(e, "employeeEntryTime")}
+                                onTouchStart={() => handleTouchStart("employeeEntryTime")}
                             >
-                                {(inputProps) => <Input {...inputProps} id="validationEntryTime" type="text" valid={employeeEntryTimeState === "valid"} invalid={employeeEntryTimeState === "invalid"} />}
+                                {(inputProps) => <Input {...inputProps}
+                                    id="validationEntryTime"
+                                    type="text"
+                                    valid={fieldTouchStatus.employeeEntryTime.touched && fieldTouchStatus.employeeEntryTime.state === "valid"}
+                                    invalid={fieldTouchStatus.employeeEntryTime.touched && fieldTouchStatus.employeeEntryTime.state === "invalid"}
+                                />}
                             </InputMask>
                             <div className="invalid-feedback">
                                 {employeeEntryTimeState === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
@@ -987,21 +1148,22 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
                             <InputMask
                                 mask="99:99:99"
                                 placeholder="12:00:00"
-                                value={employeeBreakTime}
-                                onChange={handleTimeChange(setEmployeeBreakTime, setEmployeeBreakTimeState)}
+                                value={fieldTouchStatus.employeeBreakTime.value}
+                                onChange={(e) => handleChange(e, "employeeBreakTime")}
+                                onTouchStart={() => handleTouchStart("employeeBreakTime")}
                             >
                                 {(inputProps) => (
                                     <Input
                                         {...inputProps}
                                         id="validationBreakTime"
                                         type="text"
-                                        valid={employeeBreakTimeState === "valid"}
-                                        invalid={employeeBreakTimeState === "invalid"}
+                                        valid={fieldTouchStatus.employeeEntryTime.touched && fieldTouchStatus.employeeEntryTime.state === "valid"}
+                                        invalid={fieldTouchStatus.employeeEntryTime.touched && fieldTouchStatus.employeeEntryTime.state === "invalid"}
                                     />
                                 )}
                             </InputMask>
                             <div className="invalid-feedback">
-                                {employeeBreakTimeState === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
+                                {fieldTouchStatus.employeeEntryTime.state === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
                             </div>
                         </Col>
                         <Col className="mb-3" md="2">
@@ -1014,21 +1176,43 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
                             <InputMask
                                 mask="99:99:99"
                                 placeholder="18:00:00"
-                                value={employeeDepartureTime}
-                                onChange={handleTimeChange(setEmployeeDepartureTime, setEmployeeDepartureTimeState)}
+                                value={fieldTouchStatus.employeeDepartureTime.value}
+                                onChange={(e) => handleChange(e, "employeeDepartureTime")}
+                                onTouchStart={() => handleTouchStart("employeeDepartureTime")}
                             >
                                 {(inputProps) => (
                                     <Input
                                         {...inputProps}
                                         id="validationDepartureTime"
                                         type="text"
-                                        valid={employeeDepartureTimeState === "valid"}
-                                        invalid={employeeDepartureTimeState === "invalid"}
+                                        valid={fieldTouchStatus.employeeDepartureTime.touched && fieldTouchStatus.employeeDepartureTime.state === "valid"}
+                                        invalid={fieldTouchStatus.employeeDepartureTime.touched && fieldTouchStatus.employeeDepartureTime.state === "invalid"}
                                     />
                                 )}
                             </InputMask>
                             <div className="invalid-feedback">
-                                {employeeDepartureTimeState === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
+                                {fieldTouchStatus.employeeDepartureTime.state === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
+                            </div>
+                        </Col>
+                        <Col className="mb-3" md="2">
+                            <div className="d-flex flex-column w-100">
+                                <span
+                                    className="form-control-label mb-4 mr-auto"
+                                >
+                                    Estado Ativo
+                                </span>
+                                <label className="custom-toggle ml-auto">
+                                    <input
+                                        type="checkbox"
+                                        checked={fieldTouchStatus.employeeStatus.value}
+                                        onChange={handleToggleChange}
+                                    />
+                                    <span
+                                        className="custom-toggle-slider rounded-circle"
+                                        data-label-off="Não"
+                                        data-label-on="Sim"
+                                    />
+                                </label>
                             </div>
                         </Col>
                     </div>
@@ -1039,11 +1223,21 @@ function EmployeeUserUpdate({ handleOpenCustomerModal }) {
 }
 
 EmployeeUserUpdate.defaultProps = {
-    handleCompanyNameStatusCleanupToUpdate: () => { }
+    handleShowEmployeeDetailsModal: () => { },
+    handleOpenEmployeeModal: () => { },
+    modalOpen: false,
+    employeeName: '',
+    handleCleaningEmployeeNameStatus: () => { },
+    companyNameToModalDetails: '',
 };
 
 EmployeeUserUpdate.propTypes = {
-    handleCompanyNameStatusCleanupToUpdate: PropTypes.func
+    handleShowEmployeeDetailsModal: PropTypes.func,
+    handleOpenEmployeeModal: PropTypes.func,
+    modalOpen: PropTypes.bool,
+    employeeName: PropTypes.string,
+    handleCleaningEmployeeNameStatus: PropTypes.func,
+    companyNameToModalDetails: PropTypes.string
 };
 
 export default EmployeeUserUpdate;

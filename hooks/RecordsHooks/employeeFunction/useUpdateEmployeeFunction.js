@@ -27,7 +27,7 @@ const useUpdateEmployeeFunction = () => {
     handleCloseEmployeeFunctionUpdateModal,
     employeeFunctionIdToUpdate,
     employeeFunctionName,
-    funtionReportsToFuntion,
+    functionReportsToRoleId,
     employeeFunctiontDescription,
     employeeFunctiontStatus,
     handleEmployeeFunctionIdToUpdate,
@@ -47,7 +47,7 @@ const useUpdateEmployeeFunction = () => {
     //   employeeRoleDescription !== "") {
     //   handleSubmit(employeeRoleName, employeeRoleDescription, roleReportsToRole);
     // }
-    await handleSubmit(employeeFunctionIdToUpdate, employeeFunctionName, funtionReportsToFuntion, employeeFunctiontDescription, employeeFunctiontStatus);
+    await handleSubmit(employeeFunctionIdToUpdate, employeeFunctionName, functionReportsToRoleId, employeeFunctiontDescription, employeeFunctiontStatus);
     goBackToEmployeeFunctionList(handleCloseEmployeeFunctionUpdateModal, handleEmployeeFunctionIdToUpdate, handleCleanDetailedEmployeeFunctionData);
   }
 
@@ -58,10 +58,12 @@ const useUpdateEmployeeFunction = () => {
     handleUpdatedEmployeeFunctionRecordStatusChange();
   }
 
-  const handleSubmit = async (employeeFunctionIdToUpdate, employeeFunctionName, funtionReportsToFuntion, employeeFunctiontDescription, employeeFunctiontStatus) => {
+  const handleSubmit = async (employeeFunctionIdToUpdate, employeeFunctionName, functionReportsToRoleId, employeeFunctiontDescription, employeeFunctiontStatus) => {
     if (employeeFunctionIdToUpdate && employeeFunctionIdToUpdate !== "") {
       try {
-        const payload = {};
+        const payload = {
+          status: employeeFunctiontStatus === false ? 0 : 1,
+        };
 
         if (employeeFunctionName && employeeFunctionName !== "") {
           payload.name = employeeFunctionName;
@@ -72,13 +74,11 @@ const useUpdateEmployeeFunction = () => {
           payload.description = employeeFunctiontDescription;
         }
 
-        if (funtionReportsToFuntion && funtionReportsToFuntion !== "") {
-          payload.responsible = funtionReportsToFuntion;
+        if (functionReportsToRoleId && functionReportsToRoleId !== "") {
+          payload.responsible = functionReportsToRoleId;
         }
 
-        if (employeeFunctiontStatus && employeeFunctiontStatus !== "") {
-          payload.status = employeeFunctiontStatus;
-        }
+        console.log(payload);
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE_FUNCTION}/${employeeFunctionIdToUpdate}`, {
           method: 'PATCH',

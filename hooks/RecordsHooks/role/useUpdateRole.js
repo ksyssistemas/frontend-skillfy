@@ -27,7 +27,7 @@ const useUpdateRole = () => {
     handleCloseRoleUpdateModal,
     roleIdToUpdate,
     employeeRoleName,
-    roleReportsToRole,
+    roleReportsToRoleId,
     employeeRoleDescription,
     employeeRoleStatus,
     handleRoleIdToUpdate,
@@ -35,19 +35,19 @@ const useUpdateRole = () => {
   ) {
     // validateAddEmployeeRoleForm();
     // if (employeeRoleNameState === "valid" &&
-    //   roleReportsToRole === "" &&
+    //   roleReportsToRoleId === "" &&
     //   employeeRoleDescription === "") {
     //   handleSubmit(employeeRoleName);
     // } else if (employeeRoleNameState === "valid" &&
-    //   roleReportsToRole === "" &&
+    //   roleReportsToRoleId === "" &&
     //   employeeRoleDescription !== "") {
     //   handleSubmit(employeeRoleName, employeeRoleDescription);
     // } else if (employeeRoleNameState === "valid" &&
-    //   roleReportsToRole !== "" &&
+    //   roleReportsToRoleId !== "" &&
     //   employeeRoleDescription !== "") {
-    //   handleSubmit(employeeRoleName, employeeRoleDescription, roleReportsToRole);
+    //   handleSubmit(employeeRoleName, employeeRoleDescription, roleReportsToRoleId);
     // }
-    await handleSubmit(roleIdToUpdate, employeeRoleName, roleReportsToRole, employeeRoleDescription, employeeRoleStatus);
+    await handleSubmit(roleIdToUpdate, employeeRoleName, roleReportsToRoleId, employeeRoleDescription, employeeRoleStatus);
     goBackToRoleList(handleCloseRoleUpdateModal, handleRoleIdToUpdate, handleCleanDetailedRoleData);
   }
 
@@ -58,27 +58,27 @@ const useUpdateRole = () => {
     handleUpdatedRoleRecordStatusChange();
   }
 
-  const handleSubmit = async (roleIdToUpdate, employeeRoleName, roleReportsToRole, employeeRoleDescription, employeeRoleStatus) => {
+  const handleSubmit = async (roleIdToUpdate, employeeRoleName, roleReportsToRoleId, employeeRoleDescription, employeeRoleStatus) => {
     if (roleIdToUpdate && roleIdToUpdate !== "") {
       try {
-        const payload = {};
+        const payload = {
+          status: employeeRoleStatus === false ? 0 : 1,
+        };
 
         if (employeeRoleName && employeeRoleName !== "") {
-          payload.RoleName = employeeRoleName;
+          payload.roleName = employeeRoleName;
         }
 
 
         if (employeeRoleDescription && employeeRoleDescription !== "") {
-          payload.Description = employeeRoleDescription;
+          payload.description = employeeRoleDescription;
         }
 
-        if (roleReportsToRole && roleReportsToRole !== "") {
-          payload.Responsible = roleReportsToRole;
+        if (roleReportsToRoleId && roleReportsToRoleId !== "") {
+          payload.responsible = roleReportsToRoleId;
         }
 
-        if (employeeRoleStatus && employeeRoleStatus !== "") {
-          payload.Status = employeeRoleStatus;
-        }
+        console.log(payload);
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE_ROLE}/${roleIdToUpdate}`, {
           method: 'PATCH',

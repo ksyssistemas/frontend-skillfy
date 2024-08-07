@@ -76,40 +76,67 @@ function ModalDepartment({ handleOpenDepartmentUpdateModal, modalOpen }) {
   const [selectedDepartment, setSelectedDepartment] = useState('');
 
   useEffect(() => {
-    if (departmentDataList.length === 0) {
+    if (departmentDataList.length <= 0) {
       employmentContractDataSearchAndProcess(useFindAllDepartments, handleDepartmentDataList, 'department', 'EmployeeUserRegister');
     }
-  }, []);
+  }, [departmentDataList]);
 
   const handleCloseDepartmentUpdateModal = () => {
     handleOpenDepartmentUpdateModal();
     reset();
     setSelectedDepartment('');
+    setDepartmentReportsToDepartment('');
+    setDepartmentReportsToDepartmentState(null);
+    handleCleanDetailedDepartmentDataUpdate();
+    handleDepartmentIdStatusCleanupToUpdate();
+    setDepartmentDataList([]);
   };
 
-  const [detailedDepartmentData, setDetailedDepartmentData] = useState([]);
-  function handleCleanDetailedDepartmentData() {
-    setDetailedDepartmentData([]);
+  const [detailedDepartmentDataUpdate, setDetailedDepartmentDataUpdate] = useState([]);
+  function handleCleanDetailedDepartmentDataUpdate() {
+    setDetailedDepartmentDataUpdate([]);
   };
 
   function handleUpdateDepartment() {
+    let departmentReportsToDepartmentId = null;
+
+    if (!isDepartmentInputTouched) {
+
+      const department = departmentDataList.find(
+        (dept) => dept.text === departmentReportsToDepartment
+      );
+      departmentReportsToDepartmentId = department ? department.id : null;
+    } else {
+      departmentReportsToDepartmentId = departmentReportsToDepartment;
+    }
     handleValidateUpdateDepartmentForm(
       handleCloseDepartmentUpdateModal,
       departmentIdToUpdate,
       departmentName,
-      departmentReportsToDepartment,
+      departmentReportsToDepartmentId,
       departmentDescription,
       departmentStatus,
       handleDepartmentIdToUpdate,
-      handleCleanDetailedDepartmentData
+      handleCleanDetailedDepartmentDataUpdate
     );
   }
 
-  const handleSelectionDepartmentToReports = (departmentName) => {
-    const department = departmentDataList.find(p => p.text === departmentName);
-    if (department) {
-      setSelectedDepartment(department.id);
-      handleSelectionEmploymentContractData(department.id, departmentDataList, setSelectedDepartment, setDepartmentReportsToDepartment, setDepartmentReportsToDepartmentState);
+  const handleSelectionDepartmentToReports = (departmentId) => {
+    if (departmentId && departmentId !== null) {
+      const department = departmentDataList.find(p => p.id === departmentId);
+      if (department) {
+        setSelectedDepartment(department.id);
+        handleSelectionEmploymentContractData(
+          department.id,
+          departmentDataList,
+          setSelectedDepartment,
+          setDepartmentReportsToDepartment,
+          setDepartmentReportsToDepartmentState,
+          null,
+          null,
+          'text'
+        );
+      }
     }
   };
 
@@ -124,18 +151,24 @@ function ModalDepartment({ handleOpenDepartmentUpdateModal, modalOpen }) {
     }
   };
 
+  const [isDepartmentInputTouched, setIsDepartmentInputTouched] = useState(false);
+
   useEffect(() => {
     const fetchDepartmentById = async () => {
-      if (!detailedDepartmentData.length) {
-        const foundDepartment = await useFindDepartment(departmentIdToUpdate);
-        setDetailedDepartmentData(foundDepartment);
-        setDepartmentName(foundDepartment.DepartmentName);
-        setDepartmentDescription(foundDepartment.Description);
-        setDepartmentStatus(foundDepartment.Status === null ? false : true);
-        handleSelectionDepartmentToReports(foundDepartment.Responsible);
+      if (detailedDepartmentDataUpdate.length <= 0 && departmentIdToUpdate) {
+        try {
+          const foundDepartment = await useFindDepartment(departmentIdToUpdate);
+          console.log(foundDepartment);
+          setDetailedDepartmentDataUpdate(foundDepartment);
+          setDepartmentName(foundDepartment.departmentName);
+          setDepartmentDescription(foundDepartment.description);
+          setDepartmentStatus(foundDepartment.status === null ? false : true);
+          handleSelectionDepartmentToReports(foundDepartment.responsible);
+        } catch (error) {
+          console.error(`Error fetching department data for ${departmentIdToUpdate}:`, error);
+        }
       }
     };
-
     if (departmentIdToUpdate) {
       fetchDepartmentById();
     }
@@ -152,7 +185,7 @@ function ModalDepartment({ handleOpenDepartmentUpdateModal, modalOpen }) {
           aria-label="Close"
           className=" close"
           type="button"
-          onClick={handleOpenDepartmentUpdateModal}
+          onClick={handleCloseDepartmentUpdateModal}
         >
           <span aria-hidden={true}>×</span>
         </button>
@@ -204,7 +237,19 @@ function ModalDepartment({ handleOpenDepartmentUpdateModal, modalOpen }) {
                     value={selectedDepartment}
                     onChange={(e) => setSelectedDepartment(e.target.value)}
                     data={departmentDataList}
-                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, departmentDataList, setSelectedDepartment, setDepartmentReportsToDepartment, setDepartmentReportsToDepartmentState)}
+                    onSelect={(e) => {
+                      handleSelectionEmploymentContractData(
+                        e.target.value,
+                        departmentDataList,
+                        setSelectedDepartment,
+                        setDepartmentReportsToDepartment,
+                        setDepartmentReportsToDepartmentState,
+                        null,
+                        null,
+                        'id'
+                      );
+                      setIsDepartmentInputTouched(true);
+                    }}
                   />
                 </Col>
               </div>
@@ -263,7 +308,7 @@ function ModalDepartment({ handleOpenDepartmentUpdateModal, modalOpen }) {
         <Button
           color="secondary"
           type="button"
-          onClick={handleOpenDepartmentUpdateModal}
+          onClick={handleCloseDepartmentUpdateModal}
         >
           Fechar
         </Button>

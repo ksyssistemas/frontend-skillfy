@@ -20,8 +20,9 @@ import { useFindAdmin } from "../../../hooks/RecordsHooks/admin/useFindAdmin";
 import ReactDatetime from "react-datetime";
 import InputMask from 'react-input-mask';
 import { handleDateFormatting } from "../../../util/handleDateFormatting";
+import useUpdateAdmin from "../../../hooks/RecordsHooks/admin/useUpdateAdmin";
 
-function ModalAdmin({ handleOpenAdminUpdateModal, modalOpen }) {
+function ModalAdmin({ handleOpenAdminUpdateModal, handleCleanDetailedAdminAccountData, modalOpen }) {
 
   const { adminIdToUpdate,
     handleAdminIdStatusCleanupToUpdate,
@@ -67,25 +68,32 @@ function ModalAdmin({ handleOpenAdminUpdateModal, modalOpen }) {
     setAdminPrivilegeState,
     handleValidateAddAdminForm,
     handleBirthdateChange,
-    validateEmail
+    validateEmail,
+    reset
   } = useCreateAdmin();
 
+  const {
+    handleValidateUpdateAdminForm
+  } = useUpdateAdmin();
+
+  const handleCloseAdminUpdateModal = () => {
+    handleOpenAdminUpdateModal();
+    reset();
+    handleCleanDetailedAdminData();
+  };
 
   function handleUpdateAdmin() {
     handleValidateUpdateAdminForm(
-      handleCloseAddAdminModal,
+      handleCloseAdminUpdateModal,
       adminIdToUpdate,
       firstName,
       lastName,
-      emailAddress,
       formattedBirthdate,
-      password,
-      confirmPassword,
       phoneNumber,
       adminStatus,
       adminPrivilege,
-      handleCycleIdToUpdate,
-      handleCleanDetailedAdminData
+      handleAdminIdToUpdate,
+      handleCleanDetailedAdminAccountData
     )
   }
 
@@ -96,18 +104,27 @@ function ModalAdmin({ handleOpenAdminUpdateModal, modalOpen }) {
     setDetailedAdminData([]);
   };
 
+  const handleCheckboxChange = (e) => {
+    const isChecked = e.target.checked;
+    setAdminStatus(isChecked);
+
+    if (isChecked) {
+      setAdminStatusState("valid");
+    } else {
+      setAdminStatusState("invalid");
+    }
+  };
+
   useEffect(() => {
     const fetchAdmin = async () => {
       if (!detailedAdminData.length) {
         const foundAdmin = await useFindAdmin(adminIdToUpdate);
-        console.log("foundAdmin: ", foundAdmin);
         setDetailedAdminData(foundAdmin);
         setFirstName(foundAdmin.name);
         setLastName(foundAdmin.lastname);
         setBirthdate(new Date(foundAdmin.birthdate));
         setFormattedBirthdate(foundAdmin.birthdate);
         setEmailAddress(foundAdmin.email);
-        //setPassword(foundAdmin.AdminDueDate);
         setPhoneNumber(foundAdmin.phone);
         setAdminStatus(foundAdmin.status);
         setAdminPrivilege(foundAdmin.privileges);
@@ -195,7 +212,7 @@ function ModalAdmin({ handleOpenAdminUpdateModal, modalOpen }) {
                 </Col>
               </div>
               <div className="form-row">
-                <Col className="mb-3" md="8">
+                <Col className="mb-3" md="6">
                   <label
                     className="form-control-label"
                     htmlFor="validationEmailAddress"
@@ -219,6 +236,7 @@ function ModalAdmin({ handleOpenAdminUpdateModal, modalOpen }) {
                         setEmailAddressState("invalid");
                       }
                     }}
+                    disabled
                   />
                   <div className="invalid-feedback">
                     {emailAddressState === "invalid" && "Forneça um endereço de e-mail válido."}
@@ -245,62 +263,29 @@ function ModalAdmin({ handleOpenAdminUpdateModal, modalOpen }) {
                                 </div> */}
                   </FormGroup>
                 </Col>
+                <Col className="mb-3" md="2">
+                  <div className="d-flex flex-column w-100">
+                    <span
+                      className="form-control-label mb-4 mr-auto"
+                    >
+                      Estado Ativo
+                    </span>
+                    <label className="custom-toggle ml-auto">
+                      <input
+                        type="checkbox"
+                        checked={adminStatus}
+                        onChange={handleCheckboxChange}
+                      />
+                      <span
+                        className="custom-toggle-slider rounded-circle"
+                        data-label-off="Não"
+                        data-label-on="Sim"
+                      />
+                    </label>
+                  </div>
+                </Col>
               </div>
               <div className="form-row">
-                <Col className="mb-4" md="4">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationPassword"
-                  >
-                    Senha
-                  </label>
-                  <Input
-                    id="validationPassword"
-                    placeholder="Senha de acesso ao sistema"
-                    type="password"
-                    valid={passwordState === "valid"}
-                    invalid={passwordState === "invalid"}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                      if (e.target.value === "") {
-                        setPasswordState("invalid");
-                      } else {
-                        setPasswordState("valid");
-                      }
-                    }}
-                  />
-                  <div className="invalid-feedback">
-                    É necessário preencher este campo.
-                  </div>
-                </Col>
-                <Col className="mb-4" md="4">
-                  <label
-                    className="form-control-label"
-                    htmlFor="validationConfirmPassword"
-                  >
-                    Confirmar Senha
-                  </label>
-                  <Input
-                    id="validationConfirmPassword"
-                    placeholder="Confirme a senha digitada"
-                    type="password"
-                    valid={confirmPasswordState === "valid"}
-                    invalid={confirmPasswordState === "invalid"}
-                    onChange={(e) => {
-                      setConfirmPassword(e.target.value);
-                      if (e.target.value === "") {
-                        setConfirmPasswordState("invalid");
-                      } else if (e.target.value === password) {
-                        setConfirmPasswordState("valid");
-                      } else {
-                        setConfirmPasswordState("invalid");
-                      }
-                    }}
-                  />
-                  <div className="invalid-feedback">
-                    {confirmPasswordState === "invalid" && "As senhas não coincidem."}
-                  </div>
-                </Col>
                 <Col className="mb-4" md="4">
                   <label
                     className="form-control-label"
@@ -344,13 +329,9 @@ function ModalAdmin({ handleOpenAdminUpdateModal, modalOpen }) {
         <Button
           color={'warning'}
           type="button"
-        // onClick={
-        //   cycleIdToUpdate
-        //     ? () => handleUpdateAppraisalCycle()
-        //     : () => handleValidateAddAppraisalCycleForm(handleCloseAddAppraisalCycleModal)
-        // }
+          onClick={handleUpdateAdmin}
         >
-          {'Editar Contato'}
+          {'Editar Administrador'}
         </Button>
       </ModalFooter>
     </Modal>
@@ -359,11 +340,13 @@ function ModalAdmin({ handleOpenAdminUpdateModal, modalOpen }) {
 
 ModalAdmin.defaultProps = {
   handleOpenAdminUpdateModal: () => { },
+  handleCleanDetailedAdminAccountData: () => { },
   modalOpen: false,
 };
 
 ModalAdmin.propTypes = {
   handleOpenAdminUpdateModal: PropTypes.func,
+  handleCleanDetailedAdminAccountData: PropTypes.func,
   modalOpen: PropTypes.bool,
 };
 
