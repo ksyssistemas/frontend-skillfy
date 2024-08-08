@@ -31,6 +31,7 @@ import { DepartmentProvider } from "../contexts/RecordsContext/DepartmentContext
 import { EmployeeFunctionProvider } from "../contexts/RecordsContext/EmployeeFunctionContext";
 import { RoleProvider } from "../contexts/RecordsContext/RoleContext";
 import { EmployeeProvider } from "../contexts/RecordsContext/EmployeeContext";
+import { AppraisalEvidencesProvider } from "../contexts/PerformanceContext/AppraisalEvidencesContext";
 
 Router.events.on("routeChangeStart", (url) => {
   console.log(`Loading: ${url}`);
@@ -97,17 +98,19 @@ export default class MyApp extends App {
                           <AppraisalCycleProvider>
                             <SweetAlertProvider>
                               <AppraisalSkillsProvider>
-                                <Head>
-                                  <meta
-                                    name="viewport"
-                                    content="width=device-width, initial-scale=1, shrink-to-fit=no"
-                                  />
-                                  <title>SkillFy</title>
-                                  {/* <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script> */}
-                                </Head>
-                                <Layout>
-                                  <Component {...pageProps} />
-                                </Layout>
+                                <AppraisalEvidencesProvider>
+                                  <Head>
+                                    <meta
+                                      name="viewport"
+                                      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+                                    />
+                                    <title>SkillFy</title>
+                                    {/* <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script> */}
+                                  </Head>
+                                  <Layout>
+                                    <Component {...pageProps} />
+                                  </Layout>
+                                </AppraisalEvidencesProvider>
                               </AppraisalSkillsProvider>
                             </SweetAlertProvider>
                           </AppraisalCycleProvider>

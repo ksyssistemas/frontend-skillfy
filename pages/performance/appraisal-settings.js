@@ -159,7 +159,7 @@ function AppraisalSettings() {
                                             </h4>
                                         </div>
                                         <Col className="col-auto mr-4">
-                                            <Button className="px-4 py-2" disabled color="primary" size="sm" type="button" onClick={() => handleListButtonClick('evidences')}>
+                                            <Button className="px-4 py-2" color="primary" size="sm" type="button" onClick={() => handleListButtonClick('evidences')}>
                                                 Listar
                                             </Button>
                                         </Col>
