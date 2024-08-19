@@ -99,17 +99,17 @@ const routes = () => {
       state: "appraisalsCollapse",
       views: [
         {
-          path: "/appraisal-cycle-list",
+          path: "/appraisals",
           name: "Avaliações",
           miniName: "A",
           layout: "/performance",
         },
-        // {
-        //   path: "/add-appraisal",
-        //   name: "Adicionar Avaliação",
-        //   miniName: "AD",
-        //   layout: "/performance",
-        // },
+        {
+          path: "/appraisal-settings",
+          name: "Configurações",
+          miniName: "C",
+          layout: "/performance",
+        },
       ],
     },
   ]

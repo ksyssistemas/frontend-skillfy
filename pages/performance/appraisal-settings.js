@@ -13,14 +13,16 @@ import {
 } from "reactstrap";
 import Performance from "../../layouts/Performance";
 import EvidencesList from "../../components/Tables/AppraisalTables/AppraisalSettings/EvidencesList";
-import CaptionsList from "../../components/Tables/AppraisalTables/AppraisalSettings/CaptionsList";
 import AppraisalSettingsHeader from "../../components/Headers/PerformanceHeader/AppraisalSettingsHeader";
 import SkillsManagement from "../../components/Tables/AppraisalTables/AppraisalSettings/AppraisalSkills/SkillsManagement";
 import { AppraisalSkillsContext } from "../../contexts/PerformanceContext/AppraisalSkillsContext";
+import { AppraisalCaptionsContext } from "../../contexts/PerformanceContext/AprraisalCaptionsContext";
+import CaptionsManagement from "../../components/Tables/AppraisalTables/AppraisalSettings/AppraisalCaptions/CaptionsManagement";
 
 function AppraisalSettings() {
 
     const { handleDropdownClickSkillsComponents } = useContext(AppraisalSkillsContext);
+    const { handleResetCaptionTypeViewComponents, setIsShouldSubmitCaptionsRegistration } = useContext(AppraisalCaptionsContext);
 
     const [view, setView] = useState('default');
     // function handleSettingsViewComponents(view) {
@@ -93,9 +95,13 @@ function AppraisalSettings() {
                     parentName: 'Desempenho',
                     firstButtonText: 'Voltar',
                     firstButtonIcon: 'fas fa-solid fa-arrow-left mr-2',
-                    onFirstButtonClick: () => handleSettingsViewComponents('default'),
-                    secondButtonText: null,
-                    secondButtonIcon: null,
+                    onFirstButtonClick: () => {
+                        handleSettingsViewComponents('default');
+                        setIsShouldSubmitCaptionsRegistration(false);
+                        handleResetCaptionTypeViewComponents();
+                    },
+                    secondButtonText: 'Opções de Legenda',
+                    secondButtonIcon: 'fas fa-solid fa-list mr-2',
                     onSecondButtonClick: null,
                 });
                 break;
@@ -123,7 +129,7 @@ function AppraisalSettings() {
             case 'evidences':
                 return <EvidencesList />;
             case 'captions':
-                return <CaptionsList />;
+                return <CaptionsManagement />;
             default:
                 return (
                     <Card>
@@ -175,7 +181,7 @@ function AppraisalSettings() {
                                             </h4>
                                         </div>
                                         <Col className="col-auto mr-4 justify-content-center">
-                                            <Button className="px-4 py-2" disabled color="primary" size="sm" type="button" onClick={() => handleListButtonClick('captions')}>
+                                            <Button className="px-4 py-2" s color="primary" size="sm" type="button" onClick={() => handleListButtonClick('captions')}>
                                                 Listar
                                             </Button>
                                         </Col>

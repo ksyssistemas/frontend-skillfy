@@ -24,7 +24,7 @@ import ReactDatetime from "react-datetime";
 import { useFindClientCompany } from "../../../hooks/RecordsHooks/customer/useFindClientCompany";
 import { useFindEmployeeAddress } from "../../../hooks/RecordsHooks/customer/useFindClientCompanyAddress";
 import useCreateClientCompany from "../../../hooks/RecordsHooks/customer/useCreateClientCompany";
-import CustomerUserUpdate from "../../Forms/CustomerUserUpdate";
+import CustomerUserUpdate from "../../Forms/CustomerForms/CustomerUserUpdate";
 import useCNPJ from "../../../hooks/RecordsHooks/useCNPJ";
 import { CustomerContext } from "../../../contexts/RecordsContext/CustomerContext";
 

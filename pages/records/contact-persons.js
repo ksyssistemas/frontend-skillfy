@@ -3,7 +3,7 @@ import Admin from "../../layouts/Admin";
 import AdminHeader from "components/Headers/AdminHeader.js";
 import ContactPersonsList from "../../components/Tables/Admin/ContactPersonsList";
 import { Container } from "reactstrap";
-import ContactPersonsRegister from "../../components/Forms/ContactPersonsRegister";
+import ContactPersonsRegister from "../../components/Forms/AdministratorForms/ContactPersonsRegister";
 import { TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT } from '../../contexts/AuthContext';
 
 function ContactPersonsRecords() {

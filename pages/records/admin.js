@@ -3,7 +3,7 @@ import Admin from "../../layouts/Admin";
 import AdminHeader from "components/Headers/AdminHeader.js";
 import { Container } from "reactstrap";
 import AdminList from "../../components/Tables/Admin/AdminUserList";
-import AdminUserRegister from "../../components/Forms/AdminUserRegister";
+import AdminUserRegister from "../../components/Forms/AdministratorForms/AdminUserRegister";
 import { AdminContext } from "../../contexts/RecordsContext/AdminContext";
 
 function AdminRecords() {

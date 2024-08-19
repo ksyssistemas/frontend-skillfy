@@ -3,7 +3,7 @@ import Admin from "../../layouts/Admin";
 import Performance from "../../layouts/Performance";
 import AdminHeader from "components/Headers/AdminHeader.js";
 import { Container } from "reactstrap";
-import DepartmentsRegister from "../../components/Forms/DepartmentsRegister";
+import DepartmentsRegister from "../../components/Forms/CustomerForms/DepartmentsRegister";
 import DepartmentsList from "../../components/Tables/Customer/DepartmentsList";
 import CustomerHeader from "../../components/Headers/CustomerHeader";
 import { useAuth } from '../../hooks/useAuth';

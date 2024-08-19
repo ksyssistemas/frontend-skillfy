@@ -82,7 +82,7 @@ function AddAppraisalHeader({ name, parentName }) {
                         >
                           <i className="ni ni-ruler-pencil mr-2" />
                         </span>
-                        <span className="nav-link-inner--text">Configurações da Avaliação</span>
+                        <span className="nav-link-inner--text">Configurações de Avaliação</span>
                       </Button>
                     </NavLink>
                   </Link>

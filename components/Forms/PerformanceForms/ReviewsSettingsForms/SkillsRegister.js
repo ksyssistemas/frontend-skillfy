@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import dynamic from "next/dynamic";
 const Select2 = dynamic(() => import("react-select2-wrapper"));
 import { Button, CardBody, Input, Row, Col } from "reactstrap";
-import useCreateSkillClassificaiton from '../../../hooks/PerformanceAppraisalRecordsHooks/SkillsClassifications/useCreateSkillClassificaiton';
-import { useFindAllSkillClassifications } from '../../../hooks/PerformanceAppraisalRecordsHooks/SkillsClassifications/useFindAllSkillClassifications';
-import { employmentContractDataSearchAndProcess } from '../../../util/employmentContractDataSearchAndProcess';
-import useCreateOccupationalGroup from '../../../hooks/PerformanceAppraisalRecordsHooks/OccupationalGroups/useCreateOccupationalGroup';
-import { useFindAllOccupationalGroups } from '../../../hooks/PerformanceAppraisalRecordsHooks/OccupationalGroups/useFindAllSkillClassifications';
-import useCreateSkillType from '../../../hooks/PerformanceAppraisalRecordsHooks/SkillsTypes/useCreateSkillType';
-import { useFindAllSkillTypes } from '../../../hooks/PerformanceAppraisalRecordsHooks/SkillsTypes/useFindAllSkillTypes';
-import { handleSelectionEmploymentContractData } from '../../../util/handleSelectionEmploymentContractData';
+import useCreateSkillClassificaiton from '../../../../hooks/PerformanceAppraisalRecordsHooks/SkillsClassifications/useCreateSkillClassificaiton';
+import { useFindAllSkillClassifications } from '../../../../hooks/PerformanceAppraisalRecordsHooks/SkillsClassifications/useFindAllSkillClassifications';
+import { employmentContractDataSearchAndProcess } from '../../../../util/employmentContractDataSearchAndProcess';
+import useCreateOccupationalGroup from '../../../../hooks/PerformanceAppraisalRecordsHooks/OccupationalGroups/useCreateOccupationalGroup';
+import { useFindAllOccupationalGroups } from '../../../../hooks/PerformanceAppraisalRecordsHooks/OccupationalGroups/useFindAllSkillClassifications';
+import useCreateSkillType from '../../../../hooks/PerformanceAppraisalRecordsHooks/SkillsTypes/useCreateSkillType';
+import { useFindAllSkillTypes } from '../../../../hooks/PerformanceAppraisalRecordsHooks/SkillsTypes/useFindAllSkillTypes';
+import { handleSelectionEmploymentContractData } from '../../../../util/handleSelectionEmploymentContractData';
 
 function SkillsRegister() {
 

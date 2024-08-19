@@ -156,7 +156,7 @@ function EvidencesList() {
                                 detailedEvidencesData.map((evidence) => (
                                     <ListGroupItem className="px--4" key={evidence.id}>
                                         <Row className="align-items-center">
-                                            <Col md="7">
+                                            <Col md="9">
                                                 <h5 className="">{evidence.description}</h5>
                                             </Col>
                                             <Col md="3">
@@ -164,16 +164,10 @@ function EvidencesList() {
                                                     <small className="mr-2">Título:</small>
                                                     <h5 className="mb-0">{evidence.evidenceName}</h5>
                                                 </div>
-                                                <div className="mb-2 d-flex">
+                                                {/* <div className="mb-2 d-flex">
                                                     <small className="mr-2">Criado Em:</small>
                                                     <h5 className="mb-0">{formatDate(evidence.createdAt)}</h5>
-                                                </div>
-                                            </Col>
-                                            <Col md="2">
-                                                <div className="mb-2 d-flex">
-                                                    <small className="mr-2">Estado:</small>
-                                                    <h5 className="mb-0">{evidence.status === true ? "Ativo" : "Inativo"}</h5>
-                                                </div>
+                                                </div> */}
                                                 <div className="mb-2">
                                                     <small className="mr-2">Ações:</small>
                                                     <a
@@ -200,6 +194,12 @@ function EvidencesList() {
                                                     </UncontrolledTooltip>
                                                 </div>
                                             </Col>
+                                            {/* <Col md="2"> */}
+                                            {/* <div className="mb-2 d-flex">
+                                                    <small className="mr-2">Estado:</small>
+                                                    <h5 className="mb-0">{evidence.status === true ? "Ativo" : "Inativo"}</h5>
+                                                </div> */}
+                                            {/* </Col> */}
                                         </Row>
                                     </ListGroupItem>
                                 ))

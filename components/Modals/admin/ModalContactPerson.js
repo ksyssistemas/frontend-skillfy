@@ -29,7 +29,7 @@ import { handleSelectionEmploymentContractData } from '../../../util/handleSelec
 import { ContactPersonContext } from "../../../contexts/RecordsContext/ContactPersonContext";
 import { useFindContactPerson } from "../../../hooks/RecordsHooks/contactPerson/useFindContactPerson";
 import useUpdateContactPerson from "../../../hooks/RecordsHooks/contactPerson/useUpdateContactPerson";
-import ContactPersonUpdate from "../../Forms/ContactPersonUpdate";
+import ContactPersonUpdate from "../../Forms/AdministratorForms/ContactPersonUpdate";
 
 function ModalContactPerson(
   {

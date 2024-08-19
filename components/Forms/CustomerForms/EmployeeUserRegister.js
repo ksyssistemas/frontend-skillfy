@@ -18,22 +18,22 @@ import {
     Input,
     Row,
 } from "reactstrap";
-import useCreateEmployee from '../../hooks/RecordsHooks/employee/useCreateEmployee';
+import useCreateEmployee from '../../../hooks/RecordsHooks/employee/useCreateEmployee';
 import InputMask from 'react-input-mask';
 import { useRouter } from 'next/router';
-import useCEP from '../../hooks/RecordsHooks/useCEP';
-import useCreateTypeContract from '../../hooks/RecordsHooks/featuresEmploymentContract/useCreateTypeContract';
-import useCreateWorkModel from '../../hooks/RecordsHooks/featuresEmploymentContract/useCreateWorkModel';
-import useCreateWorkplace from '../../hooks/RecordsHooks/featuresEmploymentContract/useCreateWorkplace';
-import { useFindAllEmployeeAndRole } from '../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllEmployeeAndRole';
-import { useFindAllTypeContract } from '../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllTypeContract';
-import { useFindAllWorkModels } from '../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllWorkModels';
-import { useFindAllWorkplaces } from '../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllWorkplaces';
-import { useFindAllDepartments } from '../../hooks/RecordsHooks/department/useFindAllDepartments';
-import { useFindAllRoles } from '../../hooks/RecordsHooks/role/useFindAllRoles';
-import { useFindAllFunctions } from '../../hooks/RecordsHooks/employeeFunction/useFindAllFunctions';
-import { employmentContractDataSearchAndProcess } from '../../util/employmentContractDataSearchAndProcess';
-import { handleSelectionEmploymentContractData } from '../../util/handleSelectionEmploymentContractData';
+import useCEP from '../../../hooks/RecordsHooks/useCEP';
+import useCreateTypeContract from '../../../hooks/RecordsHooks/featuresEmploymentContract/useCreateTypeContract';
+import useCreateWorkModel from '../../../hooks/RecordsHooks/featuresEmploymentContract/useCreateWorkModel';
+import useCreateWorkplace from '../../../hooks/RecordsHooks/featuresEmploymentContract/useCreateWorkplace';
+import { useFindAllEmployeeAndRole } from '../../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllEmployeeAndRole';
+import { useFindAllTypeContract } from '../../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllTypeContract';
+import { useFindAllWorkModels } from '../../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllWorkModels';
+import { useFindAllWorkplaces } from '../../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllWorkplaces';
+import { useFindAllDepartments } from '../../../hooks/RecordsHooks/department/useFindAllDepartments';
+import { useFindAllRoles } from '../../../hooks/RecordsHooks/role/useFindAllRoles';
+import { useFindAllFunctions } from '../../../hooks/RecordsHooks/employeeFunction/useFindAllFunctions';
+import { employmentContractDataSearchAndProcess } from '../../../util/employmentContractDataSearchAndProcess';
+import { handleSelectionEmploymentContractData } from '../../../util/handleSelectionEmploymentContractData';
 
 function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
 

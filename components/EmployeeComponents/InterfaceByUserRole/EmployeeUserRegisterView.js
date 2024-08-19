@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { Container } from "reactstrap";
 import AdminHeader from "../../Headers/AdminHeader"
 import CustomerHeader from "../../Headers/CustomerHeader"
-import EmployeeUserRegister from "../../Forms/EmployeeUserRegister"
+import EmployeeUserRegister from "../../Forms/CustomerForms/EmployeeUserRegister"
 
 
 const EmployeeUserRegisterView = ({ handleShowEmployeeUserRegister, authenticationDataLoggedInUser, handleShowEmployeeRecordEntrySettings }) => {

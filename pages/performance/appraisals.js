@@ -4,11 +4,11 @@ import Performance from "../../layouts/Performance";
 import AppraisalCycleHeader from "../../components/Headers/PerformanceHeader/AppraisalCycleHeader";
 import AppraisalListHeader from "../../components/Headers/PerformanceHeader/AppraisalListHeader";
 import AppraisalCycleTable from "../../components/Tables/AppraisalTables/Appraisal/CycleAppraisal ";
-import AppraisalListTable from "../../components/Tables/AppraisalTables/Appraisal/AppraisalsListTable";
+import AppraisalsListTable from "../../components/Tables/AppraisalTables/Appraisal/AppraisalsListTable";
 import AddAppraisalCycleModal from "../../components/Modals/AppraisalModal/add-appraisal-cycle";
 
 
-function AppraisalCycle() {
+function Appraisals() {
   const [admins, setAdmins] = useState([]);
   const [appraisalIdToBeShown, setAppraisalIdToBeShown] = useState(null);
 
@@ -65,40 +65,40 @@ function AppraisalCycle() {
   }
 
   return (
+    // <>
+    //   {
+    //     appraisalIdToBeShown
+    //       ? (
     <>
-      {
-        appraisalIdToBeShown
-          ? (
-            <>
-              <AppraisalListHeader name="Lista de Avaliações" parentName="Desempenho" />
-              <Container className="mt--6" fluid>
-                <AppraisalListTable />
-              </Container>
-            </>
-          )
-          : (
-            <>
-              <AppraisalCycleHeader name="Ciclos de Avaliação" parentName="Desempenho" handleOpenAddAppraisalCycleModal={handleOpenAddAppraisalCycleModal} />
-              <Container className="mt--6" fluid>
-                <AppraisalCycleTable
-                  handleShowAppraisalList={handleShowAppraisalList}
-                  handleOpenAddAppraisalCycleModal={handleOpenAddAppraisalCycleModal}
-                  handleAppraisalCycleUpdate={handleAppraisalCycleUpdate}
-                />
-              </Container>
-            </>
-          )
-      }
-      <AddAppraisalCycleModal
-        handleOpenAddAppraisalCycleModal={handleOpenAddAppraisalCycleModal}
-        modalOpen={modalOpen}
-        cycleIdToUpdate={cycleIdToUpdate}
-        handleCycleIdToUpdate={handleCycleIdToUpdate}
-      />
+      <AppraisalListHeader name="Avaliações" parentName="Desempenho" />
+      <Container className="mt--6" fluid>
+        <AppraisalsListTable />
+      </Container>
     </>
+    //       )
+    //       : (
+    //         <>
+    //           <AppraisalCycleHeader name="Ciclos de Avaliação" parentName="Desempenho" handleOpenAddAppraisalCycleModal={handleOpenAddAppraisalCycleModal} />
+    //           <Container className="mt--6" fluid>
+    //             <AppraisalCycleTable
+    //               handleShowAppraisalList={handleShowAppraisalList}
+    //               handleOpenAddAppraisalCycleModal={handleOpenAddAppraisalCycleModal}
+    //               handleAppraisalCycleUpdate={handleAppraisalCycleUpdate}
+    //             />
+    //           </Container>
+    //         </>
+    //       )
+    //   }
+    //   <AddAppraisalCycleModal
+    //     handleOpenAddAppraisalCycleModal={handleOpenAddAppraisalCycleModal}
+    //     modalOpen={modalOpen}
+    //     cycleIdToUpdate={cycleIdToUpdate}
+    //     handleCycleIdToUpdate={handleCycleIdToUpdate}
+    //   />
+    // </>
   );
 }
 
-AppraisalCycle.layout = Performance;
+Appraisals.layout = Performance;
 
-export default AppraisalCycle;
+export default Appraisals;

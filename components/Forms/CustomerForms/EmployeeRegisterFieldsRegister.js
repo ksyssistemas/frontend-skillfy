@@ -19,13 +19,13 @@ import {
     Row,
 } from "reactstrap";
 import { useRouter } from 'next/router';
-import useCreateTypeContract from '../../hooks/RecordsHooks/featuresEmploymentContract/useCreateTypeContract';
-import useCreateWorkModel from '../../hooks/RecordsHooks/featuresEmploymentContract/useCreateWorkModel';
-import useCreateWorkplace from '../../hooks/RecordsHooks/featuresEmploymentContract/useCreateWorkplace';
-import { useFindAllTypeContract } from '../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllTypeContract';
-import { useFindAllWorkModels } from '../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllWorkModels';
-import { useFindAllWorkplaces } from '../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllWorkplaces';
-import { employmentContractDataSearchAndProcess } from '../../util/employmentContractDataSearchAndProcess';
+import useCreateTypeContract from '../../../hooks/RecordsHooks/featuresEmploymentContract/useCreateTypeContract';
+import useCreateWorkModel from '../../../hooks/RecordsHooks/featuresEmploymentContract/useCreateWorkModel';
+import useCreateWorkplace from '../../../hooks/RecordsHooks/featuresEmploymentContract/useCreateWorkplace';
+import { useFindAllTypeContract } from '../../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllTypeContract';
+import { useFindAllWorkModels } from '../../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllWorkModels';
+import { useFindAllWorkplaces } from '../../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllWorkplaces';
+import { employmentContractDataSearchAndProcess } from '../../../util/employmentContractDataSearchAndProcess';
 
 
 function EmployeeRegisterFieldsRegister() {

@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import dynamic from "next/dynamic";
 const Select2 = dynamic(() => import("react-select2-wrapper"));
 import { Button, Card, CardHeader, CardBody, FormGroup, Form, Input, Container, Row, Col, Table } from "reactstrap";
-import useCreateDepartment from "../../hooks/RecordsHooks/department/useCreateDepartment";
-import { useFindAllDepartments } from '../../hooks/RecordsHooks/department/useFindAllDepartments';
-import { employmentContractDataSearchAndProcess } from '../../util/employmentContractDataSearchAndProcess';
-import { handleSelectionEmploymentContractData } from '../../util/handleSelectionEmploymentContractData';
+import useCreateDepartment from "../../../hooks/RecordsHooks/department/useCreateDepartment";
+import { useFindAllDepartments } from '../../../hooks/RecordsHooks/department/useFindAllDepartments';
+import { employmentContractDataSearchAndProcess } from '../../../util/employmentContractDataSearchAndProcess';
+import { handleSelectionEmploymentContractData } from '../../../util/handleSelectionEmploymentContractData';
 
 function DepartmentsRegister({ handleShowDepartmentsUserRegister }) {
 

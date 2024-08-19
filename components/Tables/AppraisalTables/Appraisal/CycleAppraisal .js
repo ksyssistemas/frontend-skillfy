@@ -20,12 +20,12 @@ import {
 } from 'reactstrap';
 import { withRouter } from "next/router";
 import PropTypes from "prop-types";
-import { useFindAllAppraisalCycles } from '../../../hooks/PerformanceAppraisalRecordsHooks/Cycles/useFindAllAppraisalCycles';
-import { CycleContext } from '../../../contexts/PerformanceContext/CycleContext';
-import { useDeleteCycle } from '../../../hooks/PerformanceAppraisalRecordsHooks/Cycles/useDeleteCycle';
-import { useSweetAlert } from '../../../contexts/SweetAlertContext';
+import { useFindAllAppraisalCycles } from '../../../../hooks/PerformanceAppraisalRecordsHooks/Cycles/useFindAllAppraisalCycles';
+import { CycleContext } from '../../../../contexts/PerformanceContext/CycleContext';
+import { useDeleteCycle } from '../../../../hooks/PerformanceAppraisalRecordsHooks/Cycles/useDeleteCycle';
+import { useSweetAlert } from '../../../../contexts/SweetAlertContext';
 
-function AppraisalCycleTable({ handleShowAppraisalList, handleOpenAddAppraisalCycleModal, handleAppraisalCycleUpdate }) {
+function CycleAppraisal({ handleShowAppraisalList, handleOpenAddAppraisalCycleModal, handleAppraisalCycleUpdate }) {
 
     const { hasUpdatedAppraisalCycle, handleUpdatedAppraisalCycleStatusChange, hasNewAppraisalCycleCreated, handleCreatedAppraisalCycleStatusChange, hasDeletedAppraisalCycle, handleDeletedAppraisalCycleStatusChange } = useContext(CycleContext);
 
@@ -250,12 +250,12 @@ function AppraisalCycleTable({ handleShowAppraisalList, handleOpenAddAppraisalCy
     );
 }
 
-AppraisalCycleTable.defaultProps = {
+CycleAppraisal.defaultProps = {
     handleShowAppraisalList: () => { },
 };
 
-AppraisalCycleTable.propTypes = {
+CycleAppraisal.propTypes = {
     handleShowAppraisalList: PropTypes.func,
 };
 
-export default withRouter(AppraisalCycleTable);
+export default withRouter(CycleAppraisal);

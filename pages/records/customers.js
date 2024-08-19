@@ -4,7 +4,7 @@ import AdminHeader from "components/Headers/AdminHeader.js";
 import CustomersUserList from "../../components/Tables/Customer/CustomersUserList";
 
 import { Container } from "reactstrap";
-import CustomerUserRegister from "../../components/Forms/CustomerUserRegister";
+import CustomerUserRegister from "../../components/Forms/CustomerForms/CustomerUserRegister";
 
 function CustomerRecords() {
   const [admins, setAdmins] = useState([]);

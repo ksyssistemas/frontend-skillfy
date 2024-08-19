@@ -7,19 +7,19 @@ const Select2 = dynamic(() => import("react-select2-wrapper"));
 // react plugin used to create datetimepicker
 import ReactDatetime from "react-datetime";
 import InputMask from 'react-input-mask';
-import useCreateClientCompany from '../../hooks/RecordsHooks/customer/useCreateClientCompany';
-import useCNPJ from '../../hooks/RecordsHooks/useCNPJ';
+import useCreateClientCompany from '../../../hooks/RecordsHooks/customer/useCreateClientCompany';
+import useCNPJ from '../../../hooks/RecordsHooks/useCNPJ';
 // reactstrap components
 import {
     Col, Input, Row
 } from "reactstrap";
-import { CustomerContext } from '../../contexts/RecordsContext/CustomerContext';
-import { useFindClientCompany } from "../../hooks/RecordsHooks/customer/useFindClientCompany";
-import { useFindEmployeeAddress } from "../../hooks/RecordsHooks/customer/useFindClientCompanyAddress";
-import useUpdateClientCompany from '../../hooks/RecordsHooks/customer/useUpdateClientCompany';
-import useCEP from "../../hooks/RecordsHooks/useCEP";
-import { handleSelectionEmploymentContractData } from '../../util/handleSelectionEmploymentContractData';
-import { handleDateFormatting } from "../../util/handleDateFormatting";
+import { CustomerContext } from '../../../contexts/RecordsContext/CustomerContext';
+import { useFindClientCompany } from "../../../hooks/RecordsHooks/customer/useFindClientCompany";
+import { useFindEmployeeAddress } from "../../../hooks/RecordsHooks/customer/useFindClientCompanyAddress";
+import useUpdateClientCompany from '../../../hooks/RecordsHooks/customer/useUpdateClientCompany';
+import useCEP from "../../../hooks/RecordsHooks/useCEP";
+import { handleSelectionEmploymentContractData } from '../../../util/handleSelectionEmploymentContractData';
+import { handleDateFormatting } from "../../../util/handleDateFormatting";
 
 function CustomerUserUpdate({ handleOpenCustomerModal }) {
 

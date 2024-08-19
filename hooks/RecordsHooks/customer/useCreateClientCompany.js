@@ -408,8 +408,6 @@ const useCreateClientCompany = () => {
   };
 
   const handleLinkingAccountHolderToCustomer = async (customerUserIdCreated) => {
-    console.log("Contato: ", idAccountHolderToLinkToCustomer);
-    console.log("Empresa: ", customerUserIdCreated);
     if (idAccountHolderToLinkToCustomer && idAccountHolderToLinkToCustomer !== '' &&
       customerUserIdCreated && customerUserIdCreated !== '') {
 

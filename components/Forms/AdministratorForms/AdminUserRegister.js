@@ -5,10 +5,8 @@ import ReactDatetime from "react-datetime";
 import PropTypes from "prop-types";
 import InputMask from 'react-input-mask';
 import { Button, Card, CardHeader, CardBody, FormGroup, Form, Input, Row, Col } from "reactstrap";
-import useCreateAdmin from '../../hooks/RecordsHooks/admin/useCreateAdmin';
-import { AdminContext } from "../../contexts/RecordsContext/AdminContext";
-import { useFindAdmin } from "../../hooks/RecordsHooks/admin/useFindAdmin";
-import { handleDateFormatting } from "../../util/handleDateFormatting";
+import useCreateAdmin from '../../../hooks/RecordsHooks/admin/useCreateAdmin';
+import { handleDateFormatting } from "../../../util/handleDateFormatting";
 
 function AdminUserRegister({ handleShowAdminUserRegister }) {
 

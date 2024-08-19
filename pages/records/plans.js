@@ -3,7 +3,7 @@ import Admin from "../../layouts/Admin";
 import AdminHeader from "components/Headers/AdminHeader.js";
 import PlansList from "../../components/Tables/Admin/PlansList";
 import { Container } from "reactstrap";
-import PlansRegister from "../../components/Forms/PlansRegister";
+import PlansRegister from "../../components/Forms/AdministratorForms/PlansRegister";
 
 function PlansRecords() {
 

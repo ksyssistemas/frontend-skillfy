@@ -9,7 +9,7 @@ import {
   Col,
   Button,
 } from "reactstrap";
-import EmployeeUserUpdate from "../../Forms/EmployeeUserUpdate";
+import EmployeeUserUpdate from "../../Forms/CustomerForms/EmployeeUserUpdate";
 import { EmployeeContext } from "../../../contexts/RecordsContext/EmployeeContext";
 import { useFindEmployee } from "../../../hooks/RecordsHooks/employee/useFindEmployee";
 import { useFindEmployeeAddress } from "../../../hooks/RecordsHooks/employee/useFindEmployeeAddress";

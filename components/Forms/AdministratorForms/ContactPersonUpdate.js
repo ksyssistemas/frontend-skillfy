@@ -6,13 +6,13 @@ const Select2 = dynamic(() => import("react-select2-wrapper"))
 import InputMask from 'react-input-mask';
 import ReactDatetime from "react-datetime";
 import { useContext, useEffect, useState } from "react";
-import { ContactPersonContext } from "../../contexts/RecordsContext/ContactPersonContext";
-import { useFindContactPerson } from "../../hooks/RecordsHooks/contactPerson/useFindContactPerson";
-import { employmentContractDataSearchAndProcess } from "../../util/employmentContractDataSearchAndProcess";
-import { useFindAllClientCompany } from "../../hooks/RecordsHooks/customer/useFindAllClientCompany";
-import useUpdateContactPerson from "../../hooks/RecordsHooks/contactPerson/useUpdateContactPerson";
-import useCreateCustomerAccountHolder from '../../hooks/RecordsHooks/customer/useCreateCustomerAccountHolder';
-import { handleSelectionEmploymentContractData } from '../../util/handleSelectionEmploymentContractData';
+import { ContactPersonContext } from "../../../contexts/RecordsContext/ContactPersonContext";
+import { useFindContactPerson } from "../../../hooks/RecordsHooks/contactPerson/useFindContactPerson";
+import { employmentContractDataSearchAndProcess } from "../../../util/employmentContractDataSearchAndProcess";
+import { useFindAllClientCompany } from "../../../hooks/RecordsHooks/customer/useFindAllClientCompany";
+import useUpdateContactPerson from "../../../hooks/RecordsHooks/contactPerson/useUpdateContactPerson";
+import useCreateCustomerAccountHolder from '../../../hooks/RecordsHooks/customer/useCreateCustomerAccountHolder';
+import { handleSelectionEmploymentContractData } from '../../../util/handleSelectionEmploymentContractData';
 
 function ContactPersonUpdate({ handleOpenContactModal }) {
 

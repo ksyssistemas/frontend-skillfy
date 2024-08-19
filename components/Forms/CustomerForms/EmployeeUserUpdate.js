@@ -13,25 +13,25 @@ import {
     Input,
     Row
 } from "reactstrap";
-import { handleSelectionEmploymentContractData } from '../../util/handleSelectionEmploymentContractData';
-import { EmployeeContext } from "../../contexts/RecordsContext/EmployeeContext";
-import useCreateEmployee from "../../hooks/RecordsHooks/employee/useCreateEmployee";
-import useCreateTypeContract from "../../hooks/RecordsHooks/featuresEmploymentContract/useCreateTypeContract";
-import useCreateWorkModel from "../../hooks/RecordsHooks/featuresEmploymentContract/useCreateWorkModel";
-import useCreateWorkplace from "../../hooks/RecordsHooks/featuresEmploymentContract/useCreateWorkplace";
-import { useFindEmployee } from "../../hooks/RecordsHooks/employee/useFindEmployee";
-import { useFindEmployeeContractDetails } from "../../hooks/RecordsHooks/featuresEmploymentContract/useFindEmployeeContractDetails";
-import { handleDateFormatting } from "../../util/handleDateFormatting";
-import { useFindClientCompany } from "../../hooks/RecordsHooks/customer/useFindClientCompany";
-import { useFindAllEmployeeAndRole } from "../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllEmployeeAndRole";
-import { useFindAllTypeContract } from "../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllTypeContract";
-import { useFindAllWorkModels } from "../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllWorkModels";
-import { useFindAllWorkplaces } from "../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllWorkplaces";
-import { useFindAllDepartments } from "../../hooks/RecordsHooks/department/useFindAllDepartments";
-import { useFindAllRoles } from "../../hooks/RecordsHooks/role/useFindAllRoles";
-import { useFindAllFunctions } from "../../hooks/RecordsHooks/employeeFunction/useFindAllFunctions";
-import { employmentContractDataSearchAndProcess } from "../../util/employmentContractDataSearchAndProcess";
-import useUpdateEmployee from "../../hooks/RecordsHooks/employee/useUpdateEmployee";
+import { handleSelectionEmploymentContractData } from '../../../util/handleSelectionEmploymentContractData';
+import { EmployeeContext } from "../../../contexts/RecordsContext/EmployeeContext";
+import useCreateEmployee from "../../../hooks/RecordsHooks/employee/useCreateEmployee";
+import useCreateTypeContract from "../../../hooks/RecordsHooks/featuresEmploymentContract/useCreateTypeContract";
+import useCreateWorkModel from "../../../hooks/RecordsHooks/featuresEmploymentContract/useCreateWorkModel";
+import useCreateWorkplace from "../../../hooks/RecordsHooks/featuresEmploymentContract/useCreateWorkplace";
+import { useFindEmployee } from "../../../hooks/RecordsHooks/employee/useFindEmployee";
+import { useFindEmployeeContractDetails } from "../../../hooks/RecordsHooks/featuresEmploymentContract/useFindEmployeeContractDetails";
+import { handleDateFormatting } from "../../../util/handleDateFormatting";
+import { useFindClientCompany } from "../../../hooks/RecordsHooks/customer/useFindClientCompany";
+import { useFindAllEmployeeAndRole } from "../../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllEmployeeAndRole";
+import { useFindAllTypeContract } from "../../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllTypeContract";
+import { useFindAllWorkModels } from "../../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllWorkModels";
+import { useFindAllWorkplaces } from "../../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllWorkplaces";
+import { useFindAllDepartments } from "../../../hooks/RecordsHooks/department/useFindAllDepartments";
+import { useFindAllRoles } from "../../../hooks/RecordsHooks/role/useFindAllRoles";
+import { useFindAllFunctions } from "../../../hooks/RecordsHooks/employeeFunction/useFindAllFunctions";
+import { employmentContractDataSearchAndProcess } from "../../../util/employmentContractDataSearchAndProcess";
+import useUpdateEmployee from "../../../hooks/RecordsHooks/employee/useUpdateEmployee";
 
 function EmployeeUserUpdate(
     {

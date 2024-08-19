@@ -14,7 +14,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React from "react";
+import React, { useContext } from "react";
 // nodejs library to set properties for components
 import PropTypes from "prop-types";
 // reactstrap components
@@ -33,6 +33,7 @@ import {
   NavLink,
 } from "reactstrap";
 import Link from "next/link";
+import { AppraisalCaptionsContext } from "../../../contexts/PerformanceContext/AprraisalCaptionsContext";
 
 function AppraisalSettingsHeader(
   {
@@ -48,6 +49,9 @@ function AppraisalSettingsHeader(
     onSecondButtonClick,
     onDropdownItemClick,
   }) {
+
+  const { isShouldSubmitCaptionsRegistration, handleDropdownClickCaptionType } = useContext(AppraisalCaptionsContext);
+
   return (
     <>
       <div style={{ backgroundColor: '#562f9f' }} className="header header-dark pb-6 content__title content__title--calendar">
@@ -143,7 +147,7 @@ function AppraisalSettingsHeader(
                   ))
                 }
                 {
-                  secondButtonText && view !== 'default' ? (
+                  secondButtonText && view === 'skills' ? (
                     <UncontrolledDropdown className="mx-1">
                       <DropdownToggle
                         className="btn-neutral btn-fixed-width"
@@ -168,22 +172,59 @@ function AppraisalSettingsHeader(
                         </DropdownItem>
                       </DropdownMenu>
                     </UncontrolledDropdown>
-                  ) : (secondButtonText && view === '' && (
-                    <Button
-                      className="btn-neutral"
-                      color=""
-                      href="#pablo"
-                      size="sm"
-                      onClick={onSecondButtonClick}
-                    >
-                      <span
-                        className="btn-inner--icon"
-                      >
-                        <i className={secondButtonIcon} />
-                      </span>
-                      {secondButtonText}
-                    </Button>
-                  ))
+                  ) : (
+                    secondButtonText && view === 'captions' && !isShouldSubmitCaptionsRegistration ? (
+                      <UncontrolledDropdown className="mx-1">
+                        <DropdownToggle
+                          className="btn-neutral btn-fixed-width"
+                          color=""
+                          href="#pablo"
+                          size="sm"
+                        >
+                          <span className="btn-inner--icon">
+                            <i className={secondButtonIcon} />
+                          </span>
+                          {secondButtonText}
+                        </DropdownToggle>
+                        <DropdownMenu className="dropdown-menu-arrow" right>
+                          <DropdownItem href="#pablo" onClick={(e) => { e.preventDefault(); handleDropdownClickCaptionType('Conceitual') }}>
+                            Conceitual
+                          </DropdownItem>
+                          <DropdownItem href="#pablo" onClick={(e) => { e.preventDefault(); handleDropdownClickCaptionType('Numérica') }}>
+                            Numérica
+                          </DropdownItem>
+                          <DropdownItem href="#pablo" onClick={(e) => { e.preventDefault(); handleDropdownClickCaptionType('Percentual') }}>
+                            Percentual
+                          </DropdownItem>
+                          <DropdownItem href="#pablo" onClick={(e) => { e.preventDefault(); handleDropdownClickCaptionType('Cor') }}>
+                            Cor
+                          </DropdownItem>
+                          <DropdownItem href="#pablo" onClick={(e) => { e.preventDefault(); handleDropdownClickCaptionType('Emoji') }}>
+                            Emoji
+                          </DropdownItem>
+                        </DropdownMenu>
+                      </UncontrolledDropdown>
+                    )
+                      // : (
+                      //   secondButtonText && view === 'captions' && !isShouldSubmitCaptionsRegistration ? (
+                      //     <Button
+                      //       className="btn-neutral"
+                      //       color=""
+                      //       href="#pablo"
+                      //       size="sm"
+                      //       onClick={onSecondButtonClick}
+                      //     >
+                      //       <span
+                      //         className="btn-inner--icon"
+                      //       >
+                      //         <i className={secondButtonIcon} />
+                      //       </span>
+                      //       {secondButtonText}
+                      //     </Button>
+                      //   ) 
+                      : null
+                    // )
+                  )
                 }
                 <Button
                   className="btn-neutral"
