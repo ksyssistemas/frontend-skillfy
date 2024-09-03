@@ -132,10 +132,14 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
         setEmployeeEntryTime,
         employeeEntryTimeState,
         setEmployeeEntryTimeState,
-        employeeBreakTime,
-        setEmployeeBreakTime,
-        employeeBreakTimeState,
-        setEmployeeBreakTimeState,
+        employeeStartBreakTime,
+        setEmployeeStartBreakTime,
+        employeeStartBreakTimeState,
+        setEmployeeStartBreakTimeState,
+        employeeStopBreakTime,
+        setEmployeeStopBreakTime,
+        employeeStopBreakTimeState,
+        setEmployeeStopBreakTimeState,
         employeeDepartureTime,
         setEmployeeDepartureTime,
         employeeDepartureTimeState,
@@ -899,7 +903,7 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
                             </Col>
                         </div>
                         <div className="form-row">
-                            <Col className="mb-3" md="6">
+                            <Col className="mb-3" md="4">
                                 <label
                                     className="form-control-label"
                                     htmlFor="validationWorkplace"
@@ -957,28 +961,55 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
                             <Col className="mb-3" md="2">
                                 <label
                                     className="form-control-label"
-                                    htmlFor="validationBreakTime"
+                                    htmlFor="validationStartBreakTime"
                                 >
-                                    Intervalo
+                                    Início do Intervalo
                                 </label>
                                 <InputMask
                                     mask="99:99:99"
                                     placeholder="12:00:00"
-                                    value={employeeBreakTime}
-                                    onChange={handleTimeChange(setEmployeeBreakTime, setEmployeeBreakTimeState)}
+                                    value={employeeStartBreakTime}
+                                    onChange={handleTimeChange(setEmployeeStartBreakTime, setEmployeeStartBreakTimeState)}
                                 >
                                     {(inputProps) => (
                                         <Input
                                             {...inputProps}
-                                            id="validationBreakTime"
+                                            id="validationStartBreakTime"
                                             type="text"
-                                            valid={employeeBreakTimeState === "valid"}
-                                            invalid={employeeBreakTimeState === "invalid"}
+                                            valid={employeeStartBreakTimeState === "valid"}
+                                            invalid={employeeStartBreakTimeState === "invalid"}
                                         />
                                     )}
                                 </InputMask>
                                 <div className="invalid-feedback">
-                                    {employeeBreakTimeState === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
+                                    {employeeStartBreakTimeState === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
+                                </div>
+                            </Col>
+                            <Col className="mb-3" md="2">
+                                <label
+                                    className="form-control-label"
+                                    htmlFor="validationStopBreakTime"
+                                >
+                                    Fim do Intervalo
+                                </label>
+                                <InputMask
+                                    mask="99:99:99"
+                                    placeholder="13:00:00"
+                                    value={employeeStopBreakTime}
+                                    onChange={handleTimeChange(setEmployeeStopBreakTime, setEmployeeStopBreakTimeState)}
+                                >
+                                    {(inputProps) => (
+                                        <Input
+                                            {...inputProps}
+                                            id="validationStopBreakTime"
+                                            type="text"
+                                            valid={employeeStopBreakTimeState === "valid"}
+                                            invalid={employeeStopBreakTimeState === "invalid"}
+                                        />
+                                    )}
+                                </InputMask>
+                                <div className="invalid-feedback">
+                                    {employeeStopBreakTimeState === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
                                 </div>
                             </Col>
                             <Col className="mb-3" md="2">

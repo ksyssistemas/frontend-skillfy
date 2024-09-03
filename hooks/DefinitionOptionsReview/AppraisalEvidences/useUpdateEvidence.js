@@ -26,11 +26,12 @@ const useUpdateEvidence = () => {
   async function handleValidateUpdateAppraisalEvidenceForm(
     handleCloseEvidenceModal,
     evidencesIdToUpdate,
-    evidenceTitle,
+    skillRelated,
     evidenceContent,
     evidenceStatus,
     handleEvidencesIdToUpdate,
-    handleCleanDetailedEvidencesData
+    handleCleanDetailedEvidencesData, 
+    handleSelectedSkillRelated
   ) {
     //validateAddDepartmentForm();
     // if (cycleTitleState === "valid" &&
@@ -44,28 +45,29 @@ const useUpdateEvidence = () => {
     // } else {
     //   return null;
     // }
-    await handleSubmit(evidencesIdToUpdate, evidenceTitle, evidenceContent, evidenceStatus);
-    goBackToEvidenceList(handleCloseEvidenceModal, handleEvidencesIdToUpdate, handleCleanDetailedEvidencesData);
+    await handleSubmit(evidencesIdToUpdate, skillRelated, evidenceContent, evidenceStatus);
+    goBackToEvidenceList(handleCloseEvidenceModal, handleEvidencesIdToUpdate, handleCleanDetailedEvidencesData, handleSelectedSkillRelated);
   }
 
-  function goBackToEvidenceList(handleCloseEvidenceModal, handleEvidencesIdToUpdate, handleCleanDetailedEvidencesData) {
+  function goBackToEvidenceList(handleCloseEvidenceModal, handleEvidencesIdToUpdate, handleCleanDetailedEvidencesData, handleSelectedSkillRelated) {
     handleCloseEvidenceModal();
     handleEvidencesIdToUpdate();
     handleCleanDetailedEvidencesData();
     reset();
+    handleSelectedSkillRelated();
     handleUpdatedAppraisalEvidencesStatusChange();
   }
 
-  const handleSubmit = async (evidencesIdToUpdate, evidenceTitle, evidenceContent, evidenceStatus) => {
-    console.log(evidencesIdToUpdate, evidenceTitle, evidenceContent, evidenceStatus);
+  const handleSubmit = async (evidencesIdToUpdate, skillRelated, evidenceContent, evidenceStatus) => {
+    console.log(evidencesIdToUpdate, skillRelated, evidenceContent, evidenceStatus);
     if (evidencesIdToUpdate && evidencesIdToUpdate !== "") {
       try {
         const payload = {
           status: evidenceStatus,
         };
 
-        if (evidenceTitle && evidenceTitle !== "") {
-          payload.evidenceName = evidenceTitle;
+        if (skillRelated && skillRelated !== "") {
+          payload.evidenceName = skillRelated;
         }
 
         if (evidenceContent && evidenceContent !== "") {

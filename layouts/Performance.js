@@ -20,7 +20,7 @@ import { withRouter } from "next/router";
 import PerformanceNavbar from "components/Navbars/PerformanceNavbar.js";
 import PerformanceFooter from "components/Footers/PerformanceFooter.js";
 import SidebarCustomer from "components/Sidebar/SidebarCustomer";
-import routes from "../routes/customer.routes";
+import routes from "routes/customer.routes";
 // import routes from "routes.js";
 
 function Performance({ router, children }) {

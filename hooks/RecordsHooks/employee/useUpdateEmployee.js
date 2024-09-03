@@ -172,7 +172,8 @@ const useUpdateEmployee = () => {
         employeeWorkplace,
         formattedAdmissionDate,
         employeeEntryTime,
-        employeeBreakTime,
+        employeeStartBreakTime,
+        employeeStopBreakTime,
         employeeDepartureTime,
         handleEmployeeIdToUpdate,
         handleEmployeeIdStatusCleanupToUpdate,
@@ -231,7 +232,8 @@ const useUpdateEmployee = () => {
             employeeWorkplace,
             formattedAdmissionDate,
             employeeEntryTime,
-            employeeBreakTime,
+            employeeStartBreakTime,
+            employeeStopBreakTime,
             employeeDepartureTime
         )
         // }
@@ -356,7 +358,8 @@ const useUpdateEmployee = () => {
         employeeWorkplace,
         employeetAdmissionDate,
         employeeEntryTime,
-        employeeBreakTime,
+        employeeStartBreakTime,
+        employeeStopBreakTime,
         employeeDepartureTime
     ) => {
         if (departmentWhichEmployeeReports,
@@ -367,7 +370,8 @@ const useUpdateEmployee = () => {
             employeeWorkplace,
             employeetAdmissionDate,
             employeeEntryTime,
-            employeeBreakTime,
+            employeeStartBreakTime,
+            employeeStopBreakTime,
             employeeDepartureTime
         ) {
             try {
@@ -406,8 +410,12 @@ const useUpdateEmployee = () => {
                     payload.entryTime = employeeEntryTime;
                 }
 
-                if (employeeBreakTime && employeeBreakTime !== "") {
-                    payload.breakTime = employeeBreakTime;
+                if (employeeStartBreakTime && employeeStartBreakTime !== "") {
+                    payload.startBreakTime = employeeStartBreakTime;
+                }
+
+                if (employeeStopBreakTime && employeeStopBreakTime !== "") {
+                    payload.endBreakTime = employeeStopBreakTime;
                 }
 
                 if (employeeDepartureTime && employeeDepartureTime !== "") {

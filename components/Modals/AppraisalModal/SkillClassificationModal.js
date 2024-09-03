@@ -15,11 +15,11 @@ import {
 } from "reactstrap";
 import { employmentContractDataSearchAndProcess } from "../../../util/employmentContractDataSearchAndProcess";
 import { handleSelectionEmploymentContractData } from "../../../util/handleSelectionEmploymentContractData";
-import { useFindAppraisalCycle } from "../../../hooks/PerformanceAppraisalRecordsHooks/Cycles/useFindAppraisalCycle";
-import useCreateSkillClassificaiton from "../../../hooks/PerformanceAppraisalRecordsHooks/SkillsClassifications/useCreateSkillClassificaiton";
-import { useFindAllSkillClassifications } from "../../../hooks/PerformanceAppraisalRecordsHooks/SkillsClassifications/useFindAllSkillClassifications";
-import useUpdateSkillClassificaiton from "../../../hooks/PerformanceAppraisalRecordsHooks/SkillsClassifications/useUpdateSkillClassification";
-import { useFindSkillClassification } from "../../../hooks/PerformanceAppraisalRecordsHooks/SkillsClassifications/useFindSkillClassification";
+import { useFindAppraisalCycle } from "../../../hooks/DefinitionOptionsReview/Cycles/useFindAppraisalCycle";
+import useCreateSkillClassificaiton from "../../../hooks/DefinitionOptionsReview/SkillsClassifications/useCreateSkillClassificaiton";
+import { useFindAllSkillClassifications } from "../../../hooks/DefinitionOptionsReview/SkillsClassifications/useFindAllSkillClassifications";
+import useUpdateSkillClassificaiton from "../../../hooks/DefinitionOptionsReview/SkillsClassifications/useUpdateSkillClassification";
+import { useFindSkillClassification } from "../../../hooks/DefinitionOptionsReview/SkillsClassifications/useFindSkillClassification";
 
 function SkillClassificationModal(
     {

@@ -22,7 +22,7 @@ import CaptionsManagement from "../../components/Tables/AppraisalTables/Appraisa
 function AppraisalSettings() {
 
     const { handleDropdownClickSkillsComponents } = useContext(AppraisalSkillsContext);
-    const { handleResetCaptionTypeViewComponents, setIsShouldSubmitCaptionsRegistration } = useContext(AppraisalCaptionsContext);
+    const { handleResetCaptionTypeViewComponents, handleResetShowCaptionRegister } = useContext(AppraisalCaptionsContext);
 
     const [view, setView] = useState('default');
     // function handleSettingsViewComponents(view) {
@@ -97,7 +97,7 @@ function AppraisalSettings() {
                     firstButtonIcon: 'fas fa-solid fa-arrow-left mr-2',
                     onFirstButtonClick: () => {
                         handleSettingsViewComponents('default');
-                        setIsShouldSubmitCaptionsRegistration(false);
+                        handleResetShowCaptionRegister();
                         handleResetCaptionTypeViewComponents();
                     },
                     secondButtonText: 'Opções de Legenda',

@@ -17,8 +17,8 @@ const useCreateCaption = () => {
         { id: "1", text: "Conceitual" },
         { id: "2", text: "Numérica" },
         { id: "3", text: "Percentual" },
-        { id: "4", text: "Cor" },
-        { id: "5", text: "Emoji" },
+        // { id: "4", text: "Cor" },
+        // { id: "5", text: "Emoji" },
     ]);
     const handleCaptionDataList = (captionData) => {
         setCaptionDataList(captionData);

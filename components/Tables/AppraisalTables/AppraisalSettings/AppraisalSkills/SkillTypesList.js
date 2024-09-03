@@ -21,9 +21,11 @@ import ShowRoleDescriptionsModal from "../../../../Modals/admin/show-role-descri
 import ShowFunctionsDescriptionsModal from "../../../../Modals/admin/show-functions-descriptions";
 import { AppraisalSkillsContext } from "../../../../../contexts/PerformanceContext/AppraisalSkillsContext";
 import { useSweetAlert } from "../../../../../contexts/SweetAlertContext";
-import { useFindAllSkillTypes } from "../../../../../hooks/PerformanceAppraisalRecordsHooks/SkillsTypes/useFindAllSkillTypes";
-import { useDeleteSkillType, useDeleteSkillTypes } from "../../../../../hooks/PerformanceAppraisalRecordsHooks/SkillsTypes/useDeleteSkillType";
+import { useFindAllSkillTypes } from "../../../../../hooks/DefinitionOptionsReview/SkillsTypes/useFindAllSkillTypes";
+import { useDeleteSkillType, useDeleteSkillTypes } from "../../../../../hooks/DefinitionOptionsReview/SkillsTypes/useDeleteSkillType";
 import SkillTypesModal from "../../../../Modals/AppraisalModal/SkillTypesModal";
+import { useFindSkillClassification } from "../../../../../hooks/DefinitionOptionsReview/SkillsClassifications/useFindSkillClassification";
+import { useFindOccupationalGroup } from "../../../../../hooks/DefinitionOptionsReview/OccupationalGroups/useFindOccupationalGroup";
 
 function SkillsList() {
 
@@ -87,6 +89,7 @@ function SkillsList() {
 
     const showWarningAlert = (skillTypeId, skillTypeName) => {
         warningAlert(
+            `${skillTypeId}`,
             "Atenção",
             "Deletar",
             `Você deseja realmente excluir ${skillTypeName}?`,
@@ -96,12 +99,49 @@ function SkillsList() {
     };
 
     useEffect(() => {
+        const fetchCompanyNamesAndRoles = async (skillTypes) => {
+            const updatedSkillTypes = await Promise.all(
+              skillTypes.map(async (skillType) => {
+                try {
+                    if (!skillType.skilClassificationId || !skillType.occupationalGroupId) {
+                        return {
+                            ...skillType,
+                            skilClassificationName: 'Unknown',
+                            occupationalGroupName: 'Unknown',
+                        };
+                    }
+                  const skilClassificationData = await useFindSkillClassification(skillType.skillClassificationId);
+                  const occupationalGroupData = await useFindOccupationalGroup(skillType.occupationalGroupId);
+                  return {
+                    ...skillType,
+                    skilClassificationName: skilClassificationData.competenceClassificationName,
+                    occupationalGroupName: occupationalGroupData.competencieName,
+                  };
+                } catch (error) {
+                  console.error(`Error fetching Skill Classification and Occupational Group data for skillTypeId ${skillType.id}:`, error);
+                  return {
+                    ...skillType,
+                    skilClassificationName: 'Unknown',
+                    occupationalGroupName: 'Unknown',
+                  };
+                }
+              })
+            );
+            setDetailedSkillTypeData(updatedSkillTypes);
+          };
+
         const fetchSkillTypes = async () => {
-            try {
-                const foundTypes = await useFindAllSkillTypes();
-                setDetailedSkillTypeData(foundTypes);
-            } catch (error) {
-                console.error('Error fetching types:', error);
+            if(!detailedSkillTypeData.lenght ||
+                hasNewAppraisalSkillTypeCreated ||
+                hasUpdatedAppraisalSkillType ||
+                hasDeletedAppraisalSkillType
+            ) {
+                try {
+                    const foundTypes = await useFindAllSkillTypes();
+                    await fetchCompanyNamesAndRoles(foundTypes);
+                } catch (error) {
+                    console.error('Error fetching types:', error);
+                }
             }
         };
 
@@ -117,7 +157,6 @@ function SkillsList() {
         }
 
     }, [
-        detailedSkillTypeData,
         hasNewAppraisalSkillTypeCreated,
         hasUpdatedAppraisalSkillType,
         hasDeletedAppraisalSkillType,
@@ -176,10 +215,10 @@ function SkillsList() {
                                             </span>
                                         </td>
                                         <td className="table-user">
-                                            <b>.</b>
+                                            <b>{skillType.skilClassificationName}</b>
                                         </td>
                                         <td className="table-user">
-                                            <b>.</b>
+                                            <b>{skillType.occupationalGroupName}</b>
                                         </td>
                                         <td className="text-right">
                                             <UncontrolledDropdown>

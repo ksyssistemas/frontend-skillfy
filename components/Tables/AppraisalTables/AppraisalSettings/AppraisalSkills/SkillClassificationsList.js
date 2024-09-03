@@ -13,12 +13,12 @@ import {
     Col,
     Button,
 } from "reactstrap";
-import { useFindAllSkillClassifications } from "../../../../../hooks/PerformanceAppraisalRecordsHooks/SkillsClassifications/useFindAllSkillClassifications";
+import { useFindAllSkillClassifications } from "../../../../../hooks/DefinitionOptionsReview/SkillsClassifications/useFindAllSkillClassifications";
 import ShowRoleDescriptionsModal from "../../../../Modals/admin/show-role-descriptions";
 import ShowFunctionsDescriptionsModal from "../../../../Modals/admin/show-functions-descriptions";
 import { AppraisalSkillsContext } from "../../../../../contexts/PerformanceContext/AppraisalSkillsContext";
 import SkillClassificationModal from "../../../../Modals/AppraisalModal/SkillClassificationModal";
-import { useDeleteSkillClassification } from "../../../../../hooks/PerformanceAppraisalRecordsHooks/SkillsClassifications/useDeleteSkillClassification";
+import { useDeleteSkillClassification } from "../../../../../hooks/DefinitionOptionsReview/SkillsClassifications/useDeleteSkillClassification";
 import { useSweetAlert } from "../../../../../contexts/SweetAlertContext";
 
 function SkillClassificationList() {
@@ -83,6 +83,7 @@ function SkillClassificationList() {
 
     const showWarningAlert = (classificationId, classificationName) => {
         warningAlert(
+            `${classificationId}`,
             "Atenção",
             "Deletar",
             `Você deseja realmente excluir ${classificationName}?`,

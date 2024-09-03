@@ -23,12 +23,12 @@ import {
 } from "reactstrap";
 
 import ReactDatetime from "react-datetime";
-import useCreateCycle from "../../../hooks/PerformanceAppraisalRecordsHooks/Cycles/useCreateCycle";
+import useCreateCycle from "../../../hooks/DefinitionOptionsReview/Cycles/useCreateCycle";
 import { employmentContractDataSearchAndProcess } from "../../../util/employmentContractDataSearchAndProcess";
 import { handleDateFormatting } from "../../../util/handleDateFormatting";
 import { handleSelectionEmploymentContractData } from "../../../util/handleSelectionEmploymentContractData";
-import { useFindAppraisalCycle } from "../../../hooks/PerformanceAppraisalRecordsHooks/Cycles/useFindAppraisalCycle";
-import useUpdateCycle from "../../../hooks/PerformanceAppraisalRecordsHooks/Cycles/useUpdateCycle";
+import { useFindAppraisalCycle } from "../../../hooks/DefinitionOptionsReview/Cycles/useFindAppraisalCycle";
+import useUpdateCycle from "../../../hooks/DefinitionOptionsReview/Cycles/useUpdateCycle";
 
 function AddAppraisalCycleModal(
   {

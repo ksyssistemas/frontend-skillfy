@@ -9,8 +9,8 @@ const useCreateEvidence = () => {
         handleCreatedAppraisalEvidencesStatusChange
     } = useContext(EvidencesContext);
 
-    const [evidenceTitle, setEvidenceTitle] = useState("");
-    const [evidenceTitleState, setEvidenceTitleState] = useState(null);
+    const [skillRelated, setSkillRelated] = useState("");
+    const [skillRelatedState, setSkillRelatedState] = useState(null);
     const [evidenceContent, setEvidenceContent] = useState("");
     const [evidenceContentState, setEvidenceContentState] = useState(null);
     const [evidenceStatus, setEvidenceStatus] = useState("");
@@ -18,6 +18,11 @@ const useCreateEvidence = () => {
     const [evidenceDataList, setEvidenceDataList] = useState([]);
     const handleEvidenceDataList = (evidenceData) => {
         setEvidenceDataList(evidenceData);
+    }
+
+    const [skillRelatedDataList, setSkillRelatedDataList] = useState([]);
+    const handleSkillRelatedDataList = (skillRelatedData) => {
+        setSkillRelatedDataList(skillRelatedData);
     }
 
     const validateAddDepartmentForm = () => {
@@ -35,7 +40,7 @@ const useCreateEvidence = () => {
         }
     }
 
-    function handleValidateAddEvidenceForm(handleCloseEvidenceModal) {
+    function handleValidateAddEvidenceForm(handleCloseEvidenceModal, handleSelectedSkillRelated) {
         //validateAddDepartmentForm();
         // if (cycleTitleState === "valid" &&
         //   cyclePeriodState === "valid" &&
@@ -48,19 +53,18 @@ const useCreateEvidence = () => {
         // } else {
         //   return null;
         // }
-        handleSubmit(evidenceTitle, evidenceContent);
-        goBackToAppraisalEvidenceList(handleCloseEvidenceModal);
+        handleSubmit(skillRelated, evidenceContent);
+        goBackToAppraisalEvidenceList(handleCloseEvidenceModal, handleSelectedSkillRelated);
     }
 
-    function goBackToAppraisalEvidenceList(handleCloseEvidenceModal) {
+    function goBackToAppraisalEvidenceList(handleCloseEvidenceModal, handleSelectedSkillRelated) {
         handleCloseEvidenceModal();
+        handleSelectedSkillRelated();
         handleEvidenceIdStatusCleanupToUpdate();
         handleCreatedAppraisalEvidencesStatusChange();
     }
 
-    const handleSubmit = async (evidenceTitle, evidenceContent) => {
-        console.log(`${process.env.NEXT_PUBLIC_EVIDENCES}`);
-        console.log(evidenceTitle, evidenceContent);
+    const handleSubmit = async (skillRelated, evidenceContent) => {
         if (evidenceContent && evidenceContent !== '') {
             try {
                 const payload = {
@@ -68,8 +72,8 @@ const useCreateEvidence = () => {
                     status: true
                 };
 
-                if (evidenceTitle && evidenceTitle !== "") {
-                    payload.evidenceName = evidenceTitle;
+                if (skillRelated && skillRelated !== "") {
+                    payload.evidenceName = skillRelated;
                 }
 
                 const response = await fetch(`${process.env.NEXT_PUBLIC_EVIDENCES}`, {
@@ -92,8 +96,8 @@ const useCreateEvidence = () => {
     };
 
     function reset() {
-        setEvidenceTitle('');
-        setEvidenceTitleState(null);
+        setSkillRelated('');
+        setSkillRelatedState(null);
         setEvidenceContent('');
         setEvidenceContentState(null);
         setEvidenceStatus('');
@@ -102,10 +106,10 @@ const useCreateEvidence = () => {
     }
 
     return {
-        evidenceTitle,
-        setEvidenceTitle,
-        evidenceTitleState,
-        setEvidenceTitleState,
+        skillRelated,
+        setSkillRelated,
+        skillRelatedState,
+        setSkillRelatedState,
         evidenceContent,
         setEvidenceContent,
         evidenceContentState,
@@ -116,6 +120,8 @@ const useCreateEvidence = () => {
         setEvidenceStatusState,
         evidenceDataList,
         handleEvidenceDataList,
+        skillRelatedDataList,
+        handleSkillRelatedDataList,
         handleValidateAddEvidenceForm,
         reset
     };

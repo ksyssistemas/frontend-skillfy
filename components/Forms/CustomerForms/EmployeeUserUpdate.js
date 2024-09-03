@@ -155,10 +155,17 @@ function EmployeeUserUpdate(
         setEmployeeEntryTime,
         employeeEntryTimeState,
         setEmployeeEntryTimeState,
-        employeeBreakTime,
-        setEmployeeBreakTime,
-        employeeBreakTimeState,
-        setEmployeeBreakTimeState,
+
+        employeeStartBreakTime,
+        setEmployeeStartBreakTime,
+        employeeStartBreakTimeState,
+        setEmployeeStartBreakTimeState,
+
+        employeeStopBreakTime,
+        setEmployeeStopBreakTime,
+        employeeStopBreakTimeState,
+        setEmployeeStopBreakTimeState,
+
         employeeDepartureTime,
         setEmployeeDepartureTime,
         employeeDepartureTimeState,
@@ -216,7 +223,10 @@ function EmployeeUserUpdate(
 
         employeetAdmissionDate: { value: "", touched: false, state: null },
         employeeEntryTime: { value: "", touched: false, state: null },
-        employeeBreakTime: { value: false, touched: false, state: null },
+
+        employeeStartBreakTime: { value: false, touched: false, state: null },
+        employeeStopBreakTime: { value: false, touched: false, state: null },
+
         employeeDepartureTime: { value: "", touched: false, state: null },
     });
 
@@ -303,7 +313,8 @@ function EmployeeUserUpdate(
 
             employeetAdmissionDate: { value: "", touched: false, state: null },
             employeeEntryTime: { value: "", touched: false, state: null },
-            employeeBreakTime: { value: false, touched: false, state: null },
+            employeeStartBreakTime: { value: false, touched: false, state: null },
+            employeeStopBreakTime: { value: false, touched: false, state: null },
             employeeDepartureTime: { value: "", touched: false, state: null },
         });
         setCepTouched(false);
@@ -452,7 +463,8 @@ function EmployeeUserUpdate(
                 setFieldTouchStatus((prev) => ({
                     ...prev,
                     employeeEntryTime: { ...prev.employeeEntryTime, value: foundContractDetails.entryTime },
-                    employeeBreakTime: { ...prev.employeeBreakTime, value: foundContractDetails.breakTime },
+                    employeeStartBreakTime: { ...prev.employeeStartBreakTime, value: foundContractDetails.startBreakTime },
+                    employeeStopBreakTime: { ...prev.employeeStopBreakTime, value: foundContractDetails.endBreakTime },
                     employeeDepartureTime: { ...prev.employeeDepartureTime, value: foundContractDetails.departureTime },
                 }));
                 selectedListItemToUpdate(foundContractDetails.departmentId, departmentDataList, setSelectedDepartment, setDepartmentWhichEmployeeReports, setDepartmentWhichEmployeeReportsState);
@@ -494,7 +506,8 @@ function EmployeeUserUpdate(
                 employeeWorkplace,
                 formattedAdmissionDate,
                 fieldTouchStatus.employeeEntryTime.value,
-                fieldTouchStatus.employeeBreakTime.value,
+                fieldTouchStatus.employeeStartBreakTime.value,
+                fieldTouchStatus.employeeStopBreakTime.value,
                 fieldTouchStatus.employeeDepartureTime.value,
                 handleEmployeeIdToUpdate,
                 handleEmployeeIdStatusCleanupToUpdate,
@@ -1141,29 +1154,57 @@ function EmployeeUserUpdate(
                         <Col className="mb-3" md="2">
                             <label
                                 className="form-control-label"
-                                htmlFor="validationBreakTime"
+                                htmlFor="validationStartBreakTime"
                             >
                                 Intervalo
                             </label>
                             <InputMask
                                 mask="99:99:99"
                                 placeholder="12:00:00"
-                                value={fieldTouchStatus.employeeBreakTime.value}
-                                onChange={(e) => handleChange(e, "employeeBreakTime")}
-                                onTouchStart={() => handleTouchStart("employeeBreakTime")}
+                                value={fieldTouchStatus.employeeStartBreakTime.value}
+                                onChange={(e) => handleChange(e, "employeeStartBreakTime")}
+                                onTouchStart={() => handleTouchStart("employeeStartBreakTime")}
                             >
                                 {(inputProps) => (
                                     <Input
                                         {...inputProps}
-                                        id="validationBreakTime"
+                                        id="validationStartBreakTime"
                                         type="text"
-                                        valid={fieldTouchStatus.employeeEntryTime.touched && fieldTouchStatus.employeeEntryTime.state === "valid"}
-                                        invalid={fieldTouchStatus.employeeEntryTime.touched && fieldTouchStatus.employeeEntryTime.state === "invalid"}
+                                        valid={fieldTouchStatus.employeeStartBreakTime.touched && fieldTouchStatus.employeeStartBreakTime.state === "valid"}
+                                        invalid={fieldTouchStatus.employeeStartBreakTime.touched && fieldTouchStatus.employeeStartBreakTime.state === "invalid"}
                                     />
                                 )}
                             </InputMask>
                             <div className="invalid-feedback">
-                                {fieldTouchStatus.employeeEntryTime.state === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
+                                {fieldTouchStatus.employeeStartBreakTime.state === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
+                            </div>
+                        </Col>
+                        <Col className="mb-3" md="2">
+                            <label
+                                className="form-control-label"
+                                htmlFor="validationStopBreakTime"
+                            >
+                                Fim do Intervalo
+                            </label>
+                            <InputMask
+                                mask="99:99:99"
+                                placeholder="13:00:00"
+                                value={fieldTouchStatus.employeeStopBreakTime.value}
+                                onChange={(e) => handleChange(e, "employeeStopBreakTime")}
+                                onTouchStart={() => handleTouchStart("employeeStopBreakTime")}
+                            >
+                                {(inputProps) => (
+                                    <Input
+                                        {...inputProps}
+                                        id="validationStopBreakTime"
+                                        type="text"
+                                        valid={fieldTouchStatus.employeeStopBreakTime.touched && fieldTouchStatus.employeeStopBreakTime.state === "valid"}
+                                        invalid={fieldTouchStatus.employeeStopBreakTime.touched && fieldTouchStatus.employeeStopBreakTime.state === "invalid"}
+                                    />
+                                )}
+                            </InputMask>
+                            <div className="invalid-feedback">
+                                {fieldTouchStatus.employeeStopBreakTime.state === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
                             </div>
                         </Col>
                         <Col className="mb-3" md="2">

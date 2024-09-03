@@ -15,12 +15,12 @@ import {
 } from "reactstrap";
 import { employmentContractDataSearchAndProcess } from "../../../util/employmentContractDataSearchAndProcess";
 import { handleSelectionEmploymentContractData } from "../../../util/handleSelectionEmploymentContractData";
-import { useFindAllSkillClassifications } from "../../../hooks/PerformanceAppraisalRecordsHooks/SkillsClassifications/useFindAllSkillClassifications";
-import { useFindAllSkillTypes } from "../../../hooks/PerformanceAppraisalRecordsHooks/SkillsTypes/useFindAllSkillTypes";
-import { useFindAllOccupationalGroups } from "../../../hooks/PerformanceAppraisalRecordsHooks/OccupationalGroups/useFindAllSkillClassifications";
-import { useFindSkillType } from "../../../hooks/PerformanceAppraisalRecordsHooks/SkillsTypes/useFindSkillType";
-import useCreateSkillType from "../../../hooks/PerformanceAppraisalRecordsHooks/SkillsTypes/useCreateSkillType";
-import useUpdateSkillType from "../../../hooks/PerformanceAppraisalRecordsHooks/SkillsTypes/useUpdateSkillType";
+import { useFindAllSkillClassifications } from "../../../hooks/DefinitionOptionsReview/SkillsClassifications/useFindAllSkillClassifications";
+import { useFindAllSkillTypes } from "../../../hooks/DefinitionOptionsReview/SkillsTypes/useFindAllSkillTypes";
+import { useFindAllOccupationalGroups } from "../../../hooks/DefinitionOptionsReview/OccupationalGroups/useFindAllSkillClassifications";
+import { useFindSkillType } from "../../../hooks/DefinitionOptionsReview/SkillsTypes/useFindSkillType";
+import useCreateSkillType from "../../../hooks/DefinitionOptionsReview/SkillsTypes/useCreateSkillType";
+import useUpdateSkillType from "../../../hooks/DefinitionOptionsReview/SkillsTypes/useUpdateSkillType";
 
 function SkillTypesModal(
     {
@@ -77,8 +77,8 @@ function SkillTypesModal(
     }
 
     const handleCloseSkillTipeModal = () => {
-        handleOpenSkillTypeModal();
         reset();
+        handleOpenSkillTypeModal();
     };
 
     const updateSelectedPeriod = (periodText) => {
@@ -109,8 +109,14 @@ function SkillTypesModal(
                 await employmentContractDataSearchAndProcess(useFindAllSkillClassifications, handleClassificationOfSkillTypeDataList, 'skillClassification', 'EmployeeUserRegister');
             }
             if (skillTypeOccupationalGroupDataList.length === 0) {
-                await employmentContractDataSearchAndProcess(useFindAllOccupationalGroups, handleSkillTypeOccupationalGroupDataList, 'occupationalGroup', 'EmployeeUserRegister');
+                await employmentContractDataSearchAndProcess(
+                    useFindAllOccupationalGroups,
+                    handleSkillTypeOccupationalGroupDataList,
+                    'occupationalGroup',
+                    'EmployeeUserRegister'
+                );
             }
+            console.log("skillTypeOccupationalGroupDataList: ", skillTypeOccupationalGroupDataList);
         }
 
         fetchData();
@@ -199,6 +205,7 @@ function SkillTypesModal(
                                             Tipos Cadastrados
                                         </label>
                                         <Select2
+                                            data-minimum-results-for-search="Infinity"
                                             id="listTypesSkillsRecorded"
                                             className="form-control"
                                             options={{ placeholder: "Clique para visualizar", }}
@@ -249,7 +256,16 @@ function SkillTypesModal(
                                     value={selectedClassificationOfSkillType}
                                     onChange={(e) => setSelectedClassificationOfSkillType(e.target.value)}
                                     data={classificationOfSkillTypeDataList}
-                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, classificationOfSkillTypeDataList, setSelectedClassificationOfSkillType, setClassificationOfSkillType, setClassificationOfSkillTypeState)}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(
+                                        e.target.value,
+                                        classificationOfSkillTypeDataList,
+                                        setSelectedClassificationOfSkillType,
+                                        setClassificationOfSkillType,
+                                        setClassificationOfSkillTypeState,
+                                        null,
+                                        null,
+                                        'id'
+                                    )}
                                 />
                             </Col>
                             <Col className="mb-3" md="6">
@@ -267,7 +283,16 @@ function SkillTypesModal(
                                     value={selectedSkillTypeOccupationalGroup}
                                     onChange={(e) => setSelectedSkillTypeOccupationalGroup(e.target.value)}
                                     data={skillTypeOccupationalGroupDataList}
-                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, skillTypeOccupationalGroupDataList, setSelectedSkillTypeOccupationalGroup, setskillTypeOccupationalGroup, setskillTypeOccupationalGroupState)}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(
+                                        e.target.value,
+                                        skillTypeOccupationalGroupDataList,
+                                        setSelectedSkillTypeOccupationalGroup,
+                                        setskillTypeOccupationalGroup,
+                                        setskillTypeOccupationalGroupState,
+                                        null,
+                                        null,
+                                        'id'
+                                    )}
                                 />
                             </Col>
                         </div>

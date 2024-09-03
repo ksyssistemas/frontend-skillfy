@@ -15,10 +15,10 @@ import {
 } from "reactstrap";
 import { employmentContractDataSearchAndProcess } from "../../../util/employmentContractDataSearchAndProcess";
 import { handleSelectionEmploymentContractData } from "../../../util/handleSelectionEmploymentContractData";
-import useCreateOccupationalGroup from "../../../hooks/PerformanceAppraisalRecordsHooks/OccupationalGroups/useCreateOccupationalGroup";
-import { useFindAllOccupationalGroups } from "../../../hooks/PerformanceAppraisalRecordsHooks/OccupationalGroups/useFindAllSkillClassifications";
-import { useFindOccupationalGroup } from "../../../hooks/PerformanceAppraisalRecordsHooks/OccupationalGroups/useFindOccupationalGroup";
-import useUpdateOccupationalGroup from "../../../hooks/PerformanceAppraisalRecordsHooks/OccupationalGroups/useUpdateOccupationalGroup";
+import useCreateOccupationalGroup from "../../../hooks/DefinitionOptionsReview/OccupationalGroups/useCreateOccupationalGroup";
+import { useFindAllOccupationalGroups } from "../../../hooks/DefinitionOptionsReview/OccupationalGroups/useFindAllSkillClassifications";
+import { useFindOccupationalGroup } from "../../../hooks/DefinitionOptionsReview/OccupationalGroups/useFindOccupationalGroup";
+import useUpdateOccupationalGroup from "../../../hooks/DefinitionOptionsReview/OccupationalGroups/useUpdateOccupationalGroup";
 
 function OccupationalGroupModal(
     {

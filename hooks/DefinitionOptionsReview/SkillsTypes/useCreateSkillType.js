@@ -67,6 +67,7 @@ const useCreateSkillType = () => {
     }
 
     const handleSubmit = async (skillTypeName, skillTypeDescription, classificationOfSkillType, skillTypeOccupationalGroup) => {
+        console.log(skillTypeName, skillTypeDescription, classificationOfSkillType, skillTypeOccupationalGroup);
         if (skillTypeName && skillTypeName !== '') {
             try {
                 const payload = {
@@ -78,13 +79,13 @@ const useCreateSkillType = () => {
                     payload.description = skillTypeDescription;
                 }
 
-                // if (classificationOfSkillType && classificationOfSkillType !== "") {
-                //     payload.occupationalGroupId = classificationOfSkillType;
-                // }
+                if (classificationOfSkillType && classificationOfSkillType !== "") {
+                    payload.occupationalGroupId = classificationOfSkillType;
+                }
 
-                // if (skillTypeOccupationalGroup && skillTypeOccupationalGroup !== "") {
-                //     payload.skilClassificationId = skillTypeOccupationalGroup;
-                // }
+                if (skillTypeOccupationalGroup && skillTypeOccupationalGroup !== "") {
+                    payload.skillClassificationId = skillTypeOccupationalGroup;
+                }
 
                 const response = await fetch(`${process.env.NEXT_PUBLIC_COMPETENCE_TYPE}`, {
                     method: 'POST',

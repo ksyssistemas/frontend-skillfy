@@ -3,11 +3,11 @@ import dynamic from "next/dynamic";
 const Select2 = dynamic(() => import("react-select2-wrapper"));
 import { Button, Card, CardHeader, CardBody, FormGroup, Form, Input, Row, Col } from "reactstrap";
 import { handleSelectionEmploymentContractData } from "../../../../../util/handleSelectionEmploymentContractData";
-import useCreateCaption from "../../../../../hooks/PerformanceAppraisalRecordsHooks/AppraisalCaptions/useCreateCaption";
+import useCreateCaption from "../../../../../hooks/DefinitionOptionsReview/AppraisalCaptions/useCreateCaption";
 import { AppraisalCaptionsContext } from "../../../../../contexts/PerformanceContext/AprraisalCaptionsContext";
-import { useFindCaption } from "../../../../../hooks/PerformanceAppraisalRecordsHooks/AppraisalCaptions/useFindCaption";
-import useUpdateCaption from "../../../../../hooks/PerformanceAppraisalRecordsHooks/AppraisalCaptions/useUpdateCaption";
-import { useFindCaptionOptionByCaptionId } from "../../../../../hooks/PerformanceAppraisalRecordsHooks/AppraisalCaptions/useFindCaptionOptionByCaptionId";
+import { useFindCaption } from "../../../../../hooks/DefinitionOptionsReview/AppraisalCaptions/useFindCaption";
+import useUpdateCaption from "../../../../../hooks/DefinitionOptionsReview/AppraisalCaptions/useUpdateCaption";
+import { useFindCaptionOptionByCaptionId } from "../../../../../hooks/DefinitionOptionsReview/AppraisalCaptions/useFindCaptionOptionByCaptionId";
 
 function CaptionsRegister() {
 
@@ -95,7 +95,7 @@ function CaptionsRegister() {
                     <Col md={variableColumnWidth}>
                         <Input
                             type="text"
-                            placeholder="Peso"
+                            placeholder="Nota"
                             value={option.weight}
                             onChange={(e) => handleOptionChange(index, 'weight', e.target.value)}
                         />

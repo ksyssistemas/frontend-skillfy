@@ -20,12 +20,12 @@ import {
     ListGroupItem,
     CardTitle,
 } from "reactstrap";
-import { useFindAllCaptions } from "../../../../../hooks/PerformanceAppraisalRecordsHooks/AppraisalCaptions/useFindAllCaptions";
+import { useFindAllCaptions } from "../../../../../hooks/DefinitionOptionsReview/AppraisalCaptions/useFindAllCaptions";
 import { AppraisalCaptionsContext } from "../../../../../contexts/PerformanceContext/AprraisalCaptionsContext";
-import { useFindCaptionOptionByCaptionId } from "../../../../../hooks/PerformanceAppraisalRecordsHooks/AppraisalCaptions/useFindCaptionOptionByCaptionId";
+import { useFindCaptionOptionByCaptionId } from "../../../../../hooks/DefinitionOptionsReview/AppraisalCaptions/useFindCaptionOptionByCaptionId";
 import { useSweetAlert } from "../../../../../contexts/SweetAlertContext";
-import { useDeleteCaption } from "../../../../../hooks/PerformanceAppraisalRecordsHooks/AppraisalCaptions/useDeleteCaption";
-import { useFindCaptionOptionByCaptionType } from "../../../../../hooks/PerformanceAppraisalRecordsHooks/AppraisalCaptions/useFindCaptionOptionByCaptionType";
+import { useDeleteCaption } from "../../../../../hooks/DefinitionOptionsReview/AppraisalCaptions/useDeleteCaption";
+import { useFindCaptionOptionByCaptionType } from "../../../../../hooks/DefinitionOptionsReview/AppraisalCaptions/useFindCaptionOptionByCaptionType";
 
 function CaptionsList() {
 
@@ -75,7 +75,7 @@ function CaptionsList() {
             `${captionId}`,
             "Atenção",
             "Deletar",
-            `Você deseja realmente excluir está legenda?`,
+            `Você deseja realmente excluir esta legenda?`,
             "lg",
             () => handleDeleteEvidence(captionId)
         );
@@ -105,7 +105,6 @@ function CaptionsList() {
                 }
             })
         );
-        console.log(updatedCaptions);
         setDetailedCaptionData(updatedCaptions);
     };
 

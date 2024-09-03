@@ -7,7 +7,7 @@ import EnterpriseNavbar from "components/Navbars/EmployeeNavbar.js";
 import RegisterFooter from "components/Footers/RegisterFooter.js";
 import Sidebar from "components/Sidebar/SidebarEmployee.js";
 
-import routes from "../routes/employee.routes";
+import routes from "routes/employee.routes";
 
 function Employee({ router, children }) {
   const [sidenavOpen, setSidenavOpen] = React.useState(true);

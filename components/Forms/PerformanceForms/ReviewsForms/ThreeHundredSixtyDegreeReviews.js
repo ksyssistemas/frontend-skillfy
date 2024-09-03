@@ -20,8 +20,10 @@ import {
     Col,
     Badge,
     ListGroup,
-    ListGroupItem
+    ListGroupItem,
+    Progress
 } from "reactstrap";
+import SimpleWizard from "../../../Wizard/SimpleWizard";
 
 function ThreeHundredSixtyDegreeReviews() {
     const [admins, setAdmins] = useState([]);
@@ -268,13 +270,11 @@ function ThreeHundredSixtyDegreeReviews() {
         setSelectedSubordinatesValue([...selectedSubordinatesValue, ...randomSubordinates]);
     };
 
+
     return (
-        <>
-            <Card>
-                <CardBody>
-                    <h6 className="heading-small text-muted mb-4">
-                        Detalhes da Avaliação
-                    </h6>
+        <Card>
+            <CardBody>
+                <div className="mb-4">
                     <div className="form-row">
                         <Col className="mb-3" md="6">
                             <FormGroup
@@ -284,7 +284,7 @@ function ThreeHundredSixtyDegreeReviews() {
                                     className="form-control-label"
                                     htmlFor="validationServer01"
                                 >
-                                    Nome
+                                    Nome da Avaliação
                                 </label>
                                 <Input
                                     //className="is-valid"
@@ -305,18 +305,18 @@ function ThreeHundredSixtyDegreeReviews() {
                                     className="form-control-label"
                                     htmlFor="validationServer04"
                                 >
-                                    Localização
+                                    Modelo Escolhido
                                 </label>
                                 <Input
                                     //className="is-invalid"
                                     id="validationServer04"
-                                    placeholder="Localização"
+                                    placeholder="Avaliação 360º"
                                     required
                                     type="text"
                                 />
                                 {/* <div className="invalid-feedback">
-                              Please provide a valid state.
-                            </div> */}
+                          Please provide a valid state.
+                        </div> */}
                             </FormGroup>
                         </Col>
                     </div>
@@ -336,13 +336,13 @@ function ThreeHundredSixtyDegreeReviews() {
                                     id="validationServer03"
                                 />
                                 {/* <div className="invalid-feedback">
-                              Please provide a valid city.
-                            </div> */}
+                          Please provide a valid city.
+                        </div> */}
                             </FormGroup>
                         </Col>
                     </div>
                     <hr />
-                    <div className="form-row mt-6">
+                    <div className="form-row mt-6 mb-6">
                         <Col className="mb-3" md="6">
                             <FormGroup>
                                 <label
@@ -439,222 +439,11 @@ function ThreeHundredSixtyDegreeReviews() {
                                 />
                             </FormGroup>
                         </Col>
-
                     </div>
-                </CardBody>
-            </Card>
+                </div>
+            </CardBody>
+        </Card>
 
-            <Card>
-                <CardBody>
-                    <h6 className="heading-small text-muted mb-4">
-                        Seleção de Avaliadores
-                    </h6>
-                    <div className="form-row">
-                        <Col className="mb-3" md="4" name="select_supervisor">
-                            <label className=" form-control-label">
-                                Responsável
-                            </label>
-                            <Select2
-                                className="form-control"
-                                //defaultValue="0"
-                                options={{
-                                    placeholder: "Digite para obter dicas...",
-                                }}
-                                data={dataSupervisors}
-                                value={selectedSupervisorValue} onSelect={handleChangeInSelectingSupervisor}
-                            />
-                        </Col>
-                        <Col className="mb-3" md="2" />
-                        <Col className="mb-3" md="6" name="show_supervisor">
-                            {
-                                selectedSupervisorValue.map((supervisor, index) => {
-                                    const selectedData = dataSupervisors.find(item => item.id === supervisor);
-                                    return (
-                                        <Badge
-                                            key={supervisor}
-                                            color="secondary"
-                                            className="mr-2 mb-2 bg-light"
-                                            style={{ fontSize: '0.75rem' }}
-                                        >
-                                            <span className="ml-2">
-                                                {selectedData ? selectedData.text : null}
-                                            </span>
-                                            <span
-                                                className="ml-2 mr-2 badge-close"
-                                                onClick={() => handleSupervisorsBadgeClose(index)}
-                                            >
-                                                &times;
-                                            </span>
-                                        </Badge>
-                                    );
-                                }
-                                )}
-                        </Col>
-                        <Col className="mb-3 mt-6" md="4" name="select_leader">
-                            <label className=" form-control-label">
-                                Avaliador Líder
-                            </label>
-                            <Select2
-                                className="form-control"
-                                //defaultValue="0"
-                                options={{
-                                    placeholder: "Digite para obter dicas...",
-                                }}
-                                data={dataLeaders}
-                                value={selectedLeaderValue} onSelect={handleChangeInSelectingLeader}
-                            />
-                        </Col>
-                        <Col className="mb-3  mt-6" md="2" />
-                        <Col className="mb-3  mt-6" md="6" name="show_leader">
-                            {
-                                selectedLeaderValue.map((leader, index) => {
-                                    const selectedData = dataLeaders.find(item => item.id === leader);
-                                    return (
-                                        <Badge
-                                            key={leader}
-                                            color="secondary"
-                                            className="mr-2 mb-2 bg-light"
-                                            style={{ fontSize: '0.75rem' }}
-                                        >
-                                            <span className="ml-2">
-                                                {selectedData ? selectedData.text : null}
-                                            </span>
-                                            <span
-                                                className="ml-2 mr-2 badge-close"
-                                                onClick={() => handleLeadersBadgeClose(index)}
-                                            >
-                                                &times;
-                                            </span>
-                                        </Badge>
-                                    );
-                                }
-                                )}
-                        </Col>
-                        <Col className="mb-6 mt-6" md="4" name="select_peer">
-                            <label className=" form-control-label">
-                                Pares
-                            </label>
-                            <Select2
-                                className="form-control"
-                                //defaultValue="0"
-                                options={{
-                                    placeholder: "Digite para obter dicas...",
-                                }}
-                                data={dataPeers}
-                                value={selectedPeersValue} onSelect={handleChangeInSelectingPeer}
-                            />
-                        </Col>
-                        <Col className="d-flex align-items-center mb-3 mt-5" md="2" name="draw_lots_peer">
-                            <Button color="default" type="button" onClick={handleDrawLotsPeer}>
-                                Sorteio
-                            </Button>
-                        </Col>
-                        <Col className="mb-3 mt-6" md="6" name="show_peer">
-                            {
-                                selectedPeersValue.map((peer, index) => {
-                                    const selectedData = dataPeers.find(item => item.id === peer);
-                                    return (
-                                        <Badge
-                                            key={peer}
-                                            color="secondary"
-                                            className="mr-2 mb-2 bg-light"
-                                            style={{ fontSize: '0.75rem' }}
-                                        >
-                                            <span className="ml-2">
-                                                {selectedData ? selectedData.text : null}
-                                            </span>
-                                            <span
-                                                className="ml-2 mr-2 badge-close"
-                                                onClick={() => handlePeersBadgeClose(index)}
-                                            >
-                                                &times;
-                                            </span>
-                                        </Badge>
-                                    );
-                                }
-                                )}
-                        </Col>
-                        <Col className="mb-6 mt-6" md="4" name="select_subordinate">
-                            <label className=" form-control-label">
-                                Liderados
-                            </label>
-                            <Select2
-                                className="form-control"
-                                //defaultValue="0"
-                                options={{
-                                    placeholder: "Digite para obter dicas...",
-                                }}
-                                data={dataSubordinates}
-                                value={selectedSubordinatesValue} onSelect={handleChangeInSelectingSubordinate}
-                            />
-                        </Col>
-                        <Col className="d-flex align-items-center mb-3 mt-5" md="2" name="draw_lots_subordinate">
-                            <Button color="default" type="button" onClick={handleDrawLotsSubordinate}>
-                                Sorteio
-                            </Button>
-                        </Col>
-                        <Col className="mb-3 mt-6" md="6" name="show_subordinate">
-                            {
-                                selectedSubordinatesValue.map((subordinate, index) => {
-                                    const selectedData = dataSubordinates.find(item => item.id === subordinate);
-                                    return (
-                                        <Badge
-                                            key={subordinate}
-                                            color="secondary"
-                                            className="mr-2 mb-2 bg-light"
-                                            style={{ fontSize: '0.75rem' }}
-                                        >
-                                            <span className="ml-2">
-                                                {selectedData ? selectedData.text : null}
-                                            </span>
-                                            <span
-                                                className="ml-2 mr-2 badge-close"
-                                                onClick={() => handleSubordinatesBadgeClose(index)}
-                                            >
-                                                &times;
-                                            </span>
-                                        </Badge>
-                                    );
-                                }
-                                )}
-                        </Col>
-                        <Col className="mb-3 mt-6" md="4">
-                            <Card>
-                                <CardBody>
-                                    <Row className="align-items-center">
-                                        <div className="col ml-2">
-                                            <h3 className="mb-0">
-                                                <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                                                    Auto Avaliação
-                                                </a>
-                                            </h3>
-                                        </div>
-                                        <Col className="col-auto">
-                                            <div className="custom-control custom-radio">
-                                                <input
-                                                    className="custom-control-input"
-                                                    defaultChecked
-                                                    disabled
-                                                    id="AutoAvaliação"
-                                                    name="custom-radio-auto-avaliação"
-                                                    type="radio"
-                                                />
-                                                <label
-                                                    className="custom-control-label"
-                                                    htmlFor="AutoAvaliação"
-                                                />
-                                            </div>
-                                        </Col>
-                                    </Row>
-                                </CardBody>
-                            </Card>
-                        </Col>
-                        <Col className="mb-3 mt-6" md="4" />
-
-                    </div>
-                </CardBody>
-            </Card>
-        </>
     );
 }
 

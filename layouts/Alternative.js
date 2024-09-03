@@ -21,7 +21,7 @@ import { withRouter } from "next/router";
 import AdminNavbar from "../components/Navbars/AdminNavbar";
 import AdminFooter from "components/Footers/AdminFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
-import routes from "../routes/admin.routes";
+import routes from "routes/admin.routes";
 // import routes from "routes.js";
 
 function Admin({ router, children }) {

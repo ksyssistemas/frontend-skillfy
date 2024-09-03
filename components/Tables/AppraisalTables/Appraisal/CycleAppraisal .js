@@ -20,9 +20,9 @@ import {
 } from 'reactstrap';
 import { withRouter } from "next/router";
 import PropTypes from "prop-types";
-import { useFindAllAppraisalCycles } from '../../../../hooks/PerformanceAppraisalRecordsHooks/Cycles/useFindAllAppraisalCycles';
+import { useFindAllAppraisalCycles } from '../../../../hooks/DefinitionOptionsReview/Cycles/useFindAllAppraisalCycles';
 import { CycleContext } from '../../../../contexts/PerformanceContext/CycleContext';
-import { useDeleteCycle } from '../../../../hooks/PerformanceAppraisalRecordsHooks/Cycles/useDeleteCycle';
+import { useDeleteCycle } from '../../../../hooks/DefinitionOptionsReview/Cycles/useDeleteCycle';
 import { useSweetAlert } from '../../../../contexts/SweetAlertContext';
 
 function CycleAppraisal({ handleShowAppraisalList, handleOpenAddAppraisalCycleModal, handleAppraisalCycleUpdate }) {
@@ -83,6 +83,7 @@ function CycleAppraisal({ handleShowAppraisalList, handleOpenAddAppraisalCycleMo
 
     const showWarningAlert = (cycleId, cycleName) => {
         warningAlert(
+            `${cycleId}`,
             "Atenção",
             "Deletar",
             `Você deseja realmente excluir ${cycleName}?`,

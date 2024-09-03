@@ -14,9 +14,12 @@ import {
     Col,
 } from "reactstrap";
 import { EvidencesContext } from "../../../contexts/PerformanceContext/AppraisalEvidencesContext";
-import useCreateEvidence from "../../../hooks/PerformanceAppraisalRecordsHooks/AppraisalEvidences/useCreateEvidence";
-import { useFindEvidence } from "../../../hooks/PerformanceAppraisalRecordsHooks/AppraisalEvidences/useFindEvidence";
-import useUpdateEvidence from "../../../hooks/PerformanceAppraisalRecordsHooks/AppraisalEvidences/useUpdateEvidence";
+import useCreateEvidence from "../../../hooks/DefinitionOptionsReview/AppraisalEvidences/useCreateEvidence";
+import { useFindEvidence } from "../../../hooks/DefinitionOptionsReview/AppraisalEvidences/useFindEvidence";
+import useUpdateEvidence from "../../../hooks/DefinitionOptionsReview/AppraisalEvidences/useUpdateEvidence";
+import { useFindAllSkillTypes } from "../../../hooks/DefinitionOptionsReview/SkillsTypes/useFindAllSkillTypes";
+import { employmentContractDataSearchAndProcess } from "../../../util/employmentContractDataSearchAndProcess";
+import { handleSelectionEmploymentContractData } from "../../../util/handleSelectionEmploymentContractData";
 
 function EvidencesModal(
     {
@@ -31,10 +34,10 @@ function EvidencesModal(
     } = useContext(EvidencesContext);
 
     const {
-        evidenceTitle,
-        setEvidenceTitle,
-        evidenceTitleState,
-        setEvidenceTitleState,
+        skillRelated,
+        setSkillRelated,
+        skillRelatedState,
+        setSkillRelatedState,
         evidenceContent,
         setEvidenceContent,
         evidenceContentState,
@@ -45,6 +48,8 @@ function EvidencesModal(
         setEvidenceStatusState,
         evidenceDataList,
         handleEvidenceDataList,
+        skillRelatedDataList,
+        handleSkillRelatedDataList,
         handleValidateAddEvidenceForm,
         reset
     } = useCreateEvidence();
@@ -67,11 +72,12 @@ function EvidencesModal(
         handleValidateUpdateAppraisalEvidenceForm(
             handleCloseEvidenceModal,
             evidencesIdToUpdate,
-            evidenceTitle,
+            skillRelated,
             evidenceContent,
             evidenceStatus,
             handleEvidencesIdToUpdate,
-            handleCleanDetailedEvidencesData
+            handleCleanDetailedEvidencesData,
+            handleSelectedSkillRelated
         )
     }
 
@@ -86,6 +92,28 @@ function EvidencesModal(
         }
     };
 
+    const [selectedSkillRelated, setSelectedSkillRelated] = useState('');
+    const handleSelectedSkillRelated = () => {
+        setSelectedSkillRelated('');
+    }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (skillRelatedDataList.length === 0) {
+                await employmentContractDataSearchAndProcess(useFindAllSkillTypes, handleSkillRelatedDataList, 'skillTypes', 'EmployeeUserRegister');
+            }
+        }
+
+        fetchData();
+    }, []);
+
+    const updateSelectedSkillRelated = (skillRelatedText) => {
+        const skillRelated = skillRelatedDataList.find(p => p.id === skillRelatedText);
+        if (skillRelated) {
+            setSelectedSkillRelated(skillRelated.id);
+          handleSelectionEmploymentContractData(skillRelated.id, skillRelatedDataList, setSelectedSkillRelated, setSkillRelated, setSkillRelatedState);
+        }
+      };
 
     const [detailedEvidencesData, setDetailedEvidencesData] = useState([]);
     function handleCleanDetailedEvidencesData() {
@@ -97,7 +125,7 @@ function EvidencesModal(
             if (!detailedEvidencesData.length) {
                 const foundEvidence = await useFindEvidence(evidencesIdToUpdate);
                 setDetailedEvidencesData(foundEvidence);
-                setEvidenceTitle(foundEvidence.evidenceName)
+                updateSelectedSkillRelated(foundEvidence.evidenceName)
                 setEvidenceContent(foundEvidence.description)
                 setEvidenceStatus(foundEvidence.status)
             }
@@ -136,29 +164,29 @@ function EvidencesModal(
                             <Col className="mb-3" md={evidencesIdToUpdate ? "10" : "12"}>
                                 <label
                                     className="form-control-label"
-                                    htmlFor="validationEvidenceTitle"
+                                    htmlFor="validationSkillRelated"
                                 >
-                                    Título da Evidência
+                                    Competência
                                 </label>
-                                <Input
-                                    id="validationEvidenceTitle"
-                                    placeholder="Título"
-                                    type="text"
-                                    // valid={departmentNameState === "valid"}
-                                    // invalid={departmentNameState === "invalid"}
-                                    value={evidenceTitle}
-                                    onChange={(e) => {
-                                        setEvidenceTitle(e.target.value);
-                                        //     if (e.target.value === "") {
-                                        //         setDepartmentNameState("invalid");
-                                        //     } else {
-                                        //         setDepartmentNameState("valid");
-                                        //     }
-                                    }}
+                                <Select2
+                                    id="validationSkillRelated"
+                                    className="form-control"
+                                    data-minimum-results-for-search="Infinity"
+                                    options={{ placeholder: "Selecione uma competência" }}
+                                    value={selectedSkillRelated}
+                                    onChange={(e) => setSelectedSkillRelated(e.target.value)}
+                                    data={skillRelatedDataList}
+                                    onSelect={(e) => handleSelectionEmploymentContractData(
+                                        e.target.value, 
+                                        skillRelatedDataList, 
+                                        setSelectedSkillRelated, 
+                                        setSkillRelated, 
+                                        setSkillRelatedState,
+                                        null,
+                                        null,
+                                        'id'
+                                    )}
                                 />
-                                {/* <div className="invalid-feedback">
-                                                    É necessário preencher este campo.
-                                                </div> */}
                             </Col>
                             {
                                 evidencesIdToUpdate ? (
@@ -192,12 +220,13 @@ function EvidencesModal(
                                     className="form-control-label"
                                     htmlFor="validationEvidenceContent"
                                 >
-                                    Conteúdo
+                                    Evidência
                                 </label>
                                 <Input
                                     id="validationEvidenceContent"
                                     rows="4"
                                     type="textarea"
+                                    placeholder="Escreva aqui a evidência a ser avaliada ..."
                                     // valid={departmentDescriptionState === "valid"}
                                     // invalid={departmentDescriptionState === "invalid"}
                                     value={evidenceContent}
@@ -229,7 +258,7 @@ function EvidencesModal(
                     onClick={
                         evidencesIdToUpdate
                             ? () => handleUpdateAppraisalEvidence()
-                            : () => handleValidateAddEvidenceForm(handleCloseEvidenceModal)
+                            : () => handleValidateAddEvidenceForm(handleCloseEvidenceModal, handleSelectedSkillRelated)
                     }
                 >
                     {evidencesIdToUpdate ? 'Editar Evidência' : 'Adicionar Evidência'}

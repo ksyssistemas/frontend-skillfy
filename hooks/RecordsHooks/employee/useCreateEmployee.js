@@ -73,8 +73,12 @@ const useCreateEmployee = () => {
     const [employeetAdmissionDateState, setEmployeetAdmissionDateState] = useState(null);
     const [employeeEntryTime, setEmployeeEntryTime] = useState("");
     const [employeeEntryTimeState, setEmployeeEntryTimeState] = useState(null);
-    const [employeeBreakTime, setEmployeeBreakTime] = useState("");
-    const [employeeBreakTimeState, setEmployeeBreakTimeState] = useState(null);
+
+    const [employeeStartBreakTime, setEmployeeStartBreakTime] = useState("");
+    const [employeeStartBreakTimeState, setEmployeeStartBreakTimeState] = useState(null);
+    const [employeeStopBreakTime, setEmployeeStopBreakTime] = useState("");
+    const [employeeStopBreakTimeState, setEmployeeStopBreakTimeState] = useState(null);
+
     const [employeeDepartureTime, setEmployeeDepartureTime] = useState("");
     const [employeeDepartureTimeState, setEmployeeDepartureTimeState] = useState(null);
     const [employeeStatus, setEmployeeStatus] = useState("");
@@ -190,10 +194,15 @@ const useCreateEmployee = () => {
         } else {
             setEmployeeEntryTimeState("valid");
         }
-        if (employeeBreakTime === "") {
-            setEmployeeBreakTimeState("invalid");
+        if (employeeStartBreakTime === "") {
+            setEmployeeStartBreakTimeState("invalid");
         } else {
-            setEmployeeBreakTimeState("valid");
+            setEmployeeStartBreakTimeState("valid");
+        }
+        if (employeeStopBreakTime === "") {
+            setEmployeeStopBreakTimeState("invalid");
+        } else {
+            setEmployeeStopBreakTimeState("valid");
         }
         if (employeeDepartureTime === "") {
             setEmployeeDepartureTimeState("invalid");
@@ -291,19 +300,6 @@ const useCreateEmployee = () => {
                 employeeRole,
                 employeeFunction
             );
-            console.log(
-                departmentWhichEmployeeReports,
-                employeeRole,
-                employeeFunction,
-                employeeContractType,
-                employeeWorkModel,
-                employeeWorkplace,
-                employeetAdmissionDate,
-                employeeEntryTime,
-                employeeBreakTime,
-                employeeDepartureTime,
-                userIdCreated
-            );
             if (
                 departmentWhichEmployeeReportsState === "valid" &&
                 employeeRoleState === "valid" &&
@@ -313,7 +309,8 @@ const useCreateEmployee = () => {
                 employeeWorkplaceState === "valid" &&
                 employeetAdmissionDateState === "valid" &&
                 employeeEntryTimeState === "valid" &&
-                employeeBreakTimeState === "valid" &&
+                employeeStartBreakTimeState === "valid" &&
+                employeeStopBreakTimeState === "valid" &&
                 employeeDepartureTimeState === "valid" &&
                 userIdCreated
             ) {
@@ -326,7 +323,8 @@ const useCreateEmployee = () => {
                     employeeWorkplace,
                     employeetAdmissionDate,
                     employeeEntryTime,
-                    employeeBreakTime,
+                    employeeStartBreakTime,
+                    employeeStopBreakTime,
                     employeeDepartureTime,
                     userIdCreated
                 )
@@ -356,8 +354,8 @@ const useCreateEmployee = () => {
     }
 
     function goBackToEmployeeUserList(handleShowEmployeeUserRegister) {
-        handleShowEmployeeUserRegister();
         reset();
+        handleShowEmployeeUserRegister();
     }
 
     const handleSubmit = async (
@@ -431,7 +429,8 @@ const useCreateEmployee = () => {
         employeeWorkplace,
         employeetAdmissionDate,
         employeeEntryTime,
-        employeeBreakTime,
+        employeeStartBreakTime,
+        employeeStopBreakTime,
         employeeDepartureTime,
         userIdCreated
     ) => {
@@ -443,7 +442,8 @@ const useCreateEmployee = () => {
             employeeWorkplace,
             employeetAdmissionDate,
             employeeEntryTime,
-            employeeBreakTime,
+            employeeStartBreakTime,
+            employeeStopBreakTime,
             employeeDepartureTime,
             userIdCreated
         ) {
@@ -458,7 +458,8 @@ const useCreateEmployee = () => {
                     workplaceId: Number(employeeWorkplace),
                     adimissionDate: employeetAdmissionDate,
                     entryTime: employeeEntryTime,
-                    breakTime: employeeBreakTime,
+                    startBreakTime: employeeStartBreakTime,
+                    endBreakTime: employeeStopBreakTime,
                     departureTime: employeeDepartureTime,
                 };
 
@@ -556,8 +557,10 @@ const useCreateEmployee = () => {
         setEmployeetAdmissionDateState(null);
         setEmployeeEntryTime("");
         setEmployeeEntryTimeState(null);
-        setEmployeeBreakTime("");
-        setEmployeeBreakTimeState(null);
+        setEmployeeStartBreakTime("");
+        setEmployeeStartBreakTimeState(null);
+        setEmployeeStopBreakTime("");
+        setEmployeeStopBreakTimeState(null);
         setEmployeeDepartureTime("");
         setEmployeeDepartureTimeState(null);
         setEmployeeStatus("");
@@ -707,10 +710,14 @@ const useCreateEmployee = () => {
         setEmployeeEntryTime,
         employeeEntryTimeState,
         setEmployeeEntryTimeState,
-        employeeBreakTime,
-        setEmployeeBreakTime,
-        employeeBreakTimeState,
-        setEmployeeBreakTimeState,
+        employeeStartBreakTime,
+        setEmployeeStartBreakTime,
+        employeeStartBreakTimeState,
+        setEmployeeStartBreakTimeState,
+        employeeStopBreakTime,
+        setEmployeeStopBreakTime,
+        employeeStopBreakTimeState,
+        setEmployeeStopBreakTimeState,
         employeeDepartureTime,
         setEmployeeDepartureTime,
         employeeDepartureTimeState,

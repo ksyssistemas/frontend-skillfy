@@ -10,6 +10,10 @@ function AppraisalCaptionsProvider({ children }) {
         setIsShouldSubmitCaptionsRegistration(!isShouldSubmitCaptionsRegistration);
     };
 
+    const handleResetShowCaptionRegister = () => {
+        setIsShouldSubmitCaptionsRegistration(false);
+    };
+
     const [isShouldShowUpdateAspect, setIsShouldShowUpdateAspect] = useState(false);
 
     const handleShowUpdateAspect = () => {
@@ -56,6 +60,7 @@ function AppraisalCaptionsProvider({ children }) {
             value={{
                 isShouldSubmitCaptionsRegistration,
                 handleShowCaptionRegister,
+                handleResetShowCaptionRegister,
                 hasUpdatedAppraisalCaption,
                 handleUpdatedAppraisalCaptionStatusChange,
                 hasNewAppraisalCaptionCreated,

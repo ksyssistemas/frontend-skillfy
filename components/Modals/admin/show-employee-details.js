@@ -111,6 +111,7 @@ function ShowEmployeeDetailsModal(
           // setAddressDetailsSelectedEmployee(foundEmployeeAddress.data[0] || []);
 
           const foundEmployeeContractDetails = await useFindEmployeeContractDetails(idSelectedToShowEmployeeDetails);
+          console.log("foundEmployeeContractDetails: ", foundEmployeeContractDetails);
           setContractDetailsSelectedEmployee(foundEmployeeContractDetails);
           if (foundEmployeeContractDetails) {
             const foundDepartmentName = await useFindDepartment(foundEmployeeContractDetails.departmentId);
@@ -514,10 +515,10 @@ function ShowEmployeeDetailsModal(
 
                   </div>
                   <div className="form-row">
-                    <Col className="mb-3" md="3">
+                    <Col className="mb-3" md="2">
                       <label
                         className="form-control-label"
-                        htmlFor="validationCustom02"
+                        htmlFor="validationEntryTime"
                       >
                         Hora de Entrada
                       </label>
@@ -527,23 +528,36 @@ function ShowEmployeeDetailsModal(
                         </span>
                       </div>
                     </Col>
-                    <Col className="mb-3" md="3">
+                    <Col className="mb-3" md="2">
                       <label
                         className="form-control-label"
-                        htmlFor="validationCustom02"
+                        htmlFor="validationStartBreakTime"
                       >
-                        Intervalo
+                        Início do intervalo
                       </label>
                       <div className="mt-1 mb-3">
                         <span className="name text-sm">
-                          {contractDetailsSelectedEmployee?.breakTime || ''}
+                          {contractDetailsSelectedEmployee?.startBreakTime || ''}
                         </span>
                       </div>
                     </Col>
-                    <Col className="mb-3" md="3">
+                    <Col className="mb-3" md="2">
                       <label
                         className="form-control-label"
-                        htmlFor="validationCustom02"
+                        htmlFor="validationStopBreakTime"
+                      >
+                        Fim do Intervalo
+                      </label>
+                      <div className="mt-1 mb-3">
+                        <span className="name text-sm">
+                          {contractDetailsSelectedEmployee?.endBreakTime || ''}
+                        </span>
+                      </div>
+                    </Col>
+                    <Col className="mb-3" md="2">
+                      <label
+                        className="form-control-label"
+                        htmlFor="validationDepartureTime"
                       >
                         Horário de Saída
                       </label>
@@ -553,7 +567,7 @@ function ShowEmployeeDetailsModal(
                         </span>
                       </div>
                     </Col>
-                    <Col className="mb-3" md="3">
+                    <Col className="mb-3" md="2">
                       <label
                         className="form-control-label"
                         htmlFor="validationCustom02"

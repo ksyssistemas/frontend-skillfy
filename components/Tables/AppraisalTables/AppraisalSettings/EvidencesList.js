@@ -22,8 +22,9 @@ import {
 import { useSweetAlert } from "../../../../contexts/SweetAlertContext";
 import EvidencesModal from "../../../Modals/AppraisalModal/EvidencesModal";
 import { EvidencesContext } from "../../../../contexts/PerformanceContext/AppraisalEvidencesContext";
-import { useFindAllEvidences } from "../../../../hooks/PerformanceAppraisalRecordsHooks/AppraisalEvidences/useFindAllEvidences";
-import { useDeleteEvidence } from "../../../../hooks/PerformanceAppraisalRecordsHooks/AppraisalEvidences/useDeleteEvidence";
+import { useFindAllEvidences } from "../../../../hooks/DefinitionOptionsReview/AppraisalEvidences/useFindAllEvidences";
+import { useDeleteEvidence } from "../../../../hooks/DefinitionOptionsReview/AppraisalEvidences/useDeleteEvidence";
+import { useFindSkillType } from "../../../../hooks/DefinitionOptionsReview/SkillsTypes/useFindSkillType";
 
 function EvidencesList() {
 
@@ -87,17 +88,38 @@ function EvidencesList() {
             `${evidenceId}`,
             "Atenção",
             "Deletar",
-            `Você deseja realmente excluir está evidência?`,
+            `Você deseja realmente excluir esta evidência?`,
             "lg",
             () => handleDeleteEvidence(evidenceId, evidenceName)
         );
     };
 
     useEffect(() => {
+        const fetchSkillTypesName = async (evidences) => {
+            const updatedEvidences = await Promise.all(
+                evidences.map(async (evidence) => {
+                try {
+                  const skillTypeData = await useFindSkillType(evidence.evidenceName);
+                  return {
+                    ...evidence,
+                    skillTypeName: skillTypeData.competencieTypeName,
+                  };
+                } catch (error) {
+                  console.error(`Error fetching skill type data. `, error);
+                  return {
+                    ...employee,
+                    skillTypeName: 'Unknown',
+                  };
+                }
+              })
+            );
+            setDetailedEvidencesData(updatedEvidences);
+          };
+
         const fetchEvidences = async () => {
             try {
                 const foundEvidence = await useFindAllEvidences();
-                setDetailedEvidencesData(foundEvidence);
+                await fetchSkillTypesName(foundEvidence);
             } catch (error) {
                 console.error('Error fetching types:', error);
             }
@@ -156,13 +178,13 @@ function EvidencesList() {
                                 detailedEvidencesData.map((evidence) => (
                                     <ListGroupItem className="px--4" key={evidence.id}>
                                         <Row className="align-items-center">
-                                            <Col md="9">
+                                            <Col md="8">
                                                 <h5 className="">{evidence.description}</h5>
                                             </Col>
-                                            <Col md="3">
+                                            <Col md="4">
                                                 <div className="mb-2 d-flex">
                                                     <small className="mr-2">Título:</small>
-                                                    <h5 className="mb-0">{evidence.evidenceName}</h5>
+                                                    <h5 className="mb-0">{evidence.skillTypeName}</h5>
                                                 </div>
                                                 {/* <div className="mb-2 d-flex">
                                                     <small className="mr-2">Criado Em:</small>
