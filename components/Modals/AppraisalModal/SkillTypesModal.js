@@ -116,7 +116,6 @@ function SkillTypesModal(
                     'EmployeeUserRegister'
                 );
             }
-            console.log("skillTypeOccupationalGroupDataList: ", skillTypeOccupationalGroupDataList);
         }
 
         fetchData();

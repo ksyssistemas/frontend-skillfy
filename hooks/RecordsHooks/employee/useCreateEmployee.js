@@ -467,6 +467,8 @@ const useCreateEmployee = () => {
                     payload.employeeFunctionId = Number(employeeFunction);
                 }
 
+                console.log(payload);
+
                 const response = await fetch(`${process.env.NEXT_PUBLIC_CONTRACT_DETAILS}`, {
                     method: 'POST',
                     headers: {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useReducer } from "react";
 import PropTypes from "prop-types";
 import dynamic from "next/dynamic";
 // react plugin used to create datetimepicker
@@ -32,6 +32,7 @@ import { ReviewScaleAndCriteriaForm } from "./FormPerWizardSession/ReviewScaleAn
 import { ReviewCreationSetupForm } from "./FormPerWizardSession/ReviewCreationSetupForms";
 import { ReviewParticipantSelectionForm } from "./FormPerWizardSession/ReviewParticipantSelectionForm";
 import { ModelSelectionReviewContext } from "../../../../../contexts/PerformanceContext/ModelSelectionReviewContext";
+import { wizardReducer } from "../../../../../reducers/wizardReducer";
 
 const WIZARD_COMPONENT_STEP_TITLES = ["Informações", "Modelo", "Critérios", "Configurações", "Participantes"];
 
@@ -41,20 +42,62 @@ export function ReviewFormWrapper() {
 
     const { selectedReview,
         handleSelectedReview,
-        handleCleanlinessReviewSelection } = useContext(ModelSelectionReviewContext);
+        handleCleanlinessReviewSelection
+    } = useContext(ModelSelectionReviewContext);
 
     const [currentStep, setCurrentStep] = useState(1);
+
+    // const initialState = {
+    //     currentStep: 1,
+    //     stepsNumber: WIZARD_COMPONENT_STEP_TITLES.length,
+    //     isValidStep: false,
+    // };
+
+    // const [state, dispatch] = useReducer(wizardReducer, initialState);
 
     const handleNextStep = () => {
         if (currentStep < STEPS_NUMBER_FOR_WIZARD_COMPONENT) {
             setCurrentStep(currentStep + 1);
         }
+        // dispatch({ type: ActionTypes.VALIDATE_STEP });
+
+        // if (state.isValidStep) {
+        //     dispatch({ type: ActionTypes.NEXT_STEP });
+        // }
     };
 
     const handlePrevStep = () => {
         if (currentStep > 1) {
             setCurrentStep(currentStep - 1);
         }
+        // dispatch({ type: ActionTypes.PREV_STEP });
+    };
+
+    const initializeFormData = () => {
+        const formData = {};
+        for (let i = 1; i <= STEPS_NUMBER_FOR_WIZARD_COMPONENT; i++) {
+            formData[`session${i}Data`] = {}; // Inicializa cada sessão como um objeto vazio
+        }
+        return formData;
+    };
+
+    // Estado inicial dinamicamente baseado no número de sessões
+    const [formData, setFormData] = useState(initializeFormData);
+
+    // Função para atualizar dados de uma sessão
+    const updateSessionData = (sessionKey, data) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            [sessionKey]: data,
+        }));
+    };
+
+    // Função para enviar todos os dados
+    const handleSubmit = () => {
+        // Aqui você envia todos os dados armazenados no formData
+        console.log('Submitting all data:', formData);
+        // Exemplo de envio dos dados via fetch ou axios
+        // fetch('/api/save', { method: 'POST', body: JSON.stringify(formData) });
     };
 
     const renderReviewComponent = () => {
@@ -62,15 +105,27 @@ export function ReviewFormWrapper() {
 
         switch (stepTitle) {
             case "Informações":
-                return <ReviewIdentityForm />;
+                return <ReviewIdentityForm
+                    updateSessionData={updateSessionData}
+                    sessionData={formData.sessionOneData}
+                />;
             case "Modelo":
-                return <ReviewModelAndDeadlineForm />;
+                return <ReviewModelAndDeadlineForm
+                    updateSessionData={updateSessionData}
+                    sessionData={formData.sessionTwoData}
+                />;
             case "Critérios":
-                return <ReviewScaleAndCriteriaForm />;
+                return <ReviewScaleAndCriteriaForm
+                    updateSessionData={updateSessionData}
+                    sessionData={formData.sessionThreeData}
+                />;
             case "Configurações":
-                return <ReviewCreationSetupForm />;
+                return <ReviewCreationSetupForm
+                    updateSessionData={updateSessionData}
+                    sessionData={formData.sessionFourData}
+                />;
             case "Participantes":
-                return <ReviewParticipantSelectionForm />;
+                return <ReviewParticipantSelectionForm formData={formData} handleSubmit={handleSubmit} />;
             default:
                 return null;
         }
@@ -78,7 +133,6 @@ export function ReviewFormWrapper() {
 
     return (
         <>
-
             {
                 selectedReview && (
                     <Card>
@@ -96,7 +150,9 @@ export function ReviewFormWrapper() {
                         <CardFooter>
                             <Row>
                                 <Col md="8">
-                                    <span className="font-weight-bold">{`Passo ${currentStep} de ${STEPS_NUMBER_FOR_WIZARD_COMPONENT}`}</span>
+                                    <span className="font-weight-bold">
+                                        {`Passo ${currentStep} de ${STEPS_NUMBER_FOR_WIZARD_COMPONENT}`}
+                                    </span>
                                 </Col>
                                 <Col className="d-flex justify-content-end align-items-center" md="4" >
                                     <Button className="px-5 me-2" color="secondary" size="lg" type="button"

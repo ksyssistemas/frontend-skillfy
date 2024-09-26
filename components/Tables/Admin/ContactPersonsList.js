@@ -38,7 +38,7 @@ function ContactPersonsList() {
   const [userContactAccountData, setUserContactAccountData] = useState([]);
   const [selectedIdToShowContactPersonDetails, setSelectedIdToShowContactPersonDetails] = useState(null);
   function handleCleaningSelectedIdToShowContactPersonDetails() {
-    setSelectedIdToShowContactPersonDetails(null)
+    setSelectedIdToShowContactPersonDetails(null);
   }
 
   const [companyNameToModalDetails, setCompanyNameToModalDetails] = useState(null);

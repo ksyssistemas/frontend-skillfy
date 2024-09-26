@@ -1,5 +1,4 @@
 export async function useFindCaptionOptionByCaptionId(captionId) {
-
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_RULER_OPTION}/evaluation-ruler/${captionId}`);
 

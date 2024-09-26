@@ -1,5 +1,4 @@
 export async function useFindOccupationalGroup(groupId) {
-
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_OCCUPATIONAL_GROUP}/${groupId}`);
 

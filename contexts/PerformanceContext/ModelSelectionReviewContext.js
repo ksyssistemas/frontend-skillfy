@@ -7,6 +7,7 @@ function ModelSelectionReviewProvider({ children }) {
 
     const [selectedReview, setSelectedReview] = useState(null);
     function handleSelectedReview(selectedReview) {
+        console.log("selectedReview: ", selectedReview);
         setSelectedReview(selectedReview);
     }
 

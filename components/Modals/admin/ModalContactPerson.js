@@ -367,7 +367,6 @@ function ModalContactPerson(
         ) : null
       }
     </Modal>
-
   );
 }
 

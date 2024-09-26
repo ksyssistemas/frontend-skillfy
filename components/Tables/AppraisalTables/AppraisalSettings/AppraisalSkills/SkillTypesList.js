@@ -101,37 +101,39 @@ function SkillsList() {
     useEffect(() => {
         const fetchCompanyNamesAndRoles = async (skillTypes) => {
             const updatedSkillTypes = await Promise.all(
-              skillTypes.map(async (skillType) => {
-                try {
-                    if (!skillType.skilClassificationId || !skillType.occupationalGroupId) {
+                skillTypes.map(async (skillType) => {
+                    try {
+                        if (!skillType.skillClassificationId || !skillType.occupationalGroupId) {
+                            return {
+                                ...skillType,
+                                skilClassificationName: 'Sem Classificação',
+                                occupationalGroupName: 'Nenhum Grupo',
+                            };
+                        }
+                        const skilClassificationData = await useFindSkillClassification(Number(skillType.skillClassificationId));
+                        const occupationalGroupData = await useFindOccupationalGroup(Number(skillType.occupationalGroupId));
+                        console.log(skilClassificationData);
+                        console.log(occupationalGroupData);
                         return {
                             ...skillType,
-                            skilClassificationName: 'Unknown',
-                            occupationalGroupName: 'Unknown',
+                            skilClassificationName: skilClassificationData.competenceClassificationName,
+                            occupationalGroupName: occupationalGroupData.competencieName,
+                        };
+                    } catch (error) {
+                        console.error(`Error fetching Skill Classification and Occupational Group data for skillTypeId ${skillType.id}:`, error);
+                        return {
+                            ...skillType,
+                            skilClassificationName: 'Sem Classificação',
+                            occupationalGroupName: 'Nenhum Grupo',
                         };
                     }
-                  const skilClassificationData = await useFindSkillClassification(skillType.skillClassificationId);
-                  const occupationalGroupData = await useFindOccupationalGroup(skillType.occupationalGroupId);
-                  return {
-                    ...skillType,
-                    skilClassificationName: skilClassificationData.competenceClassificationName,
-                    occupationalGroupName: occupationalGroupData.competencieName,
-                  };
-                } catch (error) {
-                  console.error(`Error fetching Skill Classification and Occupational Group data for skillTypeId ${skillType.id}:`, error);
-                  return {
-                    ...skillType,
-                    skilClassificationName: 'Unknown',
-                    occupationalGroupName: 'Unknown',
-                  };
-                }
-              })
+                })
             );
             setDetailedSkillTypeData(updatedSkillTypes);
-          };
+        };
 
         const fetchSkillTypes = async () => {
-            if(!detailedSkillTypeData.lenght ||
+            if (!detailedSkillTypeData.lenght ||
                 hasNewAppraisalSkillTypeCreated ||
                 hasUpdatedAppraisalSkillType ||
                 hasDeletedAppraisalSkillType

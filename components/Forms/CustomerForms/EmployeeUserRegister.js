@@ -952,7 +952,15 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
                                         }
                                     }}
                                 >
-                                    {(inputProps) => <Input {...inputProps} id="validationEntryTime" type="text" valid={employeeEntryTimeState === "valid"} invalid={employeeEntryTimeState === "invalid"} />}
+                                    {(inputProps) => (
+                                        <Input
+                                            {...inputProps}
+                                            id="validationEntryTime"
+                                            type="text"
+                                            valid={employeeEntryTimeState === "valid"}
+                                            invalid={employeeEntryTimeState === "invalid"}
+                                        />
+                                    )}
                                 </InputMask>
                                 <div className="invalid-feedback">
                                     {employeeEntryTimeState === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
@@ -969,7 +977,14 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
                                     mask="99:99:99"
                                     placeholder="12:00:00"
                                     value={employeeStartBreakTime}
-                                    onChange={handleTimeChange(setEmployeeStartBreakTime, setEmployeeStartBreakTimeState)}
+                                    onChange={(e) => {
+                                        setEmployeeStartBreakTime(e.target.value);
+                                        if (e.target.value === "" || e.target.value.includes("_")) {
+                                            setEmployeeStartBreakTimeState("invalid");
+                                        } else {
+                                            setEmployeeStartBreakTimeState("valid");
+                                        }
+                                    }}
                                 >
                                     {(inputProps) => (
                                         <Input
@@ -996,7 +1011,14 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
                                     mask="99:99:99"
                                     placeholder="13:00:00"
                                     value={employeeStopBreakTime}
-                                    onChange={handleTimeChange(setEmployeeStopBreakTime, setEmployeeStopBreakTimeState)}
+                                    onChange={(e) => {
+                                        setEmployeeStopBreakTime(e.target.value);
+                                        if (e.target.value === "" || e.target.value.includes("_")) {
+                                            setEmployeeStopBreakTimeState("invalid");
+                                        } else {
+                                            setEmployeeStopBreakTimeState("valid");
+                                        }
+                                    }}
                                 >
                                     {(inputProps) => (
                                         <Input

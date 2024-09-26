@@ -255,7 +255,7 @@ function CaptionsList() {
                     ) : (
                         <ListGroupItem className="px-0">
                             <div className="col">
-                                <small>Nenhum dado de evidência encontrado.</small>
+                                <small>Nenhum dado de régua de avaliação encontrado.</small>
                             </div>
                         </ListGroupItem>
                     )}

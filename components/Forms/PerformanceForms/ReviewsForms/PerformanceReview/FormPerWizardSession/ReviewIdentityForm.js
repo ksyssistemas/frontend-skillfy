@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
+import PropTypes from "prop-types";
 import dynamic from "next/dynamic";
 // react plugin used to create datetimepicker
 import ReactDatetime from "react-datetime";
@@ -23,12 +24,13 @@ import {
     ListGroupItem,
     Progress
 } from "reactstrap";
+import 'quill/dist/quill.snow.css'; // Importando o CSS do Quill
 import { ModelSelectionReviewContext } from "../../../../../../contexts/PerformanceContext/ModelSelectionReviewContext";
 import useCreatePerformanceReview from "../../../../../../hooks/PerformanceReview/useCreatePerformanceReview";
 import { handleSelectionEmploymentContractData } from "../../../../../../util/handleSelectionEmploymentContractData";
 import { handleDateFormatting } from "../../../../../../util/handleDateFormatting";
 
-export function ReviewIdentityForm() {
+export function ReviewIdentityForm({ updateSessionData, sessionData = {} }) {
 
     const {
         reviewName,
@@ -58,6 +60,16 @@ export function ReviewIdentityForm() {
         reviewPeriodDataList,
         setReviewPeriodDataList,
         handleReviewPeriodDataList,
+        hasPerformanceReviewOfLeaders,
+        deadlineToLeadersToRespondToPerformanceReview,
+        hasSelfReviewOfPerformance,
+        deadlineToRespondToPerformanceSelfReview,
+        hasPerformanceReviewOfEvaluators,
+        deadlineToEvaluatorsToRespondToPerformanceReview,
+        weightOfPerformanceReviewOfLeaders,
+        weightOfSelfReviewOfPerformance,
+        weightOfEvaluatorsPerformanceReview,
+        isFullPerformanceReviewWeigth,
         validateAddPerformanceReviewForm,
         handleValidateAddPerformanceReviewForm,
         reset
@@ -65,9 +77,20 @@ export function ReviewIdentityForm() {
 
     const [selectedPeriod, setSelectedPeriod] = useState('');
 
+    // Referências para os valores anteriores
+    const prevStateRef = useRef({
+        reviewName: sessionData.reviewName || '',
+        reviewObjective: sessionData.reviewObjective || '',
+        startDate: sessionData.startDate || null,
+        untilDate: sessionData.untilDate || null,
+        endDate: sessionData.endDate || null,
+        reviewPeriod: sessionData.reviewPeriod || ''
+    });
+
     const { selectedReview,
         handleSelectedReview,
-        handleCleanlinessReviewSelection } = useContext(ModelSelectionReviewContext);
+        handleCleanlinessReviewSelection
+    } = useContext(ModelSelectionReviewContext);
 
     let PLACEHOLDER_TEXT_TO_SELECTED_MODEL;
 
@@ -123,45 +146,149 @@ export function ReviewIdentityForm() {
         return "";
     };
 
+    const handleUntilDateChange = (value) => {
+        handleDateFormatting(value, setUntilDate, setUntilDateState);
+    };
+
+    // Efeito para sincronizar o estado inicial do `sessionData` com os inputs, apenas uma vez quando os dados forem carregados
+    useEffect(() => {
+        if (sessionData.reviewName && sessionData.reviewName !== reviewName) {
+            setReviewName(sessionData.reviewName);
+        }
+        if (sessionData.reviewObjective && sessionData.reviewObjective !== reviewObjective) {
+            setReviewObjective(sessionData.reviewObjective);
+        }
+        if (quillRef.current && sessionData.reviewObjective) {
+            const quillInstance = quillRef.current;
+            const currentContent = quillInstance.root.innerText.trim(); // Remover espaços em branco extras
+
+            // Comparar o conteúdo de texto do Quill com o objetivo da sessão
+            if (currentContent !== sessionData.reviewObjective.trim()) {
+                quillInstance.root.innerText = sessionData.reviewObjective; // Define o valor salvo (apenas texto)
+            }
+        }
+        if (sessionData.startDate && sessionData.startDate) {
+            setStartDate(new Date(sessionData.startDate));
+        }
+        if (sessionData.untilDate && sessionData.untilDate) {
+            setUntilDate(new Date(sessionData.untilDate));
+        }
+        if (sessionData.endDate && sessionData.endDate) {
+            setEndDate(new Date(sessionData.endDate));
+        }
+        if ((!reviewPeriod || reviewPeriod === '') && sessionData.reviewPeriod) {
+            handleSelectionEmploymentContractData(
+                sessionData.reviewPeriod,
+                reviewPeriodDataList,
+                setSelectedPeriod,
+                setReviewPeriod,
+                setReviewPeriodState,
+                null,
+                null,
+                'id'
+            );
+        }
+        console.log("Dados da sessão carregados no useEffect.");
+    }, [sessionData]);
+
     const quillRef = useRef(null);
 
     useEffect(() => {
         let quillInstance;
         const initializeQuill = async () => {
-            if (!quillRef.current) {
-                // we make a dynamic import for the QuillJS, as this component is not made to work on SSR
-                // Somente cria uma nova instância do Quill se não existir uma instância anterior
-                const Quill = (await import("quill")).default;
-                const quillElement = document.querySelector('[data-toggle="quill"]');
+            if (typeof window !== 'undefined' && document) {
+                // Apenas cria uma nova instância do Quill se não existir uma instância anterior
+                if (!quillRef.current) {
+                    try {
+                        // we make a dynamic import for the QuillJS, as this component is not made to work on SSR
+                        // Somente cria uma nova instância do Quill se não existir uma instância anterior
+                        const Quill = (await import("quill")).default;
+                        const quillElement = document.querySelector('[data-toggle="quill"]');
 
-                // Verificar se o elemento está presente e se ainda não tem um Quill
-                if (quillElement && !quillElement.__quill) {
-                    quillInstance = new Quill(quillElement, {
-                        modules: {
-                            toolbar: [
-                                ['bold', 'italic'],
-                                ['link', 'blockquote', 'code', 'image'],
-                                [{ 'list': 'ordered' }, { 'list': 'bullet' }]
-                            ]
-                        },
-                        placeholder: "Lorem Ipsum is simply dummy text...",
-                        theme: 'snow'
-                    });
-                    quillRef.current = quillInstance;
+                        // Verificar se o elemento está presente e se ainda não tem um Quill
+                        if (quillElement && !quillElement.__quill) {
+                            quillInstance = new Quill(quillElement, {
+                                modules: {
+                                    toolbar: [
+                                        ['bold', 'italic'],
+                                        ['link', 'blockquote', 'code', 'image'],
+                                        [{ 'list': 'ordered' }, { 'list': 'bullet' }]
+                                    ]
+                                },
+                                placeholder: "Escreva aqui o objetivo da avaliação...",
+                                theme: 'snow'
+                            });
+                            quillRef.current = quillInstance;
+
+                            // Event listener for text change
+                            quillInstance.on('text-change', () => {
+                                const text = quillInstance.root.innerText; // Get the editor content
+                                setReviewObjective(text);
+                            });
+                        }
+                    } catch (error) {
+                        console.error("Erro ao carregar o QuillJS:", error);
+                    }
                 }
             }
         };
 
         initializeQuill();
-
         // Cleanup function para desmontar o Quill ao desmontar o componente
         return () => {
             if (quillRef.current) {
-                quillRef.current.off(); // Remove event listeners if any
+                quillRef.current.off('text-change'); // Remove event listeners if any
                 quillRef.current = null; // Clean up ref
             }
         };
     }, []);
+
+    const handleReviewNameChange = (e) => {
+        const value = e.target.value;
+        setReviewName(value);
+        setReviewNameState(value ? 'valid' : 'invalid');
+    };
+
+    useEffect(() => {
+        const prevState = prevStateRef.current;
+        const currentState = {
+            reviewName,
+            reviewObjective,
+            startDate,
+            untilDate,
+            endDate,
+            reviewPeriod
+        };
+
+        // Verificação profunda para mudanças reais
+        if (
+            prevState.reviewName !== currentState.reviewName ||
+            prevState.reviewObjective !== currentState.reviewObjective ||
+            (prevState.startDate instanceof Date && currentState.startDate instanceof Date
+                ? prevState.startDate.getTime() !== currentState.startDate.getTime()
+                : prevState.startDate !== currentState.startDate) ||
+            (prevState.untilDate instanceof Date && currentState.untilDate instanceof Date
+                ? prevState.untilDate.getTime() !== currentState.untilDate.getTime()
+                : prevState.untilDate !== currentState.untilDate) ||
+            (prevState.endDate instanceof Date && currentState.endDate instanceof Date
+                ? prevState.endDate.getTime() !== currentState.endDate.getTime()
+                : prevState.endDate !== currentState.endDate) ||
+            prevState.reviewPeriod !== currentState.reviewPeriod
+        ) {
+            updateSessionData('sessionOneData', currentState);
+        }
+
+        prevStateRef.current = currentState;
+        console.log("Verificação de mudança no estado profundo.");
+    }, [
+        reviewName,
+        reviewObjective,
+        startDate,
+        untilDate,
+        endDate,
+        reviewPeriod,
+        updateSessionData
+    ]);
 
     return (
         <Card>
@@ -179,17 +306,11 @@ export function ReviewIdentityForm() {
                                 id="validationReviewName"
                                 placeholder="Nome da Avaliação"
                                 required
+                                value={reviewName || sessionData.reviewName || ''}
                                 type="text"
                                 valid={reviewNameState === "valid"}
                                 invalid={reviewNameState === "invalid"}
-                                onChange={(e) => {
-                                    setReviewName(e.target.value);
-                                    if (e.target.value === "") {
-                                        setReviewNameState("invalid");
-                                    } else {
-                                        setReviewNameState("valid");
-                                    }
-                                }}
+                                onChange={handleReviewNameChange}
                             />
                             <div className="valid-feedback">Parece bom!</div>
                             <div className="invalid-feedback">
@@ -222,16 +343,9 @@ export function ReviewIdentityForm() {
                                 data-quill-placeholder="Escreva aqui o objetivo da avaliação..."
                                 data-toggle="quill"
                                 id="validationDescriptionReviewObjective"
-                                valid={reviewObjectiveState === "valid"}
-                                invalid={reviewObjectiveState === "invalid"}
-                                onChange={(e) => {
-                                    setReviewObjective(e.target.value);
-                                    if (e.target.value === "") {
-                                        setReviewObjectiveState("");
-                                    } else {
-                                        setReviewObjectiveState("valid");
-                                    }
-                                }}
+                            // valid={reviewObjectiveState === "valid"}
+                            // invalid={reviewObjectiveState === "invalid"}
+                            // onChange={handleReviewObjectiveChange}
                             />
                             <div className="valid-feedback">Parece bom!</div>
                             <div className="invalid-feedback">
@@ -250,7 +364,7 @@ export function ReviewIdentityForm() {
                                     inputProps={{
                                         placeholder: "__/__/__",
                                     }}
-                                    value={startDate}
+                                    value={startDate || (sessionData.startDate && new Date(sessionData.startDate))}
                                     timeFormat={false}
                                     onChange={(e) =>
                                         handleReactDatetimeChange("startDate", e)
@@ -269,7 +383,7 @@ export function ReviewIdentityForm() {
                                 />
                             </FormGroup>
                         </Col>
-                        <Col className="mb-3" md="6">
+                        {/* <Col className="mb-3" md="6">
                             <label
                                 className="form-control-label"
                                 htmlFor="validationUntilDate"
@@ -280,10 +394,11 @@ export function ReviewIdentityForm() {
                                 inputProps={{
                                     placeholder: "__/__/__",
                                 }}
+                                value={untilDate || (sessionData.untilDate && new Date(sessionData.untilDate))}
                                 timeFormat={false}
-                                onChange={() => handleDateFormatting(e.target.value, setUntilDate, setUntilDateState)}
+                                onChange={handleUntilDateChange}
                             />
-                        </Col>
+                        </Col> */}
                         <Col className="mb-3" md="6">
                             <FormGroup>
                                 <label className=" form-control-label">
@@ -293,7 +408,7 @@ export function ReviewIdentityForm() {
                                     inputProps={{
                                         placeholder: "__/__/__",
                                     }}
-                                    value={endDate}
+                                    value={endDate || (sessionData.endDate && new Date(sessionData.endDate))}
                                     timeFormat={false}
                                     onChange={(e) =>
                                         handleReactDatetimeChange("endDate", e)
@@ -345,6 +460,10 @@ export function ReviewIdentityForm() {
                 </div>
             </CardBody>
         </Card>
-
     );
 }
+
+ReviewIdentityForm.propTypes = {
+    updateSessionData: PropTypes.func,
+    sessionData: PropTypes.object
+};

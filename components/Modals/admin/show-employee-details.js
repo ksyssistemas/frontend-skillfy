@@ -111,8 +111,8 @@ function ShowEmployeeDetailsModal(
           // setAddressDetailsSelectedEmployee(foundEmployeeAddress.data[0] || []);
 
           const foundEmployeeContractDetails = await useFindEmployeeContractDetails(idSelectedToShowEmployeeDetails);
-          console.log("foundEmployeeContractDetails: ", foundEmployeeContractDetails);
           setContractDetailsSelectedEmployee(foundEmployeeContractDetails);
+          console.log(foundEmployeeContractDetails);
           if (foundEmployeeContractDetails) {
             const foundDepartmentName = await useFindDepartment(foundEmployeeContractDetails.departmentId);
             setDepartmentName(foundDepartmentName.departmentName);

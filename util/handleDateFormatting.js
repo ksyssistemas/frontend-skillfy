@@ -1,4 +1,4 @@
-export const handleDateFormatting = (value, setDate, setDateState, setFormattedDate = null) => {
+export const handleDateFormatting = (value, setDate, setDateState = null, setFormattedDate = null) => {
     console.log(typeof value)
     if (value._d && !isNaN(value._d)) {
         const year = value._d.getFullYear();
@@ -13,9 +13,11 @@ export const handleDateFormatting = (value, setDate, setDateState, setFormattedD
             setDate(formattedDate);
         }
     }
-    if (value === "") {
-        setDateState("invalid");
-    } else {
-        setDateState("valid");
+    if (setDateState) {
+        if (value === "") {
+            setDateState("invalid");
+        } else {
+            setDateState("valid");
+        }
     }
 };

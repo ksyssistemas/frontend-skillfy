@@ -80,11 +80,11 @@ const useCreateSkillType = () => {
                 }
 
                 if (classificationOfSkillType && classificationOfSkillType !== "") {
-                    payload.occupationalGroupId = classificationOfSkillType;
+                    payload.occupationalGroupId = Number(classificationOfSkillType);
                 }
 
-                if (skillTypeOccupationalGroup && skillTypeOccupationalGroup !== "") {
-                    payload.skillClassificationId = skillTypeOccupationalGroup;
+                if (skillTypeOccupationalGroup && skillTypeOccupationalGroup !== "" && skillTypeOccupationalGroup !== "1") {
+                    payload.skillClassificationId = Number(skillTypeOccupationalGroup);
                 }
 
                 const response = await fetch(`${process.env.NEXT_PUBLIC_COMPETENCE_TYPE}`, {

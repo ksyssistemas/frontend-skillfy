@@ -25,6 +25,34 @@ const useCreatePerformanceReview = () => {
         setReviewPeriodDataList(reviewPeriodData);
     }
 
+    const [hasPerformanceReviewOfLeaders, setHasPerformanceReviewOfLeaders] = React.useState(true);
+    const [deadlineToLeadersToRespondToPerformanceReview, setDeadlineToLeadersToRespondToPerformanceReview] = React.useState('');
+    const [hasSelfReviewOfPerformance, setHasSelfReviewOfPerformance] = React.useState(true);
+    const [deadlineToRespondToPerformanceSelfReview, setDeadlineToRespondToPerformanceSelfReview] = React.useState('');
+    const [hasPerformanceReviewOfEvaluators, setHasPerformanceReviewOfEvaluators] = React.useState(true);
+    const [deadlineToEvaluatorsToRespondToPerformanceReview, setDeadlineToEvaluatorsToRespondToPerformanceReview] = React.useState('');
+    const [weightOfPerformanceReviewOfLeaders, setWeightOfPerformanceReviewOfLeaders] = React.useState(null);
+    const [weightOfSelfReviewOfPerformance, setWeightOfSelfReviewOfPerformance] = React.useState(null);
+    const [weightOfEvaluatorsPerformanceReview, setWeightOfEvaluatorsPerformanceReview] = React.useState(null);
+    const [isFullPerformanceReviewWeigth, setIsFullPerformanceReviewWeigth] = React.useState(null);
+
+    const [rulerTypeDataList, setRulerTypeDataList] = useState([
+        { id: "1", text: "Conceitual" },
+        { id: "2", text: "Numérica" },
+        { id: "3", text: "Percentual" },
+        { id: "4", text: "Cor" },
+        { id: "5", text: "Emoji" },
+    ]);
+    const handleRulerTypeDataList = (rulerTypeData) => {
+        setRulerTypeDataList(rulerTypeData);
+    }
+    const [employeeContractType, setEmployeeContractType] = React.useState(null);
+    const [employeeContractTypeState, setEmployeeContractTypeState] = React.useState('');
+
+    const [performanceReviewRulerTypeSelected, setPerformanceReviewRulerTypeSelected] = React.useState(null);
+    const [performanceReviewRulerOptionSelected, setPerformanceReviewRulerOptionSelected] = React.useState(null);
+    const [performanceReviewRulerOptionSelectedState, setPerformanceReviewRulerOptionSelectedState] = React.useState(null);
+
     const validateAddPerformanceReviewForm = () => {
         if (reviewName === "") {
             setReviewNameState("invalid");
@@ -143,6 +171,36 @@ const useCreatePerformanceReview = () => {
         reviewPeriodDataList,
         setReviewPeriodDataList,
         handleReviewPeriodDataList,
+        hasPerformanceReviewOfLeaders,
+        deadlineToLeadersToRespondToPerformanceReview,
+        hasSelfReviewOfPerformance,
+        deadlineToRespondToPerformanceSelfReview,
+        hasPerformanceReviewOfEvaluators,
+        deadlineToEvaluatorsToRespondToPerformanceReview,
+        weightOfPerformanceReviewOfLeaders,
+        weightOfSelfReviewOfPerformance,
+        weightOfEvaluatorsPerformanceReview,
+        isFullPerformanceReviewWeigth,
+        setHasPerformanceReviewOfLeaders,
+        setDeadlineToLeadersToRespondToPerformanceReview,
+        setHasSelfReviewOfPerformance,
+        setDeadlineToRespondToPerformanceSelfReview,
+        setHasPerformanceReviewOfEvaluators,
+        setDeadlineToEvaluatorsToRespondToPerformanceReview,
+        setWeightOfPerformanceReviewOfLeaders,
+        setWeightOfSelfReviewOfPerformance,
+        setWeightOfEvaluatorsPerformanceReview,
+        setIsFullPerformanceReviewWeigth,
+        rulerTypeDataList,
+        handleRulerTypeDataList,
+        employeeContractType,
+        setEmployeeContractType,
+        employeeContractTypeState,
+        setEmployeeContractTypeState,
+        performanceReviewRulerOptionSelected,
+        setPerformanceReviewRulerOptionSelected,
+        performanceReviewRulerOptionSelectedState,
+        setPerformanceReviewRulerOptionSelectedState,
         validateAddPerformanceReviewForm,
         handleValidateAddPerformanceReviewForm,
         reset

@@ -46,16 +46,16 @@ export async function employmentContractDataSearchAndProcess(apiCall, setData, e
                         text: mappingEmploymentContractItemName(item, employmentContractItemName),
                     }
                 });
-                if (employmentContractItemName === 'occupationalGroup') {
-                    const defaultOption = {
-                        id: "0",
-                        text: 'Nenhum grupo',
-                    };
-                    console.log("defaultOption: ", defaultOption);
-                    setData([defaultOption, ...dataObject]);
-                } else {
-                    setData(dataObject);
-                }
+                // if (employmentContractItemName === 'occupationalGroup') {
+                //     const defaultOption = {
+                //         id: "0",
+                //         text: 'Nenhum grupo',
+                //     };
+                //     console.log("defaultOption: ", defaultOption);
+                //     setData([defaultOption, ...dataObject]);
+                // } else {
+                setData(dataObject);
+                // }
             } else {
                 const noDataText = mappingEmploymentContractItemName({}, employmentContractItemName, true, context);
                 setData([{ id: "0", text: noDataText }]);

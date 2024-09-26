@@ -14,7 +14,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React from "react";
+import React, { useContext } from "react";
 import Link from "next/link";
 // nodejs library to set properties for components
 import PropTypes from "prop-types";
@@ -30,8 +30,13 @@ import {
   NavLink,
 } from "reactstrap";
 import AddAppraisalCycleModal from "../../Modals/AppraisalModal/add-appraisal-cycle";
+import { ModelSelectionReviewContext } from "../../../contexts/PerformanceContext/ModelSelectionReviewContext";
 
 function AddAppraisalHeader({ name, parentName }) {
+
+  const { selectedReview,
+    handleSelectedReview,
+    handleCleanlinessReviewSelection } = useContext(ModelSelectionReviewContext);
 
   const [modalOpen, setModalOpen] = React.useState(false);
 
@@ -69,6 +74,25 @@ function AddAppraisalHeader({ name, parentName }) {
                 </Breadcrumb>
               </Col>
               <Col className="mt-3 mt-md-0 text-md-right" lg="6" xs="5">
+                {
+                  selectedReview && (
+                    <Button
+                      className="btn-neutral"
+                      color=""
+                      href="#pablo"
+                      size="sm"
+                      onClick={handleCleanlinessReviewSelection}
+                    >
+                      <span
+                        className="btn-inner--icon"
+                      >
+                        <i className='fas fa-solid fa-arrow-left mr-2' />
+                      </span>
+                      Voltar
+                    </Button>
+
+                  )
+                }
                 <Nav className="d-inline-flex">
                   <Link href="/performance/appraisal-settings">
                     <NavLink href="#pablo">
@@ -87,6 +111,7 @@ function AddAppraisalHeader({ name, parentName }) {
                     </NavLink>
                   </Link>
                 </Nav>
+
                 <Button className="btn-neutral" color="default" size="sm">
                   Filtros
                 </Button>

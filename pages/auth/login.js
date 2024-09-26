@@ -48,7 +48,6 @@ function Login() {
 
 
   const handleSubmit = async () => {
-    console.log(process.env.NEXT_PUBLIC_AUTHENTICATION);
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_AUTHENTICATION}/signin`, {
         method: 'POST',
@@ -61,6 +60,7 @@ function Login() {
 
       if (response.ok) {
         const data = await response.json();
+        console.log("DADOS DE LOGIN: ", data);
         handleSaveAuthenticationDataLoggedInUser(data);
         handleCustomerIdToLinkToEmployee(data.data.id);
 

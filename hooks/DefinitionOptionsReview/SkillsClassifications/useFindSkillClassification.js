@@ -1,5 +1,4 @@
 export async function useFindSkillClassification(classificationId) {
-
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_COMPETENCE_CLASSIFICATION}/${classificationId}`);
 
