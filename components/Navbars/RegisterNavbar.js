@@ -163,7 +163,7 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
               <NavItem>
                 <Link href="/register/dashboard">
                   <NavLink href="#pablo">
-                    <span className="nav-link-inner--text">Dashboard</span>
+                    <span className="nav-link-inner--text">Dashboard...</span>
                   </NavLink>
                 </Link>
               </NavItem>
