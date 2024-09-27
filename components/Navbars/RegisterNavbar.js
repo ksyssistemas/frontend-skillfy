@@ -163,7 +163,7 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
               <NavItem>
                 <Link href="/register/dashboard">
                   <NavLink href="#pablo">
-                    <span className="nav-link-inner--text">Dashboard</span>
+                    <span className="nav-link-inner--text">Dashboard...</span>
                   </NavLink>
                 </Link>
               </NavItem>
@@ -223,7 +223,7 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                 >
                   <div className="px-3 py-3">
                     <h6 className="text-sm text-muted m-0">
-                      Você tem <strong className="text-info">13</strong>{" "}
+                      Você tem <strong className="text-info">20</strong>{" "}
                       notificações
                     </h6>
                   </div>
