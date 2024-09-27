@@ -223,7 +223,7 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                 >
                   <div className="px-3 py-3">
                     <h6 className="text-sm text-muted m-0">
-                      Você tem <strong className="text-info">13</strong>{" "}
+                      Você tem <strong className="text-info">10</strong>{" "}
                       notificações
                     </h6>
                   </div>
