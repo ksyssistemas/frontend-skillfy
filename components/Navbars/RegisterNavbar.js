@@ -96,7 +96,7 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:3008/administrator/email/admin@twig.com', {
+        const response = await fetch('https://skillfy.com.br:3008/administrator/email/dev.admin@skillfy.com.br', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
