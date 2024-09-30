@@ -20,16 +20,16 @@ jobs:
       id: get_commit_hash
       run: |
         echo "SHORT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
-        echo "Captured SHORT_HASH: $(git rev-parse --short=7 HEAD)"  # Adicione esta linha para depuração
-
+        echo "Captured SHORT_HASH: $(git rev-parse --short=7 HEAD)"  # Confirmação do valor
 
     - name: Deploy via SSH
       env:
         SSH_HOST: ${{ secrets.DEV_SSH_HOST }}
         SSH_USER: ${{ secrets.DEV_SSH_USER }}
         SSH_PASSWORD: ${{ secrets.DEV_SSH_PASSWORD }}
-        SHORT_HASH: ${{ env.SHORT_HASH }}
+        SHORT_HASH: ${{ env.SHORT_HASH }}  # Certifique-se de que esta linha esteja correta
       run: |
+        echo "Deploying with SHORT_HASH: $SHORT_HASH"  # Verifica o valor do SHORT_HASH
         sshpass -p $SSH_PASSWORD ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << EOF
           cd /root/dev/frontend-skillfy
 
