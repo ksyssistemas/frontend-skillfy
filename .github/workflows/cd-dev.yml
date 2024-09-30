@@ -11,10 +11,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Install SSH Client
-      run: sudo apt-get install -y sshpass
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y sshpass
 
     - name: Get Short Commit Hash
       id: get_commit_hash
@@ -31,6 +33,7 @@ jobs:
         SHORT_HASH: ${{ env.SHORT_HASH }}
       run: |
         SSHPASS=$SSH_PASSWORD sshpass -e ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
+        set -e
           cd /root/dev/frontend-skillfy
 
           # Atualizando arquivos do GitHub
@@ -70,7 +73,7 @@ jobs:
           sleep 5
 
           # Capturar o ID do novo contêiner
-          NEW_CONTAINER_ID=$(docker ps -q --filter "name=frontend-")
+          NEW_CONTAINER_ID=$(docker ps -q --filter "name=frontend-" | head -n 1)
 
           # Renomear o contêiner com o commit hash
           if [ -n "$NEW_CONTAINER_ID" ]; then
@@ -80,4 +83,7 @@ jobs:
             echo "Erro: Nenhum contêiner encontrado para renomear"
             exit 1
           fi
+
+          # Limpar arquivos temporários
+          rm -f .env.tmp
         EOF
