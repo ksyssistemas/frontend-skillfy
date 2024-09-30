@@ -32,24 +32,29 @@ jobs:
             cd /root/dev/frontend-skillfy
 
             # Atualizando arquivos do GitHub
+            echo "Atualizando repositório..."
             git pull origin dev
 
             # Parar e remover o contêiner existente, se existir
+            echo "Parando e removendo contêiner existente, se houver..."
             CONTAINER_ID=$(docker ps -q --filter "name=frontend-")
             if [ -n "$CONTAINER_ID" ]; then
               echo "Parando e removendo o contêiner existente: $CONTAINER_ID"
               docker stop $CONTAINER_ID
               docker rm $CONTAINER_ID
             else
-              echo "Nenhum contêiner existente encontrado"
+              echo "Nenhum contêiner existente encontrado."
             fi
             
-            # Construir e iniciar o novo contêiner com o nome desejado
-            echo "Iniciando o contêiner..."
+            # Construir a imagem do Docker com o nome baseado no hash
+            echo "Construindo a imagem do Docker com o nome frontend-$SHORT_HASH..."
             docker build -t frontend-$SHORT_HASH .
 
             # Iniciar o novo contêiner
+            echo "Iniciando o contêiner frontend-$SHORT_HASH..."
             docker run -d --name frontend-$SHORT_HASH -p 3000:3000 frontend-$SHORT_HASH
 
-            echo "Contêiner iniciado com o nome: frontend-$SHORT_HASH"
+            # Verificar se o contêiner foi criado com sucesso
+            echo "Verificando se o contêiner foi iniciado corretamente..."
+            docker ps -a | grep frontend-$SHORT_HASH || echo "Erro: O contêiner não foi criado."
           EOF
