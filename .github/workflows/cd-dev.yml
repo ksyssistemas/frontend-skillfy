@@ -52,14 +52,18 @@ jobs:
           # Iniciar o novo contêiner com nome temporário
           echo "Iniciando o contêiner..."
           docker-compose up -d
-
+          
+          # Aguarde alguns segundos para garantir que o contêiner esteja em execução
+          sleep 5  # Espera 5 segundos (ajuste conforme necessário)
+          
           # Renomear o contêiner para incluir o hash do commit
           NEW_CONTAINER_ID=\$(docker ps -q --filter "ancestor=frontend-dev:latest")
           if [ -n "\$NEW_CONTAINER_ID" ]; then
-            echo "Renomeando o contêiner com o hash: \$SHORT_HASH"
-            docker rename \$NEW_CONTAINER_ID frontend-\$SHORT_HASH
+              echo "Renomeando o contêiner com o hash: \$SHORT_HASH"
+              docker rename \$NEW_CONTAINER_ID frontend-\$SHORT_HASH
           else
-            echo "Erro: Nenhum contêiner encontrado para renomear"
-            exit 1
+              echo "Erro: Nenhum contêiner encontrado para renomear"
+              exit 1
           fi
+
         EOF
