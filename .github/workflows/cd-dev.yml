@@ -45,7 +45,14 @@ jobs:
           # Start the new container with a temporary name
           docker-compose up -d
 
+          # Get the container ID of the running container
+          CONTAINER_ID=\$(docker ps -q --filter "name=frontend-dev")
+
           # Rename the container to include the commit hash
-          CONTAINER_ID=\$(docker ps -q --filter "ancestor=frontend-:latest")
-          docker rename \$CONTAINER_ID ms-$(basename $(pwd))-$(echo $SHORT_HASH)
+          if [ -n "\$CONTAINER_ID" ]; then
+            docker rename \$CONTAINER_ID frontend-dev-\$SHORT_HASH
+          else
+            echo "Error: No container found to rename"
+            exit 1
+          fi
         EOF
