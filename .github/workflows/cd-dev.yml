@@ -68,7 +68,8 @@ jobs:
 
           # Iniciar o novo contêiner passando a variável de ambiente
           echo "Iniciando contêiner com HASH: $SHORT_HASH"
-          HASH=$SHORT_HASH docker-compose up -d
+          # Definindo a variável de ambiente antes de chamar docker-compose
+          HASH=$SHORT_HASH docker-compose up -d --force-recreate
 
           # Aguardar até que o contêiner esteja rodando
           echo "Aguardando o contêiner ser iniciado..."
