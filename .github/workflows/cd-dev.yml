@@ -66,8 +66,8 @@ jobs:
           # Reconstruir a imagem Docker sem cache
           docker-compose build --no-cache
 
-          # Iniciar o novo contêiner
-          docker-compose up -d
+          # Iniciar o novo contêiner passando a variável de ambiente
+          HASH=$SHORT_HASH docker-compose up -d
 
           # Aguardar até que o contêiner esteja rodando
           while [ -z "$(docker ps -q --filter "name=frontend-")" ]; do
