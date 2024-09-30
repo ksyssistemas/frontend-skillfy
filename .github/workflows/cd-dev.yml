@@ -42,15 +42,15 @@ jobs:
           # Rebuild the Docker image without cache to ensure changes are applied
           docker-compose build --no-cache
 
-          # Start the new container with a temporary name
-          docker-compose up -d
+          # Start the new container with the commit hash
+          HASH=$SHORT_HASH docker-compose up -d
 
           # Get the container ID of the running container
-          CONTAINER_ID=\$(docker ps -q --filter "name=frontend-dev")
+          CONTAINER_ID=\$(docker ps -q --filter "name=frontend-")
 
           # Rename the container to include the commit hash
           if [ -n "\$CONTAINER_ID" ]; then
-            docker rename \$CONTAINER_ID frontend-dev-\$SHORT_HASH
+            docker rename \$CONTAINER_ID frontend-\$SHORT_HASH
           else
             echo "Error: No container found to rename"
             exit 1
