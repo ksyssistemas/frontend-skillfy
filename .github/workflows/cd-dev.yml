@@ -30,7 +30,10 @@ jobs:
           cd /root/dev/frontend-skillfy
 
           # Update files from GitHub
-          git pull origin main
+          git pull origin dev
+
+          # Atualiza o HASH no arquivo .env sem perder outros dados
+          echo "HASH=$SHORT_HASH" > .env.tmp && mv .env.tmp .env
 
           # Stop and remove the existing container if it exists
           CONTAINER_ID=\$(docker ps -q --filter "name=frontend-")
@@ -42,8 +45,8 @@ jobs:
           # Rebuild the Docker image without cache to ensure changes are applied
           docker-compose build --no-cache
 
-          # Start the new container with the commit hash
-          HASH=$SHORT_HASH docker-compose up -d
+          # Start the new container with the updated .env
+          docker-compose up -d
 
           # Get the container ID of the running container
           CONTAINER_ID=\$(docker ps -q --filter "name=frontend-")

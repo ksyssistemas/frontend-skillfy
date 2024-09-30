@@ -29,3 +29,4 @@ Dockerfile
 docker-compose.yml
 *.example.*
 *.http
+.env
