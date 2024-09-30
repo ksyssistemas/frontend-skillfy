@@ -31,5 +31,5 @@ jobs:
         run: curl http://localhost:3000 
       
       - name: Stop the application
-        run: kill $(cat pid.file)
+        run: pkill -f "node"
       
