@@ -1,3 +1,28 @@
+name: Remote Deployment Dev
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install SSH Client
+      run: sudo apt-get install -y sshpass
+
+    - name: Get Short Commit Hash
+      id: get_commit_hash
+      run: |
+        SHORT_HASH=$(git rev-parse --short=7 HEAD)
+        echo "SHORT_HASH=$SHORT_HASH" >> $GITHUB_ENV
+        echo "Commit Hash capturado: $SHORT_HASH"
+
     - name: Deploy via SSH
       env:
         SSH_HOST: ${{ secrets.DEV_SSH_HOST }}
@@ -11,20 +36,45 @@
           # Atualizando arquivos do GitHub
           git pull origin dev
 
-          # Parar e remover o contêiner existente, se houver
-          docker-compose down
+          # Debug: Exibindo hash no servidor
+          echo "Hash no servidor: $SHORT_HASH"
 
-          # Iniciar o contêiner sem cache
-          docker-compose up -d --build
+          # Criar ou atualizar o .env.tmp com o HASH
+          echo "HASH=$SHORT_HASH" > .env.tmp
 
-          # Esperar o contêiner subir (ajuste o tempo se necessário)
-          sleep 10
+          # Se .env já existir, mesclar o conteúdo
+          if [ -f .env ]; then
+            cat .env >> .env.tmp
+          fi
+
+          # Mover .env.tmp para .env
+          mv .env.tmp .env
+
+          # Parar e remover o contêiner existente, se existir
+          CONTAINER_ID=$(docker ps -q --filter "name=frontend-")
+          if [ -n "$CONTAINER_ID" ]; then
+            echo "Parando e removendo o contêiner existente: $CONTAINER_ID"
+            docker stop $CONTAINER_ID
+            docker rm $CONTAINER_ID
+          else
+            echo "Nenhum contêiner existente encontrado"
+          fi
+
+          # Reconstruir a imagem Docker sem cache
+          docker-compose build --no-cache
+
+          # Iniciar o novo contêiner
+          docker-compose up -d
+
+          # Aguardar alguns segundos para garantir que o contêiner esteja rodando
+          sleep 5
 
           # Capturar o ID do novo contêiner
           NEW_CONTAINER_ID=$(docker ps -q --filter "name=frontend-")
 
-          # Renomear o contêiner para incluir o commit hash
+          # Renomear o contêiner com o commit hash
           if [ -n "$NEW_CONTAINER_ID" ]; then
+            echo "Renomeando o contêiner com o hash: $SHORT_HASH"
             docker rename $NEW_CONTAINER_ID frontend-$SHORT_HASH
           else
             echo "Erro: Nenhum contêiner encontrado para renomear"
