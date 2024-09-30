@@ -11,29 +11,27 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-      - name: Install SSH Client
-        run: sudo apt-get install -y sshpass
+    - name: Install SSH Client
+      run: sudo apt-get install -y sshpass
 
-      - name: Get Short Commit Hash
-        id: get_commit_hash
-        run: echo "SHORT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+    - name: Get Short Commit Hash
+      id: get_commit_hash
+      run: echo "SHORT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
 
-      - name: Deploy via SSH
-        env:
-          SSH_HOST: ${{ secrets.DEV_SSH_HOST }}
-          SSH_USER: ${{ secrets.DEV_SSH_USER }}
-          SSH_PASSWORD: ${{ secrets.DEV_SSH_PASSWORD }}
-          SHORT_HASH: ${{ env.SHORT_HASH }}
-        run: |
-          sshpass -p $SSH_PASSWORD ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << EOF
+    - name: Deploy via SSH
+      env:
+        SSH_HOST: ${{ secrets.DEV_SSH_HOST }}
+        SSH_USER: ${{ secrets.DEV_SSH_USER }}
+        SSH_PASSWORD: ${{ secrets.DEV_SSH_PASSWORD }}
+        SHORT_HASH: ${{ env.SHORT_HASH }}
+      run: |
+        sshpass -p $SSH_PASSWORD ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << EOF
           cd /root/dev/frontend-skillfy
-          
-          # Limpar e criar o .env.tmp
+
+          # Limpar o arquivo .env.tmp
           echo "" > .env.tmp
-          echo "HASH=$SHORT_HASH" >> .env.tmp
           
           # Atualizando arquivos do GitHub
           git pull origin dev
@@ -48,15 +46,24 @@ jobs:
             echo "Nenhum contêiner existente encontrado"
           fi
           
-          # Iniciar o novo contêiner com o nome desejado usando o arquivo .env.tmp
+          # Iniciar o novo contêiner com o nome desejado
           echo "Iniciando o contêiner..."
           docker-compose up -d --remove-orphans --force-recreate
-          
+
           # Atraso para garantir que o contêiner foi iniciado
           sleep 5
-          
-          # Exibir o nome do contêiner que foi criado
-          echo "Contêiner iniciado com o nome: frontend-$SHORT_HASH"
-          
-          EOF
 
+          # Verificar o nome do contêiner e renomear se necessário
+          NEW_CONTAINER_ID=\$(docker ps -q --filter "ancestor=frontend-dev:latest")
+          if [ -n "\$NEW_CONTAINER_ID" ]; then
+            echo "Contêiner iniciado com ID: \$NEW_CONTAINER_ID"
+            echo "Renomeando o contêiner com o hash: $SHORT_HASH"
+            docker rename \$NEW_CONTAINER_ID frontend-\$SHORT_HASH
+          else
+            echo "Erro: Nenhum contêiner encontrado para renomear"
+            exit 1
+          fi
+
+          echo "Contêiner renomeado para: frontend-$SHORT_HASH"
+
+EOF
