@@ -43,15 +43,16 @@ function Index() {
       <IndexNavbar />
       <div className="main-content">
         <IndexHeader />
-        <section className="py-6 pb-9 bg-default">
+        <section className="py-6 pb-9">
           <Container fluid>
             <Row className="justify-content-center text-center">
               <Col md="6">
-                <h2 className="display-3 text-white">
-                  Twig é mais do que uma solução
+                <h2 className="display-3 text-indigo mr--4">
+                O caminho estratégico e fácil para a gestão
+                de pessoas da sua empresa.
                 </h2>
-                <p className="lead text-white">
-                  Promova a colaboração e desenvolvimento contínuo com feedbacks abrangentes de colegas, subordinados e superiores. Na Twig, a interação entre as partes é valorizada para impulsionar o crescimento profissional
+                <p className="lead text-black">
+                Uma solução do tamanho da sua necessidade. Através da plataforma SkillFy você tem muito mais autonomia e benefícios:
                 </p>
               </Col>
             </Row>
@@ -62,86 +63,89 @@ function Index() {
             <Row className="justify-content-center">
               <Col lg="12">
                 <Row>
-                  <Col lg="4">
+                  <Col lg="6">
+                  <Card className="card-lift--hover shadow border-0">
+                    <CardBody className="py-5">
+                      <div className="d-flex align-items-start">
+                        <img
+                          alt="..."
+                          className="img mr-5"
+                          src={require("assets/img/brand/card-s-1.png")}
+                        />
+                        <div>
+                          <h4 className="h3 text-info text-uppercase text-indigo">
+                            Flexibilidade para atender <br />
+                            o DNA da sua empresa
+                          </h4>
+                          <p className="description mt-3">
+                            Monte questionários e defina as avaliações de forma flexível e prática.
+                          </p>
+                        </div>
+                      </div>
+                    </CardBody>
+                  </Card>
+                  </Col>
+                  <Col lg="6">
                     <Card className="card-lift--hover shadow border-0">
                       <CardBody className="py-5">
-                        <div className="icon icon-shape bg-gradient-info text-white rounded-circle mb-4">
-                          <i className="fas fa-chart-bar" />
-                        </div>
-                        <h4 className="h3 text-info text-uppercase">
-                          Avaliações de Competências
-                        </h4>
-                        <p className="description mt-3">
-                          Eleve o desempenho da equipe com avaliações personalizadas.</p><div>
-                          <Badge color="info" pill>
-                            Competência
-                          </Badge>
-                          <Badge color="info" pill>
-                            Desempenho
-                          </Badge>
-                          <Badge color="info" pill>
-                            Habilidades
-                          </Badge>
-                          <Badge color="info" pill>
-                            Avaliações
-                          </Badge>
+                        <div className="d-flex align-items-start">
+                          <img
+                            alt="..."
+                            className="img mr-5"
+                            src={require("assets/img/brand/card-s-2.png")}
+                          />
+                          <div>
+                            <h4 className="h3 text-success text-uppercase text-indigo">
+                              Avaliações mais precisas
+                            </h4>
+                            <p className="description mt-3">
+                              Avaliações de competência e desempenho personalizadas.
+                            </p>
+                          </div>
                         </div>
                       </CardBody>
                     </Card>
                   </Col>
-                  <Col lg="4">
+                </Row>
+                <Row>
+                  <Col lg="6">
                     <Card className="card-lift--hover shadow border-0">
                       <CardBody className="py-5">
-                        <div className="icon icon-shape bg-gradient-success text-white rounded-circle mb-4">
-                          <i className="fas fa-users" />
-                        </div>
-                        <h4 className="h3 text-success text-uppercase">
-                          Pesquisas de Inclusão
-                        </h4>
-                        <p className="description mt-3">
-                          Promova uma cultura diversificada com pesquisas significativas.</p>
-                        <div>
-                          <Badge color="success" pill>
-                            Diversidade
-                          </Badge>
-                          <Badge color="success" pill>
-                            Inclusão
-                          </Badge>
-                          <Badge color="success" pill>
-                            Cultura
-                          </Badge>
-                          <Badge color="success" pill>
-                            Pesquisas
-                          </Badge>
+                        <div className="d-flex align-items-start">
+                          <img
+                            alt="..."
+                            className="img mr-5"
+                            src={require("assets/img/brand/card-s-3.png")}
+                          />
+                          <div>
+                            <h4 className="h3 text-warning text-uppercase text-indigo">
+                              Feedbacks colaborativos
+                            </h4>
+                            <p className="description mt-3">
+                              Sistema projetado para transformar a forma de coletar, analisar e utiliza feedbacks.
+                            </p>
+                          </div>
                         </div>
                       </CardBody>
                     </Card>
                   </Col>
-                  <Col lg="4">
+                  <Col lg="6">
                     <Card className="card-lift--hover shadow border-0">
                       <CardBody className="py-5">
-                        <div className="icon icon-shape bg-gradient-warning text-white rounded-circle mb-4">
-                          <i className="fas fa-comments" />
-                        </div>
-                        <h4 className="h3 text-warning text-uppercase">
-                          Feedback 360 Graus
-                        </h4>
-                        <p className="description mt-3">
-                          Fomente a colaboração e crescimento com feedback abrangente.
-                        </p>
-                        <div>
-                          <Badge color="warning" pill>
-                            Feedback
-                          </Badge>
-                          <Badge color="warning" pill>
-                            Colaboração
-                          </Badge>
-                          <Badge color="warning" pill>
-                            Crescimento
-                          </Badge>
-                          <Badge color="warning" pill>
-                            Desenvolvimento
-                          </Badge>
+                        <div className="d-flex align-items-start">
+                            <img
+                              alt="..."
+                              className="img mr-5"
+                             src={require("assets/img/brand/card-s-4.png")}
+                            />
+                          <div>
+                            <h4 className="h3 text-info text-uppercase text-indigo">
+                              Sistema integrado e unificado
+                            </h4>
+                            <p className="description mt-3">
+                              Simplifique a gestão tendo acesso a todos os dados e recursos e em um único lugar.
+                            </p>
+                          </div>
                         </div>
                       </CardBody>
                     </Card>
@@ -151,116 +155,256 @@ function Index() {
             </Row>
           </Container>
         </section>
-        <section className="py-6">
+        <section className="py-6 pb-9 mt-5" style={{ backgroundColor: '#57249F' }}>
+          <Container fluid>
+            <Row className="justify-content-center text-center mb-5">
+              <Col md="6">
+                <h2 className="display-3 text-white">
+                Todos os recursos necessários para potencializar a sua gestão: 
+                </h2>
+              </Col>
+            </Row>
+          </Container>
           <Container>
-            <Row className="row-grid align-items-center">
-              <Col className="order-md-2" md="6">
+            <Row className="justify-content-center">
+              <Col lg="12">
+              <Row>
+                  <Col lg="4">
+                    <Card className="shadow border-0 text-center" style={{ backgroundColor: '#D2B9F4' }}>
+                      <CardBody className="py-4">
+                          <img
+                            alt="..."
+                            className="img"
+                            src={require("assets/img/brand/card-s3-1.png")}
+                          />
+                            <h4 className="h4 text-warning text-indigo">
+                            Mapa de competências da empresa e por área
+                            </h4>
+                      </CardBody>
+                    </Card>
+                  </Col>
+                  <Col lg="2">
+                    <Card className="shadow border-0 text-center ml--3 mr--3" style={{ backgroundColor: '#D2B9F4' }}>
+                      <CardBody className="py-4">
+                            <img
+                              alt="..."
+                              className="img"
+                             src={require("assets/img/brand/card-s3-2.png")}
+                            />
+                            <h4 className="h4 text-info text-indigo">
+                            Avaliação de desempenho
+                            </h4>
+                      </CardBody>
+                    </Card>
+                  </Col>
+                  <Col lg="4">
+                    <Card className="pb-4 shadow border-0 text-center" style={{ backgroundColor: '#D2B9F4' }}>
+                      <CardBody className="py-4">
+                          <img
+                            alt="..."
+                            className="img"
+                            src={require("assets/img/brand/card-s3-3.png")}
+                          />
+                            <h4 className="h4 text-warning text-indigo">
+                              Métricas de avaliação 100% flexíveis
+                            </h4>
+                      </CardBody>
+                    </Card>
+                  </Col>
+                  <Col lg="2">
+                    <Card className="shadow border-0 text-center ml--3" style={{ backgroundColor: '#D2B9F4' }}>
+                      <CardBody className="py-4">
+                            <img
+                              alt="..."
+                              className="img"
+                             src={require("assets/img/brand/card-s3-4.png")}
+                            />
+                            <h4 className="h4 text-info text-indigo">
+                              Feedback 90º, 180º e 360º
+                            </h4>
+                      </CardBody>
+                    </Card>
+                  </Col>     
+                </Row>
+                <Row>
+                  <Col lg="2 mt--3">
+                    <Card className="shadow border-0 text-center mr--3" style={{ backgroundColor: '#D2B9F4' }}>
+                      <CardBody className="py-4">
+                          <img
+                            alt="..."
+                            className="img"
+                            src={require("assets/img/brand/card-s3-5.png")}
+                          />
+                            <h4 className="h4 text-warning text-indigo">
+                            Nine box e revelação dos top performers
+                            </h4>
+                      </CardBody>
+                    </Card>
+                  </Col>
+                  <Col lg="4 mt--3">
+                    <Card className="shadow pb-4 border-0 text-center" style={{ backgroundColor: '#D2B9F4' }}>
+                      <CardBody className="py-4">
+                            <img
+                              alt="..."
+                              className="img"
+                             src={require("assets/img/brand/card-s3-6.png")}
+                            />
+                            <h4 className="h4 text-info text-indigo">
+                            Relatório de desempenho corporativo (individual e por times)
+                            </h4>
+                      </CardBody>
+                    </Card>
+                  </Col>
+                  <Col lg="2 mt--3">
+                    <Card className="shadow pb-5 border-0 text-center ml--3 mr--3" style={{ backgroundColor: '#D2B9F4' }}>
+                      <CardBody className="py-4">
+                          <img
+                            alt="..."
+                            className="img"
+                            src={require("assets/img/brand/card-s3-7.png")}
+                          />
+                            <h4 className="h4 text-warning text-indigo">
+                              One:one
+                            </h4>
+                      </CardBody>
+                    </Card>
+                  </Col>
+                  <Col lg="4 mt--3">
+                    <Card className="shadow pb-5 border-0 text-center" style={{ backgroundColor: '#D2B9F4' }}>
+                      <CardBody className="py-4">
+                            <img
+                              alt="..."
+                              className="img"
+                             src={require("assets/img/brand/card-s3-8.png")}
+                            />
+                            <h4 className="h4 text-info text-indigo">
+                            PDI: plano de desenvolvimento individual
+                            </h4>
+                      </CardBody>
+                    </Card>
+                  </Col>     
+                </Row>
+                <Row className="justify-content-center text-center mt-2">
+                <Button
+                        className="text-indigo my-2"
+                        color="success"
+                        href="/auth/pricing"
+                      >
+                        Conheça nossos planos
+                      </Button>
+                </Row>
+                </Col>
+            </Row>
+          </Container>
+        </section>
+        <section className="py-6 pb-6 bg-white">
+          <Container fluid>
+            <Row className="justify-content-center text-center">
+              <Col md="6">
+                <h2 className="display-3 text-indigo">
+                  Por que usar a plataforma SkillFy?
+                </h2>
+                <p className="lead text-black">
+                  A gestão de pessoas pode ser muito fácil. Nosso sistema foi desenvolvido
+                  com a base de um time de especialistas em gestão de pessoas, RH e DHO.
+                  É a solução criada por quem realmente entende e adequa as boas práticas do setor.
+                  Com a plataforma SkillFy você tem:
+                </p>
+              </Col>
+            </Row>
+          </Container>
+        </section>
+        <section className="py-3 bg-white">
+          <Container>
+            <Row className="row-grid align-items-center mr-6 ml-6">
+              <Col md="6">
                 <img
                   alt="..."
                   className="img-fluid"
-                  src={require("assets/img/theme/landing-1.png")}
+                  src={require("assets/img/brand/card-s4-1.png")}
                 />
               </Col>
-              <Col className="order-md-1" md="6">
+              <Col md="6">
                 <div className="pr-md-5">
-                  <h1>Central de RH Unificada</h1>
+                  <h1 className="text-indigo">Melhor experiência para o líder</h1>
                   <p>
-                    Uma única plataforma para criar pesquisas, cadastrar funcionários e utilizar os recursos essenciais do Twig. Simplifique sua gestão de RH com eficiência e praticidade.
+                    Nosso sistema foi desenvolvido com o objetivo de tornar a vida profissional dos líderes mais agradável, produtiva e eficiente. Transformando a gestão com seus liderados.
                   </p>
-                  <ul className="list-unstyled mt-5">
-                    <li className="py-2">
-                      <div className="d-flex align-items-center">
-                        <div>
-                          <Badge className="badge-circle mr-3" color="success">
-                            <i className="fas fa-chart-line" />
-                          </Badge>
-                        </div>
-                        <div>
-                          <h4 className="mb-0">Avaliação de Desempenho 90°</h4>
-                        </div>
-                      </div>
-                    </li>
-                    <li className="py-2">
-                      <div className="d-flex align-items-center">
-                        <div>
-                          <Badge className="badge-circle mr-3" color="success">
-                            <i className="fas fa-chart-bar" />
-                          </Badge>
-                        </div>
-                        <div>
-                          <h4 className="mb-0">Avaliação de Desempenho 180&deg;</h4>
-                        </div>
-                      </div>
-                    </li>
-                    <li className="py-2">
-                      <div className="d-flex align-items-center">
-                        <div>
-                          <Badge className="badge-circle mr-3" color="success">
-                            <i className="fas fa-users" />
-                          </Badge>
-                        </div>
-                        <div>
-                          <h4 className="mb-0">Avaliação de Desempenho 360&deg;</h4>
-                        </div>
-                      </div>
-                    </li>
-                  </ul>
                 </div>
               </Col>
             </Row>
           </Container>
         </section>
-        <section className="py-6">
+        <section className="py-5 bg-white">
           <Container>
-            <Row className="row-grid align-items-center">
-              <Col md="6">
+            <Row className="row-grid align-items-center mr-6 ml-6">
+              <Col className="order-md-2 d-flex justify-content-end" md="6">
                 <img
                   alt="..."
-                  className="img-fluid"
-                  src={require("assets/img/theme/landing-2.png")}
+                  className="img-end"
+                  src={require("assets/img/brand/card-s4-2.png")}
                 />
               </Col>
               <Col md="6">
-                <div className="pr-md-5">
-                  <h1>Análise Métrica de Desempenho</h1>
+                <div className="pr-md-5 bg-white">
+                  <h1 className="text-indigo mr--8">Facilidade no processo de ponta a ponta</h1>
                   <p>
-                    Explore nossa plataforma para análise métrica de desempenho.
-                    Obtenha insights precisos, avaliando cada métrica essencial.
-                    Simplificamos o processo para que você possa tomar decisões
-                    e aprimorar continuamente a sua excelência.
+                    Tenha facilidade e acesso às informações, através de uma comunicação rápida e eficiente. Otimize todos os seus processos e gerencie tudo em um único lugar.
                   </p>
-                  <Link href="/auth/login">
-                    <a className="font-weight-bold text-warning mt-5">
-                      Conhecer Twig
-                    </a>
-                  </Link>
                 </div>
               </Col>
             </Row>
           </Container>
         </section>
-        <section className="py-6">
+        <section className="py-5 bg-white">
           <Container>
-            <Row className="row-grid align-items-center">
-              <Col className="order-md-2" md="6">
+            <Row className="row-grid align-items-center mr-6 ml-6">
+              <Col md="6">
                 <img
                   alt="..."
                   className="img-fluid"
-                  src={require("assets/img/theme/landing-3.png")}
+                  src={require("assets/img/brand/card-s4-3.png")}
+                />
+              </Col>
+              <Col md="6">
+                <div className="pr-md-5">
+                  <h1 className="text-indigo">Gestão otimizada e estratégica</h1>
+                  <p>
+                  Obtenha insights precisos pelo sistema, avaliando cada métrica essencial. Simplificamos o processo para que você possa tomar decisões muito mais seguras.
+                  </p>
+                </div>
+              </Col>
+            </Row>
+          </Container>
+        </section>
+        <section className="py-5 bg-white">
+          <Container>
+            <Row className="row-grid align-items-center mr-6 ml-6">
+              <Col className="order-md-2 d-flex justify-content-end" md="6">
+                <img
+                  alt="..."
+                  className="img-fluid"
+                  src={require("assets/img/brand/card-s4-4.png")}
                 />
               </Col>
               <Col className="order-md-1" md="6">
                 <div className="pr-md-5">
-                  <h1>Ambiente Integrado de Recursos Humanos</h1>
+                  <h1 className="text-indigo mr--5">Ambiente colaborativo e dinâmico</h1>
                   <p>
-                    Desfrute de um ambiente centralizado para gestão de recursos humanos. Com a nossa plataforma, você pode criar pesquisas, cadastrar funcionários e utilizar os recursos essenciais do Twig em um único lugar. Simplifique e otimize sua gestão de RH, garantindo eficiência e praticidade em cada etapa.
+                  Com ferramentas integradas sua equipe pode colher feedbacks em tempo real. Um ambiente onde a colaboração flui naturalmente e todos tem a oportunidade de contribuir e crescer juntos.
                   </p>
-                  <Link href="/auth/pricing">
-                    <a className="font-weight-bold text-info mt-5">
-                      Contratar Plano
-                    </a>
-                  </Link>
                 </div>
+              </Col>
+            </Row>
+          </Container>
+        </section>
+        <section className="py-6 pb-9 bg-white">
+          <Container fluid>
+            <Row className="justify-content-center text-center mb-5">
+              <Col md="6">
+                <h2 className="display-3 text-indigo">
+                  Um ambiente gratificante para o colaborador. As ferramentas para uma gestão eficiente. Uma solução pensada para os resultados.
+                </h2>
               </Col>
             </Row>
           </Container>
