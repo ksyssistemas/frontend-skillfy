@@ -33,6 +33,9 @@ jobs:
           # Limpar o arquivo .env.tmp
           echo "" > .env.tmp
 
+          # Adicionar o SHORT_HASH ao .env.tmp
+          echo "HASH=$SHORT_HASH" >> .env.tmp
+
           # Atualizando arquivos do GitHub
           git pull origin dev
 
