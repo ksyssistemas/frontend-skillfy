@@ -66,4 +66,4 @@ jobs:
 
           echo "Contêiner renomeado para: frontend-$SHORT_HASH"
 
-EOF
+        EOF
