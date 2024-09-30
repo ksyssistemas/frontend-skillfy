@@ -21,7 +21,7 @@ jobs:
         run: echo "SHORT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
 
       - name: Check Short Commit Hash
-        run: echo "Short Commit Hash: ${{ env.SHORT_HASH }}"
+        run: echo "Short Commit Hash: $SHORT_HASH"  # Corrigido para acessar a variável diretamente
 
       - name: Deploy via SSH
         env:
