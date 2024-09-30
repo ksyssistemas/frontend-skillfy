@@ -1,28 +1,3 @@
-name: Remote Deployment Dev
-on:
-  push:
-    branches:
-      - dev
-  pull_request:
-    branches:
-      - dev
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Install SSH Client
-      run: sudo apt-get install -y sshpass
-
-    - name: Get Short Commit Hash
-      id: get_commit_hash
-      run: |
-        SHORT_HASH=$(git rev-parse --short=7 HEAD)
-        echo "SHORT_HASH=$SHORT_HASH" >> $GITHUB_ENV
-        echo "Commit Hash capturado: $SHORT_HASH"
-
     - name: Deploy via SSH
       env:
         SSH_HOST: ${{ secrets.DEV_SSH_HOST }}
@@ -36,20 +11,23 @@ jobs:
           # Atualizando arquivos do GitHub
           git pull origin dev
 
-          # Criar ou atualizar o .env.tmp com o HASH
-          echo "HASH=$SHORT_HASH" > .env.tmp
-
-          # Se .env já existir, mesclar o conteúdo
-          if [ -f .env ]; then
-            cat .env >> .env.tmp
-          fi
-
-          # Mover .env.tmp para .env
-          mv .env.tmp .env
-
           # Parar e remover o contêiner existente, se houver
           docker-compose down
 
-          # Iniciar o contêiner com o novo nome
-          HASH=$SHORT_HASH docker-compose up -d --build
+          # Iniciar o contêiner sem cache
+          docker-compose up -d --build
+
+          # Esperar o contêiner subir (ajuste o tempo se necessário)
+          sleep 10
+
+          # Capturar o ID do novo contêiner
+          NEW_CONTAINER_ID=$(docker ps -q --filter "name=frontend-")
+
+          # Renomear o contêiner para incluir o commit hash
+          if [ -n "$NEW_CONTAINER_ID" ]; then
+            docker rename $NEW_CONTAINER_ID frontend-$SHORT_HASH
+          else
+            echo "Erro: Nenhum contêiner encontrado para renomear"
+            exit 1
+          fi
         EOF
