@@ -67,16 +67,16 @@ jobs:
           docker-compose build --no-cache
 
           # Iniciar o novo contêiner passando a variável de ambiente
+          echo "Iniciando contêiner com HASH: $SHORT_HASH"
           HASH=$SHORT_HASH docker-compose up -d
 
           # Aguardar até que o contêiner esteja rodando
-          while [ -z "$(docker ps -q --filter "name=frontend-")" ]; do
-            echo "Aguardando o contêiner ser iniciado..."
-            sleep 2
-          done
+          echo "Aguardando o contêiner ser iniciado..."
+          sleep 5
 
           # Capturar o ID do novo contêiner
           NEW_CONTAINER_ID=$(docker ps -q --filter "name=frontend-" | head -n 1)
+          echo "ID do novo contêiner: $NEW_CONTAINER_ID"
 
           # Renomear o contêiner com o commit hash
           if [ -n "$NEW_CONTAINER_ID" ]; then
