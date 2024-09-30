@@ -1,63 +1,62 @@
-- name: Deploy via SSH
-  env:
-    SSH_HOST: ${{ secrets.DEV_SSH_HOST }}
-    SSH_USER: ${{ secrets.DEV_SSH_USER }}
-    SSH_PASSWORD: ${{ secrets.DEV_SSH_PASSWORD }}
-    SHORT_HASH: ${{ env.SHORT_HASH }}
-  run: |
-    SSHPASS=$SSH_PASSWORD sshpass -e ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
-    set -e
-      cd /root/dev/frontend-skillfy
+name: Remote Deployment Dev
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
 
-      # Atualizando arquivos do GitHub
-      git pull origin dev
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
 
-      # Debug: Exibindo hash no servidor
-      echo "Hash no servidor: $SHORT_HASH"
+    - name: Install SSH Client
+      run: sudo apt-get install -y sshpass
 
-      # Criar ou atualizar o .env.tmp com o HASH
-      echo "HASH=$SHORT_HASH" > .env.tmp
+    - name: Get Short Commit Hash
+      id: get_commit_hash
+      run: echo "SHORT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
 
-      # Se .env já existir, mesclar o conteúdo
-      if [ -f .env ]; then
-        cat .env >> .env.tmp
-      fi
+    - name: Deploy via SSH
+      env:
+        SSH_HOST: ${{ secrets.DEV_SSH_HOST }}
+        SSH_USER: ${{ secrets.DEV_SSH_USER }}
+        SSH_PASSWORD: ${{ secrets.DEV_SSH_PASSWORD }}
+        SHORT_HASH: ${{ env.SHORT_HASH }}
+      run: |
+        sshpass -p $SSH_PASSWORD ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << EOF
+          cd /root/dev/frontend-skillfy
 
-      # Mover .env.tmp para .env
-      mv .env.tmp .env
+          # Atualizando arquivos do GitHub
+          git pull origin dev
 
-      # Parar e remover o contêiner existente, se existir
-      CONTAINER_ID=$(docker ps -q --filter "name=frontend-")
-      if [ -n "$CONTAINER_ID" ]; then
-        echo "Parando e removendo o contêiner existente: $CONTAINER_ID"
-        docker stop $CONTAINER_ID
-        docker rm $CONTAINER_ID
-      else
-        echo "Nenhum contêiner existente encontrado"
-      fi
+          # Parar e remover o contêiner existente, se existir
+          CONTAINER_ID=\$(docker ps -q --filter "name=frontend-")
+          if [ -n "\$CONTAINER_ID" ]; then
+            echo "Parando e removendo o contêiner existente: \$CONTAINER_ID"
+            docker stop \$CONTAINER_ID
+            docker rm \$CONTAINER_ID
+          else
+            echo "Nenhum contêiner existente encontrado"
+          fi
 
-      # Reconstruir a imagem Docker sem cache
-      docker-compose build --no-cache
+          # Reconstruir a imagem Docker sem cache
+          docker-compose build --no-cache
 
-      # Iniciar o novo contêiner passando a variável de ambiente
-      echo "Iniciando contêiner com HASH: $SHORT_HASH"
-      HASH=$SHORT_HASH docker-compose up -d --force-recreate
+          # Iniciar o novo contêiner com nome temporário
+          echo "Iniciando o contêiner..."
+          docker-compose up -d
 
-      # Aguardar alguns segundos para garantir que o contêiner esteja rodando
-      sleep 5
-
-      # Capturar o ID do novo contêiner
-      NEW_CONTAINER_ID=$(docker ps -q --filter "name=frontend-" | head -n 1)
-
-      # Renomear o contêiner com o commit hash
-      if [ -n "$NEW_CONTAINER_ID" ]; then
-        echo "Renomeando o contêiner com o hash: $SHORT_HASH"
-        docker rename $NEW_CONTAINER_ID frontend-$SHORT_HASH
-      else
-        echo "Erro: Nenhum contêiner encontrado para renomear"
-        exit 1
-      fi
-
-      # Limpar arquivos temporários
-      rm -f .env.tmp
-    EOF
+          # Renomear o contêiner para incluir o hash do commit
+          NEW_CONTAINER_ID=\$(docker ps -q --filter "ancestor=frontend-dev:latest")
+          if [ -n "\$NEW_CONTAINER_ID" ]; then
+            echo "Renomeando o contêiner com o hash: \$SHORT_HASH"
+            docker rename \$NEW_CONTAINER_ID frontend-\$SHORT_HASH
+          else
+            echo "Erro: Nenhum contêiner encontrado para renomear"
+            exit 1
+          fi
+        EOF
