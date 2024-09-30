@@ -6,24 +6,57 @@ const useCreatePerformanceReview = () => {
     const [reviewNameState, setReviewNameState] = React.useState(null);
     const [reviewObjective, setReviewObjective] = React.useState("");
     const [reviewObjectiveState, setReviewObjectiveState] = React.useState(null);
+
+    const [isIntercurrentReviewCycle, setIsIntercurrentReviewCycle] = React.useState(false);
+    const [isIntercurrentReviewCycleState, setIsIntercurrentReviewCycleState] = React.useState(null);
+
+    const [isUserDefinedDateToReview, setIsUserDefinedDateToReview] = React.useState(false);
+    const [isUserDefinedDateToReviewState, setIsUserDefinedDateToReviewState] = React.useState(null);
+
     const [startDate, setStartDate] = React.useState("");
     const [startDateState, setStartDateState] = React.useState(null);
-    const [untilDate, setUntilDate] = React.useState("");
-    const [untilDateState, setUntilDateState] = React.useState(null);
     const [endDate, setEndDate] = React.useState("");
     const [endDateState, setEndDateState] = React.useState(null);
+
+    const [reviewCycle, setReviewCycle] = React.useState("");
+    const [reviewCycleState, setReviewCycleState] = React.useState(null);
+    const [reviewCycleDataList, setReviewCycleDataList] = useState([
+        { id: "1", text: "Intercorrente" },
+        { id: "2", text: "Anual" },
+        { id: "3", text: "Semestral" },
+        { id: "4", text: "Trimestral" },
+        { id: "5", text: "Mensal" },
+        { id: "6", text: "Quinzenal" },
+    ]);
+    const handleReviewCycleDataList = (reviewCycleData) => {
+        setReviewCycleDataList(reviewCycleData);
+    }
+
     const [reviewPeriod, setReviewPeriod] = React.useState("");
     const [reviewPeriodState, setReviewPeriodState] = React.useState(null);
     const [reviewPeriodDataList, setReviewPeriodDataList] = useState([
-        { id: "2", text: "Quinzenal" },
-        { id: "3", text: "Mensal" },
-        { id: "4", text: "Trimestral" },
-        { id: "5", text: "Semestral" },
-        { id: "6", text: "Anual" },
+        { id: "1", text: "Anual" },
+        { id: "2", text: "Semestral" },
+        { id: "3", text: "Trimestral" },
+        { id: "4", text: "Mensal" },
+        { id: "5", text: "Quinzenal" },
     ]);
     const handleReviewPeriodDataList = (reviewPeriodData) => {
         setReviewPeriodDataList(reviewPeriodData);
     }
+
+    const [reviewDate, setReviewDate] = React.useState("");
+    const [reviewDateState, setReviewDateState] = React.useState(null);
+    const [dateOnReviewWasCarriedOutDataList, setDateOnReviewWasCarriedOutDataList] = useState([
+        { id: "1", text: "Data de Admissão" },
+        { id: "2", text: "Data de Aniversário" },
+        { id: "3", text: "Definir uma Data" },
+    ]);
+    const handleDateOnReviewWasCarriedOutDataList = (dateOnReviewWasCarriedOut) => {
+        setDateOnReviewWasCarriedOutDataList(dateOnReviewWasCarriedOut);
+    }
+
+    const [isReviewCyclePerPeriod, setIsReviewCyclePerPeriod] = useState(false);
 
     const [hasPerformanceReviewOfLeaders, setHasPerformanceReviewOfLeaders] = React.useState(true);
     const [deadlineToLeadersToRespondToPerformanceReview, setDeadlineToLeadersToRespondToPerformanceReview] = React.useState('');
@@ -134,8 +167,6 @@ const useCreatePerformanceReview = () => {
         setReviewObjectiveState(null);
         setStartDate('');
         setStartDateState(null);
-        setUntilDate('');
-        setUntilDateState(null);
         setEndDate('');
         setEndDateState(null);
         setReviewPeriod('');
@@ -152,18 +183,31 @@ const useCreatePerformanceReview = () => {
         setReviewObjective,
         reviewObjectiveState,
         setReviewObjectiveState,
+        isIntercurrentReviewCycle,
+        setIsIntercurrentReviewCycle,
+        isIntercurrentReviewCycleState,
+        setIsIntercurrentReviewCycleState,
+        isUserDefinedDateToReview,
+        setIsUserDefinedDateToReview,
+        isUserDefinedDateToReviewState,
+        setIsUserDefinedDateToReviewState,
         startDate,
         setStartDate,
         startDateState,
         setStartDateState,
-        untilDate,
-        setUntilDate,
-        untilDateState,
-        setUntilDateState,
         endDate,
         setEndDate,
         endDateState,
         setEndDateState,
+
+        reviewCycle,
+        setReviewCycle,
+        reviewCycleState,
+        setReviewCycleState,
+        reviewCycleDataList,
+        setReviewCycleDataList,
+        handleReviewCycleDataList,
+
         reviewPeriod,
         setReviewPeriod,
         reviewPeriodState,
@@ -171,6 +215,17 @@ const useCreatePerformanceReview = () => {
         reviewPeriodDataList,
         setReviewPeriodDataList,
         handleReviewPeriodDataList,
+        reviewDate,
+        setReviewDate,
+        reviewDateState,
+        setReviewDateState,
+        dateOnReviewWasCarriedOutDataList,
+        setDateOnReviewWasCarriedOutDataList,
+        handleDateOnReviewWasCarriedOutDataList,
+
+        isReviewCyclePerPeriod,
+        setIsReviewCyclePerPeriod,
+
         hasPerformanceReviewOfLeaders,
         deadlineToLeadersToRespondToPerformanceReview,
         hasSelfReviewOfPerformance,

@@ -41,18 +41,33 @@ export function ReviewIdentityForm({ updateSessionData, sessionData = {} }) {
         setReviewObjective,
         reviewObjectiveState,
         setReviewObjectiveState,
+
+        isIntercurrentReviewCycle,
+        setIsIntercurrentReviewCycle,
+        isIntercurrentReviewCycleState,
+        setIsIntercurrentReviewCycleState,
+        isUserDefinedDateToReview,
+        setIsUserDefinedDateToReview,
+        isUserDefinedDateToReviewState,
+        setIsUserDefinedDateToReviewState,
+
         startDate,
         setStartDate,
         startDateState,
         setStartDateState,
-        untilDate,
-        setUntilDate,
-        untilDateState,
-        setUntilDateState,
         endDate,
         setEndDate,
         endDateState,
         setEndDateState,
+
+        reviewCycle,
+        setReviewCycle,
+        reviewCycleState,
+        setReviewCycleState,
+        reviewCycleDataList,
+        setReviewCycleDataList,
+        handleReviewCycleDataList,
+
         reviewPeriod,
         setReviewPeriod,
         reviewPeriodState,
@@ -60,6 +75,18 @@ export function ReviewIdentityForm({ updateSessionData, sessionData = {} }) {
         reviewPeriodDataList,
         setReviewPeriodDataList,
         handleReviewPeriodDataList,
+
+        reviewDate,
+        setReviewDate,
+        reviewDateState,
+        setReviewDateState,
+        dateOnReviewWasCarriedOutDataList,
+        setDateOnReviewWasCarriedOutDataList,
+        handleDateOnReviewWasCarriedOutDataList,
+
+        isReviewCyclePerPeriod,
+        setIsReviewCyclePerPeriod,
+
         hasPerformanceReviewOfLeaders,
         deadlineToLeadersToRespondToPerformanceReview,
         hasSelfReviewOfPerformance,
@@ -75,14 +102,15 @@ export function ReviewIdentityForm({ updateSessionData, sessionData = {} }) {
         reset
     } = useCreatePerformanceReview();
 
+    const [selectedCycle, setSelectedCycle] = useState('');
     const [selectedPeriod, setSelectedPeriod] = useState('');
+    const [selectedDateOnReviewWasCarriedOut, setSelectedDateOnReviewWasCarriedOut] = useState('');
 
     // Referências para os valores anteriores
     const prevStateRef = useRef({
         reviewName: sessionData.reviewName || '',
         reviewObjective: sessionData.reviewObjective || '',
         startDate: sessionData.startDate || null,
-        untilDate: sessionData.untilDate || null,
         endDate: sessionData.endDate || null,
         reviewPeriod: sessionData.reviewPeriod || ''
     });
@@ -101,6 +129,28 @@ export function ReviewIdentityForm({ updateSessionData, sessionData = {} }) {
     } else if (selectedReview === 'leader') {
         PLACEHOLDER_TEXT_TO_SELECTED_MODEL = "Avaliação Líder/Liderado";
     }
+
+    const handleWithAnIntercurrentReviewCycle = () => {
+        if (selectedCycle) {
+            const selectedItem = reviewCycleDataList.find(item => item.id === selectedCycle);
+            if (selectedItem && selectedItem.text === "Intercorrente") {
+                setIsIntercurrentReviewCycle(true);
+                setIsReviewCyclePerPeriod(false);
+                setIsUserDefinedDateToReview(false);
+            } else {
+                setIsIntercurrentReviewCycle(false);
+                setIsReviewCyclePerPeriod(true);
+            }
+        }
+    };
+
+    const handleReviewDateSelection = () => {
+        if (selectedDateOnReviewWasCarriedOut === "3") {
+            setIsUserDefinedDateToReview(true);
+        } else {
+            setIsUserDefinedDateToReview(false);
+        }
+    };
 
     const handleReactDatetimeChange = (who, date) => {
         if (
@@ -146,10 +196,6 @@ export function ReviewIdentityForm({ updateSessionData, sessionData = {} }) {
         return "";
     };
 
-    const handleUntilDateChange = (value) => {
-        handleDateFormatting(value, setUntilDate, setUntilDateState);
-    };
-
     // Efeito para sincronizar o estado inicial do `sessionData` com os inputs, apenas uma vez quando os dados forem carregados
     useEffect(() => {
         if (sessionData.reviewName && sessionData.reviewName !== reviewName) {
@@ -169,9 +215,6 @@ export function ReviewIdentityForm({ updateSessionData, sessionData = {} }) {
         }
         if (sessionData.startDate && sessionData.startDate) {
             setStartDate(new Date(sessionData.startDate));
-        }
-        if (sessionData.untilDate && sessionData.untilDate) {
-            setUntilDate(new Date(sessionData.untilDate));
         }
         if (sessionData.endDate && sessionData.endDate) {
             setEndDate(new Date(sessionData.endDate));
@@ -255,7 +298,6 @@ export function ReviewIdentityForm({ updateSessionData, sessionData = {} }) {
             reviewName,
             reviewObjective,
             startDate,
-            untilDate,
             endDate,
             reviewPeriod
         };
@@ -267,9 +309,6 @@ export function ReviewIdentityForm({ updateSessionData, sessionData = {} }) {
             (prevState.startDate instanceof Date && currentState.startDate instanceof Date
                 ? prevState.startDate.getTime() !== currentState.startDate.getTime()
                 : prevState.startDate !== currentState.startDate) ||
-            (prevState.untilDate instanceof Date && currentState.untilDate instanceof Date
-                ? prevState.untilDate.getTime() !== currentState.untilDate.getTime()
-                : prevState.untilDate !== currentState.untilDate) ||
             (prevState.endDate instanceof Date && currentState.endDate instanceof Date
                 ? prevState.endDate.getTime() !== currentState.endDate.getTime()
                 : prevState.endDate !== currentState.endDate) ||
@@ -284,7 +323,6 @@ export function ReviewIdentityForm({ updateSessionData, sessionData = {} }) {
         reviewName,
         reviewObjective,
         startDate,
-        untilDate,
         endDate,
         reviewPeriod,
         updateSessionData
@@ -354,109 +392,200 @@ export function ReviewIdentityForm({ updateSessionData, sessionData = {} }) {
                         </Col>
                     </div>
                     <hr />
-                    <div className="form-row mt-6 mb-6">
-                        <Col className="mb-3" md="6">
-                            <label className=" form-control-label">
-                                Data de Início
-                            </label>
-                            <FormGroup>
-                                <ReactDatetime
-                                    inputProps={{
-                                        placeholder: "__/__/__",
-                                    }}
-                                    value={startDate || (sessionData.startDate && new Date(sessionData.startDate))}
-                                    timeFormat={false}
-                                    onChange={(e) =>
-                                        handleReactDatetimeChange("startDate", e)
-                                    }
-                                    renderDay={(props, currentDate, selectedDate) => {
-                                        let classes = props.className;
-                                        classes += getClassNameReactDatetimeDays(
-                                            currentDate
-                                        );
-                                        return (
-                                            <td {...props} className={classes}>
-                                                {currentDate.date()}
-                                            </td>
-                                        );
-                                    }}
-                                />
-                            </FormGroup>
-                        </Col>
-                        {/* <Col className="mb-3" md="6">
-                            <label
-                                className="form-control-label"
-                                htmlFor="validationUntilDate"
-                            >
-                                Até a data
-                            </label>
-                            <ReactDatetime
-                                inputProps={{
-                                    placeholder: "__/__/__",
-                                }}
-                                value={untilDate || (sessionData.untilDate && new Date(sessionData.untilDate))}
-                                timeFormat={false}
-                                onChange={handleUntilDateChange}
-                            />
-                        </Col> */}
-                        <Col className="mb-3" md="6">
-                            <FormGroup>
-                                <label className=" form-control-label">
-                                    Data de Vencimento
-                                </label>
-                                <ReactDatetime
-                                    inputProps={{
-                                        placeholder: "__/__/__",
-                                    }}
-                                    value={endDate || (sessionData.endDate && new Date(sessionData.endDate))}
-                                    timeFormat={false}
-                                    onChange={(e) =>
-                                        handleReactDatetimeChange("endDate", e)
-                                    }
-                                    renderDay={(props, currentDate, selectedDate) => {
-                                        let classes = props.className;
-                                        classes += getClassNameReactDatetimeDays(
-                                            currentDate
-                                        );
-                                        return (
-                                            <td {...props} className={classes}>
-                                                {currentDate.date()}
-                                            </td>
-                                        );
-                                    }}
-                                />
-                            </FormGroup>
-                        </Col>
-                        <Col className="mb-3" md="6">
+                    <div className="form-row mt-6">
+                        <Col className="mb-0" md="6">
                             <FormGroup>
                                 <label
                                     className=" form-control-label"
-                                    htmlFor="validationReviewPeriod"
+                                    htmlFor="validationReviewCycle"
                                 >
-                                    Período de Avaliação
+                                    Ciclo de Avaliação
                                 </label>
                                 <Select2
-                                    id="validationReviewPeriod"
+                                    id="validationReviewCycle"
                                     className="form-control"
                                     data-minimum-results-for-search="Infinity"
-                                    options={{ placeholder: "Selecione um período:" }}
-                                    value={selectedPeriod}
-                                    onChange={(e) => setSelectedPeriod(e.target.value)}
-                                    data={reviewPeriodDataList}
-                                    onSelect={(e) => handleSelectionEmploymentContractData(
-                                        e.target.value,
-                                        reviewPeriodDataList,
-                                        setSelectedPeriod,
-                                        setReviewPeriod,
-                                        setReviewPeriodState,
-                                        null,
-                                        null,
-                                        'id'
-                                    )}
+                                    options={{ placeholder: "Selecione um ciclo:" }}
+                                    value={selectedCycle}
+                                    onChange={(e) => setSelectedCycle(e.target.value)}
+                                    data={reviewCycleDataList}
+                                    onSelect={(e) => {
+                                        handleSelectionEmploymentContractData(
+                                            e.target.value,
+                                            reviewCycleDataList,
+                                            setSelectedCycle,
+                                            setReviewCycle,
+                                            setReviewCycleState,
+                                            null,
+                                            null,
+                                            'id'
+                                        );
+                                        handleWithAnIntercurrentReviewCycle();
+                                    }
+                                    }
                                 />
                             </FormGroup>
                         </Col>
+                        {
+                            isIntercurrentReviewCycle &&
+                            <Col className="mb-0" md="6">
+                                <FormGroup>
+                                    <label
+                                        className=" form-control-label"
+                                        htmlFor="validationReviewPeriod"
+                                    >
+                                        Período de Avaliação
+                                    </label>
+                                    <Select2
+                                        id="validationReviewPeriod"
+                                        className="form-control"
+                                        data-minimum-results-for-search="Infinity"
+                                        options={{ placeholder: "Selecione um período:" }}
+                                        value={selectedPeriod}
+                                        onChange={(e) => setSelectedPeriod(e.target.value)}
+                                        data={reviewPeriodDataList}
+                                        onSelect={(e) =>
+                                            handleSelectionEmploymentContractData(
+                                                e.target.value,
+                                                reviewPeriodDataList,
+                                                setSelectedPeriod,
+                                                setReviewPeriod,
+                                                setReviewPeriodState,
+                                                null,
+                                                null,
+                                                'id'
+                                            )}
+                                    />
+                                </FormGroup>
+                            </Col>
+                        }
                     </div>
+                    {isIntercurrentReviewCycle &&
+                        <div className="form-row mb-6">
+                            <Col className="mb-0" md="6">
+                                <FormGroup>
+                                    <label
+                                        className=" form-control-label"
+                                        htmlFor="validationDateOnReviewWasCarriedOut"
+                                    >
+                                        Realização de Avaliação
+                                    </label>
+                                    <Select2
+                                        id="validationDateOnReviewWasCarriedOut"
+                                        className="form-control"
+                                        data-minimum-results-for-search="Infinity"
+                                        options={{ placeholder: "Selecione uma opção:" }}
+                                        value={selectedDateOnReviewWasCarriedOut}
+                                        onChange={(e) => setSelectedDateOnReviewWasCarriedOut(e.target.value)}
+                                        data={dateOnReviewWasCarriedOutDataList}
+                                        onSelect={(e) => {
+                                            handleSelectionEmploymentContractData(
+                                                e.target.value,
+                                                dateOnReviewWasCarriedOutDataList,
+                                                setSelectedDateOnReviewWasCarriedOut,
+                                                setReviewDate,
+                                                setReviewDateState,
+                                                null,
+                                                null,
+                                                'id'
+                                            );
+                                            handleReviewDateSelection();
+                                        }}
+                                    />
+                                </FormGroup>
+                            </Col>
+                            {isUserDefinedDateToReview &&
+                                <Col className="mb-3" md="6">
+                                    <FormGroup>
+                                        <label className=" form-control-label">
+                                            Data de Realização
+                                        </label>
+                                        <ReactDatetime
+                                            inputProps={{
+                                                placeholder: "__/__/__",
+                                            }}
+                                            value={endDate || (sessionData.endDate && new Date(sessionData.endDate))}
+                                            timeFormat={false}
+                                            onChange={(e) =>
+                                                handleReactDatetimeChange("endDate", e)
+                                            }
+                                            renderDay={(props, currentDate, selectedDate) => {
+                                                let classes = props.className;
+                                                classes += getClassNameReactDatetimeDays(
+                                                    currentDate
+                                                );
+                                                return (
+                                                    <td {...props} className={classes}>
+                                                        {currentDate.date()}
+                                                    </td>
+                                                );
+                                            }}
+                                        />
+                                    </FormGroup>
+                                </Col>
+                            }
+                        </div>
+                    }
+                    {isReviewCyclePerPeriod &&
+                        <div className="form-row mt-6 mb-6">
+                            <Col className="mb-3" md="6">
+                                <label className=" form-control-label">
+                                    Data de Início
+                                </label>
+                                <FormGroup>
+                                    <ReactDatetime
+                                        inputProps={{
+                                            placeholder: "__/__/__",
+                                        }}
+                                        value={startDate || (sessionData.startDate && new Date(sessionData.startDate))}
+                                        timeFormat={false}
+                                        onChange={(e) =>
+                                            handleReactDatetimeChange("startDate", e)
+                                        }
+                                        renderDay={(props, currentDate, selectedDate) => {
+                                            let classes = props.className;
+                                            classes += getClassNameReactDatetimeDays(
+                                                currentDate
+                                            );
+                                            return (
+                                                <td {...props} className={classes}>
+                                                    {currentDate.date()}
+                                                </td>
+                                            );
+                                        }}
+                                    />
+                                </FormGroup>
+                            </Col>
+                            <Col className="mb-3" md="6">
+                                <FormGroup>
+                                    <label className=" form-control-label">
+                                        Data de Vencimento
+                                    </label>
+                                    <ReactDatetime
+                                        inputProps={{
+                                            placeholder: "__/__/__",
+                                        }}
+                                        value={endDate || (sessionData.endDate && new Date(sessionData.endDate))}
+                                        timeFormat={false}
+                                        onChange={(e) =>
+                                            handleReactDatetimeChange("endDate", e)
+                                        }
+                                        renderDay={(props, currentDate, selectedDate) => {
+                                            let classes = props.className;
+                                            classes += getClassNameReactDatetimeDays(
+                                                currentDate
+                                            );
+                                            return (
+                                                <td {...props} className={classes}>
+                                                    {currentDate.date()}
+                                                </td>
+                                            );
+                                        }}
+                                    />
+                                </FormGroup>
+                            </Col>
+                        </div>
+                    }
                 </div>
             </CardBody>
         </Card>
