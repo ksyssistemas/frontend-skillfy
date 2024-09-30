@@ -19,9 +19,8 @@ jobs:
     - name: Get Short Commit Hash
       id: get_commit_hash
       run: |
-        SHORT_HASH=$(git rev-parse --short=7 HEAD)
-        echo "SHORT_HASH: $SHORT_HASH"  # Adicione esta linha para verificação
-        echo "SHORT_HASH=$SHORT_HASH" >> $GITHUB_ENV
+        echo "SHORT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+        echo "Captured SHORT_HASH: $(git rev-parse --short=7 HEAD)"  # Adicione esta linha para depuração
 
 
     - name: Deploy via SSH
