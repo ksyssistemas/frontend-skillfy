@@ -25,7 +25,7 @@ jobs:
         SSH_HOST: ${{ secrets.DEV_SSH_HOST }}
         SSH_USER: ${{ secrets.DEV_SSH_USER }}
         SSH_PASSWORD: ${{ secrets.DEV_SSH_PASSWORD }}
-        SHORT_HASH: ${{ env.SHORT_HASH }}  # Verifique se SHORT_HASH está definido corretamente
+        SHORT_HASH: ${{ env.SHORT_HASH }}
       run: |
         sshpass -p $SSH_PASSWORD ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << EOF
           cd /root/dev/frontend-skillfy
@@ -53,18 +53,18 @@ jobs:
           docker-compose build --no-cache
 
           # Iniciar o novo contêiner com o nome desejado
-          NEW_CONTAINER_NAME="frontend-\$SHORT_HASH"
-          echo "Iniciando o contêiner com nome: \$NEW_CONTAINER_NAME"
-          docker-compose up -d --remove-orphans
+          echo "Iniciando o contêiner..."
+          docker-compose up -d --remove-orphans --force-recreate
 
-          # Adicionar um pequeno atraso
+          # Atraso para garantir que o contêiner foi iniciado
           sleep 5
 
-          # Renomear o contêiner para incluir o hash do commit
-          NEW_CONTAINER_ID=\$(docker ps -q --filter "name=frontend-")
+          # Verificar o nome do contêiner
+          NEW_CONTAINER_ID=\$(docker ps -q --filter "ancestor=frontend-dev:latest")
           if [ -n "\$NEW_CONTAINER_ID" ]; then
+            echo "Contêiner iniciado com ID: \$NEW_CONTAINER_ID"
             echo "Renomeando o contêiner com o hash: \$SHORT_HASH"
-            docker rename \$NEW_CONTAINER_ID \$NEW_CONTAINER_NAME
+            docker rename \$NEW_CONTAINER_ID frontend-\$SHORT_HASH
           else
             echo "Erro: Nenhum contêiner encontrado para renomear"
             exit 1
