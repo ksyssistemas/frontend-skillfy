@@ -32,8 +32,16 @@ jobs:
           # Update files from GitHub
           git pull origin dev
 
-          # Atualiza o HASH no arquivo .env sem perder outros dados
-          echo "HASH=$SHORT_HASH" > .env.tmp && mv .env.tmp .env
+          # Create or update the .env.tmp with the HASH
+          echo "HASH=$SHORT_HASH" > .env.tmp
+
+          # If .env already exists, append its content to .env.tmp
+          if [ -f .env ]; then
+            cat .env >> .env.tmp
+          fi
+
+          # Move .env.tmp to .env
+          mv .env.tmp .env
 
           # Stop and remove the existing container if it exists
           CONTAINER_ID=\$(docker ps -q --filter "name=frontend-")
@@ -45,8 +53,11 @@ jobs:
           # Rebuild the Docker image without cache to ensure changes are applied
           docker-compose build --no-cache
 
-          # Start the new container with the updated .env
+          # Start the new container
           docker-compose up -d
+
+          # Aguarde um momento para garantir que o contêiner esteja em execução
+          sleep 5
 
           # Get the container ID of the running container
           CONTAINER_ID=\$(docker ps -q --filter "name=frontend-")
