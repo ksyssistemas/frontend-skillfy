@@ -31,5 +31,5 @@ jobs:
         run: curl http://localhost:3000 
       
       - name: Stop the application
-        run: kill $(jobs -p)
+        run: kill $(cat pid.file)
       
