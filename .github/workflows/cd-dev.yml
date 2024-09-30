@@ -56,6 +56,9 @@ jobs:
           echo "Iniciando o contêiner..."
           docker-compose up -d
 
+          # Adicionar um pequeno atraso
+          sleep 5
+
           # Renomear o contêiner para incluir o hash do commit
           NEW_CONTAINER_ID=\$(docker ps -q --filter "ancestor=frontend-dev:latest")
           if [ -n "\$NEW_CONTAINER_ID" ]; then
