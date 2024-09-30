@@ -69,8 +69,11 @@ jobs:
           # Iniciar o novo contêiner
           docker-compose up -d
 
-          # Aguardar alguns segundos para garantir que o contêiner esteja rodando
-          sleep 5
+          # Aguardar até que o contêiner esteja rodando
+          while [ -z "$(docker ps -q --filter "name=frontend-")" ]; do
+            echo "Aguardando o contêiner ser iniciado..."
+            sleep 2
+          done
 
           # Capturar o ID do novo contêiner
           NEW_CONTAINER_ID=$(docker ps -q --filter "name=frontend-" | head -n 1)
