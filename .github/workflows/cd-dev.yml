@@ -18,20 +18,20 @@ jobs:
 
     - name: Get Short Commit Hash
       id: get_commit_hash
-      run: |
-        echo "SHORT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
-        echo "Captured SHORT_HASH: $(git rev-parse --short=7 HEAD)"  # Confirmação do valor
+      run: echo "SHORT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
 
     - name: Deploy via SSH
       env:
         SSH_HOST: ${{ secrets.DEV_SSH_HOST }}
         SSH_USER: ${{ secrets.DEV_SSH_USER }}
         SSH_PASSWORD: ${{ secrets.DEV_SSH_PASSWORD }}
-        SHORT_HASH: ${{ env.SHORT_HASH }}  # Certifique-se de que esta linha esteja correta
+        SHORT_HASH: ${{ env.SHORT_HASH }}
       run: |
-        echo "Deploying with SHORT_HASH: $SHORT_HASH"  # Verifica o valor do SHORT_HASH
         sshpass -p $SSH_PASSWORD ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << EOF
           cd /root/dev/frontend-skillfy
+
+          # Limpar o arquivo .env.tmp
+          echo "" > .env.tmp
 
           # Atualizando arquivos do GitHub
           git pull origin dev
@@ -52,18 +52,14 @@ jobs:
           # Iniciar o novo contêiner com nome temporário
           echo "Iniciando o contêiner..."
           docker-compose up -d
-          
-          # Aguarde alguns segundos para garantir que o contêiner esteja em execução
-          sleep 5  # Espera 5 segundos (ajuste conforme necessário)
-          
+
           # Renomear o contêiner para incluir o hash do commit
           NEW_CONTAINER_ID=\$(docker ps -q --filter "ancestor=frontend-dev:latest")
           if [ -n "\$NEW_CONTAINER_ID" ]; then
-              echo "Renomeando o contêiner com o hash: \$SHORT_HASH"
-              docker rename \$NEW_CONTAINER_ID frontend-\$SHORT_HASH
+            echo "Renomeando o contêiner com o hash: \$SHORT_HASH"
+            docker rename \$NEW_CONTAINER_ID frontend-\$SHORT_HASH
           else
-              echo "Erro: Nenhum contêiner encontrado para renomear"
-              exit 1
+            echo "Erro: Nenhum contêiner encontrado para renomear"
+            exit 1
           fi
-
         EOF
