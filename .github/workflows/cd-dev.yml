@@ -26,7 +26,7 @@ jobs:
         SSH_PASSWORD: ${{ secrets.DEV_SSH_PASSWORD }}
         SHORT_HASH: ${{ env.SHORT_HASH }}
       run: |
-        sshpass -p $DEV_SSH_PASSWORD ssh -o StrictHostKeyChecking=no $DEV_SSH_USER@$DEV_SSH_HOST << EOF
+        SSHPASS=$SSH_PASSWORD sshpass -e ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << EOF
           cd /root/dev/frontend-skillfy
 
           # Update files from GitHub
