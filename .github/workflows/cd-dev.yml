@@ -31,12 +31,9 @@ jobs:
           sshpass -p $SSH_PASSWORD ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
             cd /root/dev/frontend-skillfy
 
-            # Limpar o arquivo .env.tmp
-            echo "" > .env.tmp
-            
             # Atualizando arquivos do GitHub
             git pull origin dev
-            
+
             # Parar e remover o contêiner existente, se existir
             CONTAINER_ID=$(docker ps -q --filter "name=frontend-")
             if [ -n "$CONTAINER_ID" ]; then
@@ -47,23 +44,12 @@ jobs:
               echo "Nenhum contêiner existente encontrado"
             fi
             
-            # Iniciar o novo contêiner com o nome desejado
+            # Construir e iniciar o novo contêiner com o nome desejado
             echo "Iniciando o contêiner..."
-            docker-compose up -d --remove-orphans --force-recreate
+            docker build -t frontend-$SHORT_HASH .
 
-            # Atraso para garantir que o contêiner foi iniciado
-            sleep 5
+            # Iniciar o novo contêiner
+            docker run -d --name frontend-$SHORT_HASH -p 3000:3000 frontend-$SHORT_HASH
 
-            # Verificar o nome do contêiner e renomear se necessário
-            NEW_CONTAINER_ID=$(docker ps -q --filter "ancestor=frontend-dev:latest")
-            if [ -n "$NEW_CONTAINER_ID" ]; then
-              echo "Contêiner iniciado com ID: $NEW_CONTAINER_ID"
-              echo "Renomeando o contêiner com o hash: $SHORT_HASH"
-              docker rename $NEW_CONTAINER_ID frontend-$SHORT_HASH
-            else
-              echo "Erro: Nenhum contêiner encontrado para renomear"
-              exit 1
-            fi
-
-            echo "Contêiner renomeado para: frontend-$SHORT_HASH"
+            echo "Contêiner iniciado com o nome: frontend-$SHORT_HASH"
           EOF
