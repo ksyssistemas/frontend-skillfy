@@ -1,0 +1,51 @@
+name: Remote Deployment Dev
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install SSH Client
+      run: sudo apt-get install -y sshpass
+
+    - name: Get Short Commit Hash
+      id: get_commit_hash
+      run: echo "SHORT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+
+    - name: Deploy via SSH
+      env:
+        SSH_HOST: ${{ secrets.DEV_SSH_HOST }}
+        SSH_USER: ${{ secrets.DEV_SSH_USER }}
+        SSH_PASSWORD: ${{ secrets.DEV_SSH_PASSWORD }}
+        SHORT_HASH: ${{ env.SHORT_HASH }}
+      run: |
+        sshpass -p $DEV_SSH_PASSWORD ssh -o StrictHostKeyChecking=no $DEV_SSH_USER@$DEV_SSH_HOST << EOF
+          cd /root/dev/frontend-skillfy
+
+          # Update files from GitHub
+          git pull origin main
+
+          # Stop and remove the existing container if it exists
+          CONTAINER_ID=\$(docker ps -q --filter "name=frontend-")
+          if [ -n "\$CONTAINER_ID" ]; then
+            docker stop \$CONTAINER_ID
+            docker rm \$CONTAINER_ID
+          fi
+
+          # Rebuild the Docker image without cache to ensure changes are applied
+          docker-compose build --no-cache
+
+          # Start the new container with a temporary name
+          docker-compose up -d
+
+          # Rename the container to include the commit hash
+          CONTAINER_ID=\$(docker ps -q --filter "ancestor=frontend-:latest")
+          docker rename \$CONTAINER_ID ms-$(basename $(pwd))-$(echo $SHORT_HASH)
+        EOF
