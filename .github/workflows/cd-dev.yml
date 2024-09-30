@@ -6,72 +6,67 @@ on:
   pull_request:
     branches:
       - dev
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
-      - name: Install SSH Client
-        run: sudo apt-get install -y sshpass
+    - name: Install SSH Client
+      run: sudo apt-get install -y sshpass
 
-      # Obter o hash curto do commit e exportá-lo para o ambiente
-      - name: Get Short Commit Hash
-        id: get_commit_hash
-        run: echo "SHORT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+    - name: Get Short Commit Hash
+      id: get_commit_hash
+      run: echo "SHORT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
 
-      # Exibir o hash para verificação
-      - name: Check Short Commit Hash
-        run: echo "Short Commit Hash: ${{ env.SHORT_HASH }}"  # Exibe o hash curto para garantir que está correto
+    - name: Deploy via SSH
+      env:
+        SSH_HOST: ${{ secrets.DEV_SSH_HOST }}
+        SSH_USER: ${{ secrets.DEV_SSH_USER }}
+        SSH_PASSWORD: ${{ secrets.DEV_SSH_PASSWORD }}
+        SHORT_HASH: ${{ env.SHORT_HASH }}
+      run: |
+        SSHPASS=$SSH_PASSWORD sshpass -e ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << EOF
+          cd /root/dev/frontend-skillfy
 
-      - name: Deploy via SSH
-        env:
-          SSH_HOST: ${{ secrets.DEV_SSH_HOST }}
-          SSH_USER: ${{ secrets.DEV_SSH_USER }}
-          SSH_PASSWORD: ${{ secrets.DEV_SSH_PASSWORD }}
-        run: |
-          SSHPASS=$SSH_PASSWORD sshpass -e ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << EOF
-            cd /root/dev/frontend-skillfy
+          # Update files from GitHub
+          git pull origin dev
 
-            # Atualizar arquivos do GitHub
-            git pull origin dev
+          # Create or update the .env.tmp with the HASH
+          echo "HASH=$SHORT_HASH" > .env.tmp
 
-            # Criar ou atualizar o .env.tmp com o HASH
-            echo "HASH=${{ env.SHORT_HASH }}" > .env.tmp
+          # If .env already exists, append its content to .env.tmp
+          if [ -f .env ]; then
+            cat .env >> .env.tmp
+          fi
 
-            # Se o .env já existir, acrescentar seu conteúdo ao .env.tmp
-            if [ -f .env ]; then
-              cat .env >> .env.tmp
-            fi
+          # Move .env.tmp to .env
+          mv .env.tmp .env
 
-            # Mover o .env.tmp para .env
-            mv .env.tmp .env
+          # Stop and remove the existing container if it exists
+          CONTAINER_ID=\$(docker ps -q --filter "name=frontend-")
+          if [ -n "\$CONTAINER_ID" ]; then
+            docker stop \$CONTAINER_ID
+            docker rm \$CONTAINER_ID
+          fi
 
-            # Parar e remover o container existente, se houver
-            CONTAINER_ID=\$(docker ps -q --filter "name=frontend-")
-            if [ -n "\$CONTAINER_ID" ]; then
-              docker stop \$CONTAINER_ID
-              docker rm \$CONTAINER_ID
-            fi
+          # Rebuild the Docker image without cache to ensure changes are applied
+          docker-compose build --no-cache
 
-            # Rebuild da imagem Docker sem cache para garantir que as mudanças sejam aplicadas
-            docker-compose build --no-cache
+          # Start the new container
+          docker-compose up -d
 
-            # Subir o novo container
-            docker-compose up -d
+          # Aguarde um momento para garantir que o contêiner esteja em execução
+          sleep 5
 
-            # Aguarde alguns segundos para garantir que o contêiner esteja em execução
-            sleep 5
+          # Get the container ID of the running container
+          CONTAINER_ID=\$(docker ps -q --filter "name=frontend-")
 
-            # Obter o ID do contêiner em execução
-            CONTAINER_ID=\$(docker ps -q --filter "name=frontend-")
-
-            # Renomear o container para incluir o hash do commit
-            if [ -n "\$CONTAINER_ID" ]; then
-              docker rename \$CONTAINER_ID frontend-${{ env.SHORT_HASH }}
-            else
-              echo "Error: No container found to rename"
-              exit 1
-            fi
-          EOF
+          # Rename the container to include the commit hash
+          if [ -n "\$CONTAINER_ID" ]; then
+            docker rename \$CONTAINER_ID frontend-\$SHORT_HASH
+          else
+            echo "Error: No container found to rename"
+            exit 1
+          fi
+        EOF
