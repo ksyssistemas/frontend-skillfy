@@ -1,5 +1,4 @@
 name: Remote Deployment Dev
-
 on:
   push:
     branches:
@@ -12,49 +11,59 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-      - name: Install SSH Client
-        run: sudo apt-get install -y sshpass
+    - name: Install SSH Client
+      run: sudo apt-get install -y sshpass
 
-      - name: Get Short Commit Hash
-        id: get_commit_hash
-        run: echo "SHORT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+    - name: Get Short Commit Hash
+      id: get_commit_hash
+      run: echo "SHORT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
 
-      - name: Deploy via SSH
-        env:
-          SSH_HOST: ${{ secrets.DEV_SSH_HOST }}
-          SSH_USER: ${{ secrets.DEV_SSH_USER }}
-          SSH_PASSWORD: ${{ secrets.DEV_SSH_PASSWORD }}
-          SHORT_HASH: ${{ env.SHORT_HASH }}
-        run: |
-          sshpass -p $SSH_PASSWORD ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
-            cd /root/dev/frontend-skillfy
+    - name: Deploy via SSH
+      env:
+        SSH_HOST: ${{ secrets.DEV_SSH_HOST }}
+        SSH_USER: ${{ secrets.DEV_SSH_USER }}
+        SSH_PASSWORD: ${{ secrets.DEV_SSH_PASSWORD }}
+        SHORT_HASH: ${{ env.SHORT_HASH }}
+      run: |
+        sshpass -p $SSH_PASSWORD ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << EOF
+          cd /root/dev/frontend-skillfy
 
-            # Atualizando arquivos do GitHub
-            echo "Atualizando repositório..."
-            git pull origin dev
+          # Limpar o arquivo .env.tmp
+          echo "" > .env.tmp
+          
+          # Atualizando arquivos do GitHub
+          git pull origin dev
+          
+          # Parar e remover o contêiner existente, se existir
+          CONTAINER_ID=\$(docker ps -q --filter "name=frontend-")
+          if [ -n "\$CONTAINER_ID" ]; then
+            echo "Parando e removendo o contêiner existente: \$CONTAINER_ID"
+            docker stop \$CONTAINER_ID
+            docker rm \$CONTAINER_ID
+          else
+            echo "Nenhum contêiner existente encontrado"
+          fi
+          
+          # Iniciar o novo contêiner com o nome desejado
+          echo "Iniciando o contêiner..."
+          docker-compose up -d --remove-orphans --force-recreate
 
-            # Parar e remover o contêiner existente, se existir
-            echo "Parando e removendo contêiner existente, se houver..."
-            CONTAINER_ID=$(docker ps -q --filter "name=frontend-")
-            if [ -n "$CONTAINER_ID" ]; then
-              echo "Parando e removendo o contêiner existente: $CONTAINER_ID"
-              docker stop $CONTAINER_ID
-              docker rm $CONTAINER_ID
-            else
-              echo "Nenhum contêiner existente encontrado."
-            fi
-            
-            # Construir a imagem do Docker com o nome baseado no hash
-            echo "Construindo a imagem do Docker com o nome frontend-$SHORT_HASH..."
-            docker build -t frontend-$SHORT_HASH .
+          # Atraso para garantir que o contêiner foi iniciado
+          sleep 5
 
-            # Iniciar o novo contêiner
-            echo "Iniciando o contêiner frontend-$SHORT_HASH..."
-            docker run -d --name frontend-$SHORT_HASH -p 3000:3000 frontend-$SHORT_HASH
+          # Verificar o nome do contêiner e renomear se necessário
+          NEW_CONTAINER_ID=\$(docker ps -q --filter "ancestor=frontend-dev:latest")
+          if [ -n "\$NEW_CONTAINER_ID" ]; then
+            echo "Contêiner iniciado com ID: \$NEW_CONTAINER_ID"
+            echo "Renomeando o contêiner com o hash: $SHORT_HASH"
+            docker rename \$NEW_CONTAINER_ID frontend-\$SHORT_HASH
+          else
+            echo "Erro: Nenhum contêiner encontrado para renomear"
+            exit 1
+          fi
 
-            # Verificar se o contêiner foi criado com sucesso
-            echo "Verificando se o contêiner foi iniciado corretamente..."
-            docker ps -a | grep frontend-$SHORT_HASH || echo "Erro: O contêiner não foi criado."
-          EOF
+          echo "Contêiner renomeado para: frontend-$SHORT_HASH"
+
+        EOF
