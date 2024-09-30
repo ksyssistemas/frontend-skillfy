@@ -16,7 +16,7 @@ jobs:
       - name: Install SSH Client
         run: sudo apt-get install -y sshpass
 
-      # Obter o hash curto do commit e garantir que seja exportado para o ambiente
+      # Obter o hash curto do commit e exportá-lo para o ambiente
       - name: Get Short Commit Hash
         id: get_commit_hash
         run: echo "SHORT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
@@ -30,7 +30,6 @@ jobs:
           SSH_HOST: ${{ secrets.DEV_SSH_HOST }}
           SSH_USER: ${{ secrets.DEV_SSH_USER }}
           SSH_PASSWORD: ${{ secrets.DEV_SSH_PASSWORD }}
-          SHORT_HASH: ${{ env.SHORT_HASH }}  # Usa o hash do commit obtido
         run: |
           SSHPASS=$SSH_PASSWORD sshpass -e ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << EOF
             cd /root/dev/frontend-skillfy
@@ -48,9 +47,6 @@ jobs:
 
             # Mover o .env.tmp para .env
             mv .env.tmp .env
-
-            # Verificar o conteúdo de .env para debug
-            cat .env
 
             # Parar e remover o container existente, se houver
             CONTAINER_ID=\$(docker ps -q --filter "name=frontend-")
