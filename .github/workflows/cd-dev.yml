@@ -33,40 +33,28 @@ jobs:
           # Limpar o arquivo .env.tmp
           echo "" > .env.tmp
 
-          # Adicionar o SHORT_HASH ao .env.tmp sem espaços
-          echo "HASH=$SHORT_HASH" >> .env.tmp
-
           # Atualizando arquivos do GitHub
           git pull origin dev
-
+          
           # Parar e remover o contêiner existente, se existir
-          CONTAINER_ID=\$(docker ps -q --filter "name=frontend-")
-          if [ -n "\$CONTAINER_ID" ]; then
-            echo "Parando e removendo o contêiner existente: \$CONTAINER_ID"
-            docker stop \$CONTAINER_ID
-            docker rm \$CONTAINER_ID
+          CONTAINER_ID=$(docker ps -q --filter "name=frontend-")
+          if [ -n "$CONTAINER_ID" ]; then
+            echo "Parando e removendo o contêiner existente: $CONTAINER_ID"
+            docker stop $CONTAINER_ID
+            docker rm $CONTAINER_ID
           else
             echo "Nenhum contêiner existente encontrado"
           fi
-
-          # Reconstruir a imagem Docker sem cache
-          docker-compose build --no-cache
-
-          # Iniciar o novo contêiner com o nome desejado
+          
+          # Limpar e criar o .env.tmp
+          echo "" > .env.tmp
+          echo "HASH=$SHORT_HASH" >> .env.tmp
+          
+          # Iniciar o novo contêiner com o nome desejado usando o arquivo .env.tmp
           echo "Iniciando o contêiner..."
           docker-compose up -d --remove-orphans --force-recreate
+          
+          # Exibir o nome do contêiner que foi criado
+          echo "Contêiner iniciado com o nome: frontend-$SHORT_HASH"
 
-          # Atraso para garantir que o contêiner foi iniciado
-          sleep 5
-
-          # Verificar o nome do contêiner
-          NEW_CONTAINER_ID=\$(docker ps -q --filter "ancestor=frontend-dev:latest")
-          if [ -n "\$NEW_CONTAINER_ID" ]; then
-            echo "Contêiner iniciado com ID: \$NEW_CONTAINER_ID"
-            echo "Renomeando o contêiner com o hash: \$SHORT_HASH"
-            docker rename \$NEW_CONTAINER_ID frontend-\$SHORT_HASH
-          else
-            echo "Erro: Nenhum contêiner encontrado para renomear"
-            exit 1
-          fi
         EOF
