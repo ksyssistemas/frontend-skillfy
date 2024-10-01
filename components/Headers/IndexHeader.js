@@ -32,7 +32,7 @@ import {
 function IndexHeader() {
   const slidesData = [
     {
-      image: require("assets/img/brand/Fundo-banner.png"), // Imagem que está no fundo da tela
+      image: require("assets/img/brand/fundo-banner.png"), // Imagem que está no fundo da tela
       title: "A gestão de pessoas nunca foi tão fácil.",
       subtitle: "Conheça a plataforma SkillFy.",
       description:
@@ -69,7 +69,7 @@ function IndexHeader() {
         key={index}
       >
         <div
-          className="header bg-dark pt-7 pb-8"
+          className="header bg-purple-sk pt-7 pb-8"
           style={{
             backgroundImage: `url(${slide.image})`,
             backgroundSize: "cover",
@@ -79,9 +79,9 @@ function IndexHeader() {
           <Container>
             <div className="header-body">
               <Row className="align-items-center">
-                <Col lg="7">
+                <Col lg="8">
                   <div className="pr-5">
-                    <h1 className="display-3 text-white font-weight-bold mb-0 mr--6">
+                    <h1 className="display-3 text-white font-weight-bold mb-0 text-outline-right-orange">
                       {slide.title}
                       <br />
                       {slide.subtitle}
@@ -89,8 +89,8 @@ function IndexHeader() {
                     <p className="text-white mt-5">{slide.description}</p>
                     <div className="mt-5">
                       <Button
-                        className="text-indigo my-2"
-                        color="success"
+                        className="text-purple-sk my-2 rounded-pill"
+                        color="green-sk"
                         href="/auth/pricing"
                       >
                         Conheça nossos planos
@@ -98,16 +98,28 @@ function IndexHeader() {
                     </div>
                   </div>
                 </Col>
-                <Col lg="5">
+                <Col lg="4">
                   <Row className="pt-5">
                     <Col md="6">
-                      <img alt="..." className="img" src={slide.icon} />
+                      <img alt="..." className="img d-none d-md-block" src={slide.icon} />
                     </Col>
                   </Row>
                 </Col>
               </Row>
             </div>
           </Container>
+        </div>
+        <div className="separator separator-bottom separator-skew zindex-100">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="none"
+            version="1.1"
+            viewBox="0 0 2560 100"
+            x="0"
+            y="0"
+          >
+            <polygon points="2560 0 2560 100 0 100" fill="#e1dce8" /> 
+          </svg>
         </div>
       </CarouselItem>
     );
@@ -133,14 +145,14 @@ function IndexHeader() {
           onClick={previous}
         >
           <span
-            className="carousel-control-prev-icon"
+            className="carousel-control-prev-icon d-none d-md-block"
             aria-hidden="true"
           />
           <span className="sr-only">Previous</span>
         </a>
         <a className="carousel-control-next" role="button" onClick={next}>
           <span
-            className="carousel-control-next-icon"
+            className="carousel-control-next-icon d-none d-md-block"
             aria-hidden="true"
           />
           <span className="sr-only">Next</span>

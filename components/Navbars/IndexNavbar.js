@@ -95,14 +95,14 @@ function AdminNavbar() {
               <NavItem>
                 <Link href="/auth/pricing">
                   <NavLink href="#pablo">
-                    <span className="nav-link-inner--text text-indigo">Planos</span>
+                    <span className="nav-link-inner--text text-purple-sk">Planos</span>
                   </NavLink>
                 </Link>
               </NavItem>
               <NavItem>
                 <Link href="/auth/login">
                   <NavLink href="#pablo">
-                    <span className="nav-link-inner--text text-indigo">Sobre a SkillFy</span>
+                    <span className="nav-link-inner--text text-purple-sk">Sobre a SkillFy</span>
                   </NavLink>
                 </Link>
               </NavItem>
@@ -118,8 +118,8 @@ function AdminNavbar() {
               </NavItem>
               <NavItem className="d-none d-lg-block ml-lg-4">
                 <Button
-                  className="btn"
-                  color="primary"
+                  className="btn rounded-pill"
+                  color="purple-sk"
                   href="auth/login"
                 >
                   <span className="nav-link-inner--text">Entrar</span>
