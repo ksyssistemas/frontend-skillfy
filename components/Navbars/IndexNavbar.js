@@ -35,17 +35,17 @@ function AdminNavbar() {
   return (
     <>
       <Navbar
-        className="navbar-horizontal navbar-main navbar-dark bg-info"
+        className="navbar-horizontal navbar-main navbar-light"
         expand="lg"
         id="navbar-main"
       >
         <Container>
-          <Link href="/">
+          <Link href="/pages/index">
             <span>
               <NavbarBrand href="#pablo">
                 <img
                   alt="..."
-                  src={require("assets/img/brand/nextjs_argon_white.png")}
+                  src={require("assets/img/brand/skillfy-logo-pageseller.png")}
                 />
               </NavbarBrand>
             </span>
@@ -71,7 +71,7 @@ function AdminNavbar() {
               <Row>
                 <Col className="collapse-brand" xs="6">
                   <Link href="/admin/dashboard">
-                    <img alt="..." src={require("assets/img/brand/blue.png")} />
+                    <img alt="..." src={require("assets/img/brand/skillfy-logo-pageseller.png")} />
                   </Link>
                 </Col>
                 <Col className="collapse-close" xs="6">
@@ -91,159 +91,40 @@ function AdminNavbar() {
                 </Col>
               </Row>
             </div>
-            <Nav className="mr-auto" navbar>
-              {/*
-              <NavItem>
-                <Link href="/admin/dashboard">
-                  <NavLink href="#pablo">
-                    <span className="nav-link-inner--text">Dashboard</span>
-                  </NavLink>
-                </Link>
-              </NavItem>
-              */}
+            <Nav className="align-items-lg-center ml-lg-auto mr--6" navbar>
               <NavItem>
                 <Link href="/auth/pricing">
                   <NavLink href="#pablo">
-                    <span className="nav-link-inner--text">Planos</span>
+                    <span className="nav-link-inner--text text-purple-sk">Planos</span>
                   </NavLink>
                 </Link>
               </NavItem>
-              <NavItem>
-                <Link href="/auth/checkout">
-                  <NavLink href="#pablo">
-                    <span className="nav-link-inner--text">Checkout</span>
-                  </NavLink>
-                </Link>
-              </NavItem>
-              {/** 
               <NavItem>
                 <Link href="/auth/login">
                   <NavLink href="#pablo">
-                    <span className="nav-link-inner--text">Login</span>
-                  </NavLink>
-                </Link>
-              </NavItem>
-              
-              <NavItem>
-                <Link href="/auth/register">
-                  <NavLink href="#pablo">
-                    <span className="nav-link-inner--text">Register</span>
-                  </NavLink>
-                </Link>
-              </NavItem>
-
-
-              <NavItem>
-                <Link href="/auth/lock">
-                  <NavLink href="#pablo">
-                    <span className="nav-link-inner--text">Lock</span>
-                  </NavLink>
-                </Link>
-              </NavItem>
-
-              
-              <NavItem>
-                <Link href="/performance/appraisal-cycle-list">
-                  <NavLink href="#pablo">
-                    <span className="nav-link-inner--text">Empresa</span>
-                  </NavLink>
-                </Link>
-              </NavItem>
-              <NavItem>
-                <Link href="/employee/profile">
-                  <NavLink href="#pablo">
-                    <span className="nav-link-inner--text">Colaborador</span>
-                  </NavLink>
-                </Link>
-              </NavItem>
-              */}
-              <NavItem>
-                <Link href="/auth/login">
-                  <NavLink href="#pablo">
-                    <span className="nav-link-inner--text">Login</span>
+                    <span className="nav-link-inner--text text-purple-sk">Sobre a SkillFy</span>
                   </NavLink>
                 </Link>
               </NavItem>
             </Nav>
             <hr className="d-lg-none" />
             <Nav className="align-items-lg-center ml-lg-auto" navbar>
-              <NavItem>
-                <NavLink
-                  className="nav-link-icon"
-                  href="https://www.facebook.com/creativetim?ref=creative-tim"
-                  id="tooltip601201423"
-                  target="_blank"
-                >
-                  <i className="fab fa-facebook-square" />
-                  <span className="nav-link-inner--text d-lg-none">
-                    Facebook
-                  </span>
-                </NavLink>
-                <UncontrolledTooltip delay={0} target="tooltip601201423">
-                  Like us on Facebook
-                </UncontrolledTooltip>
+              <NavItem className="mr--4">
+                <Link href="#">
+                  <NavLink href="#">
+                    <span className="nav-link-inner--text">Já possuí uma conta?</span>
+                  </NavLink>
+                </Link>
               </NavItem>
-              <NavItem>
-                <NavLink
-                  className="nav-link-icon"
-                  href="https://www.instagram.com/creativetimofficial?ref=creative-tim"
-                  id="tooltip871243015"
-                  target="_blank"
-                >
-                  <i className="fab fa-instagram" />
-                  <span className="nav-link-inner--text d-lg-none">
-                    Instagram
-                  </span>
-                </NavLink>
-                <UncontrolledTooltip delay={0} target="tooltip871243015">
-                  Follow us on Instagram
-                </UncontrolledTooltip>
-              </NavItem>
-              <NavItem>
-                <NavLink
-                  className="nav-link-icon"
-                  href="https://twitter.com/creativetim?ref=creative-tim"
-                  id="tooltip366258619"
-                  target="_blank"
-                >
-                  <i className="fab fa-twitter-square" />
-                  <span className="nav-link-inner--text d-lg-none">
-                    Twitter
-                  </span>
-                </NavLink>
-                <UncontrolledTooltip delay={0} target="tooltip366258619">
-                  Follow us on Twitter
-                </UncontrolledTooltip>
-              </NavItem>
-              <NavItem>
-                <NavLink
-                  className="nav-link-icon"
-                  href="https://github.com/creativetimofficial?ref=creative-tim"
-                  id="tooltip931502898"
-                  target="_blank"
-                >
-                  <i className="fab fa-github" />
-                  <span className="nav-link-inner--text d-lg-none">Github</span>
-                </NavLink>
-                <UncontrolledTooltip delay={0} target="tooltip931502898">
-                  Star us on Github
-                </UncontrolledTooltip>
-              </NavItem>
-              {/*
               <NavItem className="d-none d-lg-block ml-lg-4">
                 <Button
-                  className="btn-neutral btn-icon"
-                  color="default"
-                  href="https://www.creative-tim.com/product/nextjs-argon-dashboard-pro?ref=njsadp-index-navbar"
-                  target="_blank"
+                  className="btn rounded-pill"
+                  color="purple-sk"
+                  href="auth/login"
                 >
-                  <span className="btn-inner--icon">
-                    <i className="fas fa-shopping-cart mr-2" />
-                  </span>
-                  <span className="nav-link-inner--text">Purchase now</span>
+                  <span className="nav-link-inner--text">Entrar</span>
                 </Button>
               </NavItem>
-            */}
             </Nav>
           </UncontrolledCollapse>
         </Container>
