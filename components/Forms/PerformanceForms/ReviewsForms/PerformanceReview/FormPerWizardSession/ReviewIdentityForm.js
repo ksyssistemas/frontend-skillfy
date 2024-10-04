@@ -328,6 +328,8 @@ export function ReviewIdentityForm({ updateSessionData, sessionData = {} }) {
         updateSessionData
     ]);
 
+    console.log("Renderizou!");
+
     return (
         <Card>
             <CardBody>

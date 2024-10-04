@@ -76,7 +76,7 @@ const useCreateAdmin = (handleShowAdminUserRegister) => {
     }
 
     const handleSubmit = async (firstName, lastName, birthdate, emailAddress, confirmPassword, phoneNumber) => {
-
+        console.log(`Bezalel = ${process.env.NEXT_PUBLIC_ADMINISTRATOR}`)
         if (firstName, lastName, birthdate, emailAddress, confirmPassword, phoneNumber) {
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_ADMINISTRATOR}`, {

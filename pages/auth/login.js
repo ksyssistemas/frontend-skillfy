@@ -60,7 +60,6 @@ function Login() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("DADOS DE LOGIN: ", data);
         handleSaveAuthenticationDataLoggedInUser(data);
         handleCustomerIdToLinkToEmployee(data.data.id);
 
