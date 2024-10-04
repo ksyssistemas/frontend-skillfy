@@ -224,6 +224,7 @@ function CustomerUserRegister({ handleShowCustomerUserRegister }) {
         }
         if (step === 2 && individualEmployerIdNumberState === "valid" && checkboxState === "valid") {
             handleValidateAddClientCompanyForm(handleShowCustomerUserRegister);
+            console.log(`ROTA: ${process.env.NEXT_PUBLIC_CONTACT_PERSON}`)
         }
     };
 
