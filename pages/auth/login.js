@@ -27,6 +27,7 @@ import Auth from "layouts/Auth.js";
 import { useAuth } from '../../hooks/useAuth';
 import { useRouter } from 'next/router';
 import { EmployeeContext } from "../../contexts/RecordsContext/EmployeeContext";
+import "assets/css/styles/login.css"
 
 function Login() {
 
@@ -113,12 +114,10 @@ function Login() {
 
   return (
     <>
-      <div className="bg-white">
+      <div className="bg-image-login bg-white">
         <section 
           style={{
           backgroundImage: `url(${require("assets/img/brand/login-background-image.png")})`,
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center',
         }}
         >
           {/* <AuthHeader title="" lead="" /> */}
@@ -143,7 +142,7 @@ function Login() {
                             })}
                           >
                             <Label for="emailInput">Login</Label>
-                            <InputGroup className="input-group-merge input-group-alternative border border-primary">
+                            <InputGroup className="input-group-merge input-group-alternative border border-purple-sk">
                               {/* <InputGroupAddon addonType="prepend">
                                 <InputGroupText>
                                   <i className="ni ni-email-83" />
@@ -165,7 +164,7 @@ function Login() {
                             })}
                           >
                             <Label for="emailInput">Senha</Label>
-                            <InputGroup className="input-group-merge input-group-alternative border border-primary">
+                            <InputGroup className="input-group-merge input-group-alternative border border-purple-sk">
                               <Input
                                 id="senhaInput"
                                 placeholder="Senha"
@@ -179,7 +178,7 @@ function Login() {
                           <Row className="justify-content-between mt--3 ml-1 mr-1">
                             <div className="d-flex align-items-center">
                               <a
-                                  className="text-muted text-indigo"
+                                  className="text-purple-sk"
                                   href="#pablo"
                                   onClick={(e) => e.preventDefault()}
                               >
@@ -187,7 +186,7 @@ function Login() {
                               </a>
                             </div>
                             <div className="text-right">
-                              <Button className="my-4 rounded-pill border-0 bg-indigo text-white" type="button" onClick={handleSubmit}>
+                              <Button className="my-4 rounded-pill border-0 bg-purple-sk text-white" type="button" onClick={handleSubmit}>
                                 Entrar
                               </Button>
                             </div>
