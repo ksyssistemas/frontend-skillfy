@@ -54,7 +54,7 @@ jobs:
           SHORT_HASH: ${{ env.SHORT_HASH }}
         run: |
           sshpass -p $SSH_PASSWORD ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << EOF
-            cd /root/dev/frontend-skillfy
+            cd /root/dev/frontend-skillfy || exit
 
             # Limpar o arquivo .env.tmp
             echo "" > .env.tmp
@@ -74,7 +74,7 @@ jobs:
             
             # Iniciar o novo contêiner com o nome desejado
             echo "Iniciando o contêiner..."
-            docker-compose up -d --remove-orphans --force-recreate
+            docker-compose up -d --remove-orphans --force-recreate || { echo "Erro ao iniciar o contêiner"; exit 1; }
 
             # Atraso para garantir que o contêiner foi iniciado
             sleep 5
@@ -93,3 +93,4 @@ jobs:
             echo "Contêiner renomeado para: frontend-$SHORT_HASH"
 
           EOF
+
