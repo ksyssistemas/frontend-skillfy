@@ -114,119 +114,101 @@ function Login() {
 
   return (
     <>
-    <div className="bg-white">
-    <section 
-      style={{
-      backgroundImage: `url(${require("assets/img/brand/login-background-image10.png")})`,
-      backgroundRepeat: 'no-repeat',
-      backgroundPosition: 'center',
-      // backgroundSize: 'contain'
-    }}>
-    {/* <AuthHeader title="" lead="" /> */}
-      <div className="d-flex align-items-center justify-content-center" style={{height:'100vh'}}>
-      <Container>
-        <Row>
-          <Col md="6">
-            <Col md="10">
-              <Card className="bg-white border-0 mb-0 mt-3">
-                <CardBody className="px-lg-5 py-lg-4">
-                  <Row className="justify-content-center mb-5 pt-3">
-                    <img
-                      alt="..."
-                      src={require("assets/img/brand/skillfy-logo-login.png")}
-                    />
-                  </Row>
-                  <Form role="form">
-                    {erro && <p>{erro}</p>}
-                    <FormGroup
-                      className={classnames("mb-3", {
-                        focused: focusedEmail,
-                      })}
-                    >
-                      <Label for="emailInput">Login</Label>
-                      <InputGroup className="input-group-merge input-group-alternative border border-primary">
-                        {/* <InputGroupAddon addonType="prepend">
-                          <InputGroupText>
-                            <i className="ni ni-email-83" />
-                          </InputGroupText>
-                        </InputGroupAddon> */}
-                        <Input
-                          id="emailInput"
-                          placeholder="E-mail"
-                          type="email"
-                          onFocus={() => setfocusedEmail(true)}
-                          onBlur={() => setfocusedEmail(true)}
-                          onChange={(e) => handleInputChange('email', e.target.value)}
-                        />
-                      </InputGroup>
-                    </FormGroup>
-                    <FormGroup
-                      className={classnames({
-                        focused: focusedPassword,
-                      })}
-                    >
-                      <Label for="emailInput">Senha</Label>
-                      <InputGroup className="input-group-merge input-group-alternative border border-primary">
-                        {/* <InputGroupAddon addonType="prepend">
-                          <InputGroupText>
-                            <i className="ni ni-lock-circle-open" />
-                          </InputGroupText>
-                        </InputGroupAddon> */}
-                        <Input
-                          id="senhaInput"
-                          placeholder="Senha"
-                          type="password"
-                          onFocus={() => setfocusedPassword(true)}
-                          onBlur={() => setfocusedPassword(true)}
-                          onChange={(e) => handleInputChange('password', e.target.value)}
-                        />
-                      </InputGroup>
-                    </FormGroup>
-                    {/* <div className="custom-control custom-control-alternative custom-checkbox">
-                      <input
-                        className="custom-control-input"
-                        id=" customCheckLogin"
-                        type="checkbox"
-                      />
-                      <label
-                        className="custom-control-label"
-                        htmlFor=" customCheckLogin"
-                      >
-                        <span className="text-muted">Lembre de mim</span>
-                      </label>
-                    </div> */}
-                    <Row className="justify-content-between mt--3 ml-1 mr-1">
-                      <div className="d-flex align-items-center">
-                        <a
-                            className="text-muted text-indigo"
-                            href="#pablo"
-                            onClick={(e) => e.preventDefault()}
-                        >
-                          <small>Esqueci minha senha</small>
-                        </a>
-                      </div>
-                      <div className="text-right">
-                        <Button className="my-4 rounded-pill border-0 bg-indigo text-white" type="button" onClick={handleSubmit}>
-                          Entrar
-                        </Button>
-                      </div>
-                    </Row>
-                  </Form>
-                  {/** End form */}
-                </CardBody>
-              </Card>
-            </Col>
-          </Col>
-          <Col md="6" className="d-none d-md-block d-lg-block">
-            <img
-              alt="..."
-              src={require("assets/img/brand/icon-login.png")}
-            />
-          </Col>
-        </Row>
-      </Container>
-      </div>
-      </section>
+      <div className="bg-white">
+        <section 
+          style={{
+          backgroundImage: `url(${require("assets/img/brand/login-background-image.png")})`,
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+        }}
+        >
+          {/* <AuthHeader title="" lead="" /> */}
+          <div className="d-flex align-items-center justify-content-center" style={{height:'100vh'}}>
+            <Container>
+              <Row>
+                <Col md="6">
+                  <Col md="10">
+                    <Card className="bg-white border-0 mb-0 mt-3">
+                      <CardBody className="px-lg-5 py-lg-4">
+                        <Row className="justify-content-center mb-5 pt-3">
+                          <img
+                            alt="..."
+                            src={require("assets/img/brand/skillfy-logo-login.png")}
+                          />
+                        </Row>
+                        <Form role="form">
+                          {erro && <p>{erro}</p>}
+                          <FormGroup
+                            className={classnames("mb-3", {
+                              focused: focusedEmail,
+                            })}
+                          >
+                            <Label for="emailInput">Login</Label>
+                            <InputGroup className="input-group-merge input-group-alternative border border-primary">
+                              {/* <InputGroupAddon addonType="prepend">
+                                <InputGroupText>
+                                  <i className="ni ni-email-83" />
+                                </InputGroupText>
+                              </InputGroupAddon> */}
+                              <Input
+                                id="emailInput"
+                                placeholder="E-mail"
+                                type="email"
+                                onFocus={() => setfocusedEmail(true)}
+                                onBlur={() => setfocusedEmail(true)}
+                                onChange={(e) => handleInputChange('email', e.target.value)}
+                              />
+                            </InputGroup>
+                          </FormGroup>
+                          <FormGroup
+                            className={classnames({
+                              focused: focusedPassword,
+                            })}
+                          >
+                            <Label for="emailInput">Senha</Label>
+                            <InputGroup className="input-group-merge input-group-alternative border border-primary">
+                              <Input
+                                id="senhaInput"
+                                placeholder="Senha"
+                                type="password"
+                                onFocus={() => setfocusedPassword(true)}
+                                onBlur={() => setfocusedPassword(true)}
+                                onChange={(e) => handleInputChange('password', e.target.value)}
+                              />
+                            </InputGroup>
+                          </FormGroup>
+                          <Row className="justify-content-between mt--3 ml-1 mr-1">
+                            <div className="d-flex align-items-center">
+                              <a
+                                  className="text-muted text-indigo"
+                                  href="#pablo"
+                                  onClick={(e) => e.preventDefault()}
+                              >
+                                <small>Esqueci minha senha</small>
+                              </a>
+                            </div>
+                            <div className="text-right">
+                              <Button className="my-4 rounded-pill border-0 bg-indigo text-white" type="button" onClick={handleSubmit}>
+                                Entrar
+                              </Button>
+                            </div>
+                          </Row>
+                        </Form>
+                        {/** End form */}
+                      </CardBody>
+                    </Card>
+                  </Col>
+                </Col>
+                <Col md="6" className="d-none d-md-block d-lg-block">
+                  <img
+                    alt="..."
+                    src={require("assets/img/brand/icon-login.png")}
+                  />
+                </Col>
+              </Row>
+            </Container>
+          </div>
+        </section>
       </div>
     </>
   );
