@@ -28,6 +28,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useRouter } from 'next/router';
 import { EmployeeContext } from "../../contexts/RecordsContext/EmployeeContext";
 import "assets/css/styles/login.css"
+import useEmailValidation from '../../hooks/RecordsHooks/useEmailValidation';
 
 function Login() {
 
@@ -49,6 +50,8 @@ function Login() {
   const [erro, setErro] = useState('');
 
   const { handleSaveAuthenticationDataLoggedInUser } = useAuth();
+
+  const { email, emailError, loading, handleEmailChange } = useEmailValidation();
 
   const handleInputChange = (fieldName, value) => {
     setFormData({ ...formData, [fieldName]: value });
@@ -177,6 +180,7 @@ function Login() {
               <Col>
                 <Row>
                   <Col sm = "12" md="12" lg = "6">
+                  <div className="d-flex justify-content-center align-items-center" style={{ height: '100%' }}>
                     <Col sm = "10" md="10" lg = "10">
                       <Card className="bg-white border-0 mb-0 mt-3">
                         <CardBody className="px-lg-5 py-lg-4">
@@ -219,7 +223,7 @@ function Login() {
                                       placeholder="Senha"
                                       type="password"
                                       onFocus={() => setfocusedPassword(true)}
-                                      onBlur={() => setfocusedPassword(true)}
+                                      // onBlur={() => setfocusedPassword(true)}
                                       onChange={(e) => handleInputChange('password', e.target.value)}
                                     />
                                   </InputGroup>
@@ -229,15 +233,20 @@ function Login() {
                               <>
                               {emailForgot && (
                                 <FormGroup className="mb-3">
+                                  <p className="text-center text-sm mt--3">Com este email informado você irá receber um código secreto para redefinir sua senha.</p>
                                   <Label for="emailInput">E-mail para recuperação</Label>
                                   <InputGroup className="input-group-merge input-group-alternative border border-purple-sk">
-                                    <Input
-                                      id="emailInput"
-                                      placeholder="Digite seu e-mail"
-                                      type="email"
-                                      onChange={(e) => handleInputChange('email', e.target.value)}
-                                    />
+                                        <Input
+                                          id="emailInput"
+                                          placeholder="Digite seu e-mail"
+                                          type="email"
+                                          value={email}
+                                          onChange={handleEmailChange}
+                                          disabled={loading}
+                                        />
                                   </InputGroup>
+                                  {emailError && <p style={{ color: 'red' }}>{emailError}</p>}
+                                  {loading && <p>Verificando e-mail...</p>}
                                 </FormGroup>
                               )}
                                 {forgotPassword && (
@@ -352,6 +361,7 @@ function Login() {
                         </CardBody>
                       </Card>
                     </Col>
+                    </div>
                   </Col>
                   <Col md="6" className="d-none d-sm-none d-md-none d-lg-block">
                     <div className="d-flex justify-content-center align-items-center" style={{ height: '100%' }}>
