@@ -51,7 +51,7 @@ function Login() {
 
   const { handleSaveAuthenticationDataLoggedInUser } = useAuth();
 
-  const { email, emailError, loading, handleEmailChange } = useEmailValidation();
+  const { email, setEmail, emailError, loading, validateEmailFormat, validateEmailInSystem } = useEmailValidation();
 
   const handleInputChange = (fieldName, value) => {
     setFormData({ ...formData, [fieldName]: value });
@@ -66,11 +66,23 @@ function Login() {
       );
       return;
     }
-    setErro(false);
-    setFormLogin(false);
-    setForgotPassword(true);
-    setEmailForgot(false);
-    console.log("Enviar email de recuperação para: ", formData.email);
+
+    if (!validateEmailFormat(formData.email)) {
+      setErro(
+        <Alert color="warning" style={{ textAlign: 'center' }}>
+          <strong>Formato de e-mail inválido</strong>
+        </Alert>
+      );
+      return;
+    }
+
+    const isEmailValid = await validateEmailInSystem(formData.email);
+    if (isEmailValid) {
+      console.log('Enviar email de recuperação para:', formData.email);
+      setFormLogin(false);
+      setForgotPassword(true);
+      setEmailForgot(false);
+    }
   }
 
   const handleSubmit = async () => {
@@ -240,8 +252,8 @@ function Login() {
                                           id="emailInput"
                                           placeholder="Digite seu e-mail"
                                           type="email"
-                                          value={email}
-                                          onChange={handleEmailChange}
+                                          value={formData.email}
+                                          onChange={(e) => handleInputChange('email', e.target.value)}
                                           disabled={loading}
                                         />
                                   </InputGroup>

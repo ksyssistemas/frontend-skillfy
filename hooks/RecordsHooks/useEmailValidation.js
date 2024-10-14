@@ -1,10 +1,10 @@
-import { useState, useEffect  } from 'react';
+import { useState } from 'react';
 
 function useEmailValidation() {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [debouncedEmail, setDebouncedEmail] = useState(email);  
+  // const [debouncedEmail, setDebouncedEmail] = useState(email);  
 
     const validateEmailFormat = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -13,21 +13,23 @@ function useEmailValidation() {
 
   const validateEmailInSystem = async (email) => {
     setLoading(true);
+    console.log(`${process.env.NEXT_PUBLIC_VALIDATE_EMAIL}/${email}`);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/email/forgetPassword/${email}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_VALIDATE_EMAIL}/${email}`, {
         method: 'POST', 
         headers: {
           'Content-Type': 'application/json',
         },
       });
-
-      const data = await response.json();
-
-      if (data.exists) {
-        setEmailError('');
-      } else {
-        setEmailError('Este e-mail não está cadastrado no sistema.');
-      }
+    console.log("RESPONSE:",response);
+    if(response.status == 200 && response.statusText == "OK" ){
+       console.log("Enviado com sucesso!");
+       return true;
+    } else if (response.status == 404){
+      console.log("Page not found");
+      setEmailError("E-mail inválido. Tente novamente.");
+      return false; 
+    } 
     } catch (error) {
       console.error('Erro ao verificar o e-mail:', error);
       setEmailError('Erro ao verificar o e-mail. Tente novamente.');
@@ -36,31 +38,7 @@ function useEmailValidation() {
     }
   };
 
-  const handleEmailChange = (e) => {
-    const emailInput = e.target.value;
-    setEmail(emailInput);
-    setEmailError(''); 
-  };
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      if (validateEmailFormat(debouncedEmail)) {
-        validateEmailInSystem(debouncedEmail);
-      } else {
-        setEmailError('Formato de e-mail inválido.');
-      }
-    }, 1000); 
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [debouncedEmail]); 
-
-  useEffect(() => {
-    setDebouncedEmail(email);
-  }, [email]);
-
-  return { email, setEmail, emailError, loading, handleEmailChange };
+  return { email, setEmail, emailError, loading, validateEmailFormat, validateEmailInSystem };
 }
 
 export default useEmailValidation;
