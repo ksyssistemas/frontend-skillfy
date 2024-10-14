@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect  } from 'react';
 
 function useEmailValidation() {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [debouncedEmail, setDebouncedEmail] = useState(email);  
 
     const validateEmailFormat = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -35,18 +36,29 @@ function useEmailValidation() {
     }
   };
 
-  const handleEmailChange = async (e) => {
+  const handleEmailChange = (e) => {
     const emailInput = e.target.value;
     setEmail(emailInput);
-  
-    if (!validateEmailFormat(emailInput)) {
-      setEmailError('Formato de e-mail inválido.');
-    } else {
-      setEmailError('');
-      await validateEmailInSystem(emailInput);
-    }
+    setEmailError(''); 
   };
-  
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (validateEmailFormat(debouncedEmail)) {
+        validateEmailInSystem(debouncedEmail);
+      } else {
+        setEmailError('Formato de e-mail inválido.');
+      }
+    }, 1000); 
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [debouncedEmail]); 
+
+  useEffect(() => {
+    setDebouncedEmail(email);
+  }, [email]);
 
   return { email, setEmail, emailError, loading, handleEmailChange };
 }
