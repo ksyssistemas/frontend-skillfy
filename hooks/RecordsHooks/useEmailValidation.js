@@ -3,6 +3,7 @@ import { useState } from 'react';
 function useEmailValidation() {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [emailSuccess, setEmailSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   // const [debouncedEmail, setDebouncedEmail] = useState(email);  
 
@@ -24,6 +25,7 @@ function useEmailValidation() {
     console.log("RESPONSE:",response);
     if(response.status == 200 && response.statusText == "OK" ){
        console.log("Enviado com sucesso!");
+       setEmailSuccess("E-mail enviado com sucesso!")
        return true;
     } else if (response.status == 404){
       console.log("Page not found");
@@ -38,7 +40,7 @@ function useEmailValidation() {
     }
   };
 
-  return { email, setEmail, emailError, loading, validateEmailFormat, validateEmailInSystem };
+  return { email, setEmail, emailSuccess, emailError, loading, validateEmailFormat, validateEmailInSystem };
 }
 
 export default useEmailValidation;

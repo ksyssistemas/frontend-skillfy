@@ -48,10 +48,11 @@ function Login() {
   });
 
   const [erro, setErro] = useState('');
+  const [success, setSuccess] = useState('');
 
   const { handleSaveAuthenticationDataLoggedInUser } = useAuth();
 
-  const { email, setEmail, emailError, loading, validateEmailFormat, validateEmailInSystem } = useEmailValidation();
+  const { email, setEmail, emailSuccess, emailError, loading, validateEmailFormat, validateEmailInSystem } = useEmailValidation();
 
   const handleInputChange = (fieldName, value) => {
     setFormData({ ...formData, [fieldName]: value });
@@ -82,6 +83,12 @@ function Login() {
       setFormLogin(false);
       setForgotPassword(true);
       setEmailForgot(false);
+      setErro(false);
+      setSuccess(
+        <Alert color="success" style={{ textAlign: 'center' }}>
+        <strong>{emailSuccess}</strong>
+      </Alert>
+      )
     }
   }
 
@@ -257,12 +264,15 @@ function Login() {
                                           disabled={loading}
                                         />
                                   </InputGroup>
-                                  {emailError && <p style={{ color: 'red' }}>{emailError}</p>}
+                                  {!loading && emailError && <p style={{ color: 'red' }}>{emailError}</p>}
                                   {loading && <p>Verificando e-mail...</p>}
                                 </FormGroup>
                               )}
                                 {forgotPassword && (
                                   <>
+                                    {/* <Alert color="success" style={{ textAlign: 'center' }}>
+                                      <strong>{emailSuccess}</strong>
+                                    </Alert> */}
                                     <FormGroup className="mb-3">
                                       <Label for="tempCodeInput">Código Temporário</Label>
                                       <InputGroup className="input-group-merge input-group-alternative border border-purple-sk">
@@ -306,6 +316,7 @@ function Login() {
                                       e.preventDefault();
                                       setEmailForgot(true);
                                       setFormLogin(false);
+                                      setErro(false);
                                     }}
                                   >
                                     <small>Esqueci minha senha</small>
