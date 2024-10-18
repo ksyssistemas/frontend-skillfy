@@ -95,14 +95,21 @@ function AdminNavbar() {
               <NavItem>
                 <Link href="/auth/pricing">
                   <NavLink href="#pablo">
+                    <span className="nav-link-inner--text text-purple-sk">Soluções</span>
+                  </NavLink>
+                </Link>
+              </NavItem>
+              <NavItem>
+                <Link href="/auth/pricing">
+                  <NavLink href="#pablo">
                     <span className="nav-link-inner--text text-purple-sk">Planos</span>
                   </NavLink>
                 </Link>
               </NavItem>
               <NavItem>
-                <Link href="/auth/login">
+                <Link href="/auth/aboutus">
                   <NavLink href="#pablo">
-                    <span className="nav-link-inner--text text-purple-sk">Sobre a SkillFy</span>
+                    <span className="nav-link-inner--text text-purple-sk">Sobre</span>
                   </NavLink>
                 </Link>
               </NavItem>
