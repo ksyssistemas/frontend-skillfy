@@ -176,25 +176,25 @@ export function ReviewIdentityForm({ updateSessionData, sessionData = {} }) {
         }
     };
 
-    const getClassNameReactDatetimeDays = (date) => {
-        if (startDate && endDate) {
-        }
-        if (startDate && endDate && startDate._d + "" !== endDate._d + "") {
-            if (
-                new Date(endDate._d + "") > new Date(date._d + "") &&
-                new Date(startDate._d + "") < new Date(date._d + "")
-            ) {
-                return " middle-date";
-            }
-            if (endDate._d + "" === date._d + "") {
-                return " end-date";
-            }
-            if (startDate._d + "" === date._d + "") {
-                return " start-date";
-            }
-        }
-        return "";
-    };
+    // const getClassNameReactDatetimeDays = (date) => {
+    //     if (startDate && endDate) {
+    //     }
+    //     if (startDate && endDate && startDate._d + "" !== endDate._d + "") {
+    //         if (
+    //             new Date(endDate._d + "") > new Date(date._d + "") &&
+    //             new Date(startDate._d + "") < new Date(date._d + "")
+    //         ) {
+    //             return " middle-date";
+    //         }
+    //         if (endDate._d + "" === date._d + "") {
+    //             return " end-date";
+    //         }
+    //         if (startDate._d + "" === date._d + "") {
+    //             return " start-date";
+    //         }
+    //     }
+    //     return "";
+    // };
 
     // Efeito para sincronizar o estado inicial do `sessionData` com os inputs, apenas uma vez quando os dados forem carregados
     useEffect(() => {
@@ -329,6 +329,47 @@ export function ReviewIdentityForm({ updateSessionData, sessionData = {} }) {
     ]);
 
     console.log("Renderizou!");
+
+    const handleUserDefinedDateToReviewChange = (who, date) => {
+        if (who === "startDate") {
+            // Verifica se a data de início é maior que a data de vencimento
+            if (endDate && new Date(date) > new Date(endDate)) {
+                // Se a data de início for maior, ajusta a data de vencimento para ser igual à de início
+                setEndDate(date);
+            }
+            setStartDate(date);
+        } else if (who === "endDate") {
+            // Verifica se a data de vencimento é menor que a data de início
+            if (startDate && new Date(date) < new Date(startDate)) {
+                // Se a data de vencimento for menor, ajusta a data de início para ser igual à de vencimento
+                setStartDate(date);
+            }
+            setEndDate(date);
+        }
+    };
+
+    const getClassNameReactDatetimeDays = (date) => {
+        if (startDate && endDate) {
+            const dateStr = date._d + ""; // Obtém a string da data selecionada
+            const startDateStr = new Date(startDate)._d.toString();
+            const endDateStr = new Date(endDate)._d.toString();
+
+            // Verifica se a data está no intervalo entre início e fim
+            if (startDateStr !== endDateStr) {
+                if (new Date(startDate) < new Date(date) && new Date(endDate) > new Date(date)) {
+                    return " middle-date";
+                }
+                if (startDateStr === dateStr) {
+                    return " start-date";
+                }
+                if (endDateStr === dateStr) {
+                    return " end-date";
+                }
+            }
+        }
+        return "";
+    };
+
 
     return (
         <Card>
@@ -498,10 +539,10 @@ export function ReviewIdentityForm({ updateSessionData, sessionData = {} }) {
                             </Col>
                             {isUserDefinedDateToReview &&
                                 <Col className="mb-3" md="6">
+                                    <label className=" form-control-label">
+                                        Data de Realização
+                                    </label>
                                     <FormGroup>
-                                        <label className=" form-control-label">
-                                            Data de Realização
-                                        </label>
                                         <ReactDatetime
                                             inputProps={{
                                                 placeholder: "__/__/__",
@@ -539,10 +580,16 @@ export function ReviewIdentityForm({ updateSessionData, sessionData = {} }) {
                                         inputProps={{
                                             placeholder: "__/__/__",
                                         }}
-                                        value={startDate || (sessionData.startDate && new Date(sessionData.startDate))}
+                                        value={startDate ?
+                                            moment(startDate).format("DD-MM-YYYY") :
+                                            (sessionData.startDate &&
+                                                moment(new Date(sessionData.startDate)).format("DD-MM-YYYY")
+                                            )
+                                        }
                                         timeFormat={false}
+                                        dateFormat="DD-MM-YYYY"  // Define o formato esperado
                                         onChange={(e) =>
-                                            handleReactDatetimeChange("startDate", e)
+                                            handleUserDefinedDateToReviewChange("startDate", e)
                                         }
                                         renderDay={(props, currentDate, selectedDate) => {
                                             let classes = props.className;
@@ -567,10 +614,16 @@ export function ReviewIdentityForm({ updateSessionData, sessionData = {} }) {
                                         inputProps={{
                                             placeholder: "__/__/__",
                                         }}
-                                        value={endDate || (sessionData.endDate && new Date(sessionData.endDate))}
+                                        value={endDate ?
+                                            moment(endDate).format("DD-MM-YYYY") :
+                                            (sessionData.endDate &&
+                                                moment(new Date(sessionData.endDate)).format("DD-MM-YYYY")
+                                            )
+                                        }
                                         timeFormat={false}
+                                        dateFormat="DD-MM-YYYY"
                                         onChange={(e) =>
-                                            handleReactDatetimeChange("endDate", e)
+                                            handleUserDefinedDateToReviewChange("endDate", e)
                                         }
                                         renderDay={(props, currentDate, selectedDate) => {
                                             let classes = props.className;
