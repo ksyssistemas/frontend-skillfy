@@ -119,6 +119,16 @@ $green-sk: #BBDB35 !default;
   1px -0.5px 0px $outline-color;
 }
 
+.text-outline-right-purple {
+  $outline-color: #57249F; 
+
+  text-shadow: 
+  3px 3px 0px $outline-color,
+  2px 2px 0px $outline-color,
+  -0.5px -0.5px 0px $outline-color,
+  1px -0.5px 0px $outline-color;
+}
+
 $theme-colors: () !default;
 $theme-colors: map-merge((
   "default":      $default,
