@@ -76,14 +76,13 @@ return(
                                   Origami
                                 </h4>
                                 <p className="text-left mt-1">
-                                  Uma analogia ao colaborador, representa a transformação pessoal.
-                                  É a arte de dar a uma folha de papel novas formas.
+                                  Uma analogia ao colaborador representa transformação pessoal. A arte de dar novas formas a uma folha.
                                 </p>
                               </div>
                             </div>
                           </Row>
                           <Row>
-                            <div className="d-flex col-sm-12 align-items-start">
+                            <div className="d-flex align-items-start">
                               <img
                                 alt="..."
                                 className="img mr-3"
@@ -196,7 +195,7 @@ return(
               </Row>
             </Container>
             <Container>
-              <Row className="d-flex justify-content-center text-center mt-4">
+              <Row className="d-flex justify-content-center text-center mt-4 ml-lg-5">
                 <Col className="col-md-6 col-xs-12 col-sm-12">
                   <Row>
                     <Card className="card border border-purple-sk mb-2">

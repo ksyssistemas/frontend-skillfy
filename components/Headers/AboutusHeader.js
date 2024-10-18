@@ -10,7 +10,7 @@ import {
   Col,
   UncontrolledTooltip,
 } from "reactstrap";
-
+import "assets/css/styles/aboutus.css"
 
 function AboutusHeader() {
 
@@ -20,11 +20,13 @@ function AboutusHeader() {
                 <section className="bg-purple-sk">
                     <Container fluid>
                         <Row className="justify-content-center text-center">
-                            <img
-                                alt="..."
-                                className="img-fluid"
-                                src={require("assets/img/brand/people-aboutus.png")}
-                            />
+                            <div className="image-container">
+                                <img
+                                    alt="..."
+                                    className="img-fluid"
+                                    src={require("assets/img/brand/people-aboutus.png")}
+                                />
+                            </div>
                         </Row>
                     </Container>
                 </section>
@@ -40,7 +42,7 @@ function AboutusHeader() {
                             </Row>
                             <Row>
                                 <Col>
-                                    <h2 className="display-3 text-white text-outline-right-orange mt--5">
+                                    <h2 className="display-3 text-white text-outline-right-orange mt-lg--5">
                                         Bem-vindo a SkillFy
                                     </h2>
                                 </Col>
