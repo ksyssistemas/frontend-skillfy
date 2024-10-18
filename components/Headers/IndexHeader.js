@@ -81,12 +81,12 @@ function IndexHeader() {
               <Row className="align-items-center">
                 <Col lg="8">
                   <div className="pr-5">
-                    <h1 className="display-3 text-white font-weight-bold mb-0 text-outline-right-orange">
+                    <h1 className="display-3 text-white font-weight-bold mb-0">
                       {slide.title}
                       <br />
                       {slide.subtitle}
                     </h1>
-                    <p className="text-white mt-5">{slide.description}</p>
+                    <p className="text-white font-weight-bold mt-5">{slide.description}</p>
                     <div className="mt-5">
                       <Button
                         className="text-purple-sk my-2 rounded-pill"
