@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 // nodejs library that concatenates classes
 import classnames from "classnames";
 // reactstrap components
@@ -29,6 +29,7 @@ import { useRouter } from 'next/router';
 import { EmployeeContext } from "../../contexts/RecordsContext/EmployeeContext";
 import "assets/css/styles/login.css"
 import useEmailValidation from '../../hooks/RecordsHooks/useEmailValidation';
+import { useAlert } from '../../contexts/AlertContext';
 
 function Login() {
 
@@ -185,6 +186,19 @@ function Login() {
 
   const [focusedEmail, setfocusedEmail] = React.useState(false);
   const [focusedPassword, setfocusedPassword] = React.useState(false);
+  
+  const {showAlert} = useAlert();
+
+  useEffect(() => {
+    if(forgotPassword){
+      showAlert(
+        "success",
+        "ni ni-check-bold",
+        "Sucesso!",
+        "E-mail enviado com sucesso!"
+      )
+    }
+  },[forgotPassword]);
 
   return (
     <>
