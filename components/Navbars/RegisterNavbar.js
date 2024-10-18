@@ -96,7 +96,7 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://skillfy.com.br/administrator/email/dev.admin@skillfy.com.br', {
+        const response = await fetch('http://localhost/administrator/email/d.@skill.com', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -163,7 +163,7 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
               <NavItem>
                 <Link href="/register/dashboard">
                   <NavLink href="#pablo">
-                    <span className="nav-link-inner--text">Dashboard...</span>
+                    <span className="nav-link-inner--text">Dashboard!!!</span>
                   </NavLink>
                 </Link>
               </NavItem>

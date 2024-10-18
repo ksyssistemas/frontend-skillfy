@@ -129,6 +129,7 @@ const useCreateCustomer = (handleShowContactPersonsUserRegister) => {
   }
 
   const handleSubmit = async (firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, terms = true) => {
+    console.log(`ROTA: ${process.env.NEXT_PUBLIC_CONTACT_PERSON}`)
     console.log(firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, terms);
 
     if (firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, terms) {

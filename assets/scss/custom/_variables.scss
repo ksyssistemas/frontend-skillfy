@@ -101,6 +101,34 @@ $dribbble:      #ea4c89 !default;
 $github:        #222222 !default;
 $vimeo:         #04A0F0 !default;
 
+// New color of Figma (Primary)
+$purple-sk:  #57249F !default;
+$orange-sk:  #FC6435 !default;
+
+// New color of Figma (Secondary)
+$green-sk: #BBDB35 !default;
+
+// Color of text shadow
+.text-outline-right-orange {
+  $outline-color: #ff7300; 
+
+  text-shadow: 
+  3px 3px 0px $outline-color,
+  2px 2px 0px $outline-color,
+  -0.5px -0.5px 0px $outline-color,
+  1px -0.5px 0px $outline-color;
+}
+
+.text-outline-right-purple {
+  $outline-color: #57249F; 
+
+  text-shadow: 
+  3px 3px 0px $outline-color,
+  2px 2px 0px $outline-color,
+  -0.5px -0.5px 0px $outline-color,
+  1px -0.5px 0px $outline-color;
+}
+
 $theme-colors: () !default;
 $theme-colors: map-merge((
   "default":      $default,
@@ -113,6 +141,9 @@ $theme-colors: map-merge((
   "white":        $white,
   "neutral":      $white,
   "dark":         $dark,
+  "purple-sk":    $purple-sk,
+  "green-sk":     $green-sk,
+  "orange-sk":     $orange-sk,
   "darker":       $darker
 ), $theme-colors);
 
