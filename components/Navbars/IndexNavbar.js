@@ -102,7 +102,7 @@ function AdminNavbar() {
               <NavItem>
                 <Link href="/auth/aboutus">
                   <NavLink href="#pablo">
-                    <span className="nav-link-inner--text text-purple-sk">Sobre a SkillFy</span>
+                    <span className="nav-link-inner--text text-purple-sk">Sobre</span>
                   </NavLink>
                 </Link>
               </NavItem>
