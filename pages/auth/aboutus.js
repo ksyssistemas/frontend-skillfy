@@ -15,6 +15,7 @@ import {
 import AboutusHeader from "components/Headers/AboutusHeader.js";
 import AuthFooter from "components/Footers/RegisterFooter.js";
 import IndexNavbar from "components/Navbars/IndexNavbar.js";
+import "assets/css/styles/Aboutus.css"
 
 function Aboutus() {
 return(
