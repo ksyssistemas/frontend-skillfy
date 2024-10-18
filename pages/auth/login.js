@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 // nodejs library that concatenates classes
 import classnames from "classnames";
 // reactstrap components
@@ -29,6 +29,7 @@ import { useRouter } from 'next/router';
 import { EmployeeContext } from "../../contexts/RecordsContext/EmployeeContext";
 import "assets/css/styles/login.css"
 import useEmailValidation from '../../hooks/RecordsHooks/useEmailValidation';
+import { useAlert } from '../../contexts/AlertContext';
 
 function Login() {
 
@@ -48,10 +49,11 @@ function Login() {
   });
 
   const [erro, setErro] = useState('');
+  const [success, setSuccess] = useState('');
 
   const { handleSaveAuthenticationDataLoggedInUser } = useAuth();
 
-  const { email, emailError, loading, handleEmailChange } = useEmailValidation();
+  const { email, setEmail, emailSuccess, emailError, loading, validateEmailFormat, validateEmailInSystem } = useEmailValidation();
 
   const handleInputChange = (fieldName, value) => {
     setFormData({ ...formData, [fieldName]: value });
@@ -66,11 +68,29 @@ function Login() {
       );
       return;
     }
-    setErro(false);
-    setFormLogin(false);
-    setForgotPassword(true);
-    setEmailForgot(false);
-    console.log("Enviar email de recuperação para: ", formData.email);
+
+    if (!validateEmailFormat(formData.email)) {
+      setErro(
+        <Alert color="warning" style={{ textAlign: 'center' }}>
+          <strong>Formato de e-mail inválido</strong>
+        </Alert>
+      );
+      return;
+    }
+
+    const isEmailValid = await validateEmailInSystem(formData.email);
+    if (isEmailValid) {
+      console.log('Enviar email de recuperação para:', formData.email);
+      setFormLogin(false);
+      setForgotPassword(true);
+      setEmailForgot(false);
+      setErro(false);
+      setSuccess(
+        <Alert color="success" style={{ textAlign: 'center' }}>
+        <strong>{emailSuccess}</strong>
+      </Alert>
+      )
+    }
   }
 
   const handleSubmit = async () => {
@@ -166,6 +186,19 @@ function Login() {
 
   const [focusedEmail, setfocusedEmail] = React.useState(false);
   const [focusedPassword, setfocusedPassword] = React.useState(false);
+  
+  const {showAlert} = useAlert();
+
+  useEffect(() => {
+    if(forgotPassword){
+      showAlert(
+        "success",
+        "ni ni-check-bold",
+        "Sucesso!",
+        "E-mail enviado com sucesso!"
+      )
+    }
+  },[forgotPassword]);
 
   return (
     <>
@@ -240,17 +273,20 @@ function Login() {
                                           id="emailInput"
                                           placeholder="Digite seu e-mail"
                                           type="email"
-                                          value={email}
-                                          onChange={handleEmailChange}
+                                          value={formData.email}
+                                          onChange={(e) => handleInputChange('email', e.target.value)}
                                           disabled={loading}
                                         />
                                   </InputGroup>
-                                  {emailError && <p style={{ color: 'red' }}>{emailError}</p>}
+                                  {!loading && emailError && <p style={{ color: 'red' }}>{emailError}</p>}
                                   {loading && <p>Verificando e-mail...</p>}
                                 </FormGroup>
                               )}
                                 {forgotPassword && (
                                   <>
+                                    {/* <Alert color="success" style={{ textAlign: 'center' }}>
+                                      <strong>{emailSuccess}</strong>
+                                    </Alert> */}
                                     <FormGroup className="mb-3">
                                       <Label for="tempCodeInput">Código Temporário</Label>
                                       <InputGroup className="input-group-merge input-group-alternative border border-purple-sk">
@@ -294,6 +330,7 @@ function Login() {
                                       e.preventDefault();
                                       setEmailForgot(true);
                                       setFormLogin(false);
+                                      setErro(false);
                                     }}
                                   >
                                     <small>Esqueci minha senha</small>
