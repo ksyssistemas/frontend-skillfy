@@ -117,10 +117,20 @@ export function CheckoutFormWrapper() {
                             </p>
                         </div>
                     </Col>
-                    <Col md = "6">
-                        <Input
-                            type="select" className="bg-purple-sk text-white border-white"
-                        />
+                    <Col md = "6" className="d-flex align-items-center">
+                      <Input
+                        type="select" className="bg-purple-sk text-white border-white"
+                        >
+                        <option>
+                            Básico
+                        </option>
+                        <option>
+                            Intermediário
+                        </option>
+                        <option>
+                            Avançado
+                        </option>
+                        </Input>
                     </Col>
                 </Row>
             </Container>   
@@ -142,7 +152,7 @@ export function CheckoutFormWrapper() {
                         </span>
                     </Col>
                     <Col className="d-flex justify-content-end align-items-center" md="4" >
-                        <Button className="px-5 me-2 rounded-pill" color="secondary" size="md" type="button"
+                        <Button className="px-5 me-2 rounded-pill border-purple-sk text-purple-sk" color="white" size="md" type="button"
                             onClick={handlePrevStep}
                             disabled={currentStep === 1}
                         >
@@ -153,6 +163,12 @@ export function CheckoutFormWrapper() {
                             disabled={currentStep === STEPS_NUMBER_FOR_WIZARD_COMPONENT}
                         >
                             Próximo
+                        </Button>
+                        <Button className="px-5 me-2 rounded-pill" color="purple-sk" size="md" type="button"
+                            onClick={handleSubmit}
+                            disabled={currentStep != STEPS_NUMBER_FOR_WIZARD_COMPONENT}
+                        >
+                            Submit
                         </Button>
                     </Col>
                 </Row>

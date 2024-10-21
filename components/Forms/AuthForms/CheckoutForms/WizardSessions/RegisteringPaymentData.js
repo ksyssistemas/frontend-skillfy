@@ -48,15 +48,7 @@ return (
             Cartão de crédito
           </label>
         </div>
-        <Card className="bg-gradient-default">
-          <CardBody>
             <Row className="justify-content-between align-items-center">
-              <div className="col">
-                <img
-                  alt="..."
-                  src={require("assets/img/icons/cards/mastercard.png")}
-                />
-              </div>
               <Col className="col-auto">
                 <div className="d-flex align-items-center">
                   <small className="text-white font-weight-bold mr-3">
@@ -75,100 +67,90 @@ return (
                 </div>
               </Col>
             </Row>
-            <div className="mt-4">
-              <Form className="form-primary" role="form">
-                <FormGroup>
-                  <InputGroup
-                    className={classnames("input-group-alternative mb-3", {
-                      focused: nameOnCard,
-                    })}
-                  >
-                    <InputGroupAddon addonType="prepend">
-                      <InputGroupText>
-                        <i className="ni ni-single-02" />
-                      </InputGroupText>
-                    </InputGroupAddon>
-                    <Input
-                      placeholder="Name on card"
+            <div>
+              <Form className="needs-validation" role="form" noValidate>
+                <div className="form-row">
+                  <Col className="mb-3" md="6">
+                    <label
+                      className="form-control-label"
+                      htmlFor="namecard"
+                    >
+                      Nome no cartão
+                    </label>
+                    <Input 
+                      className={classnames({
+                        focused: nameOnCard,
+                      })}
+                      id='namecard'
+                      placeholder="Nome no cartão"
                       type="text"
                       onFocus={(e) => setnameOnCard(true)}
                       onBlur={(e) => setnameOnCard(false)}
                     />
-                  </InputGroup>
-                </FormGroup>
-                <FormGroup>
-                  <InputGroup
-                    className={classnames("input-group-alternative mb-3", {
-                      focused: cardNumber,
-                    })}
-                  >
-                    <InputGroupAddon addonType="prepend">
-                      <InputGroupText>
-                        <i className="ni ni-credit-card" />
-                      </InputGroupText>
-                    </InputGroupAddon>
-                    <Input
-                      placeholder="Card number"
+                    <div className="valid-feedback">Looks good!</div>
+                  </Col>
+                  <Col className="mb-3" md="6">
+                    <label
+                      className="form-control-label"
+                      htmlFor="numbercard"
+                    >
+                      Número do cartão
+                    </label>
+                    <Input 
+                      className={classnames({
+                        focused: cardNumber,
+                      })}
+                      id='numbercard'
+                      placeholder="Número do cartão"
                       type="text"
                       onFocus={(e) => setcardNumber(true)}
                       onBlur={(e) => setcardNumber(false)}
                     />
-                  </InputGroup>
-                </FormGroup>
-                <Row>
-                  <Col xs="6">
-                    <FormGroup>
-                      <InputGroup
-                        className={classnames(
-                          "input-group-alternative mb-3",
-                          {
-                            focused: date,
-                          }
-                        )}
-                      >
-                        <InputGroupAddon addonType="prepend">
-                          <InputGroupText>
-                            <i className="ni ni-calendar-grid-58" />
-                          </InputGroupText>
-                        </InputGroupAddon>
-                        <Input
-                          placeholder="MM/YY"
-                          type="text"
-                          onFocus={(e) => setdate(true)}
-                          onBlur={(e) => setdate(false)}
-                        />
-                      </InputGroup>
-                    </FormGroup>
                   </Col>
-                  <Col xs="6">
-                    <FormGroup>
-                      <InputGroup
-                        className={classnames("input-group-alternative", {
-                          focused: ccv,
-                        })}
-                      >
-                        <InputGroupAddon addonType="prepend">
-                          <InputGroupText>
-                            <i className="ni ni-lock-circle-open" />
-                          </InputGroupText>
-                        </InputGroupAddon>
-                        <Input
-                          placeholder="CCV"
-                          type="text"
-                          onFocus={(e) => setccv(true)}
-                          onBlur={(e) => setccv(false)}
-                        />
-                      </InputGroup>
-                    </FormGroup>
+                  <div className="valid-feedback">Looks good!</div>
+                </div>
+                <div className="form-row">
+                 <Col className="mb-3" md="6">
+                    <label
+                      className="form-control-label"
+                      htmlFor="datecard"
+                    >
+                      Vencimento
+                    </label>
+                    <Input 
+                      className={classnames({
+                        focused: date,
+                      })}
+                      id='datecard'
+                      placeholder="MM/AA"
+                      type="text"
+                      onFocus={(e) => setdate(true)}
+                      onBlur={(e) => setdate(false)}
+                    />
                   </Col>
-                </Row>
-                <Button block color="info" type="button">
-                  Save new card
-                </Button>
+                  <div className="valid-feedback">Looks good!</div>
+                  <Col className="mb-3" md="6">
+                    <label
+                      className="form-control-label"
+                      htmlFor="cvvcard"
+                    >
+                      CVV
+                    </label>
+                    <Input 
+                      className={classnames({
+                        focused: ccv,
+                      })}
+                      id='cvvcard'
+                      placeholder="XXXX"
+                      type="text"
+                      onFocus={(e) => setccv(true)}
+                      onBlur={(e) => setccv(false)}
+                    />
+                  </Col>
+                  <div className="valid-feedback">Looks good!</div>
+                </div>
               </Form>
             </div>
-          </CardBody>
-        </Card>
         <div className="custom-control custom-radio mb-3">
           <input
             className="custom-control-input"

@@ -24,8 +24,23 @@ import {
 
 export function IndividualRegistration() {
 
-  const [firstName, setfirstName] = React.useState("Mark");
+  const [firstName, setfirstName] = React.useState("");
   const [firstNameState, setfirstNameState] = React.useState(null);
+  const [lastName, setlastName] = React.useState("");
+  const [lastNameState, setlastNameState] = React.useState(null);
+  const [cpf, setcpf] = React.useState("");
+  const [cpfState, setcpfState] = React.useState(null);
+  const [bornDate, setbornDate] = React.useState("");
+  const [bornDateState, setbornDateState] = React.useState(null);
+  const [telefone, setTelefone] = React.useState("");
+  const [telefoneState, settelefoneState] = React.useState(null);
+  const [email, setemail] = React.useState("");
+  const [emailState, setemailState] = React.useState(null);
+  const [passWord, setpassWord] = React.useState("");
+  const [passWordState, setpassWordState] = React.useState(null);
+  const [confirmPassWord, setconfirmPassWord] = React.useState("");
+  const [confirmPassWordState, setconfirmPassWordState] = React.useState(null);
+
   const [checkbox, setcheckbox] = React.useState(false);
   const [checkboxState, setcheckboxState] = React.useState(null);
 
@@ -43,9 +58,9 @@ export function IndividualRegistration() {
                                   Nome
                                 </label>
                                 <Input
-                                  defaultValue="Mark"
+                                  value={firstName}
                                   id="validationCustom01"
-                                  placeholder="First name"
+                                  placeholder="Nome"
                                   type="text"
                                   valid={firstNameState === "valid"}
                                   invalid={firstNameState === "invalid"}
@@ -58,7 +73,7 @@ export function IndividualRegistration() {
                                     }
                                   }}
                                 />
-                                <div className="valid-feedback">Looks good!</div>
+                                <div className="valid-feedback">Parece bom!</div>
                               </Col>
                               <Col className="mb-3" md="6">
                                 <label
@@ -68,22 +83,22 @@ export function IndividualRegistration() {
                                   Sobrenome
                                 </label>
                                 <Input
-                                  defaultValue="Mark"
+                                  value={lastName}
                                   id="validationCustom01"
-                                  placeholder="First name"
+                                  placeholder="Sobrenome"
                                   type="text"
-                                  valid={firstNameState === "valid"}
-                                  invalid={firstNameState === "invalid"}
+                                  valid={lastNameState === "valid"}
+                                  invalid={lastNameState === "invalid"}
                                   onChange={(e) => {
-                                    setfirstName(e.target.value);
+                                    setlastName(e.target.value);
                                     if (e.target.value === "") {
-                                      setfirstNameState("invalid");
+                                      setlastNameState("invalid");
                                     } else {
-                                      setfirstNameState("valid");
+                                      setlastNameState("valid");
                                     }
                                   }}
                                 />
-                                <div className="valid-feedback">Looks good!</div>
+                                <div className="valid-feedback">Parece bom!</div>
                               </Col>
                             </div>
                             <div className="form-row">
@@ -95,22 +110,22 @@ export function IndividualRegistration() {
                                   CPF
                                 </label>
                                 <Input
-                                  defaultValue="Mark"
+                                  value={cpf}
                                   id="validationCustom01"
-                                  placeholder="First name"
+                                  placeholder="xxx.xxx.xxx-xx"
                                   type="text"
-                                  valid={firstNameState === "valid"}
-                                  invalid={firstNameState === "invalid"}
+                                  valid={cpfState === "valid"}
+                                  invalid={cpfState === "invalid"}
                                   onChange={(e) => {
-                                    setfirstName(e.target.value);
+                                    setcpf(e.target.value);
                                     if (e.target.value === "") {
-                                      setfirstNameState("invalid");
+                                      setcpfState("invalid");
                                     } else {
-                                      setfirstNameState("valid");
+                                      setcpfState("valid");
                                     }
                                   }}
                                 />
-                                <div className="valid-feedback">Looks good!</div>
+                                <div className="valid-feedback">Parece bom!</div>
                               </Col>
                               <Col className="mb-3" md="6">
                                 <label
@@ -120,22 +135,22 @@ export function IndividualRegistration() {
                                   Data de Nascimento
                                 </label>
                                 <Input
-                                  defaultValue="Mark"
+                                  value={bornDate}
                                   id="validationCustom01"
-                                  placeholder="First name"
+                                  placeholder="xx/xx/xxxx"
                                   type="text"
-                                  valid={firstNameState === "valid"}
-                                  invalid={firstNameState === "invalid"}
+                                  valid={bornDateState === "valid"}
+                                  invalid={bornDateState === "invalid"}
                                   onChange={(e) => {
-                                    setfirstName(e.target.value);
+                                    setbornDate(e.target.value);
                                     if (e.target.value === "") {
-                                      setfirstNameState("invalid");
+                                      setbornDateState("invalid");
                                     } else {
-                                      setfirstNameState("valid");
+                                      setbornDateState("valid");
                                     }
                                   }}
                                 />
-                                <div className="valid-feedback">Looks good!</div>
+                                <div className="valid-feedback">Parece bom!</div>
                               </Col>
                             </div>
                             <div className="form-row">
@@ -147,22 +162,22 @@ export function IndividualRegistration() {
                                   Telefone
                                 </label>
                                 <Input
-                                  defaultValue="Mark"
+                                  value={telefone}
                                   id="validationCustom01"
-                                  placeholder="First name"
+                                  placeholder="(xx) x xxxx-xxxx"
                                   type="text"
-                                  valid={firstNameState === "valid"}
-                                  invalid={firstNameState === "invalid"}
+                                  valid={telefoneState === "valid"}
+                                  invalid={telefoneState === "invalid"}
                                   onChange={(e) => {
-                                    setfirstName(e.target.value);
+                                    setTelefone(e.target.value);
                                     if (e.target.value === "") {
-                                      setfirstNameState("invalid");
+                                      settelefoneState("invalid");
                                     } else {
-                                      setfirstNameState("valid");
+                                      settelefoneState("valid");
                                     }
                                   }}
                                 />
-                                <div className="valid-feedback">Looks good!</div>
+                                <div className="valid-feedback">Parece bom!</div>
                               </Col>
                               <Col className="mb-3" md="6">
                                 <label
@@ -172,22 +187,22 @@ export function IndividualRegistration() {
                                   E-mail (será usado como login)
                                 </label>
                                 <Input
-                                  defaultValue="Mark"
+                                  value={email}
                                   id="validationCustom01"
-                                  placeholder="First name"
+                                  placeholder="xxxxx@email.com"
                                   type="text"
-                                  valid={firstNameState === "valid"}
-                                  invalid={firstNameState === "invalid"}
+                                  valid={emailState === "valid"}
+                                  invalid={emailState === "invalid"}
                                   onChange={(e) => {
-                                    setfirstName(e.target.value);
+                                    setemail(e.target.value);
                                     if (e.target.value === "") {
-                                      setfirstNameState("invalid");
+                                      setemailState("invalid");
                                     } else {
-                                      setfirstNameState("valid");
+                                      setemailState("valid");
                                     }
                                   }}
                                 />
-                                <div className="valid-feedback">Looks good!</div>
+                                <div className="valid-feedback">Parece bom!</div>
                               </Col>
                             </div>
                             <div className="form-row">
@@ -199,22 +214,22 @@ export function IndividualRegistration() {
                                   Senha
                                 </label>
                                 <Input
-                                  defaultValue="Mark"
+                                  value={passWord}
                                   id="validationCustom01"
-                                  placeholder="First name"
+                                  placeholder="Senha"
                                   type="text"
-                                  valid={firstNameState === "valid"}
-                                  invalid={firstNameState === "invalid"}
+                                  valid={passWordState === "valid"}
+                                  invalid={passWordState === "invalid"}
                                   onChange={(e) => {
-                                    setfirstName(e.target.value);
+                                    setpassWord(e.target.value);
                                     if (e.target.value === "") {
-                                      setfirstNameState("invalid");
+                                      setpassWordState("invalid");
                                     } else {
-                                      setfirstNameState("valid");
+                                      setpassWordState("valid");
                                     }
                                   }}
                                 />
-                                <div className="valid-feedback">Looks good!</div>
+                                <div className="valid-feedback">Parece bom!</div>
                               </Col>
                               <Col className="mb-3" md="6">
                                 <label
@@ -224,18 +239,18 @@ export function IndividualRegistration() {
                                   Confirmar Senha
                                 </label>
                                 <Input
-                                  defaultValue="Mark"
+                                  value={confirmPassWord}
                                   id="validationCustom01"
-                                  placeholder="First name"
+                                  placeholder="Confirme sua senha"
                                   type="text"
-                                  valid={firstNameState === "valid"}
-                                  invalid={firstNameState === "invalid"}
+                                  valid={confirmPassWordState === "valid"}
+                                  invalid={confirmPassWordState === "invalid"}
                                   onChange={(e) => {
-                                    setfirstName(e.target.value);
+                                    setconfirmPassWord(e.target.value);
                                     if (e.target.value === "") {
-                                      setfirstNameState("invalid");
+                                      setconfirmPassWordState("invalid");
                                     } else {
-                                      setfirstNameState("valid");
+                                      setconfirmPassWordState("valid");
                                     }
                                   }}
                                 />
@@ -247,7 +262,7 @@ export function IndividualRegistration() {
                               <div className="custom-control custom-checkbox mb-3">
                                 <input
                                   className="custom-control-input"
-                                  defaultValue=""
+                                  value={checkbox}
                                   id="invalidCheck"
                                   type="checkbox"
                                   valid={(checkboxState === "valid").toString()}

@@ -50,7 +50,7 @@ function SimpleWizard({ stepsNumber, currentStep, stepTitles }) {
                                             href="#"
                                             className="d-flex flex-column align-items-center justify-content-center p-1 text-decoration-none"
                                             style={{
-                                                color: step.status === 'isDone' ? '#BBDB35' : '#6c757d'
+                                                color: step.status === 'isDone' ? '#BBDB35' : '#ffff'
                                             }}
                                         >
                                             {step.status === 'isDone' ? (

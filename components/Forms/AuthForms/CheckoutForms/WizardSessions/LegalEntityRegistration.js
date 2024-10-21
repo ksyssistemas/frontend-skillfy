@@ -24,10 +24,35 @@ import {
 
 export function LegalEntityRegistration() {
 
-  const [firstName, setfirstName] = React.useState("Mark");
+  const [firstName, setfirstName] = React.useState("");
   const [firstNameState, setfirstNameState] = React.useState(null);
-  const [checkbox, setcheckbox] = React.useState(false);
-  const [checkboxState, setcheckboxState] = React.useState(null);
+
+  const [cnpj, setcnpj] = React.useState("");
+  const [cnpjState, setcnpjState] = React.useState(null);
+  const [nameEnterprise, setnameEnterprise] = React.useState("");
+  const [nameEnterpriseState, setnameEnterpriseState] = React.useState(null);
+  const [razao, setrazao] = React.useState("");
+  const [razaoState, setrazaoState] = React.useState(null);
+  const [segmento, setsegmento] = React.useState("");
+  const [segmentoState, setsegmentoState] = React.useState(null);
+  const [telefoneEnterprise, setTelefoneEnterprise] = React.useState("");
+  const [telefoneEnterpriseState, setTelefoneEnterpriseState] = React.useState(null);
+  const [celularEnterprise, setcelularEnterprise] = React.useState("");
+  const [celularEnterpriseState, setcelularEnterpriseState] = React.useState(null);
+  const [cep, setcep] = React.useState("");
+  const [cepState, setcepState] = React.useState(null);
+  const [estado, setestado] = React.useState("");
+  const [estadoState, setestadoState] = React.useState(null);
+  const [address, setaddress] = React.useState("");
+  const [addressState, setaddressState] = React.useState(null);
+  const [number, setnumber] = React.useState("");
+  const [numberState, setnumberState] = React.useState(null);
+  const [complemento, setcomplemento] = React.useState("");
+  const [complementoState, setcomplementoState] = React.useState(null);
+  const [bairro, setbairro] = React.useState("");
+  const [bairroState, setbairroState] = React.useState(null);
+  const [cidade, setcidade] = React.useState("");
+  const [cidadeState, setcidadeState] = React.useState(null);
 
 return(   
    <div>
@@ -43,22 +68,22 @@ return(
                 CNPJ
               </label>
               <Input
-                defaultValue="999.888.777/0001-22"
+                value={cnpj}
                 id="validationCustom01"
-                placeholder="999.888.777/0001-22"
+                placeholder="xxx.xxx.xxx/xxxx-xx"
                 type="text"
-                valid={firstNameState === "valid"}
-                invalid={firstNameState === "invalid"}
+                valid={cnpjState === "valid"}
+                invalid={cnpjState === "invalid"}
                 onChange={(e) => {
-                  setfirstName(e.target.value);
+                  setcnpj(e.target.value);
                   if (e.target.value === "") {
-                    setfirstNameState("invalid");
+                    setcnpjState("invalid");
                   } else {
-                    setfirstNameState("valid");
+                    setcnpjState("valid");
                   }
                 }}
               />
-              <div className="valid-feedback">Looks good!</div>
+              <div className="valid-feedback">Parece bom!</div>
             </Col>
             <Col className="mb-3" md="6">
               <label
@@ -68,22 +93,22 @@ return(
                 Nome da Empresa
               </label>
               <Input
-                defaultValue="Nome popular de título de estabelecimento"
+                value={nameEnterprise}
                 id="validationCustom01"
                 placeholder="Nome popular de título de estabelecimento"
                 type="text"
-                valid={firstNameState === "valid"}
-                invalid={firstNameState === "invalid"}
+                valid={nameEnterpriseState === "valid"}
+                invalid={nameEnterpriseState === "invalid"}
                 onChange={(e) => {
-                  setfirstName(e.target.value);
+                  setnameEnterprise(e.target.value);
                   if (e.target.value === "") {
-                    setfirstNameState("invalid");
+                    setnameEnterpriseState("invalid");
                   } else {
-                    setfirstNameState("valid");
+                    setnameEnterpriseState("valid");
                   }
                 }}
               />
-              <div className="valid-feedback">Looks good!</div>
+              <div className="valid-feedback">Parece bom!</div>
             </Col>
           </div>
           <div className="form-row">
@@ -95,22 +120,22 @@ return(
                 Razão Social
               </label>
               <Input
-                defaultValue="Nome ou termo de registro"
+                value={razao}
                 id="validationCustom01"
                 placeholder="Nome ou termo de registro"
                 type="text"
-                valid={firstNameState === "valid"}
-                invalid={firstNameState === "invalid"}
+                valid={razaoState === "valid"}
+                invalid={razaoState === "invalid"}
                 onChange={(e) => {
-                  setfirstName(e.target.value);
+                  setrazao(e.target.value);
                   if (e.target.value === "") {
-                    setfirstNameState("invalid");
+                    setrazaoState("invalid");
                   } else {
-                    setfirstNameState("valid");
+                    setrazaoState("valid");
                   }
                 }}
               />
-              <div className="valid-feedback">Looks good!</div>
+              <div className="valid-feedback">Parece bom!</div>
             </Col>
             <Col className="mb-3" md="6">
               <label
@@ -120,22 +145,22 @@ return(
                 Segmento
               </label>
               <Input
-                defaultValue="MEI, EI, LTDA, SA, ..."
+                value={segmento}
                 id="validationCustom01"
                 placeholder="MEI, EI, LTDA, SA, ..."
                 type="text"
-                valid={firstNameState === "valid"}
-                invalid={firstNameState === "invalid"}
+                valid={segmentoState === "valid"}
+                invalid={segmentoState === "invalid"}
                 onChange={(e) => {
-                  setfirstName(e.target.value);
+                  setsegmento(e.target.value);
                   if (e.target.value === "") {
-                    setfirstNameState("invalid");
+                    setsegmentoState("invalid");
                   } else {
-                    setfirstNameState("valid");
+                    setsegmentoState("valid");
                   }
                 }}
               />
-              <div className="valid-feedback">Looks good!</div>
+              <div className="valid-feedback">Parece bom!</div>
             </Col>
           </div>
           <div className="form-row">
@@ -147,22 +172,22 @@ return(
                 Telefone
               </label>
               <Input
-                defaultValue="+55 (47) 3322-4455"
+                value={telefoneEnterprise}
                 id="validationCustom01"
-                placeholder="+55 (47) 3322-4455"
+                placeholder="+55 (xx) xxxx-xxxx"
                 type="text"
-                valid={firstNameState === "valid"}
-                invalid={firstNameState === "invalid"}
+                valid={telefoneEnterpriseState === "valid"}
+                invalid={telefoneEnterpriseState === "invalid"}
                 onChange={(e) => {
-                  setfirstName(e.target.value);
+                  setTelefoneEnterprise(e.target.value);
                   if (e.target.value === "") {
-                    setfirstNameState("invalid");
+                    setTelefoneEnterpriseState("invalid");
                   } else {
-                    setfirstNameState("valid");
+                    setTelefoneEnterpriseState("valid");
                   }
                 }}
               />
-              <div className="valid-feedback">Looks good!</div>
+              <div className="valid-feedback">Parece bom!</div>
             </Col>
             <Col className="mb-3" md="6">
               <label
@@ -172,22 +197,22 @@ return(
                 Celular
               </label>
               <Input
-                defaultValue="+55 (47) 9 9988-7766"
+                value={celularEnterprise}
                 id="validationCustom01"
-                placeholder="+55 (47) 9 9988-7766"
+                placeholder="+55 (xx) x xxxxx-xxxx"
                 type="text"
-                valid={firstNameState === "valid"}
-                invalid={firstNameState === "invalid"}
+                valid={celularEnterpriseState === "valid"}
+                invalid={celularEnterpriseState === "invalid"}
                 onChange={(e) => {
-                  setfirstName(e.target.value);
+                  setcelularEnterprise(e.target.value);
                   if (e.target.value === "") {
-                    setfirstNameState("invalid");
+                    setcelularEnterpriseState("invalid");
                   } else {
-                    setfirstNameState("valid");
+                    setcelularEnterpriseState("valid");
                   }
                 }}
               />
-              <div className="valid-feedback">Looks good!</div>
+              <div className="valid-feedback">Parece bom!</div>
             </Col>
           </div>
           <div className="form-row">
@@ -199,22 +224,22 @@ return(
                 CEP
               </label>
               <Input
-                defaultValue="00000-000"
+                value={cep}
                 id="validationCustom01"
-                placeholder="00000-000"
+                placeholder="xxxxx-xxx"
                 type="text"
-                valid={firstNameState === "valid"}
-                invalid={firstNameState === "invalid"}
+                valid={cepState === "valid"}
+                invalid={cepState === "invalid"}
                 onChange={(e) => {
-                  setfirstName(e.target.value);
+                  setcep(e.target.value);
                   if (e.target.value === "") {
-                    setfirstNameState("invalid");
+                    setcepState("invalid");
                   } else {
-                    setfirstNameState("valid");
+                    setcepState("valid");
                   }
                 }}
               />
-              <div className="valid-feedback">Looks good!</div>
+              <div className="valid-feedback">Parece bom!</div>
             </Col>
             <Col className="mb-3" md="6">
               <label
@@ -224,22 +249,22 @@ return(
                 Estado
               </label>
               <Input
-                defaultValue=""
+                value={estado}
                 id="validationCustom01"
-                placeholder=""
+                placeholder="Estado"
                 type="text"
-                valid={firstNameState === "valid"}
-                invalid={firstNameState === "invalid"}
+                valid={estadoState === "valid"}
+                invalid={estadoState === "invalid"}
                 onChange={(e) => {
-                  setfirstName(e.target.value);
+                  setestado(e.target.value);
                   if (e.target.value === "") {
-                    setfirstNameState("invalid");
+                    setestadoState("invalid");
                   } else {
-                    setfirstNameState("valid");
+                    setestadoState("valid");
                   }
                 }}
               />
-              <div className="valid-feedback">Looks good!</div>
+              <div className="valid-feedback">Parece bom!</div>
             </Col>
           </div>
           <div className="form-row">
@@ -251,22 +276,22 @@ return(
                 Endereço
               </label>
               <Input
-                defaultValue=""
+                value={address}
                 id="validationCustom01"
-                placeholder=""
+                placeholder="Rua, Avenida..."
                 type="text"
-                valid={firstNameState === "valid"}
-                invalid={firstNameState === "invalid"}
+                valid={addressState === "valid"}
+                invalid={addressState === "invalid"}
                 onChange={(e) => {
-                  setfirstName(e.target.value);
+                  setaddress(e.target.value);
                   if (e.target.value === "") {
-                    setfirstNameState("invalid");
+                    setaddressState("invalid");
                   } else {
-                    setfirstNameState("valid");
+                    setaddressState("valid");
                   }
                 }}
               />
-              <div className="valid-feedback">Looks good!</div>
+              <div className="valid-feedback">Parece bom!</div>
             </Col>
             <Col className="mb-3" md="4">
               <label
@@ -276,22 +301,22 @@ return(
                 Número
               </label>
               <Input
-                defaultValue="0000"
+                value={number}
                 id="validationCustom01"
-                placeholder="0000"
+                placeholder="xxxx"
                 type="text"
-                valid={firstNameState === "valid"}
-                invalid={firstNameState === "invalid"}
+                valid={numberState === "valid"}
+                invalid={numberState === "invalid"}
                 onChange={(e) => {
-                  setfirstName(e.target.value);
+                  setnumber(e.target.value);
                   if (e.target.value === "") {
-                    setfirstNameState("invalid");
+                    setnumberState("invalid");
                   } else {
-                    setfirstNameState("valid");
+                    setnumberState("valid");
                   }
                 }}
               />
-              <div className="valid-feedback">Looks good!</div>
+              <div className="valid-feedback">Parece bom!</div>
             </Col>
           </div>
           <div className="form-row">
@@ -303,22 +328,22 @@ return(
                 Complemento (opcional)
               </label>
               <Input
-                defaultValue=""
+                value={complemento}
                 id="validationCustom01"
-                placeholder=""
+                placeholder="xxxx"
                 type="text"
-                valid={firstNameState === "valid"}
-                invalid={firstNameState === "invalid"}
+                valid={complementoState === "valid"}
+                invalid={complementoState === "invalid"}
                 onChange={(e) => {
-                  setfirstName(e.target.value);
+                  setcomplemento(e.target.value);
                   if (e.target.value === "") {
-                    setfirstNameState("invalid");
+                    setcomplementoState("invalid");
                   } else {
-                    setfirstNameState("valid");
+                    setcomplementoState("valid");
                   }
                 }}
               />
-              <div className="valid-feedback">Looks good!</div>
+              <div className="valid-feedback">Parece bom!</div>
             </Col>
           </div>
           <div className="form-row">
@@ -330,22 +355,22 @@ return(
                 Bairro
               </label>
               <Input
-                defaultValue=""
+                value={bairro}
                 id="validationCustom01"
-                placeholder=""
+                placeholder="Bairro"
                 type="text"
-                valid={firstNameState === "valid"}
-                invalid={firstNameState === "invalid"}
+                valid={bairroState === "valid"}
+                invalid={bairroState === "invalid"}
                 onChange={(e) => {
-                  setfirstName(e.target.value);
+                  setbairro(e.target.value);
                   if (e.target.value === "") {
-                    setfirstNameState("invalid");
+                    setbairroState("invalid");
                   } else {
-                    setfirstNameState("valid");
+                    setbairroState("valid");
                   }
                 }}
               />
-              <div className="valid-feedback">Looks good!</div>
+              <div className="valid-feedback">Parece bom!</div>
             </Col>
             <Col className="mb-3" md="6">
               <label
@@ -355,22 +380,22 @@ return(
                 Cidade
               </label>
               <Input
-                defaultValue=""
+                value={cidade}
                 id="validationCustom01"
-                placeholder=""
+                placeholder="Cidade"
                 type="text"
-                valid={firstNameState === "valid"}
-                invalid={firstNameState === "invalid"}
+                valid={cidadeState === "valid"}
+                invalid={cidadeState === "invalid"}
                 onChange={(e) => {
-                  setfirstName(e.target.value);
+                  setcidade(e.target.value);
                   if (e.target.value === "") {
-                    setfirstNameState("invalid");
+                    setcidadeState("invalid");
                   } else {
-                    setfirstNameState("valid");
+                    setcidadeState("valid");
                   }
                 }}
               />
-              <div className="valid-feedback">Looks good!</div>
+              <div className="valid-feedback">Parece bom!</div>
             </Col>
           </div>
         </Form>
