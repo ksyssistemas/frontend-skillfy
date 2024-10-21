@@ -24,6 +24,11 @@ import {
 
 export function LegalEntityRegistration() {
 
+  const [firstName, setfirstName] = React.useState("Mark");
+  const [firstNameState, setfirstNameState] = React.useState(null);
+  const [checkbox, setcheckbox] = React.useState(false);
+  const [checkboxState, setcheckboxState] = React.useState(null);
+
 return(   
    <div>
       <div>

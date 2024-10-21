@@ -24,6 +24,11 @@ import {
 
 export function RegisteringPaymentData() {
 
+  const [nameOnCard, setnameOnCard] = React.useState(false);
+  const [cardNumber, setcardNumber] = React.useState(false);
+  const [date, setdate] = React.useState(false);
+  const [ccv, setccv] = React.useState(false);
+
 return (    
     <div>
       <div>

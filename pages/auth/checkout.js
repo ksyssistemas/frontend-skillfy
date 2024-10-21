@@ -42,6 +42,9 @@ import Auth from "layouts/Auth.js";
 // core components
 import AuthHeader from "components/Headers/AuthHeader.js";
 import { CheckoutFormWrapper } from '../../components/Forms/AuthForms/CheckoutForms/CheckoutFormWrapper';
+import IndexNavbar from "components/Navbars/IndexNavbar.js";
+import AuthFooter from "components/Footers/RegisterFooter.js";
+
 
 function Checkout() {
   const [focused, setFocused] = React.useState(false);
@@ -113,11 +116,25 @@ function Checkout() {
   return (
     <>
       <IndexNavbar />
-        <Container className="mt--6" fluid>
-          < CheckoutFormWrapper>
+        <div 
+            style={{
+            width: "100%",
+            height: "400px",
+            backgroundColor: "#57249F",
+            clipPath: "polygon(0 0, 100% 0, 100% 80%, 0 100%)",
+            marginBottom: "-350px",
+            zIndex: "-10",
+          }}
+        >
+        </div>
+        <div className='bg-white'>
+        <Container className='mt--9'>
+          <CheckoutFormWrapper>
         
         </CheckoutFormWrapper>
       </Container>
+      </div>
+      <AuthFooter />
     </>
   );
 }

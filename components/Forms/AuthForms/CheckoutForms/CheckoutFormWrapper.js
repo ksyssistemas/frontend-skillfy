@@ -25,16 +25,16 @@ import {
     Progress,
     CardFooter
 } from "reactstrap";
-import SimpleWizard from "../../../../Wizard/SimpleWizard";
-import { ReviewIdentityForm } from "./FormPerWizardSession/ReviewIdentityForm";
-import { ReviewModelAndDeadlineForm } from "./FormPerWizardSession/ReviewModelAndDeadlineForm";
-import { ReviewScaleAndCriteriaForm } from "./FormPerWizardSession/ReviewScaleAndCriteriaForm";
-import { ReviewCreationSetupForm } from "./FormPerWizardSession/ReviewCreationSetupForms";
-import { ReviewParticipantSelectionForm } from "./FormPerWizardSession/ReviewParticipantSelectionForm";
-import { ModelSelectionReviewContext } from "../../../../../contexts/PerformanceContext/ModelSelectionReviewContext";
-import { wizardReducer } from "../../../../../reducers/wizardReducer";
+import SimpleWizard from "../../../../components/Wizard/SimpleWizard";
+import { IndividualRegistration } from "../../../../components/Forms/AuthForms/CheckoutForms/WizardSessions/IndividualRegistration";
+import { LegalEntityRegistration } from "../../../../components/Forms/AuthForms/CheckoutForms/WizardSessions/LegalEntityRegistration";
+import { RegisteringPaymentData } from "../../../../components/Forms/AuthForms/CheckoutForms/WizardSessions/RegisteringPaymentData";
+import { ReviewCreationSetupForm } from "components/Forms/PerformanceForms/ReviewsForms/PerformanceReview/FormPerWizardSession/ReviewCreationSetupForms.js";
+import { ReviewParticipantSelectionForm } from "components/Forms/PerformanceForms/ReviewsForms/PerformanceReview/FormPerWizardSession/ReviewParticipantSelectionForm.js";
+import { ModelSelectionReviewContext } from "contexts/PerformanceContext/ModelSelectionReviewContext.js";
+import { wizardReducer } from "reducers/wizardReducer";
 
-const WIZARD_COMPONENT_STEP_TITLES = ["Informações", "Modelo", "Critérios", "Configurações", "Participantes"];
+const WIZARD_COMPONENT_STEP_TITLES = ["Dados", "Empresa", "Pagamento"];
 
 const STEPS_NUMBER_FOR_WIZARD_COMPONENT = WIZARD_COMPONENT_STEP_TITLES.length;
 
@@ -85,28 +85,21 @@ export function CheckoutFormWrapper() {
         const stepTitle = WIZARD_COMPONENT_STEP_TITLES[currentStep - 1]; // Obtém o título com base no currentStep
 
         switch (stepTitle) {
-            case "Informações":
-                return <ReviewIdentityForm
+            case "Dados":
+                return <IndividualRegistration
                     updateSessionData={updateSessionData}
                     sessionData={formData.sessionOneData}
                 />;
-            case "Modelo":
-                return <ReviewModelAndDeadlineForm
+            case "Empresa":
+                return <LegalEntityRegistration
                     updateSessionData={updateSessionData}
                     sessionData={formData.sessionTwoData}
                 />;
-            case "Critérios":
-                return <ReviewScaleAndCriteriaForm
+            case "Pagamento":
+                return <RegisteringPaymentData
                     updateSessionData={updateSessionData}
                     sessionData={formData.sessionThreeData}
                 />;
-            case "Configurações":
-                return <ReviewCreationSetupForm
-                    updateSessionData={updateSessionData}
-                    sessionData={formData.sessionFourData}
-                />;
-            case "Participantes":
-                return <ReviewParticipantSelectionForm formData={formData} handleSubmit={handleSubmit} />;
             default:
                 return null;
         }
@@ -114,42 +107,56 @@ export function CheckoutFormWrapper() {
 
     return (
         <>
-                    <Card>
-                        <CardHeader>
-                            <h3 className="mb-0">Identidade da Avaliação</h3>
-                        </CardHeader>
-                        <SimpleWizard
-                            stepsNumber={STEPS_NUMBER_FOR_WIZARD_COMPONENT}
-                            currentStep={currentStep}
-                            stepTitles={WIZARD_COMPONENT_STEP_TITLES}
+            <Container>
+                <Row>
+                    <Col md = "6">
+                        <div className="d-flex flex-column">
+                            <h1 className="h1 text-outline-right-orange text-white">Finalize seu pedido</h1>
+                            <p className="text-white">
+                                Preencha os dados abaixo para contratar a SkillFy e iniciar numa jornada conosco.
+                            </p>
+                        </div>
+                    </Col>
+                    <Col md = "6">
+                        <Input
+                            type="select" className="bg-purple-sk text-white border-white"
                         />
-                        <CardBody>
-                            {renderReviewComponent()}
-                        </CardBody>
-                        <CardFooter>
-                            <Row>
-                                <Col md="8">
-                                    <span className="font-weight-bold">
-                                        {`Passo ${currentStep} de ${STEPS_NUMBER_FOR_WIZARD_COMPONENT}`}
-                                    </span>
-                                </Col>
-                                <Col className="d-flex justify-content-end align-items-center" md="4" >
-                                    <Button className="px-5 me-2" color="secondary" size="lg" type="button"
-                                        onClick={handlePrevStep}
-                                        disabled={currentStep === 1}
-                                    >
-                                        Anterior
-                                    </Button>
-                                    <Button className="px-5 me-2" color="primary" size="lg" type="button"
-                                        onClick={handleNextStep}
-                                        disabled={currentStep === STEPS_NUMBER_FOR_WIZARD_COMPONENT}
-                                    >
-                                        Próximo
-                                    </Button>
-                                </Col>
-                            </Row>
-                        </CardFooter>
-                    </Card >
+                    </Col>
+                </Row>
+            </Container>   
+            <SimpleWizard
+                stepsNumber={STEPS_NUMBER_FOR_WIZARD_COMPONENT}
+                currentStep={currentStep}
+                stepTitles={WIZARD_COMPONENT_STEP_TITLES}
+            />
+            <Card>
+                <CardBody>
+                    {renderCheckoutComponent()}
+                </CardBody>
+            </Card >
+            <Container className="pb-5">
+                <Row>
+                    <Col md="8">
+                        <span className="font-weight-bold d-none">
+                            {`Passo ${currentStep} de ${STEPS_NUMBER_FOR_WIZARD_COMPONENT}`}
+                        </span>
+                    </Col>
+                    <Col className="d-flex justify-content-end align-items-center" md="4" >
+                        <Button className="px-5 me-2 rounded-pill" color="secondary" size="md" type="button"
+                            onClick={handlePrevStep}
+                            disabled={currentStep === 1}
+                        >
+                            Anterior
+                        </Button>
+                        <Button className="px-5 me-2 rounded-pill" color="purple-sk" size="md" type="button"
+                            onClick={handleNextStep}
+                            disabled={currentStep === STEPS_NUMBER_FOR_WIZARD_COMPONENT}
+                        >
+                            Próximo
+                        </Button>
+                    </Col>
+                </Row>
+            </Container>
         </>
     );
 }

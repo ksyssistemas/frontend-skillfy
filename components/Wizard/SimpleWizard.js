@@ -37,7 +37,7 @@ function SimpleWizard({ stepsNumber, currentStep, stepTitles }) {
     });
 
     return (
-        <Card className="pt-4 mb-0">
+        <div className="pt-4 mb-0">
             <div className="d-flex flex-column align-items-center">
                 <nav className="mb-2 w-100">
                     <ol className="d-flex align-items-center justify-content-center list-unstyled">
@@ -45,22 +45,23 @@ function SimpleWizard({ stepsNumber, currentStep, stepTitles }) {
                             const title = stepTitles[index];
                             return (
                                 <React.Fragment key={index}>
-                                    <li className={`d-flex align-items-center justify-content-center ${step.status === 'isCurrent' ? 'font-weight-bold' : ''}`}>
+                                    <li className={`d-flex align-items-center justify-content-center ${step.status === 'isCurrent' ? 'font-weight-bold' : ''}`}  style={{zIndex: "10",}}>
                                         <a
                                             href="#"
                                             className="d-flex flex-column align-items-center justify-content-center p-1 text-decoration-none"
                                             style={{
-                                                color: step.status === 'isDone' ? '#ff623f' : '#6c757d'
+                                                color: step.status === 'isDone' ? '#BBDB35' : '#6c757d'
                                             }}
                                         >
                                             {step.status === 'isDone' ? (
                                                 <span
                                                     className="d-inline-flex align-items-center justify-content-center rounded-circle text-md"
                                                     style={{
-                                                        width: '2rem',
-                                                        height: '2rem',
-                                                        color: step.status === 'isDone' ? '#ffeeef' : '#6c757d',
-                                                        backgroundColor: step.status === 'isDone' ? '#ff623f' : '#e9ecef',
+                                                        width: '4rem',
+                                                        height: '4rem',
+                                                        fontSize: '2rem',
+                                                        color: step.status === 'isDone' ? '#ffeeef' : '#57249F',
+                                                        backgroundColor: step.status === 'isDone' ? '#BBDB35' : '#e9ecef',
                                                     }}>
                                                     <i className="ni ni-check-bold"></i>
                                                 </span>
@@ -68,10 +69,11 @@ function SimpleWizard({ stepsNumber, currentStep, stepTitles }) {
                                                 <span
                                                     className="d-inline-flex align-items-center justify-content-center rounded-circle text-md"
                                                     style={{
-                                                        width: '2rem',
-                                                        height: '2rem',
-                                                        color: step.status === 'isDone' ? '#ffeeef' : '#6c757d',
-                                                        backgroundColor: step.status === 'isDone' ? '#ff623f' : '#e9ecef',
+                                                        width: '4rem',
+                                                        height: '4rem',
+                                                        fontSize: '2rem',
+                                                        color: step.status === 'isDone' ? '#ffeeef' : '#57249F',
+                                                        backgroundColor: step.status === 'isDone' ? '#BBDB35' : '#e9ecef',
                                                     }}
                                                 >
                                                     {index + 1}
@@ -87,11 +89,12 @@ function SimpleWizard({ stepsNumber, currentStep, stepTitles }) {
                                         <div
                                             className="mb-4"
                                             style={{
-                                                width: '6rem',
+                                                width: '28rem',
+                                                zIndex: "10",
                                             }}
                                         >
                                             <Progress
-                                                color={`${step.status === 'isDone' ? 'warning' : 'light'}`}
+                                                color={`${step.status === 'isDone' ? 'green-sk' : 'light'}`}
                                                 className={`progress-xs mb-3 mb-md-0`}
                                                 max="100"
                                                 value="100"
@@ -104,7 +107,7 @@ function SimpleWizard({ stepsNumber, currentStep, stepTitles }) {
                     </ol>
                 </nav>
             </div>
-        </Card>
+        </div>
     );
 }
 

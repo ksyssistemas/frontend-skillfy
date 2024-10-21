@@ -1,5 +1,33 @@
+import React, { useState } from 'react';
+// nodejs library that concatenates classes
+import classnames from "classnames";
+
+// reactstrap components
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  FormGroup,
+  Form,
+  Input,
+  InputGroupAddon,
+  InputGroupText,
+  InputGroup,
+  Progress,
+  Table,
+  Container,
+  Row,
+  Col,
+} from "reactstrap";
 
 export function IndividualRegistration() {
+
+  const [firstName, setfirstName] = React.useState("Mark");
+  const [firstNameState, setfirstNameState] = React.useState(null);
+  const [checkbox, setcheckbox] = React.useState(false);
+  const [checkboxState, setcheckboxState] = React.useState(null);
 
     return ( 
                       <div>
@@ -237,7 +265,7 @@ export function IndividualRegistration() {
                                   className="custom-control-label"
                                   htmlFor="invalidCheck"
                                 >
-                                  Declaro que estou ciente e de acordo com os termos de uso: Twig
+                                  Declaro que estou ciente e de acordo com os termos de uso SkillFy
                                 </label>
                                 <div className="invalid-feedback">
                                   You must agree before submitting.
