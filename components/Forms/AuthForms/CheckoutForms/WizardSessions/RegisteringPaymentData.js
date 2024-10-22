@@ -24,163 +24,173 @@ import {
 
 export function RegisteringPaymentData() {
 
-  const [nameOnCard, setnameOnCard] = React.useState(false);
-  const [cardNumber, setcardNumber] = React.useState(false);
-  const [date, setdate] = React.useState(false);
-  const [ccv, setccv] = React.useState(false);
+  const [nameOnCard, setnameOnCard] = React.useState("");
+  const [nameOnCardState, setnameOnCardState] = React.useState(null);
+  const [cardNumber, setcardNumber] = React.useState("");
+  const [cardNumberState, setcardNumerState] = React.useState(null);
+  const [date, setdate] = React.useState("");
+  const [dateState, setdateState] = React.useState(null);
+  const [cvv, setcvv] = React.useState("");
+  const [cvvState, setcvvState] = React.useState(null);
+
+  const [paymentMethod, setPaymentMethod] = React.useState('credit-card');
 
 return (    
     <div>
       <div>
         <h2>Informações de pagamento</h2>
-        <div className="custom-control custom-radio mb-4">
-          <input
-            className="custom-control-input"
-            defaultChecked
-            id="customRadio6"
-            name="custom-radio-1"
-            type="radio"
-          />
-          <label
-            className="custom-control-label"
-            htmlFor="customRadio6"
-          >
-            Cartão de crédito
-          </label>
-        </div>
-            <Row className="justify-content-between align-items-center">
-              <Col className="col-auto">
-                <div className="d-flex align-items-center">
-                  <small className="text-white font-weight-bold mr-3">
-                    Make default
-                  </small>
-                  <div>
-                    <label className="custom-toggle custom-toggle-white">
-                      <input defaultChecked type="checkbox" />
-                      <span
-                        className="custom-toggle-slider rounded-circle"
-                        data-label-off="No"
-                        data-label-on="Yes"
+        <Form className="needs-validation" role="form">
+            <div className="custom-control custom-radio mb-4">
+            <input
+              className="custom-control-input"
+              value="credit-card"
+              checked={paymentMethod === 'credit-card'}
+              id="customRadio6"
+              name="payment-method"
+              type="radio"
+              onChange={(e) => setPaymentMethod(e.target.value)}
+            />
+            <label className="custom-control-label" htmlFor="customRadio6">
+              Cartão de Crédito
+            </label>
+          </div>
+              <div>
+                  <div className="form-row">
+                    <Col className="mb-3" md="6">
+                      <label
+                        className="form-control-label"
+                        htmlFor="namecard"
+                      >
+                        Nome no cartão
+                      </label>
+                      <Input 
+                        value={nameOnCard}
+                        id='namecard'
+                        placeholder="Nome no cartão"
+                        type="text"
+                        valid={nameOnCardState === "valid"}
+                        invalid={nameOnCardState === "invalid"}
+                        onChange={(e) => {
+                          setnameOnCard(e.target.value);
+                          if (e.target.value === "") {
+                            setnameOnCardState("invalid");
+                          } else {
+                            setnameOnCardState("valid");
+                          }
+                        }}
                       />
-                    </label>
+                      <div className="valid-feedback">Parece bom!</div>
+                    </Col>
+                    <Col className="mb-3" md="6">
+                      <label
+                        className="form-control-label"
+                        htmlFor="numbercard"
+                      >
+                        Número do cartão
+                      </label>
+                      <Input 
+                        value={cardNumber}
+                        id='numbercard'
+                        placeholder="Número do cartão"
+                        type="text"
+                        valid={cardNumberState === "valid"}
+                        invalid={cardNumberState === "invalid"}
+                        onChange={(e) => {
+                          setcardNumber(e.target.value);
+                          if (e.target.value === "") {
+                            setcardNumerState("invalid");
+                          } else {
+                            setcardNumerState("valid");
+                          }
+                        }}
+                      />
+                    </Col>
+                    <div className="valid-feedback">Parece bom!</div>
                   </div>
-                </div>
-              </Col>
-            </Row>
-            <div>
-              <Form className="needs-validation" role="form" noValidate>
-                <div className="form-row">
+                  <div className="form-row">
                   <Col className="mb-3" md="6">
-                    <label
-                      className="form-control-label"
-                      htmlFor="namecard"
-                    >
-                      Nome no cartão
-                    </label>
-                    <Input 
-                      className={classnames({
-                        focused: nameOnCard,
-                      })}
-                      id='namecard'
-                      placeholder="Nome no cartão"
-                      type="text"
-                      onFocus={(e) => setnameOnCard(true)}
-                      onBlur={(e) => setnameOnCard(false)}
-                    />
-                    <div className="valid-feedback">Looks good!</div>
-                  </Col>
-                  <Col className="mb-3" md="6">
-                    <label
-                      className="form-control-label"
-                      htmlFor="numbercard"
-                    >
-                      Número do cartão
-                    </label>
-                    <Input 
-                      className={classnames({
-                        focused: cardNumber,
-                      })}
-                      id='numbercard'
-                      placeholder="Número do cartão"
-                      type="text"
-                      onFocus={(e) => setcardNumber(true)}
-                      onBlur={(e) => setcardNumber(false)}
-                    />
-                  </Col>
-                  <div className="valid-feedback">Looks good!</div>
-                </div>
-                <div className="form-row">
-                 <Col className="mb-3" md="6">
-                    <label
-                      className="form-control-label"
-                      htmlFor="datecard"
-                    >
-                      Vencimento
-                    </label>
-                    <Input 
-                      className={classnames({
-                        focused: date,
-                      })}
-                      id='datecard'
-                      placeholder="MM/AA"
-                      type="text"
-                      onFocus={(e) => setdate(true)}
-                      onBlur={(e) => setdate(false)}
-                    />
-                  </Col>
-                  <div className="valid-feedback">Looks good!</div>
-                  <Col className="mb-3" md="6">
-                    <label
-                      className="form-control-label"
-                      htmlFor="cvvcard"
-                    >
-                      CVV
-                    </label>
-                    <Input 
-                      className={classnames({
-                        focused: ccv,
-                      })}
-                      id='cvvcard'
-                      placeholder="XXXX"
-                      type="text"
-                      onFocus={(e) => setccv(true)}
-                      onBlur={(e) => setccv(false)}
-                    />
-                  </Col>
-                  <div className="valid-feedback">Looks good!</div>
-                </div>
-              </Form>
-            </div>
-        <div className="custom-control custom-radio mb-3">
-          <input
-            className="custom-control-input"
-            id="customRadio5"
-            name="custom-radio-1"
-            type="radio"
-          />
-          <label
-            className="custom-control-label"
-            htmlFor="customRadio5"
-          >
-            Boleto
-          </label>
-        </div>
-        <div className="custom-control custom-radio mb-3">
-          <input
-            className="custom-control-input"
-            id="customRadio5"
-            name="custom-radio-1"
-            type="radio"
-          />
-          <label
-            className="custom-control-label"
-            htmlFor="customRadio5"
-          >
-            Pix
-          </label>
-        </div>
+                      <label
+                        className="form-control-label"
+                        htmlFor="datecard"
+                      >
+                        Vencimento
+                      </label>
+                      <Input 
+                        value={date}
+                        id='datecard'
+                        placeholder="MM/AA"
+                        type="text"
+                        valid={dateState === "valid"}
+                        invalid={dateState === "invalid"}
+                        onChange={(e) => {
+                          setdate(e.target.value);
+                          if (e.target.value === "") {
+                            setdateState("invalid");
+                          } else {
+                            setdateState("valid");
+                          }
+                        }}
+                      />
+                    </Col>
+                    <div className="valid-feedback">Parece bom!</div>
+                    <Col className="mb-3" md="6">
+                      <label
+                        className="form-control-label"
+                        htmlFor="cvvcard"
+                      >
+                        CVV
+                      </label>
+                      <Input 
+                        value={cvv}
+                        id='cvvcard'
+                        placeholder="XXXX"
+                        type="text"
+                        valid={cvvState === "valid"}
+                        invalid={cvvState === "invalid"}
+                        onChange={(e) => {
+                          setcvv(e.target.value);
+                          if (e.target.value === "") {
+                            setcvvState("invalid");
+                          } else {
+                            setcvvState("valid");
+                          }
+                        }}
+                      />
+                    </Col>
+                    <div className="valid-feedback">Parece bom!</div>
+                  </div>
+                
+              </div>
+              <div className="custom-control custom-radio mb-4">
+                <input
+                  className="custom-control-input"
+                  value="boleto"
+                  checked={paymentMethod === 'boleto'}
+                  id="customRadio7"
+                  name="payment-method"
+                  type="radio"
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                />
+                <label className="custom-control-label" htmlFor="customRadio7">
+                  Boleto
+                </label>
+              </div>
+              <div className="custom-control custom-radio mb-4">
+                <input
+                  className="custom-control-input"
+                  value="pix"
+                  checked={paymentMethod === 'pix'}
+                  id="customRadio8"
+                  name="payment-method"
+                  type="radio"
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                />
+                <label className="custom-control-label" htmlFor="customRadio8">
+                  Pix
+                </label>
+              </div>
+        </Form>
       </div>
     </div>
     )
-
 }

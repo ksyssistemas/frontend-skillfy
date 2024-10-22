@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 // nodejs library that concatenates classes
 import classnames from "classnames";
-
+import ReactDatetime from 'react-datetime';
+import InputMask from 'react-input-mask';
+import useCPF from 'hooks/RecordsHooks/useCPF.js';
+import useCreateCustomerAccountHolder from 'hooks/RecordsHooks/customer/useCreateCustomerAccountHolder.js';
 // reactstrap components
 import {
   Button,
@@ -22,29 +25,96 @@ import {
   Col,
 } from "reactstrap";
 
-export function IndividualRegistration() {
+export function IndividualRegistration({ handleShowIndividualRegistration }) {
 
-  const [firstName, setfirstName] = React.useState("");
-  const [firstNameState, setfirstNameState] = React.useState(null);
-  const [lastName, setlastName] = React.useState("");
-  const [lastNameState, setlastNameState] = React.useState(null);
-  const [cpf, setcpf] = React.useState("");
-  const [cpfState, setcpfState] = React.useState(null);
-  const [bornDate, setbornDate] = React.useState("");
-  const [bornDateState, setbornDateState] = React.useState(null);
-  const [telefone, setTelefone] = React.useState("");
-  const [telefoneState, settelefoneState] = React.useState(null);
-  const [email, setemail] = React.useState("");
-  const [emailState, setemailState] = React.useState(null);
-  const [passWord, setpassWord] = React.useState("");
-  const [passWordState, setpassWordState] = React.useState(null);
-  const [confirmPassWord, setconfirmPassWord] = React.useState("");
-  const [confirmPassWordState, setconfirmPassWordState] = React.useState(null);
+  const {
+    firstName,
+    setFirstName,
+    firstNameState,
+    setFirstNameState,
+    lastName,
+    setLastName,
+    lastNameState,
+    setLastNameState,
+    taxIdentificationNumber,
+    setTaxIdentificationNumber,
+    taxIdentificationNumberState,
+    setTaxIdentificationNumberState,
+    emailAddress,
+    setEmailAddress,
+    emailAddressState,
+    setEmailAddressState,
+    birthdate,
+    setBirthdate,
+    birthdateState,
+    setBirthdateState,
+    password,
+    setPassword,
+    passwordState,
+    setPasswordState,
+    confirmPassword,
+    setConfirmPassword,
+    confirmPasswordState,
+    setConfirmPasswordState,
+    phoneNumber,
+    setPhoneNumber,
+    phoneNumberState,
+    setPhoneNumberState,
+    contactStatus,
+    setContactStatus,
+    contactStatusState,
+    setContactStatusState,
+    checkbox,
+    setCheckbox,
+    checkboxState,
+    setCheckboxState,
+    isCustomerAccountHolderFormValidated,
+    setIsCustomerAccountHolderFormValidated,
+    validateCheckboxIsChecked,
+    handleBirthdateChange,
+    handleChangeCPF,
+    validateEmail,
+    handleValidateAddCustomerAccountHolderForm,
+    resetCreateCustomer,
+    contactPersonOccupation,
+    setContactPersonOccupation,
+    contactPersonOccupationState,
+    setContactPersonOccupationState,
+    contactPersonBelongsToClientCompany,
+    setContactPersonBelongsToClientCompany,
+    contactPersonBelongsToClientCompanyState,
+    setContactPersonBelongsToClientCompanyState,
+} = useCreateCustomerAccountHolder(handleShowIndividualRegistration);
 
-  const [checkbox, setcheckbox] = React.useState(false);
-  const [checkboxState, setcheckboxState] = React.useState(null);
+const handleCheckboxChange = (e) => {
+  if (checkbox === null) {
+      setCheckbox(true);
+  } else {
+      setCheckbox(!checkbox);
+  }
+};
+  // const [firstName, setfirstName] = React.useState("");
+  // const [firstNameState, setfirstNameState] = React.useState(null);
+  // const [lastName, setlastName] = React.useState("");
+  // const [lastNameState, setlastNameState] = React.useState(null);
+  // const [cpf, setcpf] = React.useState("");
+  // const [cpfState, setcpfState] = React.useState(null);
+  // const [bornDate, setbornDate] = React.useState("");
+  // const [bornDateState, setbornDateState] = React.useState(null);
+  // const [telefone, setTelefone] = React.useState("");
+  // const [telefoneState, settelefoneState] = React.useState(null);
+  // const [email, setemail] = React.useState("");
+  // const [emailState, setemailState] = React.useState(null);
+  // const [passWord, setpassWord] = React.useState("");
+  // const [passWordState, setpassWordState] = React.useState(null);
+  // const [confirmPassWord, setconfirmPassWord] = React.useState("");
+  // const [confirmPassWordState, setconfirmPassWordState] = React.useState(null);
+
+  // const [checkbox, setcheckbox] = React.useState(false);
+  // const [checkboxState, setcheckboxState] = React.useState(null);
 
     return ( 
+                    <Form>
                       <div>
                         <div>
                           <h2>Informe seus dados</h2>
@@ -52,52 +122,56 @@ export function IndividualRegistration() {
                             <div className="form-row">
                               <Col className="mb-3" md="6">
                                 <label
-                                  className="form-control-label"
-                                  htmlFor="validationCustom01"
+                                    className="form-control-label"
+                                    htmlFor="validationContactPersonFirstName"
                                 >
                                   Nome
                                 </label>
                                 <Input
-                                  value={firstName}
-                                  id="validationCustom01"
-                                  placeholder="Nome"
-                                  type="text"
-                                  valid={firstNameState === "valid"}
-                                  invalid={firstNameState === "invalid"}
-                                  onChange={(e) => {
-                                    setfirstName(e.target.value);
-                                    if (e.target.value === "") {
-                                      setfirstNameState("invalid");
-                                    } else {
-                                      setfirstNameState("valid");
-                                    }
-                                  }}
+                                    id="validationContactPersonFirstName"
+                                    placeholder="Nome"
+                                    type="text"
+                                    valid={firstNameState === "valid"}
+                                    invalid={firstNameState === "invalid"}
+                                    onChange={(e) => {
+                                        setFirstName(e.target.value);
+                                        if (e.target.value === "") {
+                                            setFirstNameState("invalid");
+                                        } else {
+                                            setFirstNameState("valid");
+                                        }
+                                    }}
                                 />
+                                <div className="invalid-feedback">
+                                    É necessário preencher este campo.
+                                </div>
                                 <div className="valid-feedback">Parece bom!</div>
                               </Col>
                               <Col className="mb-3" md="6">
                                 <label
                                   className="form-control-label"
-                                  htmlFor="validationCustom01"
+                                  htmlFor="validationContactPersonLastName"
                                 >
                                   Sobrenome
                                 </label>
                                 <Input
-                                  value={lastName}
-                                  id="validationCustom01"
-                                  placeholder="Sobrenome"
-                                  type="text"
-                                  valid={lastNameState === "valid"}
-                                  invalid={lastNameState === "invalid"}
-                                  onChange={(e) => {
-                                    setlastName(e.target.value);
-                                    if (e.target.value === "") {
-                                      setlastNameState("invalid");
-                                    } else {
-                                      setlastNameState("valid");
-                                    }
-                                  }}
+                                    id="validationContactPersonLastName"
+                                    placeholder="Sobrenome"
+                                    type="text"
+                                    valid={lastNameState === "valid"}
+                                    invalid={lastNameState === "invalid"}
+                                    onChange={(e) => {
+                                        setLastName(e.target.value);
+                                        if (e.target.value === "") {
+                                            setLastNameState("invalid");
+                                        } else {
+                                            setLastNameState("valid");
+                                        }
+                                    }}
                                 />
+                                <div className="invalid-feedback">
+                                    É necessário preencher este campo.
+                                </div>
                                 <div className="valid-feedback">Parece bom!</div>
                               </Col>
                             </div>
@@ -105,50 +179,38 @@ export function IndividualRegistration() {
                               <Col className="mb-3" md="6">
                                 <label
                                   className="form-control-label"
-                                  htmlFor="validationCustom01"
+                                  htmlFor="validationPersonCPF"
                                 >
                                   CPF
                                 </label>
-                                <Input
-                                  value={cpf}
-                                  id="validationCustom01"
-                                  placeholder="xxx.xxx.xxx-xx"
-                                  type="text"
-                                  valid={cpfState === "valid"}
-                                  invalid={cpfState === "invalid"}
-                                  onChange={(e) => {
-                                    setcpf(e.target.value);
-                                    if (e.target.value === "") {
-                                      setcpfState("invalid");
-                                    } else {
-                                      setcpfState("valid");
-                                    }
-                                  }}
-                                />
+                                <InputMask
+                                    placeholder='999.999.999-99'
+                                    mask="999.999.999-99"
+                                    maskChar="_"
+                                    value={taxIdentificationNumber}
+                                    onChange={(e) => handleChangeCPF(e.target.value)}
+                                >
+                                    {(inputProps) => <Input {...inputProps} id="validationContactPersonTaxIdNumber" valid={taxIdentificationNumberState === "valid"}  invalid={taxIdentificationNumberState === "invalid"} />}
+                                </InputMask>
+                                <div className="invalid-feedback">
+                                    {taxIdentificationNumberState === "invalid" && "Forneça um número de CPF válido."}
+                                </div>
                                 <div className="valid-feedback">Parece bom!</div>
                               </Col>
                               <Col className="mb-3" md="6">
                                 <label
                                   className="form-control-label"
-                                  htmlFor="validationCustom01"
+                                  htmlFor="validationPersonBirthDate"
                                 >
                                   Data de Nascimento
                                 </label>
-                                <Input
-                                  value={bornDate}
-                                  id="validationCustom01"
-                                  placeholder="xx/xx/xxxx"
-                                  type="text"
-                                  valid={bornDateState === "valid"}
-                                  invalid={bornDateState === "invalid"}
-                                  onChange={(e) => {
-                                    setbornDate(e.target.value);
-                                    if (e.target.value === "") {
-                                      setbornDateState("invalid");
-                                    } else {
-                                      setbornDateState("valid");
-                                    }
-                                  }}
+                                <ReactDatetime
+                                    inputProps={{
+                                        placeholder: "__/__/__",
+                                    }}
+                                    timeFormat={false}
+                                    value={birthdate}
+                                    onChange={handleBirthdateChange}
                                 />
                                 <div className="valid-feedback">Parece bom!</div>
                               </Col>
@@ -157,51 +219,58 @@ export function IndividualRegistration() {
                               <Col className="mb-3" md="6">
                                 <label
                                   className="form-control-label"
-                                  htmlFor="validationCustom01"
+                                  htmlFor="validationPersonPhoneNumber"
                                 >
                                   Telefone
                                 </label>
-                                <Input
-                                  value={telefone}
-                                  id="validationCustom01"
-                                  placeholder="(xx) x xxxx-xxxx"
-                                  type="text"
-                                  valid={telefoneState === "valid"}
-                                  invalid={telefoneState === "invalid"}
-                                  onChange={(e) => {
-                                    setTelefone(e.target.value);
-                                    if (e.target.value === "") {
-                                      settelefoneState("invalid");
-                                    } else {
-                                      settelefoneState("valid");
-                                    }
-                                  }}
-                                />
+                                <InputMask
+                                    placeholder='+55 (99) 9 9999-9999'
+                                    mask="+55 (99) 9 9999-9999"
+                                    maskChar=" "
+                                    value={phoneNumber}
+                                    onChange={(e) => {
+                                        setPhoneNumber(e.target.value);
+                                        if (e.target.value === "") {
+                                            setPhoneNumberState("invalid");
+                                        } else {
+                                            setPhoneNumberState("valid");
+                                        }
+                                    }}
+                                >
+                                    {(inputProps) => <Input {...inputProps} id="validationContactPersonPhoneNumber" type="text" valid={phoneNumberState === "valid"} invalid={phoneNumberState === "invalid"} />}
+                                </InputMask>
+                                <div className="invalid-feedback">
+                                    É necessário preencher este campo.
+                                </div>
                                 <div className="valid-feedback">Parece bom!</div>
                               </Col>
                               <Col className="mb-3" md="6">
                                 <label
                                   className="form-control-label"
-                                  htmlFor="validationCustom01"
+                                  htmlFor="validationPersonEmail"
                                 >
                                   E-mail (será usado como login)
                                 </label>
                                 <Input
-                                  value={email}
-                                  id="validationCustom01"
-                                  placeholder="xxxxx@email.com"
-                                  type="text"
-                                  valid={emailState === "valid"}
-                                  invalid={emailState === "invalid"}
-                                  onChange={(e) => {
-                                    setemail(e.target.value);
-                                    if (e.target.value === "") {
-                                      setemailState("invalid");
-                                    } else {
-                                      setemailState("valid");
-                                    }
-                                  }}
+                                    aria-describedby="inputGroupPrepend"
+                                    id="validationContactPersonEmailAddress"
+                                    placeholder="Endereço de e-mail"
+                                    type="email"
+                                    valid={emailAddressState === "valid"}
+                                    invalid={emailAddressState === "invalid"}
+                                    onChange={(e) => {
+                                        const email = e.target.value;
+                                        setEmailAddress(email);
+                                        if (validateEmail(email)) {
+                                            setEmailAddressState("valid");
+                                        } else {
+                                            setEmailAddressState("invalid");
+                                        }
+                                    }}
                                 />
+                                 <div className="invalid-feedback">
+                                    {emailAddressState === "invalid" && "Forneça um endereço de e-mail válido."}
+                                </div>
                                 <div className="valid-feedback">Parece bom!</div>
                               </Col>
                             </div>
@@ -209,86 +278,83 @@ export function IndividualRegistration() {
                               <Col className="mb-3" md="6">
                                 <label
                                   className="form-control-label"
-                                  htmlFor="validationCustom01"
+                                  htmlFor="validationPassword"
                                 >
                                   Senha
                                 </label>
                                 <Input
-                                  value={passWord}
-                                  id="validationCustom01"
-                                  placeholder="Senha"
-                                  type="text"
-                                  valid={passWordState === "valid"}
-                                  invalid={passWordState === "invalid"}
-                                  onChange={(e) => {
-                                    setpassWord(e.target.value);
+                                id="validationPassword"
+                                placeholder="Senha de acesso ao sistema"
+                                type="password"
+                                valid={passwordState === "valid"}
+                                invalid={passwordState === "invalid"}
+                                onChange={(e) => {
+                                    setPassword(e.target.value);
                                     if (e.target.value === "") {
-                                      setpassWordState("invalid");
+                                        setPasswordState("invalid");
                                     } else {
-                                      setpassWordState("valid");
+                                        setPasswordState("valid");
                                     }
-                                  }}
-                                />
+                                }}
+                            />
+                            <div className="invalid-feedback">
+                                É necessário preencher este campo.
+                            </div>
                                 <div className="valid-feedback">Parece bom!</div>
                               </Col>
                               <Col className="mb-3" md="6">
                                 <label
                                   className="form-control-label"
-                                  htmlFor="validationCustom01"
+                                  htmlFor="validationConfirmPassword"
                                 >
                                   Confirmar Senha
                                 </label>
                                 <Input
-                                  value={confirmPassWord}
-                                  id="validationCustom01"
-                                  placeholder="Confirme sua senha"
-                                  type="text"
-                                  valid={confirmPassWordState === "valid"}
-                                  invalid={confirmPassWordState === "invalid"}
-                                  onChange={(e) => {
-                                    setconfirmPassWord(e.target.value);
+                                id="validationConfirmPassword"
+                                placeholder="Confirme a senha digitada"
+                                type="password"
+                                valid={confirmPasswordState === "valid"}
+                                invalid={confirmPasswordState === "invalid"}
+                                onChange={(e) => {
+                                    setConfirmPassword(e.target.value);
                                     if (e.target.value === "") {
-                                      setconfirmPassWordState("invalid");
+                                        setConfirmPasswordState("invalid");
+                                    } else if (e.target.value === password) {
+                                        setConfirmPasswordState("valid");
                                     } else {
-                                      setconfirmPassWordState("valid");
+                                        setConfirmPasswordState("invalid");
                                     }
-                                  }}
-                                />
-                                <div className="valid-feedback">Looks good!</div>
+                                }}
+                            />
+                            <div className="invalid-feedback">
+                                {confirmPasswordState === "invalid" && "As senhas não coincidem."}
+                            </div>
+                                <div className="valid-feedback">Parece bom!</div>
                               </Col>
                             </div>
-
-                            <FormGroup>
-                              <div className="custom-control custom-checkbox mb-3">
-                                <input
-                                  className="custom-control-input"
-                                  value={checkbox}
-                                  id="invalidCheck"
-                                  type="checkbox"
-                                  valid={(checkboxState === "valid").toString()}
-                                  invalid={(checkboxState === "invalid").toString()}
-                                  onChange={(e) => {
-                                    setcheckbox(e.target.value);
-                                    if (e.target.value === "") {
-                                      setcheckboxState("invalid");
-                                    } else {
-                                      setcheckboxState("valid");
-                                    }
-                                  }}
-                                />
-                                <label
-                                  className="custom-control-label"
-                                  htmlFor="invalidCheck"
-                                >
-                                  Declaro que estou ciente e de acordo com os termos de uso SkillFy
-                                </label>
-                                <div className="invalid-feedback">
-                                  You must agree before submitting.
+                              <FormGroup>
+                                <div className="custom-control custom-checkbox mb-3">
+                                  <input
+                                    className={`custom-control-input ${checkboxState === "invalid" ? "is-invalid" : ""}`}
+                                    defaultValue=""
+                                    id="checkUseTerms"
+                                    type="checkbox"
+                                    onChange={handleCheckboxChange}
+                                  />
+                                  <label
+                                    className="custom-control-label"
+                                    htmlFor="checkUseTerms"
+                                  >
+                                    Declaro que estou ciente e de acordo com os termos de uso: Skillfy
+                                  </label>
+                                  <div className={`invalid-feedback mt-3 mt-sm-4 mt-md-4 mt-lg-3 mt-xl-2 mt-xxl-2 py-2`}>
+                                    Você deve concordar antes de enviar.
+                                  </div>
                                 </div>
-                              </div>
                             </FormGroup>
                           </Form>
                         </div>
                       </div>
+                      </Form>
     )
 }

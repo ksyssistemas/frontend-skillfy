@@ -58,7 +58,7 @@ return(
    <div>
       <div>
         <h2>Informe os dados da sua empresa (serão usados para cobrança)</h2>
-        <Form className="needs-validation" noValidate>
+        <Form className="needs-validation" role="form">
           <div className="form-row">
             <Col className="mb-3" md="6">
               <label
