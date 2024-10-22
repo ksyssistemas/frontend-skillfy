@@ -47,64 +47,64 @@ import AuthFooter from "components/Footers/RegisterFooter.js";
 
 
 function Checkout() {
-  const [focused, setFocused] = React.useState(false);
-  const [firstName, setfirstName] = React.useState("Mark");
-  const [firstNameState, setfirstNameState] = React.useState(null);
-  const [lastName, setlastName] = React.useState("Otto");
-  const [lastNameState, setlastNameState] = React.useState(null);
-  const [username, setusername] = React.useState("");
-  const [usernameState, setusernameState] = React.useState(null);
-  const [city, setcity] = React.useState("");
-  const [cityState, setcityState] = React.useState(null);
-  const [state, setstate] = React.useState("");
-  const [stateState, setstateState] = React.useState(null);
-  const [zip, setzip] = React.useState("");
-  const [zipState, setzipState] = React.useState(null);
-  const [checkbox, setcheckbox] = React.useState(false);
-  const [checkboxState, setcheckboxState] = React.useState(null);
-  const validateCustomStylesForm = () => {
-    if (firstName === "") {
-      setfirstNameState("invalid");
-    } else {
-      setfirstNameState("valid");
-    }
-    if (lastName === "") {
-      setlastNameState("invalid");
-    } else {
-      setlastNameState("valid");
-    }
-    if (username === "") {
-      setusernameState("invalid");
-    } else {
-      setusernameState("valid");
-    }
-    if (city === "") {
-      setcityState("invalid");
-    } else {
-      setcityState("valid");
-    }
-    if (state === "") {
-      setstateState("invalid");
-    } else {
-      setstateState("valid");
-    }
-    if (zip === "") {
-      setzipState("invalid");
-    } else {
-      setzipState("valid");
-    }
-    if (checkbox === false) {
-      setcheckboxState("invalid");
-    } else {
-      setcheckboxState("valid");
-    }
-  };
+  // const [focused, setFocused] = React.useState(false);
+  // const [firstName, setfirstName] = React.useState("Mark");
+  // const [firstNameState, setfirstNameState] = React.useState(null);
+  // const [lastName, setlastName] = React.useState("Otto");
+  // const [lastNameState, setlastNameState] = React.useState(null);
+  // const [username, setusername] = React.useState("");
+  // const [usernameState, setusernameState] = React.useState(null);
+  // const [city, setcity] = React.useState("");
+  // const [cityState, setcityState] = React.useState(null);
+  // const [state, setstate] = React.useState("");
+  // const [stateState, setstateState] = React.useState(null);
+  // const [zip, setzip] = React.useState("");
+  // const [zipState, setzipState] = React.useState(null);
+  // const [checkbox, setcheckbox] = React.useState(false);
+  // const [checkboxState, setcheckboxState] = React.useState(null);
+  // const validateCustomStylesForm = () => {
+  //   if (firstName === "") {
+  //     setfirstNameState("invalid");
+  //   } else {
+  //     setfirstNameState("valid");
+  //   }
+  //   if (lastName === "") {
+  //     setlastNameState("invalid");
+  //   } else {
+  //     setlastNameState("valid");
+  //   }
+  //   if (username === "") {
+  //     setusernameState("invalid");
+  //   } else {
+  //     setusernameState("valid");
+  //   }
+  //   if (city === "") {
+  //     setcityState("invalid");
+  //   } else {
+  //     setcityState("valid");
+  //   }
+  //   if (state === "") {
+  //     setstateState("invalid");
+  //   } else {
+  //     setstateState("valid");
+  //   }
+  //   if (zip === "") {
+  //     setzipState("invalid");
+  //   } else {
+  //     setzipState("valid");
+  //   }
+  //   if (checkbox === false) {
+  //     setcheckboxState("invalid");
+  //   } else {
+  //     setcheckboxState("valid");
+  //   }
+  // };
   const [step, setStep] = useState(1);
 
-  const [nameOnCard, setnameOnCard] = React.useState(false);
-  const [cardNumber, setcardNumber] = React.useState(false);
-  const [date, setdate] = React.useState(false);
-  const [ccv, setccv] = React.useState(false);
+  // const [nameOnCard, setnameOnCard] = React.useState(false);
+  // const [cardNumber, setcardNumber] = React.useState(false);
+  // const [date, setdate] = React.useState(false);
+  // const [ccv, setccv] = React.useState(false);
 
   const handleNextStep = () => {
     setStep(step + 1);

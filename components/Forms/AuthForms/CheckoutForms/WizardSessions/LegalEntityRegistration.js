@@ -1,7 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // nodejs library that concatenates classes
 import classnames from "classnames";
-
+import useCNPJ from 'hooks/RecordsHooks/useCNPJ.js';
+import useCEP from 'hooks/RecordsHooks/useCEP.js';
+import InputMask from 'react-input-mask';
+import useCreateClientCompany from 'hooks/RecordsHooks/customer/useCreateClientCompany.js';
+import dynamic from "next/dynamic";
+const Select2 = dynamic(() => import("react-select2-wrapper"));
+import { handleSelectionEmploymentContractData } from 'util/handleSelectionEmploymentContractData.js';
 // reactstrap components
 import {
   Button,
@@ -24,23 +30,6 @@ import {
 
 export function LegalEntityRegistration() {
 
-  const [firstName, setfirstName] = React.useState("");
-  const [firstNameState, setfirstNameState] = React.useState(null);
-
-  const [cnpj, setcnpj] = React.useState("");
-  const [cnpjState, setcnpjState] = React.useState(null);
-  const [nameEnterprise, setnameEnterprise] = React.useState("");
-  const [nameEnterpriseState, setnameEnterpriseState] = React.useState(null);
-  const [razao, setrazao] = React.useState("");
-  const [razaoState, setrazaoState] = React.useState(null);
-  const [segmento, setsegmento] = React.useState("");
-  const [segmentoState, setsegmentoState] = React.useState(null);
-  const [telefoneEnterprise, setTelefoneEnterprise] = React.useState("");
-  const [telefoneEnterpriseState, setTelefoneEnterpriseState] = React.useState(null);
-  const [celularEnterprise, setcelularEnterprise] = React.useState("");
-  const [celularEnterpriseState, setcelularEnterpriseState] = React.useState(null);
-  const [cep, setcep] = React.useState("");
-  const [cepState, setcepState] = React.useState(null);
   const [estado, setestado] = React.useState("");
   const [estadoState, setestadoState] = React.useState(null);
   const [address, setaddress] = React.useState("");
@@ -54,87 +43,220 @@ export function LegalEntityRegistration() {
   const [cidade, setcidade] = React.useState("");
   const [cidadeState, setcidadeState] = React.useState(null);
 
-return(   
-   <div>
+  const {
+    companyName,
+    setCompanyName,
+    companyNameState,
+    setCompanyNameState,
+    registrationName,
+    setRegistrationName,
+    registrationNameState,
+    setRegistrationNameState,
+    companyTypes,
+    setCompanyTypes,
+    companyTypesState,
+    setCompanyTypesState,
+    customerBusinessPhoneNumber,
+    setCustomerBusinessPhoneNumber,
+    customerBusinessPhoneNumberState,
+    setCustomerBusinessPhoneNumberState,
+    customerPhoneNumber,
+    setCustomerPhoneNumber,
+    customerPhoneNumberState,
+    setCustomerPhoneNumberState,
+    companyEmailAddress,
+    setCompanyEmailAddress,
+    companyEmailAddressState,
+    setCompanyEmailAddressState,
+    customerBusinessSector,
+    setCustomerBusinessSector,
+    customerBusinessSectorState,
+    setCustomerBusinessSectorState,
+    customerWebSite,
+    setCustomerWebSite,
+    customerWebSiteState,
+    setCustomerWebSiteState,
+    idHeadOfficeBranch,
+    setIdHeadOfficeBranch,
+    idHeadOfficeBranchState,
+    setIdHeadOfficeBranchState,
+    customerZipCode,
+    setCustomerZipCode,
+    customerZipCodeState,
+    setCustomerZipCodeState,
+    federatedUnit,
+    setFederatedUnit,
+    federatedUnitState,
+    setFederatedUnitState,
+    companyCity,
+    setCompanyCity,
+    companyCityState,
+    setCompanyCityState,
+    companyAddress,
+    setCompanyAddress,
+    companyAddressState,
+    setCompanyAddressState,
+    companyAddressNumber,
+    setCompanyAddressNumber,
+    companyAddressNumberState,
+    setCompanyAddressNumberState,
+    companyAddressComplement,
+    setCompanyAddressComplement,
+    companyAddressComplementState,
+    setCompanyAddressComplementState,
+    companyDistrict,
+    setCompanyDistrict,
+    companyDistrictState,
+    setCompanyDistrictState,
+    handleFormFieldsAutocomplete,
+    hasValuesChangedWithAPIData,
+    handleValuesChangedWithAPIData,
+    validateAddClientCompanyForm,
+    validateAddCustomerAddressForm,
+    handleValidateAddClientCompanyForm,
+    isCustomerCompanyFormValidated,
+    validatePhoneNumber,
+    validateWebSite,
+    validateCompanyEmail
+  } = useCreateClientCompany();
+
+  const {
+    brasilAPICNPJData,
+    loadingCNPJValidation,
+    errorCNPJValidation,
+    handleCPNJValidationLoading,
+    individualEmployerIdNumber,
+    handleSaveCNPJ,
+    individualEmployerIdNumberState,
+    setIndividualEmployerIdNumberState
+  } = useCNPJ();
+
+  const {
+    brasilAPICEPData,
+    loadingCEPValidation,
+    errorCEPValidation,
+    handleCEPValidationLoading,
+    handleSaveCEP,
+    zipCode,
+    setZipCode,
+    zipCodeState,
+    setZipCodeState,
+    handleErrorCEPValidation
+  } = useCEP();
+
+  const handleInputChange = (value, setValue, setState) => {
+    setValue(value);
+    setState(value.trim() === "" ? "invalid" : "valid");
+  };
+
+  useEffect(() => {
+    if (brasilAPICEPData) {
+      if (brasilAPICEPData.state) handleInputChange(brasilAPICEPData.state, setestado, setestadoState);
+      if (brasilAPICEPData.street) handleInputChange(brasilAPICEPData.street, setaddress, setaddressState);
+      if (brasilAPICEPData.neighborhood) handleInputChange(brasilAPICEPData.neighborhood, setbairro, setbairroState);
+      if (brasilAPICEPData.city) handleInputChange(brasilAPICEPData.city, setcidade, setcidadeState);
+    }
+  }, [brasilAPICEPData]);
+
+  const [selectedCompanyTypes, setSelectedCompanyTypes] = useState('');
+  const [companyTypesDataList, setCompanyTypesDataList] = useState([
+    { id: "0", text: "EI" },
+    { id: "1", text: "MEI" },
+    { id: "2", text: "Ltda" },
+    { id: "3", text: "SLU" },
+    { id: "4", text: "SS" },
+    { id: "5", text: "S/A" },
+  ]);
+  const handleCompanyTypesDataList = (companyTypes) => {
+    setCompanyTypesDataList(companyTypes);
+  }
+
+  return (
+    <div>
       <div>
         <h2>Informe os dados da sua empresa (serão usados para cobrança)</h2>
-        <Form className="needs-validation" role="form">
+        <Form className="needs-validation" noValidate>
           <div className="form-row">
             <Col className="mb-3" md="6">
               <label
                 className="form-control-label"
-                htmlFor="validationCustom01"
+                htmlFor="validationCustomerIndividualEmployerIdnNumber"
               >
                 CNPJ
               </label>
-              <Input
-                value={cnpj}
-                id="validationCustom01"
-                placeholder="xxx.xxx.xxx/xxxx-xx"
-                type="text"
-                valid={cnpjState === "valid"}
-                invalid={cnpjState === "invalid"}
-                onChange={(e) => {
-                  setcnpj(e.target.value);
-                  if (e.target.value === "") {
-                    setcnpjState("invalid");
-                  } else {
-                    setcnpjState("valid");
-                  }
-                }}
-              />
-              <div className="valid-feedback">Parece bom!</div>
+              <InputMask
+                placeholder="99.999.999/9999-99"
+                mask="99.999.999/9999-99"
+                maskChar="_"
+                value={individualEmployerIdNumber}
+                onChange={(e) => handleSaveCNPJ(e.target.value)}
+              >
+                {(inputProps) => <Input {...inputProps} id="validationCustomerIndividualEmployerIdnNumber" valid={individualEmployerIdNumberState === "valid"} invalid={individualEmployerIdNumberState === "invalid"} />}
+              </InputMask>
+              {
+                loadingCNPJValidation ? <div style={{ display: 'none', width: '100%', marginTop: '0.25rem', fontSize: '80%', color: '#5e72e4' }}>Validando CNPJ...</div> : (
+                  errorCNPJValidation !== null ? <div className="invalid-feedback">Ocorreu um erro ao validar o CNPJ.</div> : (
+                    brasilAPICNPJData ? <div className="valid-feedback">CNPJ válido!</div> : <div className="invalid-feedback">CNPJ inválido!</div>
+                  )
+                )
+              }
             </Col>
             <Col className="mb-3" md="6">
               <label
                 className="form-control-label"
-                htmlFor="validationCustom01"
+                htmlFor="validationCustomerCompanyName"
               >
                 Nome da Empresa
               </label>
               <Input
-                value={nameEnterprise}
-                id="validationCustom01"
+                id="validationCustomerCompanyName"
                 placeholder="Nome popular de título de estabelecimento"
+                value={companyName}
                 type="text"
-                valid={nameEnterpriseState === "valid"}
-                invalid={nameEnterpriseState === "invalid"}
+                valid={companyNameState === "valid"}
+                invalid={companyNameState === "invalid"}
                 onChange={(e) => {
-                  setnameEnterprise(e.target.value);
+                  setCompanyName(e.target.value);
                   if (e.target.value === "") {
-                    setnameEnterpriseState("invalid");
+                    setCompanyNameState("invalid");
                   } else {
-                    setnameEnterpriseState("valid");
+                    setCompanyNameState("valid");
                   }
                 }}
               />
               <div className="valid-feedback">Parece bom!</div>
+              <div className="invalid-feedback">
+                É necessário preencher este campo.
+              </div>
             </Col>
           </div>
           <div className="form-row">
             <Col className="mb-3" md="6">
               <label
                 className="form-control-label"
-                htmlFor="validationCustom01"
+                htmlFor="validationCustomerRegistrationName"
               >
                 Razão Social
               </label>
               <Input
-                value={razao}
-                id="validationCustom01"
+                id="validationCustomerRegistrationName"
                 placeholder="Nome ou termo de registro"
+                value={registrationName}
                 type="text"
-                valid={razaoState === "valid"}
-                invalid={razaoState === "invalid"}
+                valid={registrationNameState === "valid"}
+                invalid={registrationNameState === "invalid"}
                 onChange={(e) => {
-                  setrazao(e.target.value);
+                  setRegistrationName(e.target.value);
                   if (e.target.value === "") {
-                    setrazaoState("invalid");
+                    setRegistrationNameState("invalid");
                   } else {
-                    setrazaoState("valid");
+                    setRegistrationNameState("valid");
                   }
                 }}
               />
+              <div className="invalid-feedback">
+                É necessário preencher este campo.
+              </div>
               <div className="valid-feedback">Parece bom!</div>
             </Col>
             <Col className="mb-3" md="6">
@@ -144,21 +266,17 @@ return(
               >
                 Segmento
               </label>
-              <Input
-                value={segmento}
-                id="validationCustom01"
-                placeholder="MEI, EI, LTDA, SA, ..."
-                type="text"
-                valid={segmentoState === "valid"}
-                invalid={segmentoState === "invalid"}
-                onChange={(e) => {
-                  setsegmento(e.target.value);
-                  if (e.target.value === "") {
-                    setsegmentoState("invalid");
-                  } else {
-                    setsegmentoState("valid");
-                  }
+              <Select2
+                id="validationCustomerCompanyTypes"
+                className="form-control"
+                data-minimum-results-for-search="Infinity"
+                options={{
+                  placeholder: "Selecione o tipo",
                 }}
+                value={selectedCompanyTypes}
+                onChange={(e) => setSelectedCompanyTypes(e.target.value)}
+                data={companyTypesDataList}
+                onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, companyTypesDataList, setSelectedCompanyTypes, setCompanyTypes, setCompanyTypesState, null)}
               />
               <div className="valid-feedback">Parece bom!</div>
             </Col>
@@ -171,22 +289,26 @@ return(
               >
                 Telefone
               </label>
-              <Input
-                value={telefoneEnterprise}
-                id="validationCustom01"
-                placeholder="+55 (xx) xxxx-xxxx"
-                type="text"
-                valid={telefoneEnterpriseState === "valid"}
-                invalid={telefoneEnterpriseState === "invalid"}
+              <InputMask
+                placeholder="+55 (99) 9999-9999"
+                mask="+55 (99) 9999-9999"
+                maskChar=" "
+                value={customerBusinessPhoneNumber}
                 onChange={(e) => {
-                  setTelefoneEnterprise(e.target.value);
-                  if (e.target.value === "") {
-                    setTelefoneEnterpriseState("invalid");
+                  const value = e.target.value;
+                  setCustomerBusinessPhoneNumber(value);
+                  if (value === "" || !validatePhoneNumber(value, 'business')) {
+                    setCustomerBusinessPhoneNumberState("invalid");
                   } else {
-                    setTelefoneEnterpriseState("valid");
+                    setCustomerBusinessPhoneNumberState("valid");
                   }
                 }}
-              />
+              >
+                {(inputProps) => <Input {...inputProps} id="validationCustomerBusinessPhoneNumber" type="text" valid={customerBusinessPhoneNumberState === "valid"} invalid={customerBusinessPhoneNumberState === "invalid"} />}
+              </InputMask>
+              <div className="invalid-feedback">
+                É necessário preencher este campo.
+              </div>
               <div className="valid-feedback">Parece bom!</div>
             </Col>
             <Col className="mb-3" md="6">
@@ -196,22 +318,31 @@ return(
               >
                 Celular
               </label>
-              <Input
-                value={celularEnterprise}
-                id="validationCustom01"
-                placeholder="+55 (xx) x xxxxx-xxxx"
-                type="text"
-                valid={celularEnterpriseState === "valid"}
-                invalid={celularEnterpriseState === "invalid"}
+              <InputMask
+                placeholder="+55 (99) 9 9999-9999"
+                mask="+55 (99) 9 9999-9999"
+                maskChar=" "
+                value={customerPhoneNumber}
                 onChange={(e) => {
-                  setcelularEnterprise(e.target.value);
-                  if (e.target.value === "") {
-                    setcelularEnterpriseState("invalid");
+                  const value = e.target.value;
+                  setCustomerPhoneNumber(value);
+                  if (value !== "" && !validatePhoneNumber(value, 'personal')) {
+                    setCustomerPhoneNumberState("invalid");
                   } else {
-                    setcelularEnterpriseState("valid");
+                    setCustomerPhoneNumberState(value === "" ? null : "valid");
                   }
                 }}
-              />
+              >
+                {(inputProps) => <Input {...inputProps}
+                  id="validationCustomerPhoneNumber"
+                  type="text"
+                  valid={customerPhoneNumberState === "valid"}
+                  invalid={customerPhoneNumberState === "invalid"}
+                />}
+              </InputMask>
+              <div className="invalid-feedback">
+                É necessário preencher este campo corretamente.
+              </div>
               <div className="valid-feedback">Parece bom!</div>
             </Col>
           </div>
@@ -223,23 +354,25 @@ return(
               >
                 CEP
               </label>
-              <Input
-                value={cep}
-                id="validationCustom01"
-                placeholder="xxxxx-xxx"
-                type="text"
-                valid={cepState === "valid"}
-                invalid={cepState === "invalid"}
-                onChange={(e) => {
-                  setcep(e.target.value);
-                  if (e.target.value === "") {
-                    setcepState("invalid");
-                  } else {
-                    setcepState("valid");
-                  }
-                }}
-              />
-              <div className="valid-feedback">Parece bom!</div>
+              <InputMask
+                placeholder="99999-999"
+                mask="99999-999"
+                maskChar=" "
+                value={zipCode}
+                onChange={(e) => handleSaveCEP(e.target.value)}
+              >
+                {(inputProps) => <Input {...inputProps} id="validationCustomerZipCode" type="text" valid={zipCodeState === "valid"} invalid={zipCodeState === "invalid"} />}
+              </InputMask>
+              {
+                loadingCEPValidation ? <div style={{ display: 'none', width: '100%', marginTop: '0.25rem', fontSize: '80%', color: '#5e72e4' }}>Validando CEP...</div> : (
+                  errorCEPValidation !== null ? <div className="invalid-feedback">Ocorreu um erro ao validar o CEP.</div> : (
+                    brasilAPICEPData ? <div className="valid-feedback">CEP válido!</div> : <div className="invalid-feedback">CEP inválido!</div>
+                  )
+                )
+              }
+              <div className="invalid-feedback">
+                É necessário preencher este campo corretamente.
+              </div>
             </Col>
             <Col className="mb-3" md="6">
               <label
@@ -249,22 +382,18 @@ return(
                 Estado
               </label>
               <Input
-                value={estado}
+                value={brasilAPICEPData?.state || estado}
                 id="validationCustom01"
                 placeholder="Estado"
                 type="text"
                 valid={estadoState === "valid"}
                 invalid={estadoState === "invalid"}
-                onChange={(e) => {
-                  setestado(e.target.value);
-                  if (e.target.value === "") {
-                    setestadoState("invalid");
-                  } else {
-                    setestadoState("valid");
-                  }
-                }}
+                onChange={(e) => handleInputChange(e.target.value, setestado, setestadoState)}
               />
               <div className="valid-feedback">Parece bom!</div>
+              <div className="invalid-feedback">
+                É necessário preencher este campo corretamente.
+              </div>
             </Col>
           </div>
           <div className="form-row">
@@ -276,22 +405,18 @@ return(
                 Endereço
               </label>
               <Input
-                value={address}
+                value={brasilAPICEPData?.street || address}
                 id="validationCustom01"
                 placeholder="Rua, Avenida..."
                 type="text"
                 valid={addressState === "valid"}
                 invalid={addressState === "invalid"}
-                onChange={(e) => {
-                  setaddress(e.target.value);
-                  if (e.target.value === "") {
-                    setaddressState("invalid");
-                  } else {
-                    setaddressState("valid");
-                  }
-                }}
+                onChange={(e) => handleInputChange(e.target.value, setaddress, setaddressState)}
               />
               <div className="valid-feedback">Parece bom!</div>
+              <div className="invalid-feedback">
+                É necessário preencher este campo corretamente.
+              </div>
             </Col>
             <Col className="mb-3" md="4">
               <label
@@ -317,6 +442,9 @@ return(
                 }}
               />
               <div className="valid-feedback">Parece bom!</div>
+              <div className="invalid-feedback">
+                É necessário preencher este campo corretamente.
+              </div>
             </Col>
           </div>
           <div className="form-row">
@@ -344,6 +472,9 @@ return(
                 }}
               />
               <div className="valid-feedback">Parece bom!</div>
+              <div className="invalid-feedback">
+                Não é necessário preencher este campo.
+              </div>
             </Col>
           </div>
           <div className="form-row">
@@ -355,22 +486,18 @@ return(
                 Bairro
               </label>
               <Input
-                value={bairro}
+                value={brasilAPICEPData?.neighborhood || bairro}
                 id="validationCustom01"
                 placeholder="Bairro"
                 type="text"
                 valid={bairroState === "valid"}
                 invalid={bairroState === "invalid"}
-                onChange={(e) => {
-                  setbairro(e.target.value);
-                  if (e.target.value === "") {
-                    setbairroState("invalid");
-                  } else {
-                    setbairroState("valid");
-                  }
-                }}
+                onChange={(e) => handleInputChange(e.target.value, setbairro, setbairroState)}
               />
               <div className="valid-feedback">Parece bom!</div>
+              <div className="invalid-feedback">
+                É necessário preencher este campo corretamente.
+              </div>
             </Col>
             <Col className="mb-3" md="6">
               <label
@@ -380,27 +507,22 @@ return(
                 Cidade
               </label>
               <Input
-                value={cidade}
+                value={brasilAPICEPData?.city || cidade}
                 id="validationCustom01"
                 placeholder="Cidade"
                 type="text"
                 valid={cidadeState === "valid"}
                 invalid={cidadeState === "invalid"}
-                onChange={(e) => {
-                  setcidade(e.target.value);
-                  if (e.target.value === "") {
-                    setcidadeState("invalid");
-                  } else {
-                    setcidadeState("valid");
-                  }
-                }}
+                onChange={(e) => handleInputChange(e.target.value, setcidade, setcidadeState)}
               />
               <div className="valid-feedback">Parece bom!</div>
+              <div className="invalid-feedback">
+                É necessário preencher este campo corretamente.
+              </div>
             </Col>
           </div>
         </Form>
       </div>
     </div>
-    )
-
+  )
 }
