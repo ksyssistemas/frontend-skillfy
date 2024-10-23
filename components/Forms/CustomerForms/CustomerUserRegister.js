@@ -47,7 +47,7 @@ import {
 } from "reactstrap";
 import { handleSelectionEmploymentContractData } from '../../../util/handleSelectionEmploymentContractData';
 
-function CustomerUserRegister({ handleShowCustomerUserRegister }) {
+function CustomerUserRegister() {
 
     const {
         firstNameState,
@@ -223,7 +223,7 @@ function CustomerUserRegister({ handleShowCustomerUserRegister }) {
             setStep(step + 1);
         }
         if (step === 2 && individualEmployerIdNumberState === "valid" && checkboxState === "valid") {
-            handleValidateAddClientCompanyForm(handleShowCustomerUserRegister);
+            // handleValidateAddClientCompanyForm(handleShowCustomerUserRegister);
             console.log(`ROTA: ${process.env.NEXT_PUBLIC_CONTACT_PERSON}`)
         }
     };

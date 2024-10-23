@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import dynamic from "next/dynamic";
 // react plugin used to create datetimepicker
 import ReactDatetime from "react-datetime";
+import useCreateCustomerAccountHolder from '../../../../hooks/RecordsHooks/customer/useCreateCustomerAccountHolder';
 // react plugin used to create DropdownMenu for selecting items
 const Select2 = dynamic(() => import("react-select2-wrapper"));
 import {
@@ -40,6 +41,50 @@ const STEPS_NUMBER_FOR_WIZARD_COMPONENT = WIZARD_COMPONENT_STEP_TITLES.length;
 
 export function CheckoutFormWrapper() {
 
+    const {
+        firstNameState,
+        lastNameState,
+        taxIdentificationNumber,
+        taxIdentificationNumberState,
+        emailAddressState,
+        birthdateState,
+        password,
+        passwordState,
+        confirmPasswordState,
+        phoneNumber,
+        phoneNumberState,
+        checkbox,
+        checkboxState,
+        setCheckbox,
+        setCheckboxState,
+        setFirstName,
+        setFirstNameState,
+        setLastName,
+        setLastNameState,
+        setTaxIdentificationNumber,
+        setTaxIdentificationNumberState,
+        setEmailAddress,
+        setEmailAddressState,
+        setPassword,
+        setPasswordState,
+        setConfirmPassword,
+        setConfirmPasswordState,
+        setPhoneNumber,
+        setPhoneNumberState,
+        handleValidateAddCustomerAccountHolderForm,
+        handleBirthdateChange,
+        validateEmail,
+        handleChangeCPF,
+        validateCheckboxIsChecked,
+        isCustomerAccountHolderFormValidated
+    } = useCreateCustomerAccountHolder();
+
+    useEffect(() => {
+        if (checkbox !== null) {
+            validateCheckboxIsChecked();
+        }
+    }, [checkbox])
+
     const [currentStep, setCurrentStep] = useState(1);
 
     const handleNextStep = () => {
@@ -75,11 +120,21 @@ export function CheckoutFormWrapper() {
 
     // Função para enviar todos os dados
     const handleSubmit = () => {
-        // Aqui você envia todos os dados armazenados no formData
         console.log('Submitting all data:', formData);
-        // Exemplo de envio dos dados via fetch ou axios
-        // fetch('/api/save', { method: 'POST', body: JSON.stringify(formData) });
-    };
+        if(currentStep === 1) {
+            if (checkbox === null) {
+                setCheckbox(false);
+            }
+            handleValidateAddCustomerAccountHolderForm();
+        }
+        if (currentStep === 1 && checkboxState === "valid") {
+            handleNextStep();
+        }
+        // if (currentStep === 2 && individualEmployerIdNumberState === "valid" && checkboxState === "valid") {
+        //     handleValidateAddClientCompanyForm(handleShowCustomerUserRegister);
+        //     console.log(`ROTA: ${process.env.NEXT_PUBLIC_CONTACT_PERSON}`)
+        // }
+        }
 
     const renderCheckoutComponent = () => {
         const stepTitle = WIZARD_COMPONENT_STEP_TITLES[currentStep - 1]; // Obtém o título com base no currentStep
@@ -159,17 +214,17 @@ export function CheckoutFormWrapper() {
                             Anterior
                         </Button>
                         <Button className="px-5 me-2 rounded-pill" color="purple-sk" size="md" type="button"
-                            onClick={handleNextStep}
+                            onClick={handleSubmit}
                             disabled={currentStep === STEPS_NUMBER_FOR_WIZARD_COMPONENT}
                         >
                             Próximo
                         </Button>
-                        <Button className="px-5 me-2 rounded-pill" color="purple-sk" size="md" type="button"
+                        {/* <Button className="px-5 me-2 rounded-pill" color="purple-sk" size="md" type="button"
                             onClick={handleSubmit}
                             disabled={currentStep != STEPS_NUMBER_FOR_WIZARD_COMPONENT}
                         >
                             Submit
-                        </Button>
+                        </Button> */}
                     </Col>
                 </Row>
             </Container>
