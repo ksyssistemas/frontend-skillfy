@@ -8,6 +8,7 @@ import useCreateClientCompany from 'hooks/RecordsHooks/customer/useCreateClientC
 import dynamic from "next/dynamic";
 const Select2 = dynamic(() => import("react-select2-wrapper"));
 import { handleSelectionEmploymentContractData } from 'util/handleSelectionEmploymentContractData.js';
+
 // reactstrap components
 import {
   Button,
@@ -171,6 +172,42 @@ export function LegalEntityRegistration() {
     setCompanyTypesDataList(companyTypes);
   }
 
+  const valorEstado = brasilAPICEPData?.state || estado;
+  const valorStreet = brasilAPICEPData?.street || address;
+  const valorBairro = brasilAPICEPData?.neighborhood || bairro;
+  const valorCity = brasilAPICEPData?.city || cidade;
+
+  const handleNumberChange = (e) => {
+    const value = e.target.value;
+    const filteredValue = value.replace(/[^0-9]/g, '');
+    setnumber(filteredValue);
+
+    if (filteredValue === "") {
+      setnumberState("invalid");
+    } else {
+      setnumberState("valid");
+    }
+  };
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    console.log({
+      individualEmployerIdNumber,
+      companyName,
+      registrationName,
+      selectedCompanyTypes,
+      customerBusinessPhoneNumber,
+      customerPhoneNumber,
+      zipCode,
+      valorEstado,
+      valorStreet,
+      number,
+      complemento,
+      valorBairro,
+      valorCity
+    });
+  };
+
   return (
     <div>
       <div>
@@ -194,10 +231,8 @@ export function LegalEntityRegistration() {
                 {(inputProps) => <Input {...inputProps} id="validationCustomerIndividualEmployerIdnNumber" valid={individualEmployerIdNumberState === "valid"} invalid={individualEmployerIdNumberState === "invalid"} />}
               </InputMask>
               {
-                loadingCNPJValidation ? <div style={{ display: 'none', width: '100%', marginTop: '0.25rem', fontSize: '80%', color: '#5e72e4' }}>Validando CNPJ...</div> : (
-                  errorCNPJValidation !== null ? <div className="invalid-feedback">Ocorreu um erro ao validar o CNPJ.</div> : (
-                    brasilAPICNPJData ? <div className="valid-feedback">CNPJ válido!</div> : <div className="invalid-feedback">CNPJ inválido!</div>
-                  )
+                errorCNPJValidation !== null ? <div className="invalid-feedback">Ocorreu um erro ao validar o CNPJ.</div> : (
+                  brasilAPICNPJData ? <div className="valid-feedback">CNPJ válido!</div> : <div className="invalid-feedback">CNPJ inválido!</div>
                 )
               }
             </Col>
@@ -262,7 +297,7 @@ export function LegalEntityRegistration() {
             <Col className="mb-3" md="6">
               <label
                 className="form-control-label"
-                htmlFor="validationCustom01"
+                htmlFor="validationCustomerCompanyTypes"
               >
                 Segmento
               </label>
@@ -285,7 +320,7 @@ export function LegalEntityRegistration() {
             <Col className="mb-3" md="6">
               <label
                 className="form-control-label"
-                htmlFor="validationCustom01"
+                htmlFor="validationCustomerBusinessPhoneNumber"
               >
                 Telefone
               </label>
@@ -314,7 +349,7 @@ export function LegalEntityRegistration() {
             <Col className="mb-3" md="6">
               <label
                 className="form-control-label"
-                htmlFor="validationCustom01"
+                htmlFor="validationCustomerPhoneNumber"
               >
                 Celular
               </label>
@@ -350,7 +385,7 @@ export function LegalEntityRegistration() {
             <Col className="mb-3" md="6">
               <label
                 className="form-control-label"
-                htmlFor="validationCustom01"
+                htmlFor="validationCustomerZipCode"
               >
                 CEP
               </label>
@@ -377,13 +412,13 @@ export function LegalEntityRegistration() {
             <Col className="mb-3" md="6">
               <label
                 className="form-control-label"
-                htmlFor="validationCustom01"
+                htmlFor="validationCompanyState"
               >
                 Estado
               </label>
               <Input
-                value={brasilAPICEPData?.state || estado}
-                id="validationCustom01"
+                value={valorEstado}
+                id="validationCompanyState"
                 placeholder="Estado"
                 type="text"
                 valid={estadoState === "valid"}
@@ -400,13 +435,13 @@ export function LegalEntityRegistration() {
             <Col className="mb-3" md="8">
               <label
                 className="form-control-label"
-                htmlFor="validationCustom01"
+                htmlFor="validationCompanyStreet"
               >
                 Endereço
               </label>
               <Input
-                value={brasilAPICEPData?.street || address}
-                id="validationCustom01"
+                value={valorStreet}
+                id="validationCompanyStreet"
                 placeholder="Rua, Avenida..."
                 type="text"
                 valid={addressState === "valid"}
@@ -421,25 +456,18 @@ export function LegalEntityRegistration() {
             <Col className="mb-3" md="4">
               <label
                 className="form-control-label"
-                htmlFor="validationCustom01"
+                htmlFor="validationCompanyNumber"
               >
                 Número
               </label>
               <Input
                 value={number}
-                id="validationCustom01"
+                id="validationCompanyNumber"
                 placeholder="xxxx"
                 type="text"
                 valid={numberState === "valid"}
                 invalid={numberState === "invalid"}
-                onChange={(e) => {
-                  setnumber(e.target.value);
-                  if (e.target.value === "") {
-                    setnumberState("invalid");
-                  } else {
-                    setnumberState("valid");
-                  }
-                }}
+                onChange={handleNumberChange}
               />
               <div className="valid-feedback">Parece bom!</div>
               <div className="invalid-feedback">
@@ -451,13 +479,13 @@ export function LegalEntityRegistration() {
             <Col className="mb-3" md="12">
               <label
                 className="form-control-label"
-                htmlFor="validationCustom01"
+                htmlFor="validationCompanyComplemento"
               >
                 Complemento (opcional)
               </label>
               <Input
                 value={complemento}
-                id="validationCustom01"
+                id="validationCompanyComplemento"
                 placeholder="xxxx"
                 type="text"
                 valid={complementoState === "valid"}
@@ -481,13 +509,13 @@ export function LegalEntityRegistration() {
             <Col className="mb-3" md="6">
               <label
                 className="form-control-label"
-                htmlFor="validationCustom01"
+                htmlFor="validationCompanyNeighborhood"
               >
                 Bairro
               </label>
               <Input
-                value={brasilAPICEPData?.neighborhood || bairro}
-                id="validationCustom01"
+                value={valorBairro}
+                id="validationCompanyNeighborhood"
                 placeholder="Bairro"
                 type="text"
                 valid={bairroState === "valid"}
@@ -502,13 +530,13 @@ export function LegalEntityRegistration() {
             <Col className="mb-3" md="6">
               <label
                 className="form-control-label"
-                htmlFor="validationCustom01"
+                htmlFor="validationCompanyCity"
               >
                 Cidade
               </label>
               <Input
-                value={brasilAPICEPData?.city || cidade}
-                id="validationCustom01"
+                value={valorCity}
+                id="validationCompanyCity"
                 placeholder="Cidade"
                 type="text"
                 valid={cidadeState === "valid"}
@@ -521,6 +549,7 @@ export function LegalEntityRegistration() {
               </div>
             </Col>
           </div>
+          <Button color="primary" onClick={handleSave}>Salvar</Button>
         </Form>
       </div>
     </div>

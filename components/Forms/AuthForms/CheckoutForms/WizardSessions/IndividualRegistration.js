@@ -5,12 +5,14 @@ import ReactDatetime from 'react-datetime';
 import InputMask from 'react-input-mask';
 import useCPF from 'hooks/RecordsHooks/useCPF.js';
 import useCreateCustomerAccountHolder from 'hooks/RecordsHooks/customer/useCreateCustomerAccountHolder.js';
+
 // reactstrap components
 import {
   FormGroup,
   Form,
   Input,
   Col,
+  Button,
 } from "reactstrap";
 
 export function IndividualRegistration({ handleShowIndividualRegistration }) {
@@ -76,10 +78,79 @@ export function IndividualRegistration({ handleShowIndividualRegistration }) {
 
   const handleCheckboxChange = (e) => {
     if (checkbox === null) {
-      setCheckbox(true);
+      setCheckbox(false);
     } else {
-      setCheckbox(!checkbox);
+      setCheckbox(checkbox);
     }
+  };
+
+  const handleChange = (date) => {
+    if (date && date.isValid) {
+      setBirthdate(date.format('DD/MM/YYYY'));
+    } else {
+      setBirthdate(formatInput(date));
+    }
+  };
+
+  const formatInput = (input) => {
+    if (typeof input !== 'string') {
+      return '';
+    }
+
+    const numbers = input.replace(/\D/g, '');
+
+    if (numbers.length >= 2 && numbers.length < 4) {
+      return `${numbers.slice(0, 2)}/${numbers.slice(2)}`;
+    } else if (numbers.length >= 4) {
+      return `${numbers.slice(0, 2)}/${numbers.slice(2, 4)}/${numbers.slice(4, 8)}`;
+    }
+    return numbers;
+  };
+
+  const handleBlur = () => {
+    if (birthdate.length === 10) {
+      setBirthdate(birthdate);
+    } else if (birthdate.length === 8) {
+      setBirthdate(formatInput(birthdate));
+    }
+  };
+
+  const handleFirstNameChange = (e) => {
+    const value = e.target.value;
+    const filteredValue = value.replace(/[^a-zA-Z]/g, '');
+    setFirstName(filteredValue);
+
+    if (filteredValue === "") {
+      setFirstNameState("invalid");
+    } else {
+      setFirstNameState("valid");
+    }
+  };
+
+  const handleLastNameChange = (e) => {
+    const value = e.target.value;
+    const filteredValue = value.replace(/[^a-zA-Z]/g, '');
+    setLastName(filteredValue);
+
+    if (filteredValue === "") {
+      setLastNameState("invalid");
+    } else {
+      setLastNameState("valid");
+    }
+  };
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    console.log({
+      firstName,
+      lastName,
+      taxIdentificationNumber,
+      birthdate,
+      phoneNumber,
+      emailAddress,
+      password,
+      confirmPassword
+    });
   };
 
   return (
@@ -96,19 +167,13 @@ export function IndividualRegistration({ handleShowIndividualRegistration }) {
                 Nome
               </label>
               <Input
+                value={firstName}
                 id="validationContactPersonFirstName"
                 placeholder="Nome"
                 type="text"
                 valid={firstNameState === "valid"}
                 invalid={firstNameState === "invalid"}
-                onChange={(e) => {
-                  setFirstName(e.target.value);
-                  if (e.target.value === "") {
-                    setFirstNameState("invalid");
-                  } else {
-                    setFirstNameState("valid");
-                  }
-                }}
+                onChange={handleFirstNameChange}
               />
               <div className="invalid-feedback">
                 É necessário preencher este campo.
@@ -123,19 +188,13 @@ export function IndividualRegistration({ handleShowIndividualRegistration }) {
                 Sobrenome
               </label>
               <Input
+                value={lastName}
                 id="validationContactPersonLastName"
                 placeholder="Sobrenome"
                 type="text"
                 valid={lastNameState === "valid"}
                 invalid={lastNameState === "invalid"}
-                onChange={(e) => {
-                  setLastName(e.target.value);
-                  if (e.target.value === "") {
-                    setLastNameState("invalid");
-                  } else {
-                    setLastNameState("valid");
-                  }
-                }}
+                onChange={handleLastNameChange}
               />
               <div className="invalid-feedback">
                 É necessário preencher este campo.
@@ -174,12 +233,13 @@ export function IndividualRegistration({ handleShowIndividualRegistration }) {
               </label>
               <ReactDatetime
                 inputProps={{
-                  placeholder: '__/__/__',
+                  placeholder: 'DD/MM/YYYY',
+                  onBlur: handleBlur,
+                  value: formatInput(birthdate),
                 }}
                 timeFormat={false}
                 dateFormat="DD/MM/YYYY"
-                value={birthdate}
-                onChange={setBirthdate}
+                onChange={handleChange}
               />
               <div className="valid-feedback">Parece bom!</div>
             </Col>
@@ -252,6 +312,7 @@ export function IndividualRegistration({ handleShowIndividualRegistration }) {
                 Senha
               </label>
               <Input
+                value={password}
                 id="validationPassword"
                 placeholder="Senha de acesso ao sistema"
                 type="password"
@@ -279,6 +340,7 @@ export function IndividualRegistration({ handleShowIndividualRegistration }) {
                 Confirmar Senha
               </label>
               <Input
+                value={confirmPassword}
                 id="validationConfirmPassword"
                 placeholder="Confirme a senha digitada"
                 type="password"
@@ -321,6 +383,7 @@ export function IndividualRegistration({ handleShowIndividualRegistration }) {
               </div>
             </div>
           </FormGroup>
+          <Button color="primary" onClick={handleSave}>Salvar</Button>
         </Form>
       </div>
     </div>

@@ -27,7 +27,7 @@ export function RegisteringPaymentData() {
   const [nameOnCard, setnameOnCard] = React.useState("");
   const [nameOnCardState, setnameOnCardState] = React.useState(null);
   const [cardNumber, setcardNumber] = React.useState("");
-  const [cardNumberState, setcardNumerState] = React.useState(null);
+  const [cardNumberState, setcardNumberState] = React.useState(null);
   const [date, setdate] = React.useState("");
   const [dateState, setdateState] = React.useState(null);
   const [cvv, setcvv] = React.useState("");
@@ -35,12 +35,78 @@ export function RegisteringPaymentData() {
 
   const [paymentMethod, setPaymentMethod] = React.useState('credit-card');
 
-return (    
+  const handleCardNumberChange = (e) => {
+    const value = e.target.value;
+    const filteredValue = value.replace(/[^0-9]/g, '');
+    setcardNumber(filteredValue);
+
+    if (filteredValue === "") {
+      setcardNumberState("invalid");
+    } else {
+      setcardNumberState("valid");
+    }
+  };
+
+  const handleCVVChange = (e) => {
+    const value = e.target.value;
+    const filteredValue = value.replace(/[^0-9]/g, '');
+    setcvv(filteredValue);
+
+    if (filteredValue === "") {
+      setcvvState("invalid");
+    } else {
+      setcvvState("valid");
+    }
+  };
+
+  const handleCardNameChange = (e) => {
+    const value = e.target.value;
+    const filteredValue = value.replace(/[^a-zA-Z]/g, '');
+    setnameOnCard(filteredValue);
+
+    if (filteredValue === "") {
+      setnameOnCardState("invalid");
+    } else {
+      setnameOnCardState("valid");
+    }
+  };
+
+  const handleDateChange = (e) => {
+    const value = e.target.value.replace(/\D/g, ''); 
+    let formattedValue = '';
+
+    if (value.length >= 2) {
+      formattedValue = `${value.slice(0, 2)}/${value.slice(2, 4)}`;
+    } else {
+      formattedValue = value;
+    }
+
+    setdate(formattedValue);
+
+    if (formattedValue === "") {
+      setdateState("invalid");
+    } else {
+      setdateState("valid");
+    }
+  };
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    console.log({
+      nameOnCard,
+      cardNumber,
+      date,
+      cvv,
+      paymentMethod
+    });
+  };
+
+  return (
     <div>
       <div>
         <h2>Informações de pagamento</h2>
         <Form className="needs-validation" role="form">
-            <div className="custom-control custom-radio mb-4">
+          <div className="custom-control custom-radio mb-4">
             <input
               className="custom-control-input"
               value="credit-card"
@@ -54,143 +120,127 @@ return (
               Cartão de Crédito
             </label>
           </div>
-              <div>
-                  <div className="form-row">
-                    <Col className="mb-3" md="6">
-                      <label
-                        className="form-control-label"
-                        htmlFor="namecard"
-                      >
-                        Nome no cartão
-                      </label>
-                      <Input 
-                        value={nameOnCard}
-                        id='namecard'
-                        placeholder="Nome no cartão"
-                        type="text"
-                        valid={nameOnCardState === "valid"}
-                        invalid={nameOnCardState === "invalid"}
-                        onChange={(e) => {
-                          setnameOnCard(e.target.value);
-                          if (e.target.value === "") {
-                            setnameOnCardState("invalid");
-                          } else {
-                            setnameOnCardState("valid");
-                          }
-                        }}
-                      />
-                      <div className="valid-feedback">Parece bom!</div>
-                    </Col>
-                    <Col className="mb-3" md="6">
-                      <label
-                        className="form-control-label"
-                        htmlFor="numbercard"
-                      >
-                        Número do cartão
-                      </label>
-                      <Input 
-                        value={cardNumber}
-                        id='numbercard'
-                        placeholder="Número do cartão"
-                        type="text"
-                        valid={cardNumberState === "valid"}
-                        invalid={cardNumberState === "invalid"}
-                        onChange={(e) => {
-                          setcardNumber(e.target.value);
-                          if (e.target.value === "") {
-                            setcardNumerState("invalid");
-                          } else {
-                            setcardNumerState("valid");
-                          }
-                        }}
-                      />
-                    </Col>
-                    <div className="valid-feedback">Parece bom!</div>
-                  </div>
-                  <div className="form-row">
-                  <Col className="mb-3" md="6">
-                      <label
-                        className="form-control-label"
-                        htmlFor="datecard"
-                      >
-                        Vencimento
-                      </label>
-                      <Input 
-                        value={date}
-                        id='datecard'
-                        placeholder="MM/AA"
-                        type="text"
-                        valid={dateState === "valid"}
-                        invalid={dateState === "invalid"}
-                        onChange={(e) => {
-                          setdate(e.target.value);
-                          if (e.target.value === "") {
-                            setdateState("invalid");
-                          } else {
-                            setdateState("valid");
-                          }
-                        }}
-                      />
-                    </Col>
-                    <div className="valid-feedback">Parece bom!</div>
-                    <Col className="mb-3" md="6">
-                      <label
-                        className="form-control-label"
-                        htmlFor="cvvcard"
-                      >
-                        CVV
-                      </label>
-                      <Input 
-                        value={cvv}
-                        id='cvvcard'
-                        placeholder="XXXX"
-                        type="text"
-                        valid={cvvState === "valid"}
-                        invalid={cvvState === "invalid"}
-                        onChange={(e) => {
-                          setcvv(e.target.value);
-                          if (e.target.value === "") {
-                            setcvvState("invalid");
-                          } else {
-                            setcvvState("valid");
-                          }
-                        }}
-                      />
-                    </Col>
-                    <div className="valid-feedback">Parece bom!</div>
-                  </div>
-                
-              </div>
-              <div className="custom-control custom-radio mb-4">
-                <input
-                  className="custom-control-input"
-                  value="boleto"
-                  checked={paymentMethod === 'boleto'}
-                  id="customRadio7"
-                  name="payment-method"
-                  type="radio"
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                />
-                <label className="custom-control-label" htmlFor="customRadio7">
-                  Boleto
+          <div>
+            <div className="form-row">
+              <Col className="mb-3" md="6">
+                <label
+                  className="form-control-label"
+                  htmlFor="namecard"
+                >
+                  Nome no cartão
                 </label>
-              </div>
-              <div className="custom-control custom-radio mb-4">
-                <input
-                  className="custom-control-input"
-                  value="pix"
-                  checked={paymentMethod === 'pix'}
-                  id="customRadio8"
-                  name="payment-method"
-                  type="radio"
-                  onChange={(e) => setPaymentMethod(e.target.value)}
+                <Input
+                  value={nameOnCard}
+                  id='namecard'
+                  placeholder="Nome no cartão"
+                  type="text"
+                  valid={nameOnCardState === "valid"}
+                  invalid={nameOnCardState === "invalid"}
+                  onChange={handleCardNameChange}
                 />
-                <label className="custom-control-label" htmlFor="customRadio8">
-                  Pix
+                <div className="valid-feedback">Parece bom!</div>
+                <div className="invalid-feedback">
+                  É necessário preencher este campo corretamente.
+                </div>
+              </Col>
+              <Col className="mb-3" md="6">
+                <label
+                  className="form-control-label"
+                  htmlFor="numbercard"
+                >
+                  Número do cartão
                 </label>
-              </div>
+                <Input
+                  value={cardNumber}
+                  id='numbercard'
+                  placeholder="Número do cartão"
+                  type="text"
+                  valid={cardNumberState === "valid"}
+                  invalid={cardNumberState === "invalid"}
+                  onChange={handleCardNumberChange}
+                />
+                <div className="valid-feedback">Parece bom!</div>
+                <div className="invalid-feedback">
+                  É necessário preencher este campo corretamente.
+                </div>
+              </Col>
+            </div>
+            <div className="form-row">
+              <Col className="mb-3" md="6">
+                <label
+                  className="form-control-label"
+                  htmlFor="datecard"
+                >
+                  Vencimento
+                </label>
+                <Input
+                  value={date}
+                  id='datecard'
+                  placeholder="MM/AA"
+                  type="text"
+                  valid={dateState === "valid"}
+                  invalid={dateState === "invalid"}
+                  onChange={handleDateChange}
+                />
+                <div className="invalid-feedback">
+                  É necessário preencher este campo corretamente.
+                </div>
+                <div className="valid-feedback">Parece bom!</div>
+              </Col>
+              <Col className="mb-3" md="6">
+                <label
+                  className="form-control-label"
+                  htmlFor="cvvcard"
+                >
+                  CVV
+                </label>
+                <Input
+                  value={cvv}
+                  id='cvvcard'
+                  placeholder="XXXX"
+                  type="text"
+                  valid={cvvState === "valid"}
+                  invalid={cvvState === "invalid"}
+                  onChange={handleCVVChange}
+                />
+                <div className="valid-feedback">Parece bom!</div>
+                <div className="invalid-feedback">
+                  É necessário preencher este campo corretamente.
+                </div>  
+              </Col>
+            </div>
+          </div>
+          <div className="custom-control custom-radio mb-4">
+            <input
+              className="custom-control-input"
+              value="boleto"
+              checked={paymentMethod === 'boleto'}
+              id="customRadio7"
+              name="payment-method"
+              type="radio"
+              onChange={(e) => setPaymentMethod(e.target.value)}
+            />
+            <label className="custom-control-label" htmlFor="customRadio7">
+              Boleto
+            </label>
+          </div>
+          <div className="custom-control custom-radio mb-4">
+            <input
+              className="custom-control-input"
+              value="pix"
+              checked={paymentMethod === 'pix'}
+              id="customRadio8"
+              name="payment-method"
+              type="radio"
+              onChange={(e) => setPaymentMethod(e.target.value)}
+            />
+            <label className="custom-control-label" htmlFor="customRadio8">
+              Pix
+            </label>
+          </div>
+          <Button color="primary" onClick={handleSave}>Salvar</Button>
         </Form>
       </div>
     </div>
-    )
+  )
 }
