@@ -95,7 +95,6 @@ function Login() {
 
   const handleSubmit = async () => {
     if (forgotPassword){
-      // logica para fazer a rec de senha
       if (!formData.tempCode) {
         setErro(
           <Alert color="warning" style={{ textAlign: 'center' }}>
