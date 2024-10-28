@@ -11,7 +11,7 @@ function useChangePassword() {
 
     console.log(email, newPassword, confirmPassword, temporaryPassword);
     try {
-      const response = await fetch(${process.env.NEXT_PUBLIC_AUTHENTICATION}/changePassword, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_AUTHENTICATION}/changePassword`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
