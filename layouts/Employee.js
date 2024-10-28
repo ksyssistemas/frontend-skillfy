@@ -6,7 +6,7 @@ import { withRouter } from "next/router";
 import EnterpriseNavbar from "components/Navbars/EmployeeNavbar.js";
 import RegisterFooter from "components/Footers/RegisterFooter.js";
 import Sidebar from "components/Sidebar/SidebarEmployee.js";
-
+import "assets/css/styles/layoutspage.css";
 import routes from "routes/employee.routes";
 
 function Employee({ router, children }) {
@@ -73,7 +73,9 @@ function Employee({ router, children }) {
           sidenavOpen={sidenavOpen}
           brandText={getBrandText(router.pathname)}
         />
-        {children}
+        <main>
+          {children}
+        </main>
         <RegisterFooter />
       </div>
       {sidenavOpen ? (
