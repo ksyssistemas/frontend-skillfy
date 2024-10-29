@@ -166,37 +166,7 @@ $RECYCLE.BIN/
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 
-### Web ###
-*.asp
-*.cer
-*.csr
-*.css
-*.htm
-*.html
-*.js
-*.jsp
-*.php
-*.rss
-*.wasm
-*.wat
-*.xhtml
-
-### Sass ###
-.sass-cache/
-*.css.map
-*.sass.map
-*.scss.map
-
 ### SSH ###
 **/.ssh/id_*
 **/.ssh/*_id_*
 **/.ssh/known_hosts
-
-### Node Patch ###
-# Serverless Webpack directories
-.webpack/
-
-# Optional stylelint cache
-
-# SvelteKit build / generate output
-.svelte-kit
