@@ -35,7 +35,7 @@ function AdminNavbar() {
   return (
     <>
       <Navbar
-        className="navbar-horizontal navbar-main navbar-light"
+        className="navbar-horizontal navbar-main navbar-light bg-white"
         expand="lg"
         id="navbar-main"
       >
