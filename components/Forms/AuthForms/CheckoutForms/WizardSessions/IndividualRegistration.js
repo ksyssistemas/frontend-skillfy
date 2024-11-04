@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // nodejs library that concatenates classes
 import classnames from "classnames";
 import ReactDatetime from 'react-datetime';
@@ -15,7 +15,7 @@ import {
   Button,
 } from "reactstrap";
 
-export function IndividualRegistration({ handleShowIndividualRegistration }) {
+export function IndividualRegistration({ handleShowIndividualRegistration, data, updateData }) {
 
   const {
     firstName,
@@ -90,6 +90,7 @@ export function IndividualRegistration({ handleShowIndividualRegistration }) {
     } else {
       setBirthdate(formatInput(date));
     }
+    updateData('birthdate', formatInput(date));
   };
 
   const formatInput = (input) => {
@@ -104,6 +105,7 @@ export function IndividualRegistration({ handleShowIndividualRegistration }) {
     } else if (numbers.length >= 4) {
       return `${numbers.slice(0, 2)}/${numbers.slice(2, 4)}/${numbers.slice(4, 8)}`;
     }
+    // updateData('numbers', numbers);
     return numbers;
   };
 
@@ -113,17 +115,19 @@ export function IndividualRegistration({ handleShowIndividualRegistration }) {
     } else if (birthdate.length === 8) {
       setBirthdate(formatInput(birthdate));
     }
+    updateData('birthdate', formatInput(birthdate));
   };
 
   const handleFirstNameChange = (e) => {
     const value = e.target.value;
     const filteredValue = value.replace(/[^a-zA-Z]/g, '');
     setFirstName(filteredValue);
-
+    
     if (filteredValue === "") {
       setFirstNameState("invalid");
     } else {
       setFirstNameState("valid");
+      updateData('firstName', filteredValue);
     }
   };
 
@@ -136,23 +140,19 @@ export function IndividualRegistration({ handleShowIndividualRegistration }) {
       setLastNameState("invalid");
     } else {
       setLastNameState("valid");
+      updateData('lastName', filteredValue);
     }
   };
-
-  const handleSave = (e) => {
-    e.preventDefault();
-    console.log({
-      firstName,
-      lastName,
-      taxIdentificationNumber,
-      birthdate,
-      phoneNumber,
-      emailAddress,
-      password,
-      confirmPassword
-    });
-  };
-
+  useEffect(() => {
+    if (taxIdentificationNumberState === "valid") {
+        updateData('taxIdentificationNumber', taxIdentificationNumber);
+    }
+}, [taxIdentificationNumberState, taxIdentificationNumber]);
+useEffect(() => {
+  if (taxIdentificationNumberState === "valid") {
+      updateData('taxIdentificationNumber', taxIdentificationNumber);
+  }
+}, [taxIdentificationNumberState, taxIdentificationNumber]);
   return (
     <div>
       <div>
@@ -167,7 +167,7 @@ export function IndividualRegistration({ handleShowIndividualRegistration }) {
                 Nome
               </label>
               <Input
-                value={firstName}
+                value={data.firstName || firstName}
                 id="validationContactPersonFirstName"
                 placeholder="Nome"
                 type="text"
@@ -188,7 +188,7 @@ export function IndividualRegistration({ handleShowIndividualRegistration }) {
                 Sobrenome
               </label>
               <Input
-                value={lastName}
+                value={data.lastName || lastName}
                 id="validationContactPersonLastName"
                 placeholder="Sobrenome"
                 type="text"
@@ -214,7 +214,7 @@ export function IndividualRegistration({ handleShowIndividualRegistration }) {
                 placeholder='999.999.999-99'
                 mask="999.999.999-99"
                 maskChar="_"
-                value={taxIdentificationNumber}
+                value={data.taxIdentificationNumber || taxIdentificationNumber}
                 onChange={(e) => handleChangeCPF(e.target.value)}
               >
                 {(inputProps) => <Input {...inputProps} id="validationContactPersonTaxIdNumber" valid={taxIdentificationNumberState === "valid"} invalid={taxIdentificationNumberState === "invalid"} />}
@@ -235,7 +235,7 @@ export function IndividualRegistration({ handleShowIndividualRegistration }) {
                 inputProps={{
                   placeholder: 'DD/MM/YYYY',
                   onBlur: handleBlur,
-                  value: formatInput(birthdate),
+                  value: formatInput(data.birthdate || birthdate),
                 }}
                 timeFormat={false}
                 dateFormat="DD/MM/YYYY"
@@ -256,13 +256,14 @@ export function IndividualRegistration({ handleShowIndividualRegistration }) {
                 placeholder='+55 (99) 9 9999-9999'
                 mask="+55 (99) 9 9999-9999"
                 maskChar=" "
-                value={phoneNumber}
+                value={data.phoneNumber}
                 onChange={(e) => {
                   setPhoneNumber(e.target.value);
                   if (e.target.value === "") {
                     setPhoneNumberState("invalid");
                   } else {
                     setPhoneNumberState("valid");
+                    updateData('phoneNumber', e.target.value);
                   }
                 }}
               >
@@ -285,13 +286,15 @@ export function IndividualRegistration({ handleShowIndividualRegistration }) {
                 id="validationContactPersonEmailAddress"
                 placeholder="Endereço de e-mail"
                 type="email"
+                value={data.emailAddress || emailAddress}
                 valid={emailAddressState === "valid"}
                 invalid={emailAddressState === "invalid"}
                 onChange={(e) => {
-                  const email = e.target.value;
-                  setEmailAddress(email);
-                  if (validateEmail(email)) {
+                  const emailAddress = e.target.value;
+                  setEmailAddress(emailAddress);
+                  if (validateEmail(emailAddress)) {
                     setEmailAddressState("valid");
+                    updateData('emailAddress', emailAddress);
                   } else {
                     setEmailAddressState("invalid");
                   }
@@ -312,7 +315,7 @@ export function IndividualRegistration({ handleShowIndividualRegistration }) {
                 Senha
               </label>
               <Input
-                value={password}
+                value={data.password}
                 id="validationPassword"
                 placeholder="Senha de acesso ao sistema"
                 type="password"
@@ -324,6 +327,7 @@ export function IndividualRegistration({ handleShowIndividualRegistration }) {
                     setPasswordState("invalid");
                   } else {
                     setPasswordState("valid");
+                    updateData('password', e.target.value);
                   }
                 }}
               />
@@ -340,7 +344,7 @@ export function IndividualRegistration({ handleShowIndividualRegistration }) {
                 Confirmar Senha
               </label>
               <Input
-                value={confirmPassword}
+                value={data.confirmPassword}
                 id="validationConfirmPassword"
                 placeholder="Confirme a senha digitada"
                 type="password"
@@ -348,6 +352,7 @@ export function IndividualRegistration({ handleShowIndividualRegistration }) {
                 invalid={confirmPasswordState === "invalid"}
                 onChange={(e) => {
                   setConfirmPassword(e.target.value);
+                  updateData('confirmPassword', e.target.value);
                   if (e.target.value === "") {
                     setConfirmPasswordState("invalid");
                   } else if (e.target.value === password) {
@@ -383,7 +388,6 @@ export function IndividualRegistration({ handleShowIndividualRegistration }) {
               </div>
             </div>
           </FormGroup>
-          <Button color="primary" onClick={handleSave}>Salvar</Button>
         </Form>
       </div>
     </div>

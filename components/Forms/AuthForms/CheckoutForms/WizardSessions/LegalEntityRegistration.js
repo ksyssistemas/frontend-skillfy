@@ -152,10 +152,10 @@ export function LegalEntityRegistration() {
 
   useEffect(() => {
     if (brasilAPICEPData) {
-      if (brasilAPICEPData.state) handleInputChange(brasilAPICEPData.state, setestado, setestadoState);
-      if (brasilAPICEPData.street) handleInputChange(brasilAPICEPData.street, setaddress, setaddressState);
-      if (brasilAPICEPData.neighborhood) handleInputChange(brasilAPICEPData.neighborhood, setbairro, setbairroState);
-      if (brasilAPICEPData.city) handleInputChange(brasilAPICEPData.city, setcidade, setcidadeState);
+      if (brasilAPICEPData.state) handleInputChange(brasilAPICEPData.state, setFederatedUnit, setFederatedUnitState);
+      if (brasilAPICEPData.street) handleInputChange(brasilAPICEPData.street, setCompanyAddress, setCompanyAddressState);
+      if (brasilAPICEPData.neighborhood) handleInputChange(brasilAPICEPData.neighborhood, setCompanyDistrict, setCompanyDistrictState);
+      if (brasilAPICEPData.city) handleInputChange(brasilAPICEPData.city, setCompanyCity, setCompanyCityState);
     }
   }, [brasilAPICEPData]);
 
@@ -189,6 +189,15 @@ export function LegalEntityRegistration() {
     }
   };
 
+  const [selectedCompanySector, setSelectedCompanySector] = useState('');
+  const [companySectorDataList, setCompanySectorDataList] = useState([
+    { id: "0", text: "Privado" },
+    { id: "1", text: "Público" },
+  ]);
+  const handleCompanySectorDataList = (companySector) => {
+    setCompanySectorDataList(companySector);
+  }
+
   const handleSave = (e) => {
     e.preventDefault();
     console.log({
@@ -199,12 +208,15 @@ export function LegalEntityRegistration() {
       customerBusinessPhoneNumber,
       customerPhoneNumber,
       zipCode,
-      valorEstado,
-      valorStreet,
-      number,
-      complemento,
-      valorBairro,
-      valorCity
+      federatedUnit,
+      companyAddressNumber,
+      companyAddressComplement,
+      companyDistrict,
+      selectedCompanySector,
+      idHeadOfficeBranch,
+      customerWebSite,
+      companyEmailAddress,
+      companyAddress
     });
   };
 
@@ -382,6 +394,112 @@ export function LegalEntityRegistration() {
             </Col>
           </div>
           <div className="form-row">
+            <Col md="6">
+              <label
+                className="form-control-label"
+                htmlFor="validationCompanyEmailAddress"
+              >
+                E-mail (utilizará como login)
+              </label>
+              <Input
+                aria-describedby="inputGroupPrepend"
+                id="validationCompanyEmailAddress"
+                placeholder="Endereço de e-mail"
+                type="email"
+                valid={companyEmailAddressState === "valid"}
+                invalid={companyEmailAddressState === "invalid"}
+                onChange={(e) => {
+                  const email = e.target.value;
+                  setCompanyEmailAddress(email);
+                  if (validateCompanyEmail(email)) {
+                    setCompanyEmailAddressState("valid");
+                  } else {
+                    setCompanyEmailAddressState("invalid");
+                  }
+                }}
+              />
+              <div className="invalid-feedback">
+                {companyEmailAddressState === "invalid" && "Forneça um endereço de e-mail válido."}
+              </div>
+            </Col>
+            <Col className="mb-3" md="6">
+              <label
+                className="form-control-label"
+                htmlFor="validationCustomerWebSite"
+              >
+                Web Site
+              </label>
+              <Input
+                id="validationCustomerWebSite"
+                placeholder="www.site.com.br"
+                value={customerWebSite}
+                type="text"
+                valid={customerWebSiteState === "valid"}
+                invalid={customerWebSiteState === "invalid"}
+                onChange={(e) => {
+                  setCustomerWebSite(e.target.value);
+                  if (e.target.value !== "" && !validateWebSite(e.target.value)) {
+                    setCustomerWebSiteState("invalid");
+                  } else {
+                    setCustomerWebSiteState(e.target.value === "" ? null : "valid");
+                  }
+                }}
+              />
+              <div className="invalid-feedback">
+                É necessário preencher este campo corretamente.
+              </div>
+            </Col>
+          </div>
+          <div className="form-row">
+            <Col className="mb-3" md="6">
+              <label
+                className="form-control-label"
+                htmlFor="validationCustomerIdHeadOfficeBranch"
+              >
+                Matriz
+              </label>
+              <Input
+                id="validationCustomerIdHeadOfficeBranch"
+                placeholder="Matriz ou Filial"
+                value={idHeadOfficeBranch}
+                type="text"
+                valid={idHeadOfficeBranchState === "valid"}
+                invalid={idHeadOfficeBranchState === "invalid"}
+                onChange={(e) => {
+                  setIdHeadOfficeBranch(e.target.value);
+                  if (e.target.value === "") {
+                    setIdHeadOfficeBranchState("invalid");
+                  } else {
+                    setIdHeadOfficeBranchState("valid");
+                  }
+                }}
+              />
+              <div className="invalid-feedback">
+                É necessário preencher este campo.
+              </div>
+            </Col>
+            <Col className="mb-3" md="6">
+              <label
+                className="form-control-label"
+                htmlFor="validationCustomerBusinessSector"
+              >
+                Setor
+              </label>
+              <Select2
+                id="validationCustomerBusinessSector"
+                className="form-control"
+                data-minimum-results-for-search="Infinity"
+                options={{
+                  placeholder: "Selecione o setor",
+                }}
+                value={selectedCompanySector}
+                onChange={(e) => setSelectedCompanySector(e.target.value)}
+                data={companySectorDataList}
+                onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, companySectorDataList, setSelectedCompanySector, setCustomerBusinessSector, setCustomerBusinessSectorState, null)}
+              />
+            </Col>
+          </div>
+          <div className="form-row">
             <Col className="mb-3" md="6">
               <label
                 className="form-control-label"
@@ -417,13 +535,13 @@ export function LegalEntityRegistration() {
                 Estado
               </label>
               <Input
-                value={valorEstado}
+                value={federatedUnit}
                 id="validationCompanyState"
                 placeholder="Estado"
                 type="text"
-                valid={estadoState === "valid"}
-                invalid={estadoState === "invalid"}
-                onChange={(e) => handleInputChange(e.target.value, setestado, setestadoState)}
+                valid={federatedUnitState === "valid"}
+                invalid={federatedUnitState === "invalid"}
+                onChange={(e) => handleInputChange(e.target.value, setFederatedUnit, setFederatedUnitState)}
               />
               <div className="valid-feedback">Parece bom!</div>
               <div className="invalid-feedback">
@@ -440,13 +558,13 @@ export function LegalEntityRegistration() {
                 Endereço
               </label>
               <Input
-                value={valorStreet}
+                value={companyAddress}
                 id="validationCompanyStreet"
                 placeholder="Rua, Avenida..."
                 type="text"
-                valid={addressState === "valid"}
-                invalid={addressState === "invalid"}
-                onChange={(e) => handleInputChange(e.target.value, setaddress, setaddressState)}
+                valid={companyAddressState === "valid"}
+                invalid={companyAddressState === "invalid"}
+                onChange={(e) => handleInputChange(e.target.value, setCompanyAddress, setCompanyAddressState)}
               />
               <div className="valid-feedback">Parece bom!</div>
               <div className="invalid-feedback">
@@ -461,17 +579,24 @@ export function LegalEntityRegistration() {
                 Número
               </label>
               <Input
-                value={number}
+                value={companyAddressNumber}
                 id="validationCompanyNumber"
                 placeholder="xxxx"
                 type="text"
-                valid={numberState === "valid"}
-                invalid={numberState === "invalid"}
-                onChange={handleNumberChange}
+                valid={companyAddressNumberState === "valid"}
+                invalid={companyAddressNumberState === "invalid"}
+                onChange={(e) => {
+                  setCompanyAddressNumber(e.target.value);
+                  if (e.target.value === "") {
+                      setCompanyAddressNumberState("invalid");
+                  } else {
+                      setCompanyAddressNumberState("valid");
+                  }
+              }}
               />
               <div className="valid-feedback">Parece bom!</div>
               <div className="invalid-feedback">
-                É necessário preencher este campo corretamente.
+                Não é necessário preencher este campo.
               </div>
             </Col>
           </div>
@@ -484,20 +609,21 @@ export function LegalEntityRegistration() {
                 Complemento (opcional)
               </label>
               <Input
-                value={complemento}
+                value={companyAddressComplement}
                 id="validationCompanyComplemento"
                 placeholder="xxxx"
                 type="text"
-                valid={complementoState === "valid"}
-                invalid={complementoState === "invalid"}
+                valid={companyAddressComplementState === "valid"}
+                invalid={companyAddressComplementState === "invalid"}
                 onChange={(e) => {
-                  setcomplemento(e.target.value);
-                  if (e.target.value === "") {
-                    setcomplementoState("invalid");
+                  const value = e.target.value;
+                  setCompanyAddressComplement(value);
+                  if (value === "") {
+                      setCompanyAddressComplementState(null);
                   } else {
-                    setcomplementoState("valid");
+                      setCompanyAddressComplementState("valid");
                   }
-                }}
+              }}
               />
               <div className="valid-feedback">Parece bom!</div>
               <div className="invalid-feedback">
@@ -514,13 +640,13 @@ export function LegalEntityRegistration() {
                 Bairro
               </label>
               <Input
-                value={valorBairro}
+                value={companyDistrict}
                 id="validationCompanyNeighborhood"
                 placeholder="Bairro"
                 type="text"
-                valid={bairroState === "valid"}
-                invalid={bairroState === "invalid"}
-                onChange={(e) => handleInputChange(e.target.value, setbairro, setbairroState)}
+                valid={companyDistrictState === "valid"}
+                invalid={companyDistrictState === "invalid"}
+                onChange={(e) => handleInputChange(e.target.value, setCompanyDistrict, setCompanyDistrictState)}
               />
               <div className="valid-feedback">Parece bom!</div>
               <div className="invalid-feedback">
@@ -535,13 +661,13 @@ export function LegalEntityRegistration() {
                 Cidade
               </label>
               <Input
-                value={valorCity}
+                value={companyCity}
                 id="validationCompanyCity"
                 placeholder="Cidade"
                 type="text"
-                valid={cidadeState === "valid"}
-                invalid={cidadeState === "invalid"}
-                onChange={(e) => handleInputChange(e.target.value, setcidade, setcidadeState)}
+                valid={companyCityState === "valid"}
+                invalid={companyCityState === "invalid"}
+                onChange={(e) => handleInputChange(e.target.value, setCompanyCity, setCompanyCityState)}
               />
               <div className="valid-feedback">Parece bom!</div>
               <div className="invalid-feedback">
@@ -551,7 +677,7 @@ export function LegalEntityRegistration() {
           </div>
           <Button color="primary" onClick={handleSave}>Salvar</Button>
         </Form>
-      </div>
-    </div>
+      </div >
+    </div >
   )
 }
