@@ -188,8 +188,60 @@ function CustomerUserRegister() {
         phoneNumber: '',
         emailAddress: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        firstNameState: '',
+        lastNameState: '',
+        taxIdentificationNumberState: '',
+        birthdateState: '',
+        phoneNumberState: '',
+        emailAddressState: '',
+        passwordState: '',
+        confirmPasswordState: '',
+        checkbox: '',
+        checkboxState: ''
     });
+
+    const [legalEntityRegistrationData, setLegalEntityRegistrationData] = useState({
+        individualEmployerIdNumber: '',
+        companyName: '',
+        registrationName: '',
+        selectedCompanyTypes: '',
+        customerBusinessPhoneNumber: '',
+        customerPhoneNumber: '',
+        zipCode: '',
+        federatedUnit: '',
+        companyAddressNumber: '',
+        companyAddressComplement: '',
+        companyDistrict: '',
+        selectedCompanySector: '',
+        idHeadOfficeBranch: '',
+        customerWebSite: '',
+        companyEmailAddress: '',
+        companyAddress: '',
+        individualEmployerIdNumberState: '',
+        companyNameState: '',
+        registrationNameState: '',
+        selectedCompanyTypesState: '',
+        customerBusinessPhoneNumberState: '',
+        customerPhoneNumberState: '',
+        zipCodeState: '',
+        federatedUnitState: '',
+        companyAddressNumberState: '',
+        companyAddressComplementState: '',
+        companyDistrictState: '',
+        selectedCompanySectorState: '',
+        idHeadOfficeBranchState: '',
+        customerWebSiteState: '',
+        companyEmailAddressState: '',
+        companyAddressState: ''
+    });
+
+    const updateLegalEntityRegistrationData = (field, value) => {
+        setLegalEntityRegistrationData(prevData => ({
+            ...prevData,
+            [field]: value
+        }));
+    };
 
     const updateIndividualRegistrationData = (field, value) => {
         setIndividualRegistrationData(prevData => ({
@@ -252,6 +304,7 @@ function CustomerUserRegister() {
     const handleNextStep = () => {
         if (step === 1) {
             console.log('Individual Registration Data:', individualRegistrationData);
+            console.log('Legal Entity Registration Data:', legalEntityRegistrationData);
             setStep(step + 1);
         }
         if (step === 2 && individualEmployerIdNumberState === "valid" && checkboxState === "valid") {
@@ -261,6 +314,8 @@ function CustomerUserRegister() {
     };
 
     const handlePrevStep = () => {
+        console.log('Individual Registration Data:', individualRegistrationData);
+        console.log('Legal Entity Registration Data:', legalEntityRegistrationData);
         setStep(step - 1);
     };
 
@@ -333,7 +388,10 @@ function CustomerUserRegister() {
                                                 />
                                             )}
                                             {step === 2 && (
-                                                <LegalEntityRegistration />
+                                                <LegalEntityRegistration
+                                                    data={legalEntityRegistrationData}
+                                                    updateData={updateLegalEntityRegistrationData}
+                                                />
                                             )}
                                             {step === 3 && (
                                                 <RegisteringPaymentData />

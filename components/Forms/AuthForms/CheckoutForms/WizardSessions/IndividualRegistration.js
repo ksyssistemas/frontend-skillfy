@@ -5,6 +5,7 @@ import ReactDatetime from 'react-datetime';
 import InputMask from 'react-input-mask';
 import useCPF from 'hooks/RecordsHooks/useCPF.js';
 import useCreateCustomerAccountHolder from 'hooks/RecordsHooks/customer/useCreateCustomerAccountHolder.js';
+import moment from 'moment';
 
 // reactstrap components
 import {
@@ -77,20 +78,38 @@ export function IndividualRegistration({ handleShowIndividualRegistration, data,
   } = useCreateCustomerAccountHolder(handleShowIndividualRegistration);
 
   const handleCheckboxChange = (e) => {
-    if (checkbox === null) {
-      setCheckbox(false);
+    const isChecked = e.target.checked;
+    setCheckbox(isChecked);
+    updateData('checkbox', isChecked);
+
+    if (isChecked) {
+      updateData('checkboxState', "valid");
+      setCheckboxState("valid");
     } else {
-      setCheckbox(checkbox);
+      updateData('checkboxState', "invalid");
+      setCheckboxState("invalid");
     }
   };
 
-  const handleChange = (date) => {
-    if (date && date.isValid) {
-      setBirthdate(date.format('DD/MM/YYYY'));
+  const handleChange = (inputDate) => {
+    const date = typeof inputDate === 'string' ? inputDate : inputDate.format('DD/MM/YYYY');
+
+    const isDateValid = (dateStr) => {
+      const formattedDate = moment(dateStr, 'DD/MM/YYYY', true);
+      return formattedDate.isValid() && dateStr.length === 10;
+    };
+
+    if (isDateValid(date)) {
+      setBirthdate(date);
+      setBirthdateState("valid");
+      updateData('birthdate', date);
+      updateData('birthdateState', "valid");
     } else {
-      setBirthdate(formatInput(date));
+      setBirthdate(date);
+      setBirthdateState("invalid");
+      updateData('birthdate', date);
+      updateData('birthdateState', "invalid");
     }
-    updateData('birthdate', formatInput(date));
   };
 
   const formatInput = (input) => {
@@ -105,34 +124,26 @@ export function IndividualRegistration({ handleShowIndividualRegistration, data,
     } else if (numbers.length >= 4) {
       return `${numbers.slice(0, 2)}/${numbers.slice(2, 4)}/${numbers.slice(4, 8)}`;
     }
-    // updateData('numbers', numbers);
     return numbers;
-  };
-
-  const handleBlur = () => {
-    if (birthdate.length === 10) {
-      setBirthdate(birthdate);
-    } else if (birthdate.length === 8) {
-      setBirthdate(formatInput(birthdate));
-    }
-    updateData('birthdate', formatInput(birthdate));
   };
 
   const handleFirstNameChange = (e) => {
     const value = e.target.value;
+    updateData('firstName', value);
     const filteredValue = value.replace(/[^a-zA-Z]/g, '');
     setFirstName(filteredValue);
-    
+
     if (filteredValue === "") {
       setFirstNameState("invalid");
     } else {
       setFirstNameState("valid");
-      updateData('firstName', filteredValue);
     }
+    updateData('firstNameState', firstNameState);
   };
 
   const handleLastNameChange = (e) => {
     const value = e.target.value;
+    updateData('lastName', value);
     const filteredValue = value.replace(/[^a-zA-Z]/g, '');
     setLastName(filteredValue);
 
@@ -140,19 +151,76 @@ export function IndividualRegistration({ handleShowIndividualRegistration, data,
       setLastNameState("invalid");
     } else {
       setLastNameState("valid");
-      updateData('lastName', filteredValue);
+    }
+    updateData('lastNameState', lastNameState);
+  };
+
+  const handlephoneNumberChange = (e) => {
+    const value = e.target.value;
+    updateData('phoneNumber', value);
+    const filteredValue = value.replace(/\D/g, '');
+    setPhoneNumber(filteredValue);
+
+    if (filteredValue.length !== 13) {
+      setPhoneNumberState("invalid");
+      updateData('phoneNumberState', "invalid");
+    } else {
+      setPhoneNumberState("valid");
+      updateData('phoneNumberState', "valid");
     }
   };
-  useEffect(() => {
-    if (taxIdentificationNumberState === "valid") {
-        updateData('taxIdentificationNumber', taxIdentificationNumber);
+
+  const handletaxIdentificationNumberChange = (e) => {
+    const value = e.target.value;
+    handleChangeCPF(value);
+    updateData('taxIdentificationNumber', value);
+    const isValid = value.match(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/);
+    if (!isValid) {
+      updateData('taxIdentificationNumberState', "invalid");
+    } else {
+      updateData('taxIdentificationNumberState', "valid");
     }
-}, [taxIdentificationNumberState, taxIdentificationNumber]);
-useEffect(() => {
-  if (taxIdentificationNumberState === "valid") {
-      updateData('taxIdentificationNumber', taxIdentificationNumber);
-  }
-}, [taxIdentificationNumberState, taxIdentificationNumber]);
+  };
+
+  const handleemailChange = (e) => {
+    const emailAddress = e.target.value;
+    updateData('emailAddress', emailAddress);
+    setEmailAddress(emailAddress);
+    if (validateEmail(emailAddress)) {
+      setEmailAddressState("valid");
+    } else {
+      setEmailAddressState("invalid");
+    }
+    updateData('emailAddressState', emailAddressState);
+  };
+
+  const handlepassWordChange = (e) => {
+    updateData('password', e.target.value);
+    setPassword(e.target.value);
+    if (e.target.value === "") {
+      setPasswordState("invalid");
+    } else {
+      setPasswordState("valid");
+    }
+    updateData('passwordState', passwordState);
+  };
+
+  const handlepassWordConfirmChange = (e) => {
+    const value = e.target.value;
+    setConfirmPassword(value);
+    updateData('confirmPassword', value);
+
+    let newConfirmPasswordState = "valid";
+    if (value === "") {
+      newConfirmPasswordState = "invalid";
+    } else if (value !== password) {
+      newConfirmPasswordState = "invalid";
+    }
+
+    setConfirmPasswordState(newConfirmPasswordState);
+    updateData('confirmPasswordState', newConfirmPasswordState);
+  };
+
   return (
     <div>
       <div>
@@ -171,8 +239,8 @@ useEffect(() => {
                 id="validationContactPersonFirstName"
                 placeholder="Nome"
                 type="text"
-                valid={firstNameState === "valid"}
-                invalid={firstNameState === "invalid"}
+                valid={data.firstNameState === "valid" || firstNameState === "valid"}
+                invalid={data.firstNameState === "invalid" || firstNameState === "invalid"}
                 onChange={handleFirstNameChange}
               />
               <div className="invalid-feedback">
@@ -192,8 +260,8 @@ useEffect(() => {
                 id="validationContactPersonLastName"
                 placeholder="Sobrenome"
                 type="text"
-                valid={lastNameState === "valid"}
-                invalid={lastNameState === "invalid"}
+                valid={data.lastNameState === "valid" || lastNameState === "valid"}
+                invalid={data.lastNameState === "invalid" || lastNameState === "invalid"}
                 onChange={handleLastNameChange}
               />
               <div className="invalid-feedback">
@@ -204,43 +272,43 @@ useEffect(() => {
           </div>
           <div className="form-row">
             <Col className="mb-3" md="6">
-              <label
-                className="form-control-label"
-                htmlFor="validationPersonCPF"
-              >
+              <label className="form-control-label" htmlFor="validationPersonCPF">
                 CPF
               </label>
               <InputMask
                 placeholder='999.999.999-99'
                 mask="999.999.999-99"
                 maskChar="_"
+                valid={data.taxIdentificationNumberState === "valid" || taxIdentificationNumberState === "valid"}
+                invalid={data.taxIdentificationNumberState === "invalid" || taxIdentificationNumberState === "invalid"}
                 value={data.taxIdentificationNumber || taxIdentificationNumber}
-                onChange={(e) => handleChangeCPF(e.target.value)}
+                onChange={handletaxIdentificationNumberChange}
               >
-                {(inputProps) => <Input {...inputProps} id="validationContactPersonTaxIdNumber" valid={taxIdentificationNumberState === "valid"} invalid={taxIdentificationNumberState === "invalid"} />}
+                {(inputProps) => <Input {...inputProps} id="validationContactPersonTaxIdNumber" />}
               </InputMask>
               <div className="invalid-feedback">
-                {taxIdentificationNumberState === "invalid" && "Forneça um número de CPF válido."}
+                Forneça um número de CPF válido
               </div>
               <div className="valid-feedback">Parece bom!</div>
             </Col>
             <Col className="mb-3" md="6">
-              <label
-                className="form-control-label"
-                htmlFor="validationPersonBirthDate"
-              >
+              <label className="form-control-label" htmlFor="validationPersonBirthDate">
                 Data de Nascimento
               </label>
               <ReactDatetime
+                valid={data.birthdateState === "valid" || birthdateState === "valid"}
+                invalid={data.birthdateState === "invalid" || birthdateState === "invalid"}
                 inputProps={{
                   placeholder: 'DD/MM/YYYY',
-                  onBlur: handleBlur,
                   value: formatInput(data.birthdate || birthdate),
                 }}
                 timeFormat={false}
                 dateFormat="DD/MM/YYYY"
                 onChange={handleChange}
               />
+              <div className="invalid-feedback">
+                É necessário preencher este campo.
+              </div>
               <div className="valid-feedback">Parece bom!</div>
             </Col>
           </div>
@@ -256,18 +324,12 @@ useEffect(() => {
                 placeholder='+55 (99) 9 9999-9999'
                 mask="+55 (99) 9 9999-9999"
                 maskChar=" "
-                value={data.phoneNumber}
-                onChange={(e) => {
-                  setPhoneNumber(e.target.value);
-                  if (e.target.value === "") {
-                    setPhoneNumberState("invalid");
-                  } else {
-                    setPhoneNumberState("valid");
-                    updateData('phoneNumber', e.target.value);
-                  }
-                }}
+                value={data.phoneNumber || phoneNumber}
+                valid={data.phoneNumberState === "valid" || phoneNumberState === "valid"}
+                invalid={data.phoneNumberState === "invalid" || phoneNumberState === "invalid"}
+                onChange={handlephoneNumberChange}
               >
-                {(inputProps) => <Input {...inputProps} id="validationContactPersonPhoneNumber" type="text" valid={phoneNumberState === "valid"} invalid={phoneNumberState === "invalid"} />}
+                {(inputProps) => <Input {...inputProps} id="validationContactPersonPhoneNumber" type="text" />}
               </InputMask>
               <div className="invalid-feedback">
                 É necessário preencher este campo.
@@ -287,18 +349,9 @@ useEffect(() => {
                 placeholder="Endereço de e-mail"
                 type="email"
                 value={data.emailAddress || emailAddress}
-                valid={emailAddressState === "valid"}
-                invalid={emailAddressState === "invalid"}
-                onChange={(e) => {
-                  const emailAddress = e.target.value;
-                  setEmailAddress(emailAddress);
-                  if (validateEmail(emailAddress)) {
-                    setEmailAddressState("valid");
-                    updateData('emailAddress', emailAddress);
-                  } else {
-                    setEmailAddressState("invalid");
-                  }
-                }}
+                valid={data.emailAddressState === "valid" || emailAddressState === "valid"}
+                invalid={data.emailAddressState === "invalid" || emailAddressState === "invalid"}
+                onChange={handleemailChange}
               />
               <div className="invalid-feedback">
                 {emailAddressState === "invalid" && "Forneça um endereço de e-mail válido."}
@@ -315,21 +368,13 @@ useEffect(() => {
                 Senha
               </label>
               <Input
-                value={data.password}
+                value={data.password || password}
                 id="validationPassword"
                 placeholder="Senha de acesso ao sistema"
                 type="password"
-                valid={passwordState === "valid"}
-                invalid={passwordState === "invalid"}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  if (e.target.value === "") {
-                    setPasswordState("invalid");
-                  } else {
-                    setPasswordState("valid");
-                    updateData('password', e.target.value);
-                  }
-                }}
+                valid={data.passwordState === "valid" || passwordState === "valid"}
+                invalid={data.passwordState === "invalid" || passwordState === "invalid"}
+                onChange={handlepassWordChange}
               />
               <div className="invalid-feedback">
                 É necessário preencher este campo.
@@ -337,10 +382,7 @@ useEffect(() => {
               <div className="valid-feedback">Parece bom!</div>
             </Col>
             <Col className="mb-3" md="6">
-              <label
-                className="form-control-label"
-                htmlFor="validationConfirmPassword"
-              >
+              <label className="form-control-label" htmlFor="validationConfirmPassword">
                 Confirmar Senha
               </label>
               <Input
@@ -348,19 +390,9 @@ useEffect(() => {
                 id="validationConfirmPassword"
                 placeholder="Confirme a senha digitada"
                 type="password"
-                valid={confirmPasswordState === "valid"}
-                invalid={confirmPasswordState === "invalid"}
-                onChange={(e) => {
-                  setConfirmPassword(e.target.value);
-                  updateData('confirmPassword', e.target.value);
-                  if (e.target.value === "") {
-                    setConfirmPasswordState("invalid");
-                  } else if (e.target.value === password) {
-                    setConfirmPasswordState("valid");
-                  } else {
-                    setConfirmPasswordState("invalid");
-                  }
-                }}
+                valid={data.confirmPasswordState === "valid" || confirmPasswordState === "valid"}
+                invalid={data.confirmPasswordState === "invalid" || confirmPasswordState === "invalid"}
+                onChange={handlepassWordConfirmChange}
               />
               <div className="invalid-feedback">
                 {confirmPasswordState === "invalid" && "As senhas não coincidem."}
@@ -372,20 +404,19 @@ useEffect(() => {
             <div className="custom-control custom-checkbox mb-3">
               <input
                 className={`custom-control-input ${checkboxState === "invalid" ? "is-invalid" : ""}`}
-                defaultValue=""
                 id="checkUseTerms"
                 type="checkbox"
+                checked={data.checkbox || checkbox}
                 onChange={handleCheckboxChange}
               />
-              <label
-                className="custom-control-label"
-                htmlFor="checkUseTerms"
-              >
+              <label className="custom-control-label" htmlFor="checkUseTerms">
                 Declaro que estou ciente e de acordo com os termos de uso: Skillfy
               </label>
-              <div className={`invalid-feedback mt-3 mt-sm-4 mt-md-4 mt-lg-3 mt-xl-2 mt-xxl-2 py-2`}>
-                Você deve concordar antes de enviar.
-              </div>
+              {checkboxState === "invalid" && (
+                <div className="invalid-feedback mt-3">
+                  Você deve concordar antes de enviar.
+                </div>
+              )}
             </div>
           </FormGroup>
         </Form>
