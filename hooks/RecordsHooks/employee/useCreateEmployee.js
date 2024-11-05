@@ -3,7 +3,45 @@ import React, { useContext, useState } from 'react';
 import useCEP from '../useCEP';
 import { EmployeeContext } from '../../../contexts/RecordsContext/EmployeeContext';
 
-const useCreateEmployee = () => {
+const useCreateEmployee = (state, dispatch) => {
+
+    const {
+        firstName,
+        lastName,
+        emailAddress,
+        birthdate,
+        phoneNumber,
+        employeeDepartment,
+        employeeRole,
+        employeeFunction,
+        isEmployeeLeader,
+        hasEmployeeLeader,
+        employeeLeaderName,
+        employeeContractType,
+        employeeWorkModel,
+        employeeWorkplace,
+        employeeAdmissionDate,
+        employeeEntryTime,
+        employeeStartBreakTime,
+        employeeStopBreakTime,
+        employeeDepartureTime,
+        employeeStatus,
+        firstNameState,
+        lastNameState,
+        emailAddressState,
+        birthdateState,
+        phoneNumberState,
+        employeeDepartmentState,
+        employeeRoleState,
+        employeeContractTypeState,
+        employeeWorkModelState,
+        employeeWorkplaceState,
+        employeeAdmissionDateState,
+        employeeEntryTimeState,
+        employeeStartBreakTimeState,
+        employeeStopBreakTimeState,
+        employeeDepartureTimeState,
+    } = state.collaboratorData;
 
     const {
         customerIdToLinkToEmployee,
@@ -23,192 +61,95 @@ const useCreateEmployee = () => {
         setEmployeeZipCodeState
     } = useCEP("");
 
-    const [employeeIdNumber, setEmployeeIdNumber] = useState("");
-    const [employeeIdNumberState, setEmployeeIdNumberState] = useState(null);
-    const [firstName, setFirstName] = useState("");
-    const [firstNameState, setFirstNameState] = useState(null);
-    const [lastName, setLastName] = useState("");
-    const [lastNameState, setLastNameState] = useState(null);
-    const [emailAddress, setEmailAddress] = useState("");
-    const [emailAddressState, setEmailAddressState] = useState(null);
-    const [birthdate, setBirthdate] = useState("");
-    const [birthdateState, setBirthdateState] = useState(null);
-    const [phoneNumber, setPhoneNumber] = useState("");
-    const [phoneNumberState, setPhoneNumberState] = useState(null);
-
-    const [employeeAddress, setEmployeeAddress] = useState("");
-    const [employeeAddressState, setEmployeeAddressState] = useState(null);
-    const [employeeAddressNumber, setEmployeeAddressNumber] = useState("");
-    const [employeeAddressNumberState, setEmployeeAddressNumberState] = useState(null);
-    const [employeeAddressComplement, setEmployeeAddressComplement] = useState("");
-    const [employeeAddressComplementState, setEmployeeAddressComplementState] = useState(null);
-    const [employeeNeighborhood, setEmployeeNeighborhood] = useState("");
-    const [employeeNeighborhoodState, setEmployeeNeighborhoodState] = useState(null);
-    const [employeeCity, setEmployeeCity] = useState("");
-    const [employeeCityState, setEmployeeCityState] = useState(null);
-    const [federatedUnit, setFederatedUnit] = useState("");
-    const [federatedUnitState, setFederatedUnitState] = useState(null);
-
-    const [departmentWhichEmployeeReports, setDepartmentWhichEmployeeReports] = useState("");
-    const [departmentWhichEmployeeReportsState, setDepartmentWhichEmployeeReportsState] = useState(null);
-    const [employeeRole, setEmployeeRole] = useState("");
-    const [employeeRoleState, setEmployeeRoleState] = useState(null);
-    const [employeeFunction, setEmployeeFunction] = useState("");
-    const [employeeFunctionState, setEmployeeFunctionState] = useState(null);
-
-    const [isEmployeeLeader, setIsEmployeeLeader] = React.useState(false);
-    const [hasEmployeeLeader, setHasEmployeeLeader] = React.useState(false);
-
-    const [employeeLeaderName, setEmployeeLeaderName] = React.useState("");
-    const [employeeLeaderNameState, setEmployeeLeaderNameState] = useState(null);
-
-    const [employeeContractType, setEmployeeContractType] = React.useState("");
-    const [employeeContractTypeState, setEmployeeContractTypeState] = React.useState(null);
-    const [employeeWorkModel, setEmployeeWorkModel] = React.useState("");
-    const [employeeWorkModelState, setEmployeeWorkModelState] = React.useState(null);
-    const [employeeWorkplace, setEmployeeWorkplace] = React.useState("");
-    const [employeeWorkplaceState, setEmployeeWorkplaceState] = React.useState(null);
-
-    const [employeetAdmissionDate, setEmployeetAdmissionDate] = useState("");
-    const [employeetAdmissionDateState, setEmployeetAdmissionDateState] = useState(null);
-    const [employeeEntryTime, setEmployeeEntryTime] = useState("");
-    const [employeeEntryTimeState, setEmployeeEntryTimeState] = useState(null);
-
-    const [employeeStartBreakTime, setEmployeeStartBreakTime] = useState("");
-    const [employeeStartBreakTimeState, setEmployeeStartBreakTimeState] = useState(null);
-    const [employeeStopBreakTime, setEmployeeStopBreakTime] = useState("");
-    const [employeeStopBreakTimeState, setEmployeeStopBreakTimeState] = useState(null);
-
-    const [employeeDepartureTime, setEmployeeDepartureTime] = useState("");
-    const [employeeDepartureTimeState, setEmployeeDepartureTimeState] = useState(null);
-    const [employeeStatus, setEmployeeStatus] = useState("");
-    const [employeeStatusState, setEmployeeStatusState] = useState(null);
-
     const [hasValuesChangedWithAPIData, setHasValuesChangedWithAPIData] = React.useState(false);
     const handleValuesChangedWithAPIData = () => setHasValuesChangedWithAPIData(!hasValuesChangedWithAPIData);
-    const [isInvalidEmployeeLeaderComponent, setIsInvalidEmployeeLeaderComponent] = useState(false);
-    const [showErrorFeedbackEmployeeLeaderComponent, setShowErrorFeedbackEmployeeLeaderComponent] = useState(false);
-
-    function handleIsEmployeeLeader() {
-        setIsEmployeeLeader(!isEmployeeLeader);
-        setHasEmployeeLeader(false);
-        setIsInvalidEmployeeLeaderComponent(false);
-        setShowErrorFeedbackEmployeeLeaderComponent(false);
-    }
-
-    function handleHasEmployeeLeader() {
-        setHasEmployeeLeader(!hasEmployeeLeader);
-        setIsEmployeeLeader(false);
-        setIsInvalidEmployeeLeaderComponent(false);
-        setShowErrorFeedbackEmployeeLeaderComponent(false);
-    }
 
     const validateSelection = () => {
         if (!isEmployeeLeader && !hasEmployeeLeader && !employeeLeaderName) {
-            setIsInvalidEmployeeLeaderComponent(true);
-            setShowErrorFeedbackEmployeeLeaderComponent(true);
-            setEmployeeLeaderNameState("invalid");
+            dispatch({ type: 'SET_IS_INVALID_EMPLOYEE_LEADER_COMPONENT', payload: true });
+            dispatch({ type: 'SET_SHOW_ERROR_FEEDBACK_EMPLOYEE_LEADER_COMPONENT', payload: true });
+            dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME_STATE', payload: 'invalid' });
         } else if (!isEmployeeLeader && hasEmployeeLeader && !employeeLeaderName) {
-            setIsInvalidEmployeeLeaderComponent(false);
-            setShowErrorFeedbackEmployeeLeaderComponent(false);
-            setEmployeeLeaderNameState("invalid");
+            dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME_STATE', payload: 'invalid' });
         } else if (!isEmployeeLeader && hasEmployeeLeader && employeeLeaderName) {
-            setIsInvalidEmployeeLeaderComponent(false);
-            setShowErrorFeedbackEmployeeLeaderComponent(false);
-            setEmployeeLeaderNameState("valid");
+            dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME_STATE', payload: 'valid' });
         } else if (isEmployeeLeader && !hasEmployeeLeader && !employeeLeaderName) {
-            setIsInvalidEmployeeLeaderComponent(false);
-            setShowErrorFeedbackEmployeeLeaderComponent(false);
-            setEmployeeLeaderNameState("");
+            dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME_STATE', payload: '' });
         }
     };
 
     const validateAddEmployeeForm = () => {
-        if (employeeIdNumber === "") {
-            setEmployeeIdNumberState("invalid");
-        } else {
-            setEmployeeIdNumberState("valid");
-        }
-        if (firstName === "") {
-            setFirstNameState("invalid");
-        } else {
-            setFirstNameState("valid");
-        }
-        if (lastName === "") {
-            setLastNameState("invalid");
-        } else {
-            setLastNameState("valid");
-        }
-        if (emailAddress === "") {
-            setEmailAddressState("invalid");
-        } else {
-            setEmailAddressState("valid");
-        }
-        if (birthdate === "") {
-            setBirthdateState("invalid");
-        } else {
-            setBirthdateState("valid");
-        }
-        if (phoneNumber === "") {
-            setPhoneNumberState("invalid");
-        } else {
-            setPhoneNumberState("valid");
-        }
-        if (departmentWhichEmployeeReports === "") {
-            setDepartmentWhichEmployeeReportsState("invalid");
-        } else {
-            setDepartmentWhichEmployeeReportsState("valid");
-        }
-        if (employeeRole === "") {
-            setEmployeeRoleState("invalid");
-        } else {
-            setEmployeeRoleState("valid");
-        }
-        if (employeeFunction === "") {
-            setEmployeeFunctionState("invalid");
-        } else {
-            setEmployeeFunctionState("valid");
-        }
-        if (employeeContractType === "") {
-            setEmployeeContractTypeState("invalid");
-        } else {
-            setEmployeeContractTypeState("valid");
-        }
-        if (employeeWorkModel === "") {
-            setEmployeeWorkModelState("invalid");
-        } else {
-            setEmployeeWorkModelState("valid");
-        }
-        if (employeeWorkplace === "") {
-            setEmployeeWorkplaceState("invalid");
-        } else {
-            setEmployeeWorkplaceState("valid");
-        }
-        if (employeetAdmissionDate === "") {
-            setEmployeetAdmissionDateState("invalid");
-        } else {
-            setEmployeetAdmissionDateState("valid");
-        }
-        if (employeeEntryTime === "") {
-            setEmployeeEntryTimeState("invalid");
-        } else {
-            setEmployeeEntryTimeState("valid");
-        }
-        if (employeeStartBreakTime === "") {
-            setEmployeeStartBreakTimeState("invalid");
-        } else {
-            setEmployeeStartBreakTimeState("valid");
-        }
-        if (employeeStopBreakTime === "") {
-            setEmployeeStopBreakTimeState("invalid");
-        } else {
-            setEmployeeStopBreakTimeState("valid");
-        }
-        if (employeeDepartureTime === "") {
-            setEmployeeDepartureTimeState("invalid");
-        } else {
-            setEmployeeDepartureTimeState("valid");
-        }
+        // dispatch({
+        //     type: 'SET_EMPLOYEE_ID_NUMBER_STATE',
+        //     payload: employeeIdNumber ? "valid" : "invalid"
+        // });
+        dispatch({
+            type: 'SET_FIRST_NAME_STATE',
+            payload: firstName ? "valid" : "invalid"
+        });
+        dispatch({
+            type: 'SET_LAST_NAME_STATE',
+            payload: lastName ? "valid" : "invalid"
+        });
+        dispatch({
+            type: 'SET_EMAIL_ADDRESS_STATE',
+            payload: emailAddress ? "valid" : "invalid"
+        });
+        dispatch({
+            type: 'SET_BIRTHDATE_STATE',
+            payload: birthdate ? "valid" : "invalid"
+        });
+        dispatch({
+            type: 'SET_PHONE_NUMBER_STATE',
+            payload: phoneNumber ? "valid" : "invalid"
+        });
+
+        dispatch({
+            type: 'SET_EMPLOYEE_DEPARTMENT',
+            payload: employeeDepartment ? "valid" : "invalid"
+        });
+        dispatch({
+            type: 'SET_EMPLOYEE_ROLE',
+            payload: employeeRole ? "valid" : "invalid"
+        });
+        dispatch({
+            type: 'SET_EMPLOYEE_FUNCTION',
+            payload: employeeFunction ? "valid" : "invalid"
+        });
+
+        dispatch({
+            type: 'SET_EMPLOYEE_CONTRACT_TYPE',
+            payload: employeeContractType ? "valid" : "invalid"
+        });
+        dispatch({
+            type: 'SET_EMPLOYEE_WORK_MODEL',
+            payload: employeeWorkModel ? "valid" : "invalid"
+        });
+        dispatch({
+            type: 'SET_EMPLOYEE_WORKPLACE',
+            payload: employeeWorkplace ? "valid" : "invalid"
+        });
+        dispatch({
+            type: 'SET_EMPLOYEE_ADMISSION_DATE',
+            payload: employeeAdmissionDate ? "valid" : "invalid"
+        });
+
+        dispatch({
+            type: 'SET_EMPLOYEE_ENTRY_TIME',
+            payload: employeeEntryTime ? "valid" : "invalid"
+        });
+        dispatch({
+            type: 'SET_EMPLOYEE_START_BREAK_TIME',
+            payload: employeeStartBreakTime ? "valid" : "invalid"
+        });
+        dispatch({
+            type: 'SET_EMPLOYEE_STOP_BREAK_TIME',
+            payload: employeeStopBreakTime ? "valid" : "invalid"
+        });
+        dispatch({
+            type: 'SET_EMPLOYEE_DEPARTURE_TIME',
+            payload: employeeDepartureTime ? "valid" : "invalid"
+        });
     };
 
     const validateAddEmployeeAddressForm = () => {
@@ -249,6 +190,31 @@ const useCreateEmployee = () => {
         }
     };
 
+    const isFormValid = () => {
+        return (
+            firstNameState === 'valid' &&
+            lastNameState === 'valid' &&
+            emailAddressState === 'valid' &&
+            birthdateState === 'valid' &&
+            phoneNumberState === 'valid'
+        );
+    };
+
+    const isFormDetailsValid = () => {
+        return (
+            employeeDepartmentState === "valid" &&
+            employeeRoleState === "valid" &&
+            employeeContractTypeState === "valid" &&
+            employeeWorkModelState === "valid" &&
+            employeeWorkplaceState === "valid" &&
+            employeeAdmissionDateState === "valid" &&
+            employeeEntryTimeState === "valid" &&
+            employeeStartBreakTimeState === "valid" &&
+            employeeStopBreakTimeState === "valid" &&
+            employeeDepartureTimeState === "valid"
+        );
+    };
+
     function handleFormFieldsAutocomplete(cep) {
         if (cep.cep) {
             handleSaveCEP(cep.cep);
@@ -269,24 +235,13 @@ const useCreateEmployee = () => {
     }
 
     async function handleValidateAddEmployeeForm(handleShowEmployeeUserRegister) {
-        let isLead;
         validateAddEmployeeForm();
         validateSelection();
         //validateAddEmployeeAddressForm();
-        if (isEmployeeLeader && !hasEmployeeLeader) {
-            isLead = true;
-        } else if (!isEmployeeLeader && hasEmployeeLeader) {
-            isLead = false;
-        } else {
-            isLead = null;
-        }
-        if (firstNameState === "valid" &&
-            lastNameState === "valid" &&
-            birthdateState === "valid" &&
-            emailAddressState === "valid" &&
-            phoneNumberState === "valid"
-            // && employeeLeaderNameState === "valid"
-        ) {
+        const isLead = isEmployeeLeader && !hasEmployeeLeader ? true : !isEmployeeLeader && hasEmployeeLeader ? false : null;
+
+        const validForm = isFormValid();
+        if (validForm) {
             const userIdCreated = await handleSubmit(
                 firstName,
                 lastName,
@@ -296,32 +251,21 @@ const useCreateEmployee = () => {
                 isLead,
                 employeeLeaderName,
                 customerIdToLinkToEmployee,
-                departmentWhichEmployeeReports,
+                employeeDepartment,
                 employeeRole,
                 employeeFunction
             );
-            if (
-                departmentWhichEmployeeReportsState === "valid" &&
-                employeeRoleState === "valid" &&
-                //employeeFunctionState === "valid" &&
-                employeeContractTypeState === "valid" &&
-                employeeWorkModelState === "valid" &&
-                employeeWorkplaceState === "valid" &&
-                employeetAdmissionDateState === "valid" &&
-                employeeEntryTimeState === "valid" &&
-                employeeStartBreakTimeState === "valid" &&
-                employeeStopBreakTimeState === "valid" &&
-                employeeDepartureTimeState === "valid" &&
-                userIdCreated
-            ) {
+
+            const validDetails = isFormDetailsValid();
+            if (validDetails && userIdCreated) {
                 await handleEmployeeContactDetails(
-                    departmentWhichEmployeeReports,
+                    employeeDepartment,
                     employeeRole,
                     employeeFunction,
                     employeeContractType,
                     employeeWorkModel,
                     employeeWorkplace,
-                    employeetAdmissionDate,
+                    employeeAdmissionDate,
                     employeeEntryTime,
                     employeeStartBreakTime,
                     employeeStopBreakTime,
@@ -354,7 +298,7 @@ const useCreateEmployee = () => {
     }
 
     function goBackToEmployeeUserList(handleShowEmployeeUserRegister) {
-        reset();
+        dispatch({ type: 'RESET_COLLABORATOR_DATA' });
         handleShowEmployeeUserRegister();
     }
 
@@ -367,17 +311,29 @@ const useCreateEmployee = () => {
         isLead,
         employeeLeaderName,
         customerIdToLinkToEmployee,
-        departmentWhichEmployeeReports,
+        employeeDepartment,
         employeeRole,
         employeeFunction
     ) => {
+        console.log(firstName,
+            lastName,
+            emailAddress,
+            birthdate,
+            phoneNumber,
+            isLead,
+            employeeLeaderName,
+            customerIdToLinkToEmployee,
+            employeeDepartment,
+            employeeRole,
+            employeeFunction
+        );
         if (firstName,
             lastName,
             emailAddress,
             birthdate,
             phoneNumber,
             customerIdToLinkToEmployee,
-            departmentWhichEmployeeReports,
+            employeeDepartment,
             employeeRole
         ) {
             try {
@@ -392,7 +348,7 @@ const useCreateEmployee = () => {
                     isLead: isLead,
                     LeaderName: employeeLeaderName,
                     customerId: customerIdToLinkToEmployee,
-                    departmentId: Number(departmentWhichEmployeeReports),
+                    departmentId: Number(employeeDepartment),
                     rolesId: Number(employeeRole),
                 };
 
@@ -421,26 +377,40 @@ const useCreateEmployee = () => {
     };
 
     const handleEmployeeContactDetails = async (
-        departmentWhichEmployeeReports,
+        employeeDepartment,
         employeeRole,
         employeeFunction,
         employeeContractType,
         employeeWorkModel,
         employeeWorkplace,
-        employeetAdmissionDate,
+        employeeAdmissionDate,
         employeeEntryTime,
         employeeStartBreakTime,
         employeeStopBreakTime,
         employeeDepartureTime,
         userIdCreated
     ) => {
-        if (departmentWhichEmployeeReports,
+        console.log(
+            employeeDepartment,
             employeeRole,
             employeeFunction,
             employeeContractType,
             employeeWorkModel,
             employeeWorkplace,
-            employeetAdmissionDate,
+            employeeAdmissionDate,
+            employeeEntryTime,
+            employeeStartBreakTime,
+            employeeStopBreakTime,
+            employeeDepartureTime,
+            userIdCreated
+        );
+        if (employeeDepartment,
+            employeeRole,
+            employeeFunction,
+            employeeContractType,
+            employeeWorkModel,
+            employeeWorkplace,
+            employeeAdmissionDate,
             employeeEntryTime,
             employeeStartBreakTime,
             employeeStopBreakTime,
@@ -451,12 +421,12 @@ const useCreateEmployee = () => {
 
                 const payload = {
                     employeeId: userIdCreated,
-                    departmentId: Number(departmentWhichEmployeeReports),
+                    departmentId: Number(employeeDepartment),
                     rolesId: Number(employeeRole),
                     contractTypeId: Number(employeeContractType),
                     contractModelId: Number(employeeWorkModel),
                     workplaceId: Number(employeeWorkplace),
-                    adimissionDate: employeetAdmissionDate,
+                    adimissionDate: employeeAdmissionDate,
                     entryTime: employeeEntryTime,
                     startBreakTime: employeeStartBreakTime,
                     endBreakTime: employeeStopBreakTime,
@@ -524,222 +494,13 @@ const useCreateEmployee = () => {
         }
     };
 
-    function reset() {
-        setFirstName("");
-        setFirstNameState(null);
-        setLastName("");
-        setLastNameState(null);
-        setEmailAddress("");
-        setEmailAddressState(null);
-        setBirthdate("");
-        setBirthdateState(null);
-        // setPassword("");
-        // setPasswordState(null);
-        // setConfirmPassword("");
-        // setConfirmPasswordState(null);
-        setPhoneNumber("");
-        setPhoneNumberState(null);
-        setIsEmployeeLeader(false);
-        setHasEmployeeLeader(false);
-        setEmployeeLeaderName("");
-        setEmployeeLeaderNameState(null);
-        setDepartmentWhichEmployeeReports("");
-        setDepartmentWhichEmployeeReportsState(null);
-        setEmployeeRole("");
-        setEmployeeRoleState(null);
-        setEmployeeFunction("");
-        setEmployeeFunctionState(null);
-        setEmployeeContractType("");
-        setEmployeeContractTypeState(null);
-        setEmployeeWorkModel("");
-        setEmployeeWorkModelState(null);
-        setEmployeeWorkplace("");
-        setEmployeeWorkplaceState(null);
-        setEmployeetAdmissionDate("");
-        setEmployeetAdmissionDateState(null);
-        setEmployeeEntryTime("");
-        setEmployeeEntryTimeState(null);
-        setEmployeeStartBreakTime("");
-        setEmployeeStartBreakTimeState(null);
-        setEmployeeStopBreakTime("");
-        setEmployeeStopBreakTimeState(null);
-        setEmployeeDepartureTime("");
-        setEmployeeDepartureTimeState(null);
-        setEmployeeStatus("");
-        setEmployeeStatusState(null);
-    }
-
-    const validateEmail = (email) => {
-        if (email) {
-            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return regex.test(email);
-        }
-    };
-
-    const handleBirthdateChange = (value) => {
-        if (value._d && !isNaN(value._d)) {
-            const year = value._d.getFullYear();
-            const month = String(value._d.getMonth() + 1).padStart(2, '0');
-            const day = String(value._d.getDate()).padStart(2, '0');
-
-            const formattedDate = `${year}-${month}-${day}`;
-
-            setBirthdate(formattedDate);
-        }
-        if (value === "") {
-            setEmployeetAdmissionDateState("invalid");
-        } else {
-            setEmployeetAdmissionDateState("valid");
-        }
-    }
-
-    const handleAdmissionDateChange = (value) => {
-        if (value._d && !isNaN(value._d)) {
-            const year = value._d.getFullYear();
-            const month = String(value._d.getMonth() + 1).padStart(2, '0');
-            const day = String(value._d.getDate()).padStart(2, '0');
-
-            const formattedDate = `${year}-${month}-${day}`;
-
-            setEmployeetAdmissionDate(formattedDate);
-        }
-        if (value === "") {
-            setEmployeetAdmissionDateState("invalid");
-        } else {
-            setEmployeetAdmissionDateState("valid");
-        }
-    };
-
-    const handleTimeChange = (setTime, setTimeState) => (e) => {
-        setTime(e.target.value);
-        if (e.target.value === "" || e.target.value.includes("_")) {
-            setTimeState("invalid");
-        } else {
-            setTimeState("valid");
-        }
-    };
-
     return {
-        employeeIdNumber,
-        setEmployeeIdNumber,
-        employeeIdNumberState,
-        setEmployeeIdNumberState,
-        firstName,
-        setFirstName,
-        firstNameState,
-        setFirstNameState,
-        lastName,
-        setLastName,
-        lastNameState,
-        setLastNameState,
-        emailAddress,
-        setEmailAddress,
-        emailAddressState,
-        setEmailAddressState,
-        birthdate,
-        setBirthdate,
-        birthdateState,
-        setBirthdateState,
-        phoneNumber,
-        setPhoneNumber,
-        phoneNumberState,
-        setPhoneNumberState,
-        employeeAddress,
-        setEmployeeAddress,
-        employeeAddressState,
-        setEmployeeAddressState,
-        employeeAddressNumber,
-        setEmployeeAddressNumber,
-        employeeAddressNumberState,
-        setEmployeeAddressNumberState,
-        employeeAddressComplement,
-        setEmployeeAddressComplement,
-        employeeAddressComplementState,
-        setEmployeeAddressComplementState,
-        employeeNeighborhood,
-        setEmployeeNeighborhood,
-        employeeNeighborhoodState,
-        setEmployeeNeighborhoodState,
-        employeeCity,
-        setEmployeeCity,
-        employeeCityState,
-        setEmployeeCityState,
-        federatedUnit,
-        setFederatedUnit,
-        federatedUnitState,
-        setFederatedUnitState,
-        departmentWhichEmployeeReports,
-        setDepartmentWhichEmployeeReports,
-        departmentWhichEmployeeReportsState,
-        setDepartmentWhichEmployeeReportsState,
-        employeeRole,
-        setEmployeeRole,
-        employeeRoleState,
-        setEmployeeRoleState,
-        employeeFunction,
-        setEmployeeFunction,
-        employeeFunctionState,
-        setEmployeeFunctionState,
-        isEmployeeLeader,
-        setIsEmployeeLeader,
-        hasEmployeeLeader,
-        setHasEmployeeLeader,
-        employeeLeaderName,
-        setEmployeeLeaderName,
-        employeeLeaderNameState,
-        setEmployeeLeaderNameState,
-        employeeContractType,
-        setEmployeeContractType,
-        employeeContractTypeState,
-        setEmployeeContractTypeState,
-        employeeWorkModel,
-        setEmployeeWorkModel,
-        employeeWorkModelState,
-        setEmployeeWorkModelState,
-        employeeWorkplace,
-        setEmployeeWorkplace,
-        employeeWorkplaceState,
-        setEmployeeWorkplaceState,
-        isInvalidEmployeeLeaderComponent,
-        setIsInvalidEmployeeLeaderComponent,
-        showErrorFeedbackEmployeeLeaderComponent,
-        setShowErrorFeedbackEmployeeLeaderComponent,
-        employeetAdmissionDate,
-        setEmployeetAdmissionDate,
-        employeetAdmissionDateState,
-        setEmployeetAdmissionDateState,
-        employeeEntryTime,
-        setEmployeeEntryTime,
-        employeeEntryTimeState,
-        setEmployeeEntryTimeState,
-        employeeStartBreakTime,
-        setEmployeeStartBreakTime,
-        employeeStartBreakTimeState,
-        setEmployeeStartBreakTimeState,
-        employeeStopBreakTime,
-        setEmployeeStopBreakTime,
-        employeeStopBreakTimeState,
-        setEmployeeStopBreakTimeState,
-        employeeDepartureTime,
-        setEmployeeDepartureTime,
-        employeeDepartureTimeState,
-        setEmployeeDepartureTimeState,
-        employeeStatus,
-        setEmployeeStatus,
-        employeeStatusState,
-        setEmployeeStatusState,
         handleValidateAddEmployeeForm,
-        handleBirthdateChange,
-        validateEmail,
         validateAddEmployeeForm,
         validateAddEmployeeAddressForm,
         handleFormFieldsAutocomplete,
         hasValuesChangedWithAPIData,
         handleValuesChangedWithAPIData,
-        handleAdmissionDateChange,
-        handleTimeChange,
-        handleIsEmployeeLeader,
-        handleHasEmployeeLeader,
     };
 };
 

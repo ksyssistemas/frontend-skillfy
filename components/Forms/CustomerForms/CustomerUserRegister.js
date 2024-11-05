@@ -236,7 +236,7 @@ function CustomerUserRegister({ handleShowCustomerUserRegister }) {
         if (checkbox !== null) {
             validateCheckboxIsChecked();
         }
-    }, [checkbox])
+    }, [checkbox]) 
 
     useEffect(() => {
         if (brasilAPICNPJData !== null) {

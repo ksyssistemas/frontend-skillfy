@@ -21,34 +21,14 @@ const useCreateDepartment = (handleShowDepartmentsUserRegister) => {
     } else {
       setDepartmentNameState("valid");
     }
-    if (departmentDescription === "") {
-      if (departmentDescription.length < 10) {
-        setEmployeeRoleDescriptionState("invalid");
-      } else {
-        setEmployeeRoleDescriptionState("valid");
-      }
-    }
   }
 
   function handleValidateAddDepartmentForm() {
     validateAddDepartmentForm();
-    if (departmentNameState === "valid" &&
-      departmentReportsToDepartmentState === "" &&
-      departmentDescriptionState === "") {
-      handleSubmit(departmentName);
-    } else if (departmentNameState === "valid" &&
-      departmentReportsToDepartmentState === "" &&
-      departmentDescriptionState !== "") {
-      handleSubmit(departmentName, departmentDescription);
-    } else if (departmentNameState === "valid" &&
-      departmentReportsToDepartmentState !== "" &&
-      departmentDescriptionState !== "") {
-      handleSubmit(departmentName, departmentDescription, departmentReportsToDepartment);
-    }
+    handleSubmit(departmentName, departmentDescription, departmentReportsToDepartment);
   }
 
   const handleSubmit = async (departmentName, departmentDescription, departmentReportsToDepartment) => {
-    console.log(departmentName, departmentDescription, departmentReportsToDepartment);
     if (departmentName && departmentName !== "") {
       try {
         const payload = {

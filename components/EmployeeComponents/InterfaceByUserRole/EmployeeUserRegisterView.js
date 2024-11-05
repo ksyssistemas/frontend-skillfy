@@ -14,7 +14,7 @@ const EmployeeUserRegisterView = ({ handleShowEmployeeUserRegister, authenticati
                     authenticationDataLoggedInUser.role === 'administrator'
                     ? (
                         <>
-                            <AdminHeader name="Colaboradores" parentName="Cadastros" employeeRecordEntrySettingsButtonName="Configurações" handleShowEmployeeRecordEntrySettings={handleShowEmployeeRecordEntrySettings} />
+                            <AdminHeader name="Colaboradores" parentName="Cadastros" newRegistrationButtonText="Voltar" handleShowEmployeeUserRegister={handleShowEmployeeUserRegister} employeeRecordEntrySettingsButtonName="Configurações" handleShowEmployeeRecordEntrySettings={handleShowEmployeeRecordEntrySettings} />
                             <Container className="mt--6" fluid>
                                 <EmployeeUserRegister handleShowEmployeeUserRegister={handleShowEmployeeUserRegister} />
                             </Container>
@@ -24,7 +24,7 @@ const EmployeeUserRegisterView = ({ handleShowEmployeeUserRegister, authenticati
                         authenticationDataLoggedInUser &&
                         authenticationDataLoggedInUser.role === 'customer' &&
                         <>
-                            <CustomerHeader name="Colaboradores" parentName="Cadastros" employeeRecordEntrySettingsButtonName="Configurações" handleShowEmployeeRecordEntrySettings={handleShowEmployeeRecordEntrySettings} />
+                            <CustomerHeader name="Colaboradores" parentName="Cadastros" newRegistrationButtonText="Voltar" handleShowEmployeeUserRegister={handleShowEmployeeUserRegister} employeeRecordEntrySettingsButtonName="Configurações" handleShowEmployeeRecordEntrySettings={handleShowEmployeeRecordEntrySettings} />
                             <Container className="mt--6" fluid>
                                 <EmployeeUserRegister handleShowEmployeeUserRegister={handleShowEmployeeUserRegister} />
                             </Container>
