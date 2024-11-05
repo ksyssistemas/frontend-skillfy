@@ -52,120 +52,120 @@ import { handleSelectionEmploymentContractData } from '../../../util/handleSelec
 
 function CustomerUserRegister() {
 
-    const {
-        firstNameState,
-        lastNameState,
-        taxIdentificationNumber,
-        taxIdentificationNumberState,
-        emailAddressState,
-        birthdateState,
-        password,
-        passwordState,
-        confirmPasswordState,
-        phoneNumber,
-        phoneNumberState,
-        checkbox,
-        checkboxState,
-        setCheckbox,
-        setCheckboxState,
-        setFirstName,
-        setFirstNameState,
-        setLastName,
-        setLastNameState,
-        setTaxIdentificationNumber,
-        setTaxIdentificationNumberState,
-        setEmailAddress,
-        setEmailAddressState,
-        setPassword,
-        setPasswordState,
-        setConfirmPassword,
-        setConfirmPasswordState,
-        setPhoneNumber,
-        setPhoneNumberState,
-        handleValidateAddCustomerAccountHolderForm,
-        handleBirthdateChange,
-        validateEmail,
-        handleChangeCPF,
-        validateCheckboxIsChecked,
-        isCustomerAccountHolderFormValidated
-    } = useCreateCustomerAccountHolder();
+    // const {
+    //     firstNameState,
+    //     lastNameState,
+    //     taxIdentificationNumber,
+    //     taxIdentificationNumberState,
+    //     emailAddressState,
+    //     birthdateState,
+    //     password,
+    //     passwordState,
+    //     confirmPasswordState,
+    //     phoneNumber,
+    //     phoneNumberState,
+    //     checkbox,
+    //     checkboxState,
+    //     setCheckbox,
+    //     setCheckboxState,
+    //     setFirstName,
+    //     setFirstNameState,
+    //     setLastName,
+    //     setLastNameState,
+    //     setTaxIdentificationNumber,
+    //     setTaxIdentificationNumberState,
+    //     setEmailAddress,
+    //     setEmailAddressState,
+    //     setPassword,
+    //     setPasswordState,
+    //     setConfirmPassword,
+    //     setConfirmPasswordState,
+    //     setPhoneNumber,
+    //     setPhoneNumberState,
+    //     handleValidateAddCustomerAccountHolderForm,
+    //     handleBirthdateChange,
+    //     validateEmail,
+    //     handleChangeCPF,
+    //     validateCheckboxIsChecked,
+    //     isCustomerAccountHolderFormValidated
+    // } = useCreateCustomerAccountHolder();
 
-    const {
-        companyName,
-        setCompanyName,
-        companyNameState,
-        setCompanyNameState,
-        registrationName,
-        setRegistrationName,
-        registrationNameState,
-        setRegistrationNameState,
-        companyTypes,
-        setCompanyTypes,
-        companyTypesState,
-        setCompanyTypesState,
-        customerBusinessPhoneNumber,
-        setCustomerBusinessPhoneNumber,
-        customerBusinessPhoneNumberState,
-        setCustomerBusinessPhoneNumberState,
-        customerPhoneNumber,
-        setCustomerPhoneNumber,
-        customerPhoneNumberState,
-        setCustomerPhoneNumberState,
-        companyEmailAddress,
-        setCompanyEmailAddress,
-        companyEmailAddressState,
-        setCompanyEmailAddressState,
-        customerBusinessSector,
-        setCustomerBusinessSector,
-        customerBusinessSectorState,
-        setCustomerBusinessSectorState,
-        customerWebSite,
-        setCustomerWebSite,
-        customerWebSiteState,
-        setCustomerWebSiteState,
-        idHeadOfficeBranch,
-        setIdHeadOfficeBranch,
-        idHeadOfficeBranchState,
-        setIdHeadOfficeBranchState,
-        customerZipCode,
-        setCustomerZipCode,
-        customerZipCodeState,
-        setCustomerZipCodeState,
-        federatedUnit,
-        setFederatedUnit,
-        federatedUnitState,
-        setFederatedUnitState,
-        companyCity,
-        setCompanyCity,
-        companyCityState,
-        setCompanyCityState,
-        companyAddress,
-        setCompanyAddress,
-        companyAddressState,
-        setCompanyAddressState,
-        companyAddressNumber,
-        setCompanyAddressNumber,
-        companyAddressNumberState,
-        setCompanyAddressNumberState,
-        companyAddressComplement,
-        setCompanyAddressComplement,
-        companyAddressComplementState,
-        setCompanyAddressComplementState,
-        companyDistrict,
-        setCompanyDistrict,
-        companyDistrictState,
-        setCompanyDistrictState,
-        handleFormFieldsAutocomplete,
-        hasValuesChangedWithAPIData,
-        handleValuesChangedWithAPIData,
-        validateAddClientCompanyForm,
-        validateAddCustomerAddressForm,
-        handleValidateAddClientCompanyForm,
-        isCustomerCompanyFormValidated,
-        validatePhoneNumber,
-        validateWebSite,
-        validateCompanyEmail
-    } = useCreateClientCompany();
+    // const {
+    //     companyName,
+    //     setCompanyName,
+    //     companyNameState,
+    //     setCompanyNameState,
+    //     registrationName,
+    //     setRegistrationName,
+    //     registrationNameState,
+    //     setRegistrationNameState,
+    //     companyTypes,
+    //     setCompanyTypes,
+    //     companyTypesState,
+    //     setCompanyTypesState,
+    //     customerBusinessPhoneNumber,
+    //     setCustomerBusinessPhoneNumber,
+    //     customerBusinessPhoneNumberState,
+    //     setCustomerBusinessPhoneNumberState,
+    //     customerPhoneNumber,
+    //     setCustomerPhoneNumber,
+    //     customerPhoneNumberState,
+    //     setCustomerPhoneNumberState,
+    //     companyEmailAddress,
+    //     setCompanyEmailAddress,
+    //     companyEmailAddressState,
+    //     setCompanyEmailAddressState,
+    //     customerBusinessSector,
+    //     setCustomerBusinessSector,
+    //     customerBusinessSectorState,
+    //     setCustomerBusinessSectorState,
+    //     customerWebSite,
+    //     setCustomerWebSite,
+    //     customerWebSiteState,
+    //     setCustomerWebSiteState,
+    //     idHeadOfficeBranch,
+    //     setIdHeadOfficeBranch,
+    //     idHeadOfficeBranchState,
+    //     setIdHeadOfficeBranchState,
+    //     customerZipCode,
+    //     setCustomerZipCode,
+    //     customerZipCodeState,
+    //     setCustomerZipCodeState,
+    //     federatedUnit,
+    //     setFederatedUnit,
+    //     federatedUnitState,
+    //     setFederatedUnitState,
+    //     companyCity,
+    //     setCompanyCity,
+    //     companyCityState,
+    //     setCompanyCityState,
+    //     companyAddress,
+    //     setCompanyAddress,
+    //     companyAddressState,
+    //     setCompanyAddressState,
+    //     companyAddressNumber,
+    //     setCompanyAddressNumber,
+    //     companyAddressNumberState,
+    //     setCompanyAddressNumberState,
+    //     companyAddressComplement,
+    //     setCompanyAddressComplement,
+    //     companyAddressComplementState,
+    //     setCompanyAddressComplementState,
+    //     companyDistrict,
+    //     setCompanyDistrict,
+    //     companyDistrictState,
+    //     setCompanyDistrictState,
+    //     handleFormFieldsAutocomplete,
+    //     hasValuesChangedWithAPIData,
+    //     handleValuesChangedWithAPIData,
+    //     validateAddClientCompanyForm,
+    //     validateAddCustomerAddressForm,
+    //     handleValidateAddClientCompanyForm,
+    //     isCustomerCompanyFormValidated,
+    //     validatePhoneNumber,
+    //     validateWebSite,
+    //     validateCompanyEmail
+    // } = useCreateClientCompany();
 
     const {
         brasilAPICNPJData,
@@ -179,6 +179,9 @@ function CustomerUserRegister() {
     } = useCNPJ();
 
     const [step, setStep] = useState(1);
+
+    const { handleValidateAddCustomerAccountHolderForm } = useCreateCustomerAccountHolder(individualRegistrationData);
+    const { handleValidateAddClientCompanyForm } = useCreateClientCompany(legalEntityRegistrationData);
 
     const [individualRegistrationData, setIndividualRegistrationData] = useState({
         firstName: '',
@@ -250,65 +253,20 @@ function CustomerUserRegister() {
         }));
     };
 
-    const [nameOnCard, setnameOnCard] = React.useState(false);
-    const [cardNumber, setcardNumber] = React.useState(false);
-    const [date, setdate] = React.useState(false);
-    const [ccv, setccv] = React.useState(false);
-
-    const [selectedCompanySector, setSelectedCompanySector] = useState('');
-    const [companySectorDataList, setCompanySectorDataList] = useState([
-        { id: "0", text: "Privado" },
-        { id: "1", text: "Público" },
-    ]);
-    const handleCompanySectorDataList = (companySector) => {
-        setCompanySectorDataList(companySector);
-    }
-
-    const [selectedCompanyTypes, setSelectedCompanyTypes] = useState('');
-    const [companyTypesDataList, setCompanyTypesDataList] = useState([
-        { id: "0", text: "EI" },
-        { id: "1", text: "MEI" },
-        { id: "2", text: "Ltda" },
-        { id: "3", text: "SLU" },
-        { id: "4", text: "SS" },
-        { id: "5", text: "S/A" },
-    ]);
-    const handleCompanyTypesDataList = (companyTypes) => {
-        setCompanyTypesDataList(companyTypes);
-    }
-
-    const handleCheckboxChange = (e) => {
-        if (checkbox === null) {
-            setCheckbox(true);
-        } else {
-            setCheckbox(!checkbox);
-        }
-    };
-
-    // const handleNextStep = () => {
-    //     if (step === 1) {
-    //         if (checkbox === null) {
-    //             setCheckbox(false);
-    //         }
-    //         handleValidateAddCustomerAccountHolderForm();
-    //     }
-    //     if (step === 1 && checkboxState === "valid") {
-    //         setStep(step + 1);
-    //     }
-    //     if (step === 2 && individualEmployerIdNumberState === "valid" && checkboxState === "valid") {
-    //         // handleValidateAddClientCompanyForm(handleShowCustomerUserRegister);
-    //         console.log(`ROTA: ${process.env.NEXT_PUBLIC_CONTACT_PERSON}`)
-    //     }
-    // };
-
     const handleNextStep = () => {
         if (step === 1) {
+            if (individualRegistrationData.checkbox === null) {
+                setCheckbox(false);
+            }
+            handleValidateAddCustomerAccountHolderForm();
+        }
+        if (step === 1 && individualRegistrationData.checkboxState === "valid") {
             console.log('Individual Registration Data:', individualRegistrationData);
             console.log('Legal Entity Registration Data:', legalEntityRegistrationData);
             setStep(step + 1);
         }
-        if (step === 2 && individualEmployerIdNumberState === "valid" && checkboxState === "valid") {
-            // handleValidateAddClientCompanyForm(handleShowCustomerUserRegister);
+        if (step === 2 && legalEntityRegistrationData.individualEmployerIdNumberState === "valid") {
+            handleValidateAddClientCompanyForm();
             console.log(`ROTA: ${process.env.NEXT_PUBLIC_CONTACT_PERSON}`)
         }
     };
@@ -319,11 +277,11 @@ function CustomerUserRegister() {
         setStep(step - 1);
     };
 
-    useEffect(() => {
-        if (checkbox !== null) {
-            validateCheckboxIsChecked();
-        }
-    }, [checkbox])
+    // useEffect(() => {
+    //     if (checkbox !== null) {
+    //         validateCheckboxIsChecked();
+    //     }
+    // }, [checkbox])
 
     useEffect(() => {
         if (brasilAPICNPJData !== null) {
@@ -332,13 +290,13 @@ function CustomerUserRegister() {
         }
     }, [brasilAPICNPJData])
 
-    useEffect(() => {
-        if (hasValuesChangedWithAPIData) {
-            handleValuesChangedWithAPIData(!hasValuesChangedWithAPIData);
-            validateAddClientCompanyForm();
-            validateAddCustomerAddressForm();
-        }
-    }, [hasValuesChangedWithAPIData, validateAddClientCompanyForm]);
+    // useEffect(() => {
+    //     if (hasValuesChangedWithAPIData) {
+    //         handleValuesChangedWithAPIData(!hasValuesChangedWithAPIData);
+    //         validateAddClientCompanyForm();
+    //         validateAddCustomerAddressForm();
+    //     }
+    // }, [hasValuesChangedWithAPIData, validateAddClientCompanyForm]);
 
     return (
         <Row>
