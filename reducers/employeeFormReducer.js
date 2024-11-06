@@ -1,13 +1,11 @@
 export const initialState = {
     collaboratorData: {
         employeeCompanyName: '',
-
         firstName: '',
         lastName: '',
         emailAddress: '',
         birthdate: null,
         phoneNumber: '',
-
         selectedDepartment: '',
         selectedRole: '',
         selectedFunction: '',
@@ -15,29 +13,23 @@ export const initialState = {
         selectedWorkModel: '',
         selectedWorkplace: '',
         selectedEmployeeAndRole: '',
-
         employeeDepartment: '',
         employeeRole: '',
         employeeFunction: '',
-
         isEmployeeLeader: false,
         hasEmployeeLeader: false,
         employeeLeaderName: '',
-
         isInvalidEmployeeLeaderComponent: false,
         showErrorFeedbackEmployeeLeaderComponent: false,
-
         employeeContractType: '',
         employeeWorkModel: '',
         employeeWorkplace: '',
-
         employeeAdmissionDate: null,
         employeeEntryTime: '',
         employeeStartBreakTime: '',
         employeeStopBreakTime: '',
         employeeDepartureTime: '',
         employeeStatus: '',
-
         selectedDepartmentId: null,
         hasDepartmentSelected: false,
         departmentDataList: [],
@@ -47,40 +39,32 @@ export const initialState = {
         workModelDataList: [],
         workplaceDataList: [],
         employeeAndRoleDataList: [],
-
         firstNameState: null,
         lastNameState: null,
         emailAddressState: null,
         birthdateState: null,
         phoneNumberState: null,
-
         employeeAddressState: null,
         employeeAddressNumberState: null,
         employeeAddressComplementState: null,
         employeeNeighborhoodState: null,
         employeeCityState: null,
         federatedUnitState: null,
-
         employeeDepartmentState: null,
         employeeRoleState: null,
         employeeFunctionState: null,
-
         employeeLeaderNameState: null,
-
         employeeContractTypeState: null,
         employeeWorkModelState: null,
         employeeWorkplaceState: null,
-
         employeeAdmissionDateState: null,
         employeeEntryTimeState: null,
         employeeStartBreakTimeState: null,
         employeeStopBreakTimeState: null,
         employeeDepartureTimeState: null,
         employeeStatusState: null,
-
         formattedBirthdate: '',
         formattedAdmissionDate: '',
-
         firstNameTouched: false,
         lastNameTouched: false,
         emailAddressTouched: false,
