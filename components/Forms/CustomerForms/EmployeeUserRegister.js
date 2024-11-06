@@ -704,7 +704,7 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
                                 id="validationSelectLeader"
                                 placeholder="Nome do líder"
                                 type="text"
-                                value={state.collaboratorData.employeeLeaderName}
+                                value={state.collaboratorData.employeeLeaderName || ''}
                                 valid={state.collaboratorData.employeeLeaderNameState === "valid"}
                                 invalid={state.collaboratorData.employeeLeaderNameState === "invalid"}
                                 onChange={handleEmployeeLeaderNameChange}

@@ -364,13 +364,16 @@ const useCreateEmployee = (state, dispatch) => {
                     body: JSON.stringify(payload),
                 });
                 if (response.ok) {
+                    console.log("RESPONSE: ", response);
                     console.log('Data sent successfully!');
                     const data = await response.json();
                     return data.id;
                 } else {
+                    console.log("RESPONSE else: ", response);
                     console.error('Error in response:', response.status);
                 }
             } catch (error) {
+                console.log("RESPONSE error: ", response);
                 console.error('Error in request:', error);
             }
         }
