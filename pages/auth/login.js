@@ -29,6 +29,7 @@ import { useRouter } from 'next/router';
 import { EmployeeContext } from "../../contexts/RecordsContext/EmployeeContext";
 import "assets/css/styles/login.css"
 import useEmailValidation from '../../hooks/RecordsHooks/useEmailValidation';
+import useChangePassword from '../../hooks/RecordsHooks/useChangePassword';
 import { useAlert } from '../../contexts/AlertContext';
 
 function Login() {
@@ -44,8 +45,8 @@ function Login() {
     email: '',
     password: '',
     newPassword: '',
-    confirmNewPassword: '',
-    tempCode: ''
+    confirmPassword: '',
+    temporaryPassword: ''
   });
 
   const [erro, setErro] = useState('');
@@ -54,6 +55,8 @@ function Login() {
   const { handleSaveAuthenticationDataLoggedInUser } = useAuth();
 
   const { email, setEmail, emailSuccess, emailError, loading, validateEmailFormat, validateEmailInSystem } = useEmailValidation();
+
+  const { passwordSuccess, passwordError, changePassword } = useChangePassword();
 
   const handleInputChange = (fieldName, value) => {
     setFormData({ ...formData, [fieldName]: value });
@@ -93,10 +96,50 @@ function Login() {
     }
   }
 
+  const changePasswordNew = async () => {
+    if (!formData.temporaryPassword) {
+      setErro(
+        <Alert color="warning" style={{ textAlign: 'center' }}>
+          <strong>Código temporário é obrigatório</strong>
+        </Alert>
+      );
+      return;
+    }
+  
+    if (formData.newPassword === '') {
+      setErro(
+        <Alert color="warning" style={{ textAlign: 'center' }}>
+          <strong>A nova senha é obrigatória</strong>
+        </Alert>
+      );
+      return;
+    }
+  
+    if (formData.newPassword !== formData.confirmPassword) {
+      setErro(
+        <Alert color="warning" style={{ textAlign: 'center' }}>
+          <strong>As senhas não coincidem</strong>
+        </Alert>
+      );
+      return;
+    }
+
+    const isChangedPassowrd = await changePassword(formData.email, formData.newPassword, formData.confirmPassword, formData.temporaryPassword);
+    if (isChangedPassowrd) {
+      setForgotPassword(false);
+      setFormLogin(true);
+      setSuccess(
+        <Alert color="success" style={{ textAlign: 'center' }}>
+        <strong>{passwordSuccess}</strong>
+      </Alert>
+      )
+    }
+  }
+
   const handleSubmit = async () => {
     if (forgotPassword){
       // logica para fazer a rec de senha
-      if (!formData.tempCode) {
+      if (!formData.temporaryPassword) {
         setErro(
           <Alert color="warning" style={{ textAlign: 'center' }}>
             <strong>Código temporário é obrigatório</strong>
@@ -114,7 +157,7 @@ function Login() {
         return;
       }
   
-      if (formData.newPassword !== formData.confirmNewPassword) {
+      if (formData.newPassword !== formData.confirmPassword) {
         setErro(
           <Alert color="warning" style={{ textAlign: 'center' }}>
             <strong>As senhas não coincidem</strong>
@@ -123,7 +166,7 @@ function Login() {
         return;
       }
       
-      setFormData({ ...formData, password: '', newPassword: '', confirmNewPassword: '' });
+      setFormData({ ...formData, password: '', newPassword: '', confirmPassword: '' });
     } else {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_AUTHENTICATION}/signin`, {
@@ -182,8 +225,7 @@ function Login() {
     }
 
   }};
-
-
+  
   const [focusedEmail, setfocusedEmail] = React.useState(false);
   const [focusedPassword, setfocusedPassword] = React.useState(false);
   
@@ -199,6 +241,17 @@ function Login() {
       )
     }
   },[forgotPassword]);
+
+  useEffect(() => {
+    if(passwordSuccess){
+      showAlert(
+        "success",
+        "ni ni-check-bold",
+        "Sucesso!",
+        "Senha trocada com sucesso!"
+      )
+    }
+  },[passwordSuccess]);
 
   return (
     <>
@@ -288,14 +341,14 @@ function Login() {
                                       <strong>{emailSuccess}</strong>
                                     </Alert> */}
                                     <FormGroup className="mb-3">
-                                      <Label for="tempCodeInput">Código Temporário</Label>
+                                      <Label for="temporaryPasswordInput">Código Temporário</Label>
                                       <InputGroup className="input-group-merge input-group-alternative border border-purple-sk">
                                         <Input
-                                          id="tempCodeInput"
+                                          id="temporaryPasswordInput"
                                           placeholder="Digite o código temporário"
                                           type="text"
-                                          value={formData.tempCode} 
-                                          onChange={(e) => handleInputChange('tempCode', e.target.value)} 
+                                          value={formData.temporaryPassword} 
+                                          onChange={(e) => handleInputChange('temporaryPassword', e.target.value)} 
                                         />
                                       </InputGroup>
                                     </FormGroup>
@@ -309,12 +362,12 @@ function Login() {
                                       />
                                     </FormGroup>
                                     <FormGroup>
-                                      <Label for="confirmNewPasswordInput">Confirme a nova senha</Label>
+                                      <Label for="confirmPasswordInput">Confirme a nova senha</Label>
                                       <Input className="input-group-merge input-group-alternative border border-purple-sk"
-                                        id="confirmNewPasswordInput"
+                                        id="confirmPasswordInput"
                                         placeholder="Confirme a nova senha"
                                         type="password"
-                                        onChange={(e) => handleInputChange('confirmNewPassword', e.target.value)}
+                                        onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                                       />
                                     </FormGroup>
                                   </>
@@ -382,16 +435,25 @@ function Login() {
                                 </Button>
                               </div>
                               )}
-                              {!emailForgot && (
+                              {formLogin && (
                               <div className="text-right">
                                 <Button
                                   className="my-4 rounded-pill border-0 bg-purple-sk text-white"
                                   type="button"
                                   onClick={handleSubmit}
                                 >
-                                  {forgotPassword ? "Redefinir" : "Entrar"}
+                                  Entrar
                                 </Button>
                               </div>
+                              )}
+                              {forgotPassword && (
+                              <Button
+                                className="my-4 rounded-pill border-0 bg-purple-sk text-white"
+                                onClick={changePasswordNew}
+                                disabled={loading}
+                              >
+                                Alterar Senha
+                              </Button>
                               )}
                             </Row>
                           </Form>

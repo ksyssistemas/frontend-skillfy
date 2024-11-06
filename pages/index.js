@@ -41,7 +41,7 @@ function Index() {
   return (
     <>
     <IndexNavbar />
-      <div className="main-content">
+      <div className="main-content-auth">
         <IndexHeader />
         <section className="py-6 pb-9 bg-white">
           <Container fluid>
