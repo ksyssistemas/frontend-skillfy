@@ -7,6 +7,7 @@ import RegisterFooter from "components/Footers/RegisterFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 import routes from "../routes/admin.routes";
 import AdminNavbar from "../components/Navbars/AdminNavbar";
+import "assets/css/styles/layoutspage.css";
 // import routes from "routes.js";
 
 function Admin({ router, children }) {
@@ -61,7 +62,7 @@ function Admin({ router, children }) {
         sidenavOpen={sidenavOpen}
         logo={{
           innerLink: "/",
-          imgSrc: require("assets/img/brand/nextjs_argon_black.png"),
+          imgSrc: require("assets/img/brand/skillfy-logo-login.png"),
           imgAlt: "...",
         }}
       />
@@ -72,7 +73,9 @@ function Admin({ router, children }) {
           sidenavOpen={sidenavOpen}
           brandText={getBrandText(router.pathname)}
         />
-        {children}
+        <main>
+          {children}
+        </main>
         <RegisterFooter />
       </div>
       {sidenavOpen ? (
