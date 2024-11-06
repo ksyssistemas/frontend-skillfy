@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import PropTypes from "prop-types";
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useReducer } from 'react';
 // nodejs library that concatenates classes
 // react plugin used to create DropdownMenu for selecting items
 const Select2 = dynamic(() => import("react-select2-wrapper"));
@@ -32,6 +32,7 @@ import { useFindAllRoles } from "../../../hooks/RecordsHooks/role/useFindAllRole
 import { useFindAllFunctions } from "../../../hooks/RecordsHooks/employeeFunction/useFindAllFunctions";
 import { employmentContractDataSearchAndProcess } from "../../../util/employmentContractDataSearchAndProcess";
 import useUpdateEmployee from "../../../hooks/RecordsHooks/employee/useUpdateEmployee";
+import { initialState, formReducer } from '../../../reducers/employeeFormReducer';
 
 function EmployeeUserUpdate(
     {
@@ -43,6 +44,8 @@ function EmployeeUserUpdate(
         companyNameToModalDetails
     }
 ) {
+
+    const [state, dispatch] = useReducer(formReducer, initialState);
 
     const {
         employeeIdToUpdate,
@@ -62,230 +65,197 @@ function EmployeeUserUpdate(
         handleValidateUpdateEmployeeForm
     } = useUpdateEmployee();
 
-    const {
-        employeeIdNumber,
-        setEmployeeIdNumber,
-        employeeIdNumberState,
-        setEmployeeIdNumberState,
-        firstName,
-        setFirstName,
-        firstNameState,
-        setFirstNameState,
-        lastName,
-        setLastName,
-        lastNameState,
-        setLastNameState,
-        emailAddress,
-        setEmailAddress,
-        emailAddressState,
-        setEmailAddressState,
-        birthdate,
-        setBirthdate,
-        birthdateState,
-        setBirthdateState,
-        phoneNumber,
-        setPhoneNumber,
-        phoneNumberState,
-        setPhoneNumberState,
-        employeeAddress,
-        setEmployeeAddress,
-        employeeAddressState,
-        setEmployeeAddressState,
-        employeeAddressNumber,
-        setEmployeeAddressNumber,
-        employeeAddressNumberState,
-        setEmployeeAddressNumberState,
-        employeeAddressComplement,
-        setEmployeeAddressComplement,
-        employeeAddressComplementState,
-        setEmployeeAddressComplementState,
-        employeeNeighborhood,
-        setEmployeeNeighborhood,
-        employeeNeighborhoodState,
-        setEmployeeNeighborhoodState,
-        employeeCity,
-        setEmployeeCity,
-        employeeCityState,
-        setEmployeeCityState,
-        federatedUnit,
-        setFederatedUnit,
-        federatedUnitState,
-        setFederatedUnitState,
-        departmentWhichEmployeeReports,
-        setDepartmentWhichEmployeeReports,
-        departmentWhichEmployeeReportsState,
-        setDepartmentWhichEmployeeReportsState,
-        employeeRole,
-        setEmployeeRole,
-        employeeRoleState,
-        setEmployeeRoleState,
-        employeeFunction,
-        setEmployeeFunction,
-        employeeFunctionState,
-        setEmployeeFunctionState,
-        isEmployeeLeader,
-        setIsEmployeeLeader,
-        hasEmployeeLeader,
-        setHasEmployeeLeader,
-        employeeLeaderName,
-        setEmployeeLeaderName,
-        employeeLeaderNameState,
-        setEmployeeLeaderNameState,
-        employeeContractType,
-        setEmployeeContractType,
-        employeeContractTypeState,
-        setEmployeeContractTypeState,
-        employeeWorkModel,
-        setEmployeeWorkModel,
-        employeeWorkModelState,
-        setEmployeeWorkModelState,
-        employeeWorkplace,
-        setEmployeeWorkplace,
-        employeeWorkplaceState,
-        setEmployeeWorkplaceState,
-        isInvalidEmployeeLeaderComponent,
-        setIsInvalidEmployeeLeaderComponent,
-        showErrorFeedbackEmployeeLeaderComponent,
-        setShowErrorFeedbackEmployeeLeaderComponent,
-        employeetAdmissionDate,
-        setEmployeetAdmissionDate,
-        employeetAdmissionDateState,
-        setEmployeetAdmissionDateState,
-        employeeEntryTime,
-        setEmployeeEntryTime,
-        employeeEntryTimeState,
-        setEmployeeEntryTimeState,
-
-        employeeStartBreakTime,
-        setEmployeeStartBreakTime,
-        employeeStartBreakTimeState,
-        setEmployeeStartBreakTimeState,
-
-        employeeStopBreakTime,
-        setEmployeeStopBreakTime,
-        employeeStopBreakTimeState,
-        setEmployeeStopBreakTimeState,
-
-        employeeDepartureTime,
-        setEmployeeDepartureTime,
-        employeeDepartureTimeState,
-        setEmployeeDepartureTimeState,
-        employeeStatus,
-        setEmployeeStatus,
-        employeeStatusState,
-        setEmployeeStatusState,
-        handleValidateAddEmployeeForm,
-        handleBirthdateChange,
-        validateEmail,
-        validateAddEmployeeForm,
-        validateAddEmployeeAddressForm,
-        handleFormFieldsAutocomplete,
-        hasValuesChangedWithAPIData,
-        handleValuesChangedWithAPIData,
-        handleAdmissionDateChange,
-        handleTimeChange,
-        handleIsEmployeeLeader,
-        handleHasEmployeeLeader
-    } = useCreateEmployee();
-
-    const {
-        handleEmployeeContractType,
-        handleEmployeeContractTypeState,
-        contractTypeDataList,
-        handleContractTypeDataList
-    } = useCreateTypeContract();
-
-    const {
-        handleEmployeetWorkModel,
-        handleEmployeetWorkModelState,
-        workModelDataList,
-        handleWorkModelDataList
-    } = useCreateWorkModel();
-
-    const {
-        handleEmployeeWorkplace,
-        handleEmployeeWorkplaceState,
-        workplaceDataList,
-        handleWorkplaceDataList
-    } = useCreateWorkplace();
-
     const [dataLoaded, setDataLoaded] = useState(false);
-
-    const [fieldTouchStatus, setFieldTouchStatus] = useState({
-
-        firstName: { value: "", touched: false, state: null },
-        lastName: { value: "", touched: false, state: null },
-        emailAddress: { value: "", touched: false, state: null },
-        phoneNumber: { value: "", touched: false, state: null },
-        employeeLeaderName: { value: "", touched: false, state: null },
-        isEmployeeLeader: { value: "", touched: false, state: null },
-        employeeStatus: { value: "", touched: false, state: null },
-
-        employeetAdmissionDate: { value: "", touched: false, state: null },
-        employeeEntryTime: { value: "", touched: false, state: null },
-
-        employeeStartBreakTime: { value: false, touched: false, state: null },
-        employeeStopBreakTime: { value: false, touched: false, state: null },
-
-        employeeDepartureTime: { value: "", touched: false, state: null },
-    });
 
     const [cepTouched, setCepTouched] = useState(false);
 
-    const handleTouchStart = (field) => {
-        setFieldTouchStatus((prev) => ({
-            ...prev,
-            [field]: {
-                ...prev[field],
-                touched: true
-            }
-        }));
+    const handleFirstNameChange = (e) => {
+        dispatch({ type: 'SET_FIRST_NAME', payload: e.target.value });
+        dispatch({ type: 'SET_FIRST_NAME_STATE', payload: e.target.value === '' ? 'invalid' : 'valid' });
     };
 
-    const handleChange = (e, field, type = null) => {
-        let value = e.target.value;
-        let isValid = true;
+    const handleFirstNameTouch = () => {
+        dispatch({ type: 'TOUCH_FIRST_NAME' });
+    };
 
-        if (field === "idHeadOfficeBranch") {
-            const normalizedValue = value.trim().toLowerCase();
-            if (normalizedValue === "matriz") {
-                value = "Matriz";
-            } else if (normalizedValue === "filial") {
-                value = "Filial";
-            } else {
-                isValid = false;
-            }
-        } else if (type && type !== null) {
-            if (field.includes('Phone')) {
-                isValid = validatePhoneNumber(value, type);
-            } else if (field.includes('Email')) {
-                isValid = validateCompanyEmail(value);
-            }
-        } else {
-            isValid = value !== "";
+    const handleLastNameChange = (e) => {
+        dispatch({ type: 'SET_LAST_NAME', payload: e.target.value });
+        dispatch({ type: 'SET_LAST_NAME_STATE', payload: e.target.value === '' ? 'invalid' : 'valid' });
+    };
+
+    const handleLastNameTouch = () => {
+        dispatch({ type: 'TOUCH_LAST_NAME' });
+    };
+
+    const handleEmailChange = (e) => {
+        dispatch({ type: 'SET_EMAIL_ADDRESS', payload: e.target.value });
+        const isValidEmail = validateEmail(e.target.value);
+        dispatch({ type: 'SET_EMAIL_ADDRESS_STATE', payload: isValidEmail ? 'valid' : 'invalid' });
+    };
+
+    const handleEmailTouch = () => {
+        dispatch({ type: 'TOUCH_EMAIL_ADDRESS' });
+    };
+
+    const validateEmail = (email) => {
+        if (email) {
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
         }
+    };
 
-        setFieldTouchStatus((prev) => ({
-            ...prev,
-            [field]: {
-                ...prev[field],
-                value: value,
-                state: isValid ? "valid" : "invalid",
-                touched: true
-            }
-        }));
+    const handlePhoneNumberChange = (value) => {
+        if (value && value.trim() !== "") {
+            return { formattedPhoneNumber: value, isValid: true };
+        }
+        return { formattedPhoneNumber: "", isValid: false };
+    };
+
+    const handlePhoneTouch = () => {
+        dispatch({ type: 'TOUCH_PHONE_NUMBER' });
+    };
+
+    const onPhoneNumberChange = (e) => {
+        const { formattedPhoneNumber, isValid } = handlePhoneNumberChange(e.target.value);
+
+        dispatch({ type: 'SET_PHONE_NUMBER', payload: formattedPhoneNumber });
+        dispatch({ type: 'SET_PHONE_NUMBER_STATE', payload: isValid ? 'valid' : 'invalid' });
+    };
+
+    const handleSelectedItemOnSelectComponent = (
+        selectedId,
+        dataList,
+        setSelectedAction,
+        setFieldAction,
+        setStateAction,
+        setSelectedDepartmentIdAction = null,
+        setHasDepartmentSelectedAction = null,
+        savedDataType = 'id'
+    ) => {
+        // Despache o estado 'valid' antes de iniciar o processo de seleção
+        if (setStateAction) dispatch({ type: setStateAction, payload: 'valid' });
+        if (setHasDepartmentSelectedAction) dispatch({ type: setHasDepartmentSelectedAction, payload: true });
+
+        // Chama a função de processamento de seleção de dados
+        handleSelectionEmploymentContractData(
+            selectedId,
+            dataList,
+            (value) => dispatch({ type: setSelectedAction, payload: value }),
+            (value) => dispatch({ type: setFieldAction, payload: value }), // Agora definirá o valor correto
+            (state) => dispatch({ type: setStateAction, payload: state }),
+            (id) => dispatch({ type: setSelectedDepartmentIdAction, payload: id }),
+            () => dispatch({ type: setHasDepartmentSelectedAction, payload: true }),
+            savedDataType
+        );
+    };
+
+    const handleEmployeeLeaderNameChange = (e) => {
+        dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME', payload: e.target.value });
+        dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME_STATE', payload: e.target.value === '' ? 'invalid' : 'valid' });
+    };
+
+    const handleEmployeeLeaderNameTouch = () => {
+        dispatch({ type: 'TOUCH_EMPLOYEE_LEADER_NAME' });
+    };
+
+    const handleIsEmployeeLeaderTouch = () => {
+        dispatch({ type: 'TOUCH_IS_EMPLOYEE_LEADER' });
+    };
+
+    const handleIsEmployeeLeader = () => {
+        dispatch({ type: 'SET_IS_EMPLOYEE_LEADER', payload: !state.isEmployeeLeader });
+        dispatch({ type: 'SET_HAS_EMPLOYEE_LEADER', payload: false });
+        dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME_STATE', payload: null });
+        dispatch({ type: 'SET_IS_INVALID_EMPLOYEE_LEADER_COMPONENT', payload: false });
+        dispatch({ type: 'SET_SHOW_ERROR_FEEDBACK_EMPLOYEE_LEADER_COMPONENT', payload: false });
+    };
+
+    const handleHasEmployeeLeader = () => {
+        dispatch({ type: 'SET_HAS_EMPLOYEE_LEADER', payload: !state.hasEmployeeLeader });
+        dispatch({ type: 'SET_IS_EMPLOYEE_LEADER', payload: false });
+        dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME_STATE', payload: null });
+        dispatch({ type: 'SET_IS_INVALID_EMPLOYEE_LEADER_COMPONENT', payload: false });
+        dispatch({ type: 'SET_SHOW_ERROR_FEEDBACK_EMPLOYEE_LEADER_COMPONENT', payload: false });
+    };
+
+    // Função para converter string em Date e garantir validade
+    const parseDateFromString = (dateString) => {
+        const [year, month, day] = dateString.split('-').map(Number);
+        return new Date(Date.UTC(year, month - 1, day)); // Mês é zero-indexado no JavaScript
+    };
+
+    // Função para formatar uma data (Date) em uma string ISO (yyyy-MM-dd)
+    const formatDate = (date) => {
+        if (date instanceof Date && !isNaN(date)) {
+            const year = date.getUTCFullYear();
+            const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(date.getUTCDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        return '';
+    };
+
+    // Função para manipular e despachar ações de data
+    const handleDateChange = (dispatch, value, dateAction, stateAction) => {
+        if (value && value._d && !isNaN(value._d)) {
+            const dateObj = value._d;
+            dispatch({ type: dateAction, payload: dateObj });
+            dispatch({ type: stateAction, payload: 'valid' });
+        } else {
+            dispatch({ type: stateAction, payload: 'invalid' });
+        }
+    };
+
+    const handleBirthdateTouch = () => {
+        dispatch({ type: 'TOUCH_BIRTHDATE' });
+    };
+
+    const handleEmployeeAdmissionDateTouch = () => {
+        dispatch({ type: 'TOUCH_EMPLOYEE_ADMISSION_DATE' });
+    };
+
+    const handleClear = () => {
+        dispatch({ type: 'RESET_COLLABORATOR_DATA' });
+        localStorage.removeItem('collaboratorData');
+        setCepTouched(false);
+        setDataLoaded(false);
+    };
+
+    const handleTimeChange = (typeTime, typeTimeState) => (e) => {
+        const value = e.target.value;
+        dispatch({ type: typeTime, payload: value });
+        if (value === "" || value.includes("_")) {
+            dispatch({ type: typeTimeState, payload: "invalid" });
+        } else {
+            dispatch({ type: typeTimeState, payload: "valid" });
+        }
+    };
+
+    const handleEmployeeEntryTimeTouch = () => {
+        dispatch({ type: 'TOUCH_EMPLOYEE_ENTRY_TIME' });
+    };
+
+    const handleEmployeeStartBreakTimeTouch = () => {
+        dispatch({ type: 'TOUCH_EMPLOYEE_START_BREAK_TIME' });
+    };
+
+    const handleEmployeeStopBreakTimeTouch = () => {
+        dispatch({ type: 'TOUCH_EMPLOYEE_STOP_BREAK_TIME' });
+    };
+
+    const handleEmployeeDepartureTimeTouch = () => {
+        dispatch({ type: 'TOUCH_EMPLOYEE_DEPARTURE_TIME' });
     };
 
     const handleToggleChange = () => {
-        setFieldTouchStatus((prev) => ({
-            ...prev,
-            employeeStatus: {
-                ...prev.employeeStatus,
-                value: !prev.employeeStatus.value,
-                touched: true,
-                state: "valid"
-            }
-        }));
+        dispatch({
+            type: 'SET_EMPLOYEE_STATUS',
+            payload: !state.collaboratorData.employeeStatus,
+        });
+    };
+
+    const handleEmployeeStatusTouch = () => {
+        dispatch({ type: 'TOUCH_EMPLOYEE_STATUS' });
     };
 
     const handleCEPChange = (e) => {
@@ -301,221 +271,228 @@ function EmployeeUserUpdate(
         }
     };
 
-    const handleCloseEmployeeUpdateModal = () => {
-        setFieldTouchStatus({
-            firstName: { value: "", touched: false, state: null },
-            lastName: { value: "", touched: false, state: null },
-            emailAddress: { value: "", touched: false, state: null },
-            phoneNumber: { value: "", touched: false, state: null },
-            employeeLeaderName: { value: "", touched: false, state: null },
-            isEmployeeLeader: { value: "", touched: false, state: null },
-            employeeStatus: { value: "", touched: false, state: null },
-
-            employeetAdmissionDate: { value: "", touched: false, state: null },
-            employeeEntryTime: { value: "", touched: false, state: null },
-            employeeStartBreakTime: { value: false, touched: false, state: null },
-            employeeStopBreakTime: { value: false, touched: false, state: null },
-            employeeDepartureTime: { value: "", touched: false, state: null },
-        });
-        setCepTouched(false);
-        setDataLoaded(false);
-        setSelectedDepartment('');
-        setSelectedRole('');
-        setSelectedFunction('');
-        setSelectedContractType('');
-        setSelectedWorkModel('');
-        setSelectedWorkplace('');
-        setSelectedDepartmentId('');
-        setHasDepartmentSelected(false);
-        setDepartmentDataList([]);
-        setRoleDataList([]);
-        setFunctionDataList([]);
-        setEmployeeAndRoleDataList([]);
-        setDetailedEmployeeData([]);
-        setDetailedContractDetailsData([]);
-        setFormattedBirthdate('');
-        setFormattedAdmissionDate('');
-
-    }
-
-    const [selectedDepartment, setSelectedDepartment] = useState('');
-    const [selectedRole, setSelectedRole] = useState('');
-    const [selectedFunction, setSelectedFunction] = useState('');
-    const [selectedContractType, setSelectedContractType] = useState('');
-    const [selectedWorkModel, setSelectedWorkModel] = useState('');
-    const [selectedWorkplace, setSelectedWorkplace] = useState('');
-
-    const [selectedDepartmentId, setSelectedDepartmentId] = useState('');
-    const handleSelectedDepartmentId = (id) => {
-        setSelectedDepartmentId(id);
-    };
-    const [hasDepartmentSelected, setHasDepartmentSelected] = useState(false);
-    const handleHasDepartmentSelected = (departmentSelectedStatus) => {
-        setHasDepartmentSelected(departmentSelectedStatus);
-    };
-
-    const [departmentDataList, setDepartmentDataList] = useState([]);
-    const handleDepartmentDataList = (departmentData) => {
-        setDepartmentDataList(departmentData);
-    }
-
-    const [roleDataList, setRoleDataList] = useState([]);
-    const handleRoleDataList = (roleData) => {
-        setRoleDataList(roleData);
-    }
-
-    const [functionDataList, setFunctionDataList] = useState([]);
-    const handleFunctionDataList = (functionData) => {
-        setFunctionDataList(functionData);
-    }
-
-    const [employeeAndRoleDataList, setEmployeeAndRoleDataList] = useState([]);
-    const handleEmployeeAndRoleDataList = (employeeAndRole) => {
-        setEmployeeAndRoleDataList(employeeAndRole);
-    }
-
     useEffect(() => {
+        if (!state || !state.collaboratorData) return;
+
+        let isMounted = true;
+
+        const controllers = {
+            //employeeAndRoleData: new AbortController(),
+            contractType: new AbortController(),
+            workModel: new AbortController(),
+            workplace: new AbortController(),
+            department: new AbortController(),
+            role: new AbortController(),
+            functionData: new AbortController(),
+        };
+
+        const safeDispatch = (type, payload) => {
+            if (isMounted && dispatch) {
+                dispatch({ type, payload });
+            }
+        };
+
+        // const fetchEmployeeAndRoleData = async () => {
+        //     if (state.collaboratorData.employeeAndRoleDataList.length === 0 || state.collaboratorData.hasDepartmentSelected) {
+        //         await employeeAndRoleDataSearchAndProcess(
+        //             useFindAllEmployeeAndRole,
+        //             (data) => safeDispatch('SET_EMPLOYEE_AND_ROLE_DATA_LIST', data),
+        //             state.collaboratorData.selectedDepartmentId,
+        //             (status) => safeDispatch('SET_HAS_DEPARTMENT_SELECTED', status),
+        //             (id) => safeDispatch('SET_SELECTED_DEPARTMENT_ID', id),
+        //             { signal: controllers.employeeAndRoleData.signal },
+        //             dispatch
+        //         );
+        //     }
+        // }
+
+        const fetchContractTypeData = async () => {
+            if (state.collaboratorData.contractTypeDataList.length === 0) {
+                await employmentContractDataSearchAndProcess(
+                    useFindAllTypeContract,
+                    (data) => safeDispatch('SET_CONTRACT_TYPE_DATA_LIST', data),
+                    'contractType',
+                    'EmployeeUserRegister',
+                    { signal: controllers.contractType.signal },
+                );
+            }
+        }
+
+        const fetchWorkModelData = async () => {
+            if (state.collaboratorData.workModelDataList.length === 0) {
+                await employmentContractDataSearchAndProcess(
+                    useFindAllWorkModels,
+                    (data) => safeDispatch('SET_WORK_MODEL_DATA_LIST', data),
+                    'workModel',
+                    'EmployeeUserRegister',
+                    { signal: controllers.workModel.signal },
+                );
+            }
+        }
+
+        const fetchWorkplaceData = async () => {
+            if (state.collaboratorData.workplaceDataList.length === 0) {
+                await employmentContractDataSearchAndProcess(
+                    useFindAllWorkplaces,
+                    (data) => safeDispatch('SET_WORKPLACE_DATA_LIST', data),
+                    'workplace',
+                    'EmployeeUserRegister',
+                    { signal: controllers.workplace.signal },
+                );
+            }
+        }
+
+        const fetchDepartmentData = async () => {
+            if (state.collaboratorData.departmentDataList.length === 0) {
+                await employmentContractDataSearchAndProcess(
+                    useFindAllDepartments,
+                    (data) => safeDispatch('SET_DEPARTMENT_DATA_LIST', data),
+                    'department',
+                    'EmployeeUserRegister',
+                    { signal: controllers.department.signal },
+                );
+            }
+        }
+
+        const fetchRoleData = async () => {
+            if (state.collaboratorData.roleDataList.length === 0) {
+                await employmentContractDataSearchAndProcess(
+                    useFindAllRoles,
+                    (data) => safeDispatch('SET_ROLE_DATA_LIST', data),
+                    'role',
+                    'EmployeeUserRegister',
+                    { signal: controllers.role.signal },
+                );
+            }
+        }
+
+        const fetchFunctionData = async () => {
+            if (state.collaboratorData.functionDataList.length === 0) {
+                await employmentContractDataSearchAndProcess(
+                    useFindAllFunctions,
+                    (data) => safeDispatch('SET_FUNCTION_DATA_LIST', data),
+                    'function',
+                    'EmployeeUserRegister',
+                    { signal: controllers.functionData.signal },
+                );
+            }
+        }
+
         const fetchAllData = async () => {
-            //     employeeAndRoleDataSearchAndProcess(useFindAllEmployeeAndRole, handleEmployeeAndRoleDataList, selectedDepartmentId, handleHasDepartmentSelected, setSelectedDepartmentId);
-            await employmentContractDataSearchAndProcess(useFindAllTypeContract, handleContractTypeDataList, 'contractType', 'EmployeeUserRegister');
-            await employmentContractDataSearchAndProcess(useFindAllWorkModels, handleWorkModelDataList, 'workModel', 'EmployeeUserRegister');
-            await employmentContractDataSearchAndProcess(useFindAllWorkplaces, handleWorkplaceDataList, 'workplace', 'EmployeeUserRegister');
-            await employmentContractDataSearchAndProcess(useFindAllDepartments, handleDepartmentDataList, 'department', 'EmployeeUserRegister');
-            await employmentContractDataSearchAndProcess(useFindAllRoles, handleRoleDataList, 'role', 'EmployeeUserRegister');
-            await employmentContractDataSearchAndProcess(useFindAllFunctions, handleFunctionDataList, 'function', 'EmployeeUserRegister');
+            //fetchEmployeeAndRoleData();
+            fetchContractTypeData();
+            fetchWorkModelData();
+            fetchWorkplaceData();
+            fetchDepartmentData();
+            fetchRoleData();
+            fetchFunctionData();
             setDataLoaded(true);
         };
 
         fetchAllData();
-    }, []);
 
-    const selectedListItemToUpdate = (item, list, setSelectedItem, setItem, setItemState) => {
-        const selectedItem = list.find(p => p.id === String(item));
-        console.log(selectedItem);
-        if (selectedItem) {
-            setSelectedItem(selectedItem.id);
-            handleSelectionEmploymentContractData(
-                selectedItem.id,
-                list,
-                setSelectedItem,
-                setItem,
-                setItemState,
-                null,
-                null,
-                'id'
-            );
-        }
-    };
+        return () => {
+            isMounted = false;
+            Object.values(controllers).forEach((controller) => controller.abort());
+        };
 
-    const [detailedEmployeeData, setDetailedEmployeeData] = useState([]);
-    function handleCleanDetailedEmployeeData() {
-        setDetailedEmployeeData([]);
-    };
-
-    const [detailedContractDetailsData, setDetailedContractDetailsData] = useState([]);
-    function handleCleanDetailedContractDetailsData() {
-        setDetailedContractDetailsData([]);
-    };
-
-    const [formattedBirthdate, setFormattedBirthdate] = useState('');
-    const [formattedAdmissionDate, setFormattedAdmissionDate] = useState('');
+    }, [dispatch, state.collaboratorData]);
 
     useEffect(() => {
 
         const fetchCompanyNames = async (employee) => {
             try {
                 const companyData = await useFindClientCompany(employee.customerId);
-                return { ...employee, companyName: companyData.companyName };
+                console.log(companyData.companyName);
+                return companyData.companyName;
             } catch (error) {
                 console.error(`Error fetching employee data for customerId ${employee.customerId}:`, error);
-                return { ...employee, companyName: 'Unknown' };
+                return 'Desconhecida';
             }
         };
+
+        const fetchEmployeeById = async () => {
+            const foundEmployee = await useFindEmployee(employeeIdToUpdate);
+            const employeeCompanyName = await fetchCompanyNames(foundEmployee);
+
+            dispatch({ type: 'SET_EMPLOYEE_COMPANY_NAME', payload: employeeCompanyName });
+
+            dispatch({ type: 'SET_FIRST_NAME', payload: foundEmployee.name });
+            dispatch({ type: 'SET_LAST_NAME', payload: foundEmployee.lastName });
+            dispatch({ type: 'SET_EMAIL_ADDRESS', payload: foundEmployee.email });
+            dispatch({ type: 'SET_PHONE_NUMBER', payload: foundEmployee.phoneNumber });
+            dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME', payload: foundEmployee.LeaderName });
+            dispatch({ type: 'SET_EMPLOYEE_STATUS', payload: foundEmployee.status });
+
+            if (foundEmployee.isLead === true) {
+                dispatch({ type: 'SET_IS_EMPLOYEE_LEADER', payload: true });
+                dispatch({ type: 'SET_HAS_EMPLOYEE_LEADER', payload: false });
+            } else if (foundEmployee.isLead === false) {
+                dispatch({ type: 'SET_IS_EMPLOYEE_LEADER', payload: false });
+                dispatch({ type: 'SET_HAS_EMPLOYEE_LEADER', payload: true });
+            }
+
+            dispatch({ type: 'SET_BIRTHDATE', payload: new Date(foundEmployee.birthdate) });
+            dispatch({ type: 'SET_FORMATTED_BIRTHDATE', payload: foundEmployee.birthdate });
+        }
 
         const fetchEmployeeAndContractDetailsById = async () => {
-            if (!detailedEmployeeData.length) {
-                const foundEmployee = await useFindEmployee(employeeIdToUpdate);
-                const employeeWithCompanyName = await fetchCompanyNames(foundEmployee);
-                setDetailedEmployeeData(employeeWithCompanyName);
-                setFieldTouchStatus((prev) => ({
-                    ...prev,
-                    firstName: { ...prev.firstName, value: foundEmployee.name },
-                    lastName: { ...prev.lastName, value: foundEmployee.lastName },
-                    emailAddress: { ...prev.emailAddress, value: foundEmployee.email },
-                    phoneNumber: { ...prev.phoneNumber, value: foundEmployee.phoneNumber },
+            const foundContractDetails = await useFindEmployeeContractDetails(employeeIdToUpdate);
 
-                    employeeLeaderName: { ...prev.employeeLeaderName, value: foundEmployee.LeaderName },
-                    employeeStatus: { ...prev.employeeStatus, value: foundEmployee.status },
-                }));
-                if (foundEmployee.isLead === true) {
-                    setIsEmployeeLeader(true);
-                    setHasEmployeeLeader(false);
-                } else if (foundEmployee.isLead === false) {
-                    setIsEmployeeLeader(false);
-                    setHasEmployeeLeader(true);
-                }
-                setBirthdate(new Date(foundEmployee.birthdate));
-                setFormattedBirthdate(foundEmployee.birthdate);
-            }
-            if (!detailedContractDetailsData.length) {
-                const foundContractDetails = await useFindEmployeeContractDetails(employeeIdToUpdate);
-                setDetailedContractDetailsData(foundContractDetails);
-                setFieldTouchStatus((prev) => ({
-                    ...prev,
-                    employeeEntryTime: { ...prev.employeeEntryTime, value: foundContractDetails.entryTime },
-                    employeeStartBreakTime: { ...prev.employeeStartBreakTime, value: foundContractDetails.startBreakTime },
-                    employeeStopBreakTime: { ...prev.employeeStopBreakTime, value: foundContractDetails.endBreakTime },
-                    employeeDepartureTime: { ...prev.employeeDepartureTime, value: foundContractDetails.departureTime },
-                }));
-                selectedListItemToUpdate(foundContractDetails.departmentId, departmentDataList, setSelectedDepartment, setDepartmentWhichEmployeeReports, setDepartmentWhichEmployeeReportsState);
-                selectedListItemToUpdate(foundContractDetails.rolesId, roleDataList, setSelectedRole, setEmployeeRole, setEmployeeRoleState);
-                selectedListItemToUpdate(foundContractDetails.employeeFunctionId, functionDataList, setSelectedFunction, setEmployeeFunction, setEmployeeFunctionState);
-                selectedListItemToUpdate(foundContractDetails.contractTypeId, contractTypeDataList, setSelectedContractType, setEmployeeContractType, setEmployeeContractTypeState);
-                selectedListItemToUpdate(foundContractDetails.contractModelId, workModelDataList, setSelectedWorkModel, setEmployeeWorkModel, setEmployeeWorkModelState);
-                selectedListItemToUpdate(foundContractDetails.workplaceId, workplaceDataList, setSelectedWorkplace, setEmployeeWorkplace, setEmployeeWorkplaceState);
-                setEmployeetAdmissionDate(new Date(foundContractDetails.adimissionDate));
-                setFormattedAdmissionDate(foundContractDetails.adimissionDate);
-            }
-        };
+            dispatch({ type: 'SET_EMPLOYEE_ENTRY_TIME', payload: foundContractDetails.entryTime });
+            dispatch({ type: 'SET_EMPLOYEE_START_BREAK_TIME', payload: foundContractDetails.startBreakTime });
+            dispatch({ type: 'SET_EMPLOYEE_STOP_BREAK_TIME', payload: foundContractDetails.endBreakTime });
+            dispatch({ type: 'SET_EMPLOYEE_DEPARTURE_TIME', payload: foundContractDetails.departureTime });
+
+            handleSelectedItemOnSelectComponent(foundContractDetails.departmentId, state.collaboratorData.departmentDataList, 'SET_SELECTED_DEPARTMENT', 'SET_EMPLOYEE_DEPARTMENT', 'SET_EMPLOYEE_DEPARTMENT_STATE');
+            handleSelectedItemOnSelectComponent(foundContractDetails.rolesId, state.collaboratorData.roleDataList, 'SET_SELECTED_ROLE', 'SET_EMPLOYEE_ROLE', 'SET_EMPLOYEE_ROLE_STATE');
+            handleSelectedItemOnSelectComponent(foundContractDetails.employeeFunctionId, state.collaboratorData.functionDataList, 'SET_SELECTED_FUNCTION', 'SET_EMPLOYEE_FUNCTION', 'SET_EMPLOYEE_FUNCTION_STATE');
+            handleSelectedItemOnSelectComponent(foundContractDetails.contractTypeId, state.collaboratorData.contractTypeDataList, 'SET_SELECTED_CONTRACT_TYPE', 'SET_EMPLOYEE_CONTRACT_TYPE', 'SET_EMPLOYEE_CONTRACT_TYPE_STATE');
+            handleSelectedItemOnSelectComponent(foundContractDetails.contractModelId, state.collaboratorData.workModelDataList, 'SET_SELECTED_WORK_MODEL', 'SET_EMPLOYEE_WORK_MODEL', 'SET_EMPLOYEE_WORK_MODEL_STATE');
+            handleSelectedItemOnSelectComponent(foundContractDetails.workplaceId, state.collaboratorData.workplaceDataList, 'SET_SELECTED_WORKPLACE', 'SET_EMPLOYEE_WORKPLACE', 'SET_EMPLOYEE_WORKPLACE_STATE');
+            dispatch({ type: 'SET_EMPLOYEE_ADMISSION_DATE', payload: new Date(foundContractDetails.admissionDate) });
+            dispatch({ type: 'SET_FORMATTED_ADMISSION_DATE', payload: foundContractDetails.admissionDate });
+        }
 
         if (dataLoaded && employeeIdToUpdate) {
+            fetchEmployeeById();
             fetchEmployeeAndContractDetailsById();
         }
 
-    }, [dataLoaded, employeeIdToUpdate]);
+    }, [dataLoaded, employeeIdToUpdate, dispatch]);
 
     useEffect(() => {
         if (isShouldUpdateEmployee) {
             handleValidateUpdateEmployeeForm(
                 handleOpenEmployeeModal,
-                fieldTouchStatus.firstName.value,
-                fieldTouchStatus.lastName.value,
-                formattedBirthdate,
-                fieldTouchStatus.emailAddress.value,
-                fieldTouchStatus.phoneNumber.value,
-                fieldTouchStatus.employeeLeaderName.value,
-                isEmployeeLeader,
-                hasEmployeeLeader,
-                fieldTouchStatus.employeeStatus.value,
+                state.collaboratorData.firstName,
+                state.collaboratorData.lastName,
+                state.collaboratorData.birthdate,
+                state.collaboratorData.emailAddress,
+                state.collaboratorData.phoneNumber,
+                state.collaboratorData.employeeLeaderName,
+                state.collaboratorData.isEmployeeLeader,
+                state.collaboratorData.hasEmployeeLeader,
+                state.collaboratorData.employeeStatus,
 
-                departmentWhichEmployeeReports,
-                employeeRole,
-                employeeFunction,
-                employeeContractType,
-                employeeWorkModel,
-                employeeWorkplace,
-                formattedAdmissionDate,
-                fieldTouchStatus.employeeEntryTime.value,
-                fieldTouchStatus.employeeStartBreakTime.value,
-                fieldTouchStatus.employeeStopBreakTime.value,
-                fieldTouchStatus.employeeDepartureTime.value,
+                state.collaboratorData.employeeDepartment,
+                state.collaboratorData.employeeRole,
+                state.collaboratorData.employeeFunction,
+                state.collaboratorData.employeeContractType,
+                state.collaboratorData.employeeWorkModel,
+                state.collaboratorData.employeeWorkplace,
+                state.collaboratorData.admissionDate,
+                state.collaboratorData.employeeEntryTime,
+                state.collaboratorData.employeeStartBreakTime,
+                state.collaboratorData.employeeStopBreakTime,
+                state.collaboratorData.employeeDepartureTime,
                 handleEmployeeIdToUpdate,
                 handleEmployeeIdStatusCleanupToUpdate,
-                handleCloseEmployeeUpdateModal
-            )
+                handleClear
+            );
             handleIsShouldUpdateEmployee();
         }
-    }, [isShouldUpdateEmployee, fieldTouchStatus, formattedBirthdate, formattedAdmissionDate]);
+    }, [isShouldUpdateEmployee, state.collaboratorData]);
 
     return (
 
@@ -534,14 +511,9 @@ function EmployeeUserUpdate(
                                 id="validationEmployeeIdNumber"
                                 placeholder="Nome da Empresa"
                                 type="text"
-                                value={detailedEmployeeData.companyName}
-                                onChange={(e) => {
-                                    setEmployeeIdNumber(e.target.value);
-
-                                }}
+                                value={state.collaboratorData.employeeCompanyName || ''}
                                 disabled
                             />
-
                         </Col>
                         <Col className="mb-3" md="4">
                             <label
@@ -554,15 +526,15 @@ function EmployeeUserUpdate(
                                 id="validationEmployeeFirstName"
                                 placeholder="Nome"
                                 type="text"
-                                valid={fieldTouchStatus.firstName.touched && fieldTouchStatus.firstName.state === "valid"}
-                                invalid={fieldTouchStatus.firstName.touched && fieldTouchStatus.firstName.state === "invalid"}
-                                value={fieldTouchStatus.firstName.value}
-                                onChange={(e) => handleChange(e, "firstName")}
-                                onTouchStart={() => handleTouchStart("firstName")}
+                                value={state.collaboratorData.firstName || ''}
+                                valid={state.collaboratorData.firstNameState === 'valid'}
+                                invalid={state.collaboratorData.firstNameState === 'invalid'}
+                                onChange={handleFirstNameChange}
+                                onFocus={handleFirstNameTouch}
                             />
-                            <div className="invalid-feedback">
-                                É necessário preencher este campo.
-                            </div>
+                            {state.collaboratorData.firstNameState === 'invalid' && (
+                                <div className="invalid-feedback">Nome é obrigatório.</div>
+                            )}
                         </Col>
                         <Col className="mb-3" md="4">
                             <label
@@ -575,15 +547,15 @@ function EmployeeUserUpdate(
                                 id="validationEmployeeLastName"
                                 placeholder="Sobrenome"
                                 type="text"
-                                valid={fieldTouchStatus.lastName.touched && fieldTouchStatus.lastName.state === "valid"}
-                                invalid={fieldTouchStatus.lastName.touched && fieldTouchStatus.lastName.state === "invalid"}
-                                value={fieldTouchStatus.lastName.value}
-                                onChange={(e) => handleChange(e, "lastName")}
-                                onTouchStart={() => handleTouchStart("lastName")}
+                                value={state.collaboratorData.lastName || ''}
+                                valid={state.collaboratorData.lastNameState === 'valid'}
+                                invalid={state.collaboratorData.lastNameState === 'invalid'}
+                                onChange={handleLastNameChange}
+                                onFocus={handleLastNameTouch}
                             />
-                            <div className="invalid-feedback">
-                                É necessário preencher este campo.
-                            </div>
+                            {state.collaboratorData.lastNameState === 'invalid' && (
+                                <div className="invalid-feedback">Sobrenome é obrigatório.</div>
+                            )}
                         </Col>
                     </div>
                     <div className="form-row">
@@ -599,9 +571,15 @@ function EmployeeUserUpdate(
                                     placeholder: "__/__/__",
                                 }}
                                 timeFormat={false}
-                                value={birthdate}
-                                onChange={(e) => handleDateFormatting(e, setBirthdate, setBirthdateState, setFormattedBirthdate)}
+                                dateFormat="DD/MM/YYYY"
+                                value={state.collaboratorData.birthdate || ''}
+                                onChange={(value) => handleDateChange(dispatch, value, 'SET_BIRTHDATE', 'SET_BIRTHDATE_STATE')}
+                                onFocus={handleBirthdateTouch}
+                                className={state.collaboratorData.birthdateState === 'invalid' ? 'is-invalid' : ''}
                             />
+                            {state.collaboratorData.birthdateState === 'invalid' && (
+                                <div className="invalid-feedback">Data de nascimento inválida.</div>
+                            )}
                         </Col>
                         <Col className="mb-3" md="4">
                             <label
@@ -615,15 +593,15 @@ function EmployeeUserUpdate(
                                 id="validationEmployeeEmailAddress"
                                 placeholder="Endereço de e-mail"
                                 type="email"
-                                valid={fieldTouchStatus.emailAddress.touched && fieldTouchStatus.emailAddress.state === "valid"}
-                                invalid={fieldTouchStatus.emailAddress.touched && fieldTouchStatus.emailAddress.state === "invalid"}
-                                value={fieldTouchStatus.emailAddress.value}
-                                onChange={(e) => handleChange(e, "emailAddress")}
-                                onTouchStart={() => handleTouchStart("emailAddress")}
+                                value={state.collaboratorData.emailAddress}
+                                valid={state.collaboratorData.emailAddressState === 'valid'}
+                                invalid={state.collaboratorData.emailAddressState === 'invalid'}
+                                onChange={handleEmailChange}
+                                onFocus={handleEmailTouch}
                             />
-                            <div className="invalid-feedback">
-                                {fieldTouchStatus.emailAddress.state === "invalid" && "Forneça um endereço de e-mail válido."}
-                            </div>
+                            {state.collaboratorData.emailAddressState === 'invalid' && (
+                                <div className="invalid-feedback">Forneça um email válido.</div>
+                            )}
                         </Col>
                         <Col className="mb-3" md="4">
                             <label
@@ -636,211 +614,23 @@ function EmployeeUserUpdate(
                                 placeholder='+55 (99) 9 9999-9999'
                                 mask="+55 (99) 9 9999-9999"
                                 maskChar=" "
-                                value={fieldTouchStatus.phoneNumber.value}
-                                onChange={(e) => handleChange(e, 'phoneNumber', 'personal')}
-                                onBlur={() => handleTouchStart('phoneNumber')}
+                                value={state.collaboratorData.phoneNumber}
+                                onChange={onPhoneNumberChange}
+                                onFocus={handlePhoneTouch}
                             >
                                 {(inputProps) => <Input {...inputProps}
                                     id="validationEmployeePhoneNumber"
                                     type="text"
-                                    valid={fieldTouchStatus.phoneNumber.state === "valid"}
-                                    invalid={fieldTouchStatus.phoneNumber.state === "invalid"}
+                                    valid={state.collaboratorData.phoneNumberState === "valid"}
+                                    invalid={state.collaboratorData.phoneNumberState === "invalid"}
                                 />}
                             </InputMask>
-                            <div className="invalid-feedback">
-                                É necessário preencher este campo.
-                            </div>
+                            {state.collaboratorData.phoneNumberState === "invalid" && (
+                                <div className="invalid-feedback">É necessário preencher este campo.</div>
+                            )}
                         </Col>
                     </div>
                     <hr />
-                    {/* <div className="form-row">
-                            <Col className="mb-3" md="4">
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="validationEmployeeZipCode"
-                                >
-                                    CEP
-                                </label>
-                                <InputMask
-                                    placeholder="99999-999"
-                                    mask="99999-999"
-                                    maskChar=" "
-                                    value={employeeZipCode}
-                                    onChange={(e) => handleSaveCEP(e.target.value)}
-                                >
-                                    {(inputProps) => <Input {...inputProps} id="validationEmployeeZipCode" type="text" valid={employeeZipCodeState === "valid"} invalid={employeeZipCodeState === "invalid"} />}
-                                </InputMask>
-                                {
-                                    loadingCEPValidation ? <div style={{ display: 'none', width: '100%', marginTop: '0.25rem', fontSize: '80%', color: '#5e72e4' }}>Validando CEP...</div> : (
-                                        errorCEPValidation !== null ? <div className="invalid-feedback">Ocorreu um erro ao validar o CEP.</div> : (
-                                            brasilAPICEPData ? <div className="valid-feedback">CEP válido!</div> : <div className="invalid-feedback">CEP inválido!</div>
-                                        )
-                                    )
-                                }
-                            </Col>
-                            <Col className="mb-3" md="8">
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="validationEmployeeCompanyAddress"
-                                >
-                                    Endereço
-                                </label>
-                                <Input
-                                    defaultValue=""
-                                    id="validationEmployeeCompanyAddress"
-                                    placeholder=""
-                                    value={employeeAddress}
-                                    type="text"
-                                    valid={employeeAddressState === "valid"}
-                                    invalid={employeeAddressState === "invalid"}
-                                    onChange={(e) => {
-                                        setEmployeeAddress(e.target.value);
-                                        if (e.target.value === "") {
-                                            setEmployeeAddressState("invalid");
-                                        } else {
-                                            setEmployeeAddressState("valid");
-                                        }
-                                    }}
-                                />
-                                <div className="invalid-feedback">
-                                    É necessário preencher este campo.
-                                </div>
-                            </Col>
-                        </div>
-                        <div className="form-row">
-                            <Col className="mb-3" md="4">
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="validationEmployeeCompanyAddressNumber"
-                                >
-                                    Número
-                                </label>
-                                <Input
-                                    defaultValue="0000"
-                                    id="validationEmployeeCompanyAddressNumber"
-                                    placeholder="0000"
-                                    value={employeeAddressNumber}
-                                    type="text"
-                                    valid={employeeAddressNumberState === "valid"}
-                                    invalid={employeeAddressNumberState === "invalid"}
-                                    onChange={(e) => {
-                                        setEmployeeAddressNumber(e.target.value);
-                                        if (e.target.value === "") {
-                                            setEmployeeAddressNumberState("invalid");
-                                        } else {
-                                            setEmployeeAddressNumberState("valid");
-                                        }
-                                    }}
-                                />
-                                <div className="invalid-feedback">
-                                    É necessário preencher este campo.
-                                </div>
-                            </Col>
-                            <Col className="mb-3" md="8">
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="validationEmployeeCompanyAddressComplement"
-                                >
-                                    Complemento (opcional)
-                                </label>
-                                <Input
-                                    id="validationEmployeeCompanyAddressComplement"
-                                    placeholder=""
-                                    value={employeeAddressComplement}
-                                    type="text"
-                                    onChange={(e) => {
-                                        setEmployeeAddressComplement(e.target.value);
-                                    }}
-                                />
-                            </Col>
-                        </div>
-                        <div className="form-row">
-                            <Col className="mb-3" md="4">
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="validationEmployeeCompanyDistrict"
-                                >
-                                    Bairro
-                                </label>
-                                <Input
-                                    defaultValue=""
-                                    id="validationEmployeeCompanyDistrict"
-                                    placeholder=""
-                                    value={employeeNeighborhood}
-                                    type="text"
-                                    valid={employeeNeighborhoodState === "valid"}
-                                    invalid={employeeNeighborhoodState === "invalid"}
-                                    onChange={(e) => {
-                                        setEmployeeNeighborhood(e.target.value);
-                                        if (e.target.value === "") {
-                                            setEmployeeNeighborhoodState("invalid");
-                                        } else {
-                                            setEmployeeNeighborhoodState("valid");
-                                        }
-                                    }}
-                                />
-                                <div className="invalid-feedback">
-                                    É necessário preencher este campo.
-                                </div>
-                            </Col>
-                            <Col className="mb-3" md="4">
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="validationEmployeeCompanyCity"
-                                >
-                                    Cidade
-                                </label>
-                                <Input
-                                    defaultValue=""
-                                    id="validationEmployeeCompanyCity"
-                                    placeholder=""
-                                    value={employeeCity}
-                                    type="text"
-                                    valid={employeeCityState === "valid"}
-                                    invalid={employeeCityState === "invalid"}
-                                    onChange={(e) => {
-                                        setEmployeeCity(e.target.value);
-                                        if (e.target.value === "") {
-                                            setEmployeeCityState("invalid");
-                                        } else {
-                                            setEmployeeCityState("valid");
-                                        }
-                                    }}
-                                />
-                                <div className="invalid-feedback">
-                                    É necessário preencher este campo.
-                                </div>
-                            </Col>
-                            <Col className="mb-3" md="4">
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="validationEmployeeFederatedUnit"
-                                >
-                                    Estado
-                                </label>
-                                <Input
-                                    defaultValue=""
-                                    id="validationEmployeeFederatedUnit"
-                                    placeholder=""
-                                    value={federatedUnit}
-                                    type="text"
-                                    valid={federatedUnitState === "valid"}
-                                    invalid={federatedUnitState === "invalid"}
-                                    onChange={(e) => {
-                                        setFederatedUnit(e.target.value);
-                                        if (e.target.value === "") {
-                                            setFederatedUnitState("invalid");
-                                        } else {
-                                            setFederatedUnitState("valid");
-                                        }
-                                    }}
-                                />
-                                <div className="invalid-feedback">
-                                    É necessário selecionar uma opção.
-                                </div>
-                            </Col>
-                        </div>
-                        <hr /> */}
                     <div className="form-row">
                         <Col className="mb-3" md="4">
                             <label
@@ -856,18 +646,18 @@ function EmployeeUserUpdate(
                                 options={{
                                     placeholder: "Selecione o departamento",
                                 }}
-                                value={selectedDepartment}
-                                onChange={(e) => setSelectedDepartment(e.target.value)}
-                                data={departmentDataList}
-                                onSelect={(e) => handleSelectionEmploymentContractData(
+
+                                value={state.collaboratorData.selectedDepartment}
+                                data={state.collaboratorData.departmentDataList || []}
+                                onSelect={(e) => handleSelectedItemOnSelectComponent(
                                     e.target.value,
-                                    departmentDataList,
-                                    setSelectedDepartment,
-                                    setDepartmentWhichEmployeeReports,
-                                    setDepartmentWhichEmployeeReportsState,
-                                    handleSelectedDepartmentId,
-                                    setHasDepartmentSelected,
-                                    'id'
+                                    Array.isArray(state.collaboratorData.departmentDataList) ? state.collaboratorData.departmentDataList : [],
+                                    'SET_SELECTED_DEPARTMENT',
+                                    'SET_EMPLOYEE_DEPARTMENT',
+                                    'SET_EMPLOYEE_DEPARTMENT_STATE',
+                                    'SET_SELECTED_DEPARTMENT_ID',
+                                    'SET_HAS_DEPARTMENT_SELECTED',
+                                    'id',
                                 )}
                             />
                         </Col>
@@ -885,18 +675,17 @@ function EmployeeUserUpdate(
                                 options={{
                                     placeholder: "Selecione o cargo",
                                 }}
-                                value={selectedRole}
-                                onChange={(e) => setSelectedRole(e.target.value)}
-                                data={roleDataList}
-                                onSelect={(e) => handleSelectionEmploymentContractData(
+                                value={state.collaboratorData.selectedRole}
+                                data={state.collaboratorData.roleDataList}
+                                onSelect={(e) => handleSelectedItemOnSelectComponent(
                                     e.target.value,
-                                    roleDataList,
-                                    setSelectedRole,
-                                    setEmployeeRole,
-                                    setEmployeeRoleState,
+                                    state.collaboratorData.roleDataList,
+                                    'SET_SELECTED_ROLE',
+                                    'SET_EMPLOYEE_ROLE',
+                                    'SET_EMPLOYEE_ROLE_STATE',
                                     null,
                                     null,
-                                    'id'
+                                    'id',
                                 )}
                             />
                         </Col>
@@ -914,18 +703,17 @@ function EmployeeUserUpdate(
                                 options={{
                                     placeholder: "Selecione o função",
                                 }}
-                                value={selectedFunction}
-                                onChange={(e) => setSelectedFunction(e.target.value)}
-                                data={functionDataList}
-                                onSelect={(e) => handleSelectionEmploymentContractData(
+                                value={state.collaboratorData.selectedFunction}
+                                data={state.collaboratorData.functionDataList}
+                                onSelect={(e) => handleSelectedItemOnSelectComponent(
                                     e.target.value,
-                                    functionDataList,
-                                    setSelectedFunction,
-                                    setEmployeeFunction,
-                                    setEmployeeFunctionState,
+                                    state.collaboratorData.functionDataList,
+                                    'SET_SELECTED_FUNCTION',
+                                    'SET_EMPLOYEE_FUNCTION',
+                                    'SET_EMPLOYEE_FUNCTION_STATE',
                                     null,
                                     null,
-                                    'id'
+                                    'id',
                                 )}
                             />
                         </Col>
@@ -940,14 +728,15 @@ function EmployeeUserUpdate(
                             </label>
                             <Row className="mt-3">
                                 <Col md="6">
-                                    <div className={`custom-control custom-radio mb-3 ${isInvalidEmployeeLeaderComponent ? 'is-invalid' : ''}`}>
+                                    <div className={`custom-control custom-radio mb-3 ${state.collaboratorData.isInvalidEmployeeLeaderComponent ? 'is-invalid' : ''}`}>
                                         <input
-                                            className={`custom-control-input ${isInvalidEmployeeLeaderComponent ? 'is-invalid' : ''}`}
+                                            className={`custom-control-input ${state.collaboratorData.isInvalidEmployeeLeaderComponent ? 'is-invalid' : ''}`}
                                             id="validationEmployeeIsLeader"
                                             type="radio"
                                             name="custom-radio-leader"
-                                            checked={isEmployeeLeader}
-                                            onClick={handleIsEmployeeLeader}
+                                            checked={state.collaboratorData.isEmployeeLeader}
+                                            onChange={handleIsEmployeeLeader}
+                                            onFocus={handleIsEmployeeLeaderTouch}
                                         />
                                         <label
                                             className="custom-control-label"
@@ -958,14 +747,15 @@ function EmployeeUserUpdate(
                                     </div>
                                 </Col>
                                 <Col md="6">
-                                    <div className={`custom-control custom-radio mb-3 ${isInvalidEmployeeLeaderComponent ? 'is-invalid' : ''}`}>
+                                    <div className={`custom-control custom-radio mb-3 ${state.collaboratorData.isInvalidEmployeeLeaderComponent ? 'is-invalid' : ''}`}>
                                         <input
-                                            className={`custom-control-input ${isInvalidEmployeeLeaderComponent ? 'is-invalid' : ''}`}
+                                            className={`custom-control-input ${state.collaboratorData.isInvalidEmployeeLeaderComponent ? 'is-invalid' : ''}`}
                                             id="validationEmployeeNoLeader"
                                             type="radio"
                                             name="custom-radio-leader"
-                                            checked={hasEmployeeLeader}
-                                            onClick={handleHasEmployeeLeader}
+                                            checked={state.collaboratorData.hasEmployeeLeader}
+                                            onChange={handleHasEmployeeLeader}
+                                            onFocus={handleIsEmployeeLeaderTouch}
                                         />
                                         <label
                                             className="custom-control-label"
@@ -976,7 +766,7 @@ function EmployeeUserUpdate(
                                     </div>
                                 </Col>
                             </Row>
-                            {showErrorFeedbackEmployeeLeaderComponent && (
+                            {state.collaboratorData.showErrorFeedbackEmployeeLeaderComponent && (
                                 <div className="invalid-feedback" style={{ display: 'block' }}>
                                     Necessário selecionar uma das opções, indicando se o colaborador exerce ou não liderança
                                 </div>
@@ -993,31 +783,15 @@ function EmployeeUserUpdate(
                                 id="validationSelectLeader"
                                 placeholder="Nome do líder"
                                 type="text"
-                                ///valid={fieldTouchStatus.employeeLeaderName.touched && fieldTouchStatus.employeeLeaderName.state === "valid"}
-                                //invalid={fieldTouchStatus.employeeLeaderName.touched && fieldTouchStatus.employeeLeaderName.state === "invalid"}
-                                value={fieldTouchStatus.employeeLeaderName.value}
-                                onChange={(e) => handleChange(e, "employeeLeaderName")}
-                                onTouchStart={() => handleTouchStart("employeeLeaderName")}
+                                value={state.collaboratorData.employeeLeaderName}
+                                valid={state.collaboratorData.employeeLeaderNameState === "valid"}
+                                invalid={state.collaboratorData.employeeLeaderNameState === "invalid"}
+                                onChange={handleEmployeeLeaderNameChange}
+                                onFocus={handleEmployeeLeaderNameTouch}
                             />
-                            {
-                                hasEmployeeLeader && fieldTouchStatus.employeeLeaderName.value === "" ? (
-                                    <div className="invalid-feedback">
-                                        É necessário preencher este campo.
-                                    </div>
-                                ) : null
-                            }
-                            {/* <Select2
-                                    id="validationSelectLeader"
-                                    className="form-control"
-                                    data-minimum-results-for-search="Infinity"
-                                    options={{
-                                        placeholder: "Selecione o líder",
-                                    }}
-                                    value={selectedEmployeeAndRole}
-                                    onChange={(e) => setSelectedEmployeeAndRole(e.target.value)}
-                                    data={employeeAndRoleDataList}
-                                    onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, employeeAndRoleDataList, setSelectedEmployeeAndRole, setEmployeeLeaderName, setEmployeeLeaderNameState)}
-                                /> */}
+                            {state.collaboratorData.hasEmployeeLeader && !state.collaboratorData.employeeLeaderName?.value && (
+                                <div className="invalid-feedback">É necessário preencher este campo.</div>
+                            )}
                         </Col>
                     </div>
                     <hr />
@@ -1036,18 +810,18 @@ function EmployeeUserUpdate(
                                 options={{
                                     placeholder: "Selecione o tipo de contrato",
                                 }}
-                                value={selectedContractType}
-                                onChange={(e) => setSelectedContractType(e.target.value)}
-                                data={contractTypeDataList}
-                                onSelect={(e) => handleSelectionEmploymentContractData(
+                                value={state.collaboratorData.selectedContractType}
+                                data={state.collaboratorData.contractTypeDataList}
+                                onSelect={(e) => handleSelectedItemOnSelectComponent(
                                     e.target.value,
-                                    contractTypeDataList,
-                                    setSelectedContractType,
-                                    setEmployeeContractType,
-                                    setEmployeeContractTypeState,
+                                    state.collaboratorData.contractTypeDataList,
+                                    'SET_SELECTED_CONTRACT_TYPE',
+                                    'SET_EMPLOYEE_CONTRACT_TYPE',
+                                    'SET_EMPLOYEE_CONTRACT_TYPE_STATE',
                                     null,
                                     null,
-                                    'id')}
+                                    'id',
+                                )}
                             />
                         </Col>
                         <Col className="mb-3" md="4">
@@ -1064,18 +838,17 @@ function EmployeeUserUpdate(
                                 options={{
                                     placeholder: "Selecione o modelo de trabalho",
                                 }}
-                                value={selectedWorkModel}
-                                onChange={(e) => setSelectedWorkModel(e.target.value)}
-                                data={workModelDataList}
-                                onSelect={(e) => handleSelectionEmploymentContractData(
+                                value={state.collaboratorData.selectedWorkModel}
+                                data={state.collaboratorData.workModelDataList}
+                                onSelect={(e) => handleSelectedItemOnSelectComponent(
                                     e.target.value,
-                                    workModelDataList,
-                                    setSelectedWorkModel,
-                                    setEmployeeWorkModel,
-                                    setEmployeeWorkModelState,
+                                    state.collaboratorData.workModelDataList,
+                                    'SET_SELECTED_WORK_MODEL',
+                                    'SET_EMPLOYEE_WORK_MODEL',
+                                    'SET_EMPLOYEE_WORK_MODEL_STATE',
                                     null,
                                     null,
-                                    'id'
+                                    'id',
                                 )}
                             />
                         </Col>
@@ -1087,13 +860,17 @@ function EmployeeUserUpdate(
                                 Data de Admissão
                             </label>
                             <ReactDatetime
-                                inputProps={{
-                                    placeholder: "__/__/__",
-                                }}
+                                inputProps={{ placeholder: "__/__/__" }}
                                 timeFormat={false}
-                                value={employeetAdmissionDate}
-                                onChange={(e) => handleDateFormatting(e, setEmployeetAdmissionDate, setEmployeetAdmissionDateState, setFormattedAdmissionDate)}
+                                dateFormat="DD/MM/YYYY"
+                                value={state.collaboratorData.employeeAdmissionDate || ''}
+                                onChange={(value) => handleDateChange(dispatch, value, 'SET_EMPLOYEE_ADMISSION_DATE', 'SET_EMPLOYEE_ADMISSION_DATE_STATE')}
+                                onFocus={handleEmployeeAdmissionDateTouch}
+                                className={state.collaboratorData.employeeAdmissionDateState === 'invalid' ? 'is-invalid' : ''}
                             />
+                            {state.collaboratorData.employeeAdmissionDateState === 'invalid' && (
+                                <div className="invalid-feedback">Data de admissão inválida.</div>
+                            )}
                         </Col>
                     </div>
                     <div className="form-row">
@@ -1111,18 +888,17 @@ function EmployeeUserUpdate(
                                 options={{
                                     placeholder: "Selecione o local de trabalho",
                                 }}
-                                value={selectedWorkplace}
-                                onChange={(e) => setSelectedWorkplace(e.target.value)}
-                                data={workplaceDataList}
-                                onSelect={(e) => handleSelectionEmploymentContractData(
+                                value={state.collaboratorData.selectedWorkplace}
+                                data={state.collaboratorData.workplaceDataList}
+                                onSelect={(e) => handleSelectedItemOnSelectComponent(
                                     e.target.value,
-                                    workplaceDataList,
-                                    setSelectedWorkplace,
-                                    setEmployeeWorkplace,
-                                    setEmployeeWorkplaceState,
+                                    state.collaboratorData.workplaceDataList,
+                                    'SET_SELECTED_WORKPLACE',
+                                    'SET_EMPLOYEE_WORKPLACE',
+                                    'SET_EMPLOYEE_WORKPLACE_STATE',
                                     null,
                                     null,
-                                    'id'
+                                    'id',
                                 )}
                             />
                         </Col>
@@ -1136,19 +912,19 @@ function EmployeeUserUpdate(
                             <InputMask
                                 mask="99:99:99"
                                 placeholder="08:00:00"
-                                value={fieldTouchStatus.employeeEntryTime.value}
-                                onChange={(e) => handleChange(e, "employeeEntryTime")}
-                                onTouchStart={() => handleTouchStart("employeeEntryTime")}
+                                value={state.collaboratorData.employeeEntryTime}
+                                onChange={handleTimeChange('SET_EMPLOYEE_ENTRY_TIME', 'SET_EMPLOYEE_ENTRY_TIME_STATE')}
+                                onFocus={handleEmployeeEntryTimeTouch}
                             >
                                 {(inputProps) => <Input {...inputProps}
                                     id="validationEntryTime"
                                     type="text"
-                                    valid={fieldTouchStatus.employeeEntryTime.touched && fieldTouchStatus.employeeEntryTime.state === "valid"}
-                                    invalid={fieldTouchStatus.employeeEntryTime.touched && fieldTouchStatus.employeeEntryTime.state === "invalid"}
+                                    valid={state.collaboratorData.employeeEntryTimeState === "valid"}
+                                    invalid={state.collaboratorData.employeeEntryTimeState === "invalid"}
                                 />}
                             </InputMask>
                             <div className="invalid-feedback">
-                                {employeeEntryTimeState === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
+                                {state.collaboratorData.employeeEntryTimeState === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
                             </div>
                         </Col>
                         <Col className="mb-3" md="2">
@@ -1161,22 +937,22 @@ function EmployeeUserUpdate(
                             <InputMask
                                 mask="99:99:99"
                                 placeholder="12:00:00"
-                                value={fieldTouchStatus.employeeStartBreakTime.value}
-                                onChange={(e) => handleChange(e, "employeeStartBreakTime")}
-                                onTouchStart={() => handleTouchStart("employeeStartBreakTime")}
+                                value={state.collaboratorData.employeeStartBreakTime}
+                                onChange={handleTimeChange('SET_EMPLOYEE_START_BREAK_TIME', 'SET_EMPLOYEE_START_BREAK_TIME_STATE')}
+                                onFocus={handleEmployeeStartBreakTimeTouch}
                             >
                                 {(inputProps) => (
                                     <Input
                                         {...inputProps}
                                         id="validationStartBreakTime"
                                         type="text"
-                                        valid={fieldTouchStatus.employeeStartBreakTime.touched && fieldTouchStatus.employeeStartBreakTime.state === "valid"}
-                                        invalid={fieldTouchStatus.employeeStartBreakTime.touched && fieldTouchStatus.employeeStartBreakTime.state === "invalid"}
+                                        valid={state.collaboratorData.employeeStartBreakTimeState === "valid"}
+                                        invalid={state.collaboratorData.employeeStartBreakTimeState === "invalid"}
                                     />
                                 )}
                             </InputMask>
                             <div className="invalid-feedback">
-                                {fieldTouchStatus.employeeStartBreakTime.state === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
+                                {state.collaboratorData.employeeStartBreakTime === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
                             </div>
                         </Col>
                         <Col className="mb-3" md="2">
@@ -1189,22 +965,22 @@ function EmployeeUserUpdate(
                             <InputMask
                                 mask="99:99:99"
                                 placeholder="13:00:00"
-                                value={fieldTouchStatus.employeeStopBreakTime.value}
-                                onChange={(e) => handleChange(e, "employeeStopBreakTime")}
-                                onTouchStart={() => handleTouchStart("employeeStopBreakTime")}
+                                value={state.collaboratorData.employeeStopBreakTime}
+                                onChange={handleTimeChange('SET_EMPLOYEE_STOP_BREAK_TIME', 'SET_EMPLOYEE_STOP_BREAK_TIME_STATE')}
+                                onFocus={handleEmployeeStopBreakTimeTouch}
                             >
                                 {(inputProps) => (
                                     <Input
                                         {...inputProps}
                                         id="validationStopBreakTime"
                                         type="text"
-                                        valid={fieldTouchStatus.employeeStopBreakTime.touched && fieldTouchStatus.employeeStopBreakTime.state === "valid"}
-                                        invalid={fieldTouchStatus.employeeStopBreakTime.touched && fieldTouchStatus.employeeStopBreakTime.state === "invalid"}
+                                        valid={state.collaboratorData.employeeStopBreakTimeState === "valid"}
+                                        invalid={state.collaboratorData.employeeStopBreakTimeState === "invalid"}
                                     />
                                 )}
                             </InputMask>
                             <div className="invalid-feedback">
-                                {fieldTouchStatus.employeeStopBreakTime.state === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
+                                {state.collaboratorData.employeeStopBreakTimeState === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
                             </div>
                         </Col>
                         <Col className="mb-3" md="2">
@@ -1217,22 +993,22 @@ function EmployeeUserUpdate(
                             <InputMask
                                 mask="99:99:99"
                                 placeholder="18:00:00"
-                                value={fieldTouchStatus.employeeDepartureTime.value}
-                                onChange={(e) => handleChange(e, "employeeDepartureTime")}
-                                onTouchStart={() => handleTouchStart("employeeDepartureTime")}
+                                value={state.collaboratorData.employeeDepartureTime}
+                                onChange={handleTimeChange('SET_EMPLOYEE_DEPARTURE_TIME', 'SET_EMPLOYEE_DEPARTURE_TIME_STATE')}
+                                onFocus={handleEmployeeDepartureTimeTouch}
                             >
                                 {(inputProps) => (
                                     <Input
                                         {...inputProps}
                                         id="validationDepartureTime"
                                         type="text"
-                                        valid={fieldTouchStatus.employeeDepartureTime.touched && fieldTouchStatus.employeeDepartureTime.state === "valid"}
-                                        invalid={fieldTouchStatus.employeeDepartureTime.touched && fieldTouchStatus.employeeDepartureTime.state === "invalid"}
+                                        valid={state.collaboratorData.employeeDepartureTimeState === "valid"}
+                                        invalid={state.collaboratorData.employeeDepartureTimeState === "invalid"}
                                     />
                                 )}
                             </InputMask>
                             <div className="invalid-feedback">
-                                {fieldTouchStatus.employeeDepartureTime.state === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
+                                {state.collaboratorData.employeeDepartureTimeState === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
                             </div>
                         </Col>
                         <Col className="mb-3" md="2">
@@ -1245,8 +1021,9 @@ function EmployeeUserUpdate(
                                 <label className="custom-toggle ml-auto">
                                     <input
                                         type="checkbox"
-                                        checked={fieldTouchStatus.employeeStatus.value}
+                                        checked={state.collaboratorData.employeeStatus}
                                         onChange={handleToggleChange}
+                                        onFocus={handleEmployeeStatusTouch}
                                     />
                                     <span
                                         className="custom-toggle-slider rounded-circle"

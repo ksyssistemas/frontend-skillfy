@@ -32,7 +32,11 @@ function DepartmentsRegister({ handleShowDepartmentsUserRegister }) {
 
     useEffect(() => {
         if (departmentDataList.length === 0) {
-            employmentContractDataSearchAndProcess(useFindAllDepartments, handleDepartmentDataList, 'department', 'EmployeeUserRegister');
+            employmentContractDataSearchAndProcess(useFindAllDepartments, (departmentData) => {
+                const noneOption = { id: 'none', text: 'Nenhum Cargo' };
+                const updatedDepartmentData = [noneOption, ...departmentData];
+                handleDepartmentDataList(updatedDepartmentData);
+            }, 'department', 'EmployeeUserRegister');
         }
     }, []);
 
@@ -85,16 +89,27 @@ function DepartmentsRegister({ handleShowDepartmentsUserRegister }) {
                                 value={selectedDepartment}
                                 onChange={(e) => setSelectedDepartment(e.target.value)}
                                 data={departmentDataList}
-                                onSelect={(e) => handleSelectionEmploymentContractData(
-                                    e.target.value,
-                                    departmentDataList,
-                                    setSelectedDepartment,
-                                    setDepartmentReportsToDepartment,
-                                    setDepartmentReportsToDepartmentState,
-                                    null,
-                                    null,
-                                    'id'
-                                )}
+                                onSelect={(e) => {
+                                    const selectedId = e.target.value;
+                                    if (selectedId === 'none') {
+                                        // Mantenha o estado inalterado ao selecionar "Nenhum Cargo"
+                                        console.log("Nenhum departamento selecionado");
+                                        return;
+                                    }
+
+                                    console.log("Reporta ao Departamento");
+                                    handleSelectionEmploymentContractData(
+                                        e.target.value,
+                                        departmentDataList,
+                                        setSelectedDepartment,
+                                        setDepartmentReportsToDepartment,
+                                        setDepartmentReportsToDepartmentState,
+                                        null,
+                                        null,
+                                        'id'
+                                    )
+                                }
+                                }
                             />
                         </Col>
                         <Col className="mb-3" md="12">

@@ -1,4 +1,5 @@
 export async function useFindEmployeeContractDetails(employeeId) {
+    console.log(`${process.env.NEXT_PUBLIC_CONTRACT_DETAILS}/employee/${employeeId}`);
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_CONTRACT_DETAILS}/employee/${employeeId}`);
         if (!response.ok) {

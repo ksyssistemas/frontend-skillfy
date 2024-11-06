@@ -93,7 +93,8 @@ function AdminHeader(
                                     handleShowRolesUserRegister :
                                     (handleShowContactPersonsUserRegister ?
                                       handleShowContactPersonsUserRegister :
-                                      null)
+                                      null
+                                    )
                                   )
                                 )
                               )
@@ -145,6 +146,7 @@ AdminHeader.propTypes = {
   handleShowDepartmentsUserRegister: () => { },
   handleShowRolesUserRegister: () => { },
   handleShowContactPersonsUserRegister: () => { },
+  handleShowEmployeeUserRegister: () => { },
   handleShowEmployeeRecordEntrySettings: () => { }
 };
 
@@ -160,6 +162,7 @@ AdminHeader.propTypes = {
   handleShowRolesUserRegister: PropTypes.func,
   handleShowContactPersonsUserRegister: PropTypes.func,
   employeeRecordEntrySettingsButtonName: PropTypes.string,
+  handleShowEmployeeUserRegister: PropTypes.func,
   handleShowEmployeeRecordEntrySettings: PropTypes.func,
 };
 

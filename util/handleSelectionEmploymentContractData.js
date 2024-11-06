@@ -1,6 +1,6 @@
 export function handleSelectionEmploymentContractData(
     selectedId,
-    dataList,
+    dataList = [],
     setSelectedItem,
     setItem,
     setItemState,
@@ -8,17 +8,46 @@ export function handleSelectionEmploymentContractData(
     setHasDepartmentSelected = null,
     savedDataType = ''
 ) {
-    if (dataList && dataList.length !== 0) {
+    try {
+        if (!Array.isArray(dataList)) {
+            console.error("Erro: dataList não é um array.", dataList);
+            dataList = [];
+        }
+
+        if (selectedId === "") {
+            setSelectedItem('');
+            setItem("");
+            setItemState("valid");
+            return;
+        }
+
+        if (typeof setSelectedItem !== 'function' || typeof setItem !== 'function' || typeof setItemState !== 'function') {
+            console.error("Uma ou mais funções de callback são inválidas.", {
+                setSelectedItem,
+                setItem,
+                setItemState
+            });
+            return;
+        }
+
+        if (selectedId === "") {
+            setSelectedItem('');
+            setItem("");
+            setItemState("valid");
+            return;
+        }
+
+        // Filtre dataList para encontrar o item correspondente
         const optionType = dataList.filter(option => option.id === selectedId);
         setSelectedItem(selectedId);
 
-        if (savedDataType === 'id') {
-            setItem(optionType[0]?.id);
+        if (optionType.length > 0) {
+            const itemValue = savedDataType === 'id' ? optionType[0].id : optionType[0].text;
+            setItem(itemValue);
+            setItemState("valid");
         } else {
-            setItem(optionType[0]?.text);
+            setItemState("invalid");
         }
-
-        setItemState(optionType.length === 0 ? "invalid" : "valid");
 
         if (setSelectedDepartmentId) {
             setSelectedDepartmentId(selectedId);
@@ -26,5 +55,7 @@ export function handleSelectionEmploymentContractData(
         if (setHasDepartmentSelected) {
             setHasDepartmentSelected(true);
         }
+    } catch (error) {
+        console.error("Erro ao executar handleSelectionEmploymentContractData:", error);
     }
 }

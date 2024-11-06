@@ -26,34 +26,14 @@ const useCreateRole = (handleShowRolesUserRegister) => {
     } else {
       setEmployeeRoleNameState("valid");
     }
-    if (employeeRoleDescription !== "") {
-      if (employeeRoleDescription.length < 10) {
-        setEmployeeRoleDescriptionState("invalid");
-      } else {
-        setEmployeeRoleDescriptionState("valid");
-      }
-    }
   }
 
   function handleValidateAddEmployeeRoleForm() {
     validateAddEmployeeRoleForm();
-    if (employeeRoleNameState === "valid" &&
-      roleReportsToRole === "" &&
-      employeeRoleDescription === "") {
-      handleSubmit(employeeRoleName);
-    } else if (employeeRoleNameState === "valid" &&
-      roleReportsToRole === "" &&
-      employeeRoleDescription !== "") {
-      handleSubmit(employeeRoleName, employeeRoleDescription);
-    } else if (employeeRoleNameState === "valid" &&
-      roleReportsToRole !== "" &&
-      employeeRoleDescription !== "") {
-      handleSubmit(employeeRoleName, employeeRoleDescription, roleReportsToRole);
-    }
+    handleSubmit(employeeRoleName, employeeRoleDescription, roleReportsToRole);
   }
 
   const handleSubmit = async (employeeRoleName, employeeRoleDescription, roleReportsToRole) => {
-    console.log(employeeRoleName, employeeRoleDescription, roleReportsToRole);
     if (employeeRoleName && employeeRoleName !== "") {
       try {
         const payload = {
@@ -64,7 +44,7 @@ const useCreateRole = (handleShowRolesUserRegister) => {
           payload.description = employeeRoleDescription;
         }
 
-        if (roleReportsToRole) {
+        if (roleReportsToRole && roleReportsToRole !== "") {
           payload.responsible = roleReportsToRole;
         }
 

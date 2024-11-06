@@ -166,6 +166,8 @@ function ShowEmployeeDetailsModal(
     companyNameToModalDetails
   };
 
+  const MODAL_HEADER_TITLE = employeeIdToUpdate && employeeName ? `Informações de ${employeeName}` : 'Informações'
+
   return (
     <Modal
       toggle={handleShowEmployeeDetailsModal}
@@ -176,17 +178,8 @@ function ShowEmployeeDetailsModal(
     //fullscreen
     >
       <div className=" modal-header">
-        <h5 className=" modal-title" id="exampleModalLabel">
-          Informações de {detailsSelectedEmployee?.name || ''}
-          {
-            employeeName
-              ? `Informações de ${employeeName}`
-              : (
-                employeeIdToUpdate && employeeName
-                  ? `Informações de ${employeeName}`
-                  : 'Informações'
-              )
-          }
+        <h5 className="modal-title" id="exampleModalLabel">
+          {MODAL_HEADER_TITLE}
         </h5>
         <button
           aria-label="Close"
@@ -609,7 +602,7 @@ function ShowEmployeeDetailsModal(
               type="button"
               onClick={() => handleUpdateEmployeeUserUpdate()}
             >
-              Editar Ciclo
+              Editar Colaborador
             </Button>
           </ModalFooter>
         ) : null

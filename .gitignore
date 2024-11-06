@@ -165,8 +165,3 @@ $RECYCLE.BIN/
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
-
-### SSH ###
-**/.ssh/id_*
-**/.ssh/*_id_*
-**/.ssh/known_hosts

@@ -1,5 +1,4 @@
 export async function useFindAllDepartments() {
-  console.log(process.env.NEXT_PUBLIC_DEPARTMENT);
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_DEPARTMENT}`);
 
@@ -8,7 +7,6 @@ export async function useFindAllDepartments() {
     }
 
     const data = await response.json();
-    console.log("DATA: ", data)
     return data;
 
   } catch (error) {
