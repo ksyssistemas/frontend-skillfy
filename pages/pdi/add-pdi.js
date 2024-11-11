@@ -1,35 +1,43 @@
-import React, { useState, useEffect, useContext } from "react";
-import dynamic from "next/dynamic";
+import React, { useState } from "react";
 import {
-    Button,
-    Card,
-    CardHeader,
-    CardBody,
-    Container,
-    Row,
-    Col,
-    ListGroup,
-    ListGroupItem
+    Container
 } from "reactstrap";
-import Performance from "../../layouts/Performance";
-import AppraisalSettingsHeader from "../../components/Headers/PerformanceHeader/AppraisalSettingsHeader";
 import AdminHeader from "components/Headers/AdminHeader.js";
 import Admin from "layouts/Admin.js";
 import { PDIRegister } from "../../components/Forms/PDIForms/PDIRegister";
+import { PDIList } from "../../components/Tables/PDI/PDIList";
 
 function AddPDI() {
+    const [isAddingPDI, setIsAddingPDI] = useState(false);
+
+    function handleTogglePDIForm() {
+        setIsAddingPDI(!isAddingPDI);
+    }
 
     return (
         <>
-            <AdminHeader name="PDI" parentName="Desempenho" />
-
-            <Container className="mt--6" fluid>
-                <PDIRegister />
-            </Container>
+            {
+                !isAddingPDI
+                    ? (
+                        <>
+                            <AdminHeader name="PDI" parentName="Desempenho" newRegistrationButtonText="Adicionar PDI" handleShowCustomerUserRegister={handleTogglePDIForm} />
+                            <Container className="mt--6" fluid>
+                                <PDIList handleTogglePDIForm={handleTogglePDIForm} />
+                            </Container>
+                        </>
+                    )
+                    : (
+                        <>
+                            <AdminHeader name="PDI" parentName="Cadastros" newRegistrationButtonText="Voltar para Lista" handleShowCustomerUserRegister={handleTogglePDIForm} />
+                            <Container className="mt--6" fluid>
+                                <PDIRegister handleTogglePDIForm={handleTogglePDIForm} />
+                            </Container>
+                        </>
+                    )
+            }
         </>
     );
 }
 
 AddPDI.layout = Admin;
-
 export default AddPDI;

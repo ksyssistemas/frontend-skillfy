@@ -17,7 +17,7 @@ import ReactDatetime from "react-datetime";
 import PropTypes from "prop-types";
 import InputMask from 'react-input-mask';
 export function PDIRegister() {
-
+   
     return (
         <Card className="mb-4">
             <CardHeader>
@@ -57,7 +57,7 @@ export function PDIRegister() {
                                 className="form-control-label"
                                 htmlFor="validationCustomLastName"
                             >
-                                Sobrenome
+                                Descrição
                             </label>
                             <Input
                             // id="validationCustomLastName"
@@ -80,38 +80,31 @@ export function PDIRegister() {
                         </Col>
                     </div>
                     <div className="form-row">
-                        <Col className="mb-3" md="8">
+                        <Col className="mb-3" md="6">
                             <label
                                 className="form-control-label"
                                 htmlFor="validationEmailAddress"
                             >
-                                Email
+                                Data de início
                             </label>
-                            <Input
-                            // aria-describedby="inputGroupPrepend"
-                            // id="validationEmailAddress"
-                            // placeholder="Endereço de e-mail"
-                            // type="email"
-                            // valid={emailAddressState === "valid"}
-                            // invalid={emailAddressState === "invalid"}
-                            // onChange={(e) => {
-                            //     const email = e.target.value;
-                            //     setEmailAddress(email);
-                            //     if (validateEmail(email)) {
-                            //         setEmailAddressState("valid");
-                            //     } else {
-                            //         setEmailAddressState("invalid");
-                            //     }
-                            // }}
-                            />
+                            <ReactDatetime
+                                // inputProps={{
+                                //     placeholder: "__/__/__",
+                                // }}
+                                // timeFormat={false}
+                                // onChange={(e) => handleDateFormatting(e, setBirthdate, setBirthdateState)}
+                                />
+                                {/* <div className="invalid-feedback">
+                            É necessário selecionar uma data.
+                        </div> */}
                         </Col>
-                        <Col className="mb-3" md="4">
+                        <Col md="6">
                             <FormGroup>
                                 <label
                                     className="form-control-label"
                                     htmlFor="validationBirthdate"
                                 >
-                                    Data de Nascimento
+                                    Data de Fim
                                 </label>
                                 <ReactDatetime
                                 // inputProps={{
@@ -127,12 +120,12 @@ export function PDIRegister() {
                         </Col>
                     </div>
                     <div className="form-row">
-                        <Col className="mb-4" md="4">
+                        <Col className="mb-3" md="6">
                             <label
                                 className="form-control-label"
                                 htmlFor="validationPassword"
                             >
-                                Senha
+                                Avaliador
                             </label>
                             <Input
                             // id="validationPassword"
@@ -153,12 +146,12 @@ export function PDIRegister() {
                                 É necessário preencher este campo.
                             </div>
                         </Col>
-                        <Col className="mb-4" md="4">
+                        <Col className="mb-3" md="6">
                             <label
                                 className="form-control-label"
                                 htmlFor="validationConfirmPassword"
                             >
-                                Confirmar Senha
+                                Avaliado
                             </label>
                             <Input
                             // id="validationConfirmPassword"
@@ -178,32 +171,6 @@ export function PDIRegister() {
                             // }}
                             />
                             <div className="invalid-feedback">
-                            </div>
-                        </Col>
-                        <Col className="mb-4" md="4">
-                            <label
-                                className="form-control-label"
-                                htmlFor="validationPhoneNumber"
-                            >
-                                Número de Telefone
-                            </label>
-                            <Input
-                            // placeholder="+55 (99) 9 9999-9999"
-                            // mask="+55 (99) 9 9999-9999"
-                            // maskChar=" "
-                            // onChange={(e) => {
-                            //     setPhoneNumber(e.target.value);
-                            //     if (e.target.value === "") {
-                            //         setPhoneNumberState("invalid");
-                            //     } else {
-                            //         setPhoneNumberState("valid");
-                            //     }
-                            // }}
-                            >
-                                {/* {(inputProps) => <Input {...inputProps} id="validationPhoneNumber" type="text" valid={phoneNumberState === "valid"} invalid={phoneNumberState === "invalid"} />} */}
-                            </Input>
-                            <div className="invalid-feedback">
-                                É necessário preencher este campo.
                             </div>
                         </Col>
                     </div>
