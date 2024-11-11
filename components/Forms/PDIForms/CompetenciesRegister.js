@@ -16,8 +16,23 @@ import {
 import ReactDatetime from "react-datetime";
 import PropTypes from "prop-types";
 import InputMask from 'react-input-mask';
+import useCreateCompetencies from '../../../hooks/RecordsHooks/pdi/competencies/useCreateCompetencies';
 
-export function CompetenciesRegister() {
+export function CompetenciesRegister({ handleShowCompetencieRegister }) {
+
+    const {
+        Name,
+        setName,
+        NameState,
+        setNameState,
+        Description,
+        setDescription,
+        DescriptionState,
+        setDescriptionState,
+        handleValidateAddCompetenciesForm,
+        reset
+    } = useCreateCompetencies(handleShowCompetencieRegister);
+
     return (
         <Card className="mb-4">
             <CardHeader>
@@ -29,27 +44,30 @@ export function CompetenciesRegister() {
                         <Col className="mb-3" md="12">
                             <label
                                 className="form-control-label"
-                                htmlFor="validationFirstName"
+                                htmlFor="validationName"
                             >
                                 Nome
                             </label>
                             <Input
-                            // id="validationFirstName"
-                            // placeholder="Nome"
-                            // type="text"
-                            // valid={firstNameState === "valid"}
-                            // invalid={firstNameState === "invalid"}
-                            // onChange={(e) => {
-                            //     setFirstName(e.target.value);
-                            //     if (e.target.value === "") {
-                            //         setFirstNameState("invalid");
-                            //     } else {
-                            //         setFirstNameState("valid");
-                            //     }
-                            // }}
+                            id="validationName"
+                            placeholder="Nome"
+                            type="text"
+                            valid={NameState === "valid"}
+                            invalid={NameState === "invalid"}
+                            onChange={(e) => {
+                                setName(e.target.value);
+                                if (e.target.value === "") {
+                                    setNameState("invalid");
+                                } else {
+                                    setNameState("valid");
+                                }
+                            }}
                             />
                             <div className="invalid-feedback">
                                 É necessário preencher este campo.
+                            </div>
+                            <div className="valid-feedback">
+                               Parece bom!
                             </div>
                         </Col>
                     </div>
@@ -57,33 +75,32 @@ export function CompetenciesRegister() {
                         <Col className="mb-3" md="12">
                             <label
                                 className="form-control-label"
-                                htmlFor="validationEmailAddress"
+                                htmlFor="validationDescription"
                             >
                                 Descrição
                             </label>
                             <Input
-                            // aria-describedby="inputGroupPrepend"
-                            // id="validationEmailAddress"
-                            // placeholder="Endereço de e-mail"
-                            // type="email"
-                            // valid={emailAddressState === "valid"}
-                            // invalid={emailAddressState === "invalid"}
-                            // onChange={(e) => {
-                            //     const email = e.target.value;
-                            //     setEmailAddress(email);
-                            //     if (validateEmail(email)) {
-                            //         setEmailAddressState("valid");
-                            //     } else {
-                            //         setEmailAddressState("invalid");
-                            //     }
-                            // }}
+                            aria-describedby="inputGroupPrepend"
+                            id="validationDescription"
+                            placeholder="Descrição da competência"
+                            type="text"
+                            valid={DescriptionState === "valid"}
+                            invalid={DescriptionState === "invalid"}
+                            onChange={(e) => {
+                                setDescription(e.target.value);
+                                if (e.target.value === "") {
+                                    setDescriptionState("invalid");
+                                } else {
+                                    setDescriptionState("valid");
+                                }
+                            }}
                             />
                         </Col>
                     </div>
                     <Row>
                         <Col md="8" />
                         <Col className="d-flex justify-content-end align-items-center" md="4" >
-                            <Button className="px-5" color="primary" size="lg" type="button" >
+                        <Button className="px-5" color="primary" size="lg" type="button" onClick={handleValidateAddCompetenciesForm}>
                                 <span className="btn-inner--text">Salvar</span>
                             </Button>
                         </Col>
@@ -93,3 +110,13 @@ export function CompetenciesRegister() {
         </Card >
     )
 }
+
+CompetenciesRegister.propTypes = {
+    handleShowCompetencieRegister: () => { },
+};
+
+CompetenciesRegister.propTypes = {
+    handleShowCompetencieRegister: PropTypes.func,
+}
+
+export default CompetenciesRegister;

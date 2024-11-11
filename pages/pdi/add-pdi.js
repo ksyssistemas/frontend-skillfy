@@ -28,7 +28,7 @@ function AddPDI() {
                     )
                     : (
                         <>
-                            <AdminHeader name="PDI" parentName="Cadastros" newRegistrationButtonText="Voltar para Lista" handleShowCustomerUserRegister={handleTogglePDIForm} />
+                            <AdminHeader name="PDI" parentName="Desempenho" newRegistrationButtonText="Voltar para Lista" handleShowCustomerUserRegister={handleTogglePDIForm} />
                             <Container className="mt--6" fluid>
                                 <PDIRegister handleTogglePDIForm={handleTogglePDIForm} />
                             </Container>

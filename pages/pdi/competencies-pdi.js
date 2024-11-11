@@ -1,13 +1,8 @@
 import React, { useState } from "react";
-import {
-    Card,
-    CardHeader,
-    CardBody,
-    Container
-} from "reactstrap";
+import { Container } from "reactstrap";
 import AdminHeader from "components/Headers/AdminHeader.js";
 import { CompetenciesRegister } from "../../components/Forms/PDIForms/CompetenciesRegister";
-import { CompetenciesList } from "../../components/Tables/PDI/CompetenciesList";
+import CompetenciesList from "../../components/Tables/PDI/CompetenciesList";
 import Admin from "layouts/Admin.js";
 
 function CompetenciesPDI() {
@@ -24,10 +19,10 @@ function CompetenciesPDI() {
                     ? (
                         <>
                             <AdminHeader 
-                                name="Administrador" 
+                                name="Competências" 
                                 parentName="Desempenho" 
                                 newRegistrationButtonText="Adicionar Competência" 
-                                handleShowCustomerUserRegister={handleToggleCompetencyForm} // Aqui usamos `handleShowCustomerUserRegister`
+                                handleShowCustomerUserRegister={handleToggleCompetencyForm} 
                             />
                             <Container className="mt--6" fluid>
                                 <CompetenciesList handleToggleCompetencyForm={handleToggleCompetencyForm} />
@@ -38,9 +33,9 @@ function CompetenciesPDI() {
                         <>
                             <AdminHeader 
                                 name="Competências" 
-                                parentName="Cadastros" 
+                                parentName="Desempenho" 
                                 newRegistrationButtonText="Voltar para Lista"
-                                handleShowCustomerUserRegister={handleToggleCompetencyForm} // Aqui também
+                                handleShowCustomerUserRegister={handleToggleCompetencyForm} 
                             />
                             <Container className="mt--6" fluid>
                                 <CompetenciesRegister handleToggleCompetencyForm={handleToggleCompetencyForm} />
