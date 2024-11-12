@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useContext } from 'react';
 import {
     Badge,
@@ -40,7 +39,7 @@ function CompetenciesList({ handleShowCompetencieRegister }) {
         handleCompetenciesIdToUpdate(competencieId);
         handleOpenCompetenciesUpdateModal();
     }
-    
+
     const [modalCompetenciesOpen, setModalCompetenciesOpen] = React.useState(false);
 
     const handleOpenCompetenciesUpdateModal = () => {
@@ -49,11 +48,13 @@ function CompetenciesList({ handleShowCompetencieRegister }) {
 
     useEffect(() => {
         const fetchCompetencies = async () => {
-            try {
-                const foundCompetencies = await useFindAllComptencies();
-                setUserCompetenciesAccountData(foundCompetencies);
-            } catch (error) {
-                console.error('Error fetching competencies:', error);
+            if (userCompetenciesAccountData.length <= 0 || hasUpdatedCompetenciesRecord || hasDeletedCompetenciesRecord) {
+                try {
+                    const foundCompetencies = await useFindAllComptencies();
+                    setUserCompetenciesAccountData(foundCompetencies);
+                } catch (error) {
+                    console.error('Error fetching competencies:', error);
+                }
             }
         };
         fetchCompetencies();

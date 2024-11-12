@@ -34,6 +34,7 @@ import { EmployeeProvider } from "../contexts/RecordsContext/EmployeeContext";
 import { AppraisalEvidencesProvider } from "../contexts/PerformanceContext/AppraisalEvidencesContext";
 import { AppraisalCaptionsProvider } from "../contexts/PerformanceContext/AprraisalCaptionsContext";
 import { ModelSelectionReviewProvider } from "../contexts/PerformanceContext/ModelSelectionReviewContext";
+import { CompetenciesProvider } from "../contexts/RecordsContext/CompetenciesContext";
 
 Router.events.on("routeChangeStart", (url) => {
   console.log(`Loading: ${url}`);
@@ -103,17 +104,19 @@ export default class MyApp extends App {
                                 <AppraisalSkillsProvider>
                                   <AppraisalEvidencesProvider>
                                     <AppraisalCaptionsProvider>
-                                      <Head>
-                                        <meta
-                                          name="viewport"
-                                          content="width=device-width, initial-scale=1, shrink-to-fit=no"
-                                        />
-                                        <title>SkillFy</title>
-                                        {/* <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script> */}
-                                      </Head>
-                                      <Layout>
-                                        <Component {...pageProps} />
-                                      </Layout>
+                                      <CompetenciesProvider>
+                                        <Head>
+                                          <meta
+                                            name="viewport"
+                                            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+                                          />
+                                          <title>SkillFy</title>
+                                          {/* <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script> */}
+                                        </Head>
+                                        <Layout>
+                                          <Component {...pageProps} />
+                                        </Layout>
+                                      </CompetenciesProvider>
                                     </AppraisalCaptionsProvider>
                                   </AppraisalEvidencesProvider>
                                 </AppraisalSkillsProvider>
