@@ -16,8 +16,43 @@ import {
 import ReactDatetime from "react-datetime";
 import PropTypes from "prop-types";
 import InputMask from 'react-input-mask';
-export function PDIRegister() {
-   
+import useCreatePdi from '../../../hooks/RecordsHooks/pdi/useCreatePdi';
+
+export function PDIRegister({ handleShowPDIRegister }) {
+
+    const {
+    Name,
+    setName,
+    NameState,
+    setNameState,
+    Description,
+    setDescription,
+    DescriptionState,
+    setDescriptionState,
+    StartDate,
+    setStartDate,
+    StartDateState,
+    setStartDateState,
+    FinalDate,
+    setFinalDate,
+    FinalDateState,
+    setFinalDateState,
+    pdiStatus,
+    setPdiStatus,
+    pdiStatusState,
+    setPdiStatusState,
+    appraiser,
+    setAppraiser,
+    appraiserState,
+    setAppraiserState,
+    evaluated,
+    setEvaluated,
+    evaluatedState,
+    setEvaluatedState,
+    handleValidateAddPDIForm,
+    reset
+    } = useCreatePdi(handleShowPDIRegister);
+
     return (
         <Card className="mb-4">
             <CardHeader>
@@ -80,7 +115,7 @@ export function PDIRegister() {
                         </Col>
                     </div>
                     <div className="form-row">
-                        <Col className="mb-3" md="6">
+                        <Col className="mb-3" md="3">
                             <label
                                 className="form-control-label"
                                 htmlFor="validationEmailAddress"
@@ -88,17 +123,17 @@ export function PDIRegister() {
                                 Data de início
                             </label>
                             <ReactDatetime
-                                // inputProps={{
-                                //     placeholder: "__/__/__",
-                                // }}
-                                // timeFormat={false}
-                                // onChange={(e) => handleDateFormatting(e, setBirthdate, setBirthdateState)}
-                                />
-                                {/* <div className="invalid-feedback">
+                            // inputProps={{
+                            //     placeholder: "__/__/__",
+                            // }}
+                            // timeFormat={false}
+                            // onChange={(e) => handleDateFormatting(e, setBirthdate, setBirthdateState)}
+                            />
+                            {/* <div className="invalid-feedback">
                             É necessário selecionar uma data.
                         </div> */}
                         </Col>
-                        <Col md="6">
+                        <Col md="3">
                             <FormGroup>
                                 <label
                                     className="form-control-label"
@@ -117,6 +152,32 @@ export function PDIRegister() {
                             É necessário selecionar uma data.
                         </div> */}
                             </FormGroup>
+                        </Col>
+                        <Col className="mb-3" md="6">
+                            <label
+                                className="form-control-label"
+                                htmlFor="validationPassword"
+                            >
+                                Status
+                            </label>
+                            <Input
+                            // id="validationPassword"
+                            // placeholder="Senha de acesso ao sistema"
+                            // type="password"
+                            // valid={passwordState === "valid"}
+                            // invalid={passwordState === "invalid"}
+                            // onChange={(e) => {
+                            //     setPassword(e.target.value);
+                            //     if (e.target.value === "") {
+                            //         setPasswordState("invalid");
+                            //     } else {
+                            //         setPasswordState("valid");
+                            //     }
+                            // }}
+                            />
+                            <div className="invalid-feedback">
+                                É necessário preencher este campo.
+                            </div>
                         </Col>
                     </div>
                     <div className="form-row">
@@ -187,3 +248,15 @@ export function PDIRegister() {
         </Card >
     )
 }
+
+
+PDIRegister.propTypes = {
+    handleShowPDIRegister: () => { },
+};
+
+PDIRegister.propTypes = {
+    handleShowPDIRegister: PropTypes.func,
+}
+
+
+export default PDIRegister;
