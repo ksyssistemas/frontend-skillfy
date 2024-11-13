@@ -1,7 +1,7 @@
 // Hook para gerenciar o formulário
 import React, { useState } from 'react';
 
-const useCreatePdi = () => {
+const useCreatePdi = (handleShowPDIRegister) => {
 
     const [Name, setName] = React.useState("");
     const [NameState, setNameState] = React.useState(null);
@@ -64,7 +64,7 @@ const useCreatePdi = () => {
             FinalDateState === "valid" &&
             pdiStatusState === "valid" &&
             appraiserState === "valid" &&
-            evaluatedState === "valid" 
+            evaluatedState === "valid"
         ) {
             handleSubmit(Name, Description, StartDate, FinalDate, pdiStatus, appraiser, evaluated);
         } else {
@@ -73,8 +73,9 @@ const useCreatePdi = () => {
     }
 
     const handleSubmit = async (Name, Description, StartDate, FinalDate, pdiStatus, appraiser, evaluated) => {
-        console.log(`Kaua = ${process.env.NEXT_PUBLIC_PDI}`)
-        if (Name, Description) {
+        console.log(`Kaua = ${process.env.NEXT_PUBLIC_PDI}`);
+        console.log("name:", Name, "description:", Description, "startDate:", StartDate, "endDate:", FinalDate, "status:", pdiStatus, "assessorId:", appraiser, "assessorId:", evaluated);
+        if (Name, Description, StartDate, FinalDate, pdiStatus, appraiser, evaluated) {
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_PDI}`, {
                     method: 'POST',
@@ -84,17 +85,17 @@ const useCreatePdi = () => {
                     body: JSON.stringify({
                         name: Name,
                         description: Description,
+                        assessedId: Number(evaluated), 
+                        assessorId: Number(appraiser),
                         startDate: StartDate,
                         endDate: FinalDate,
                         status: pdiStatus,
-                        assessorId: appraiser,
-                        assessedId: evaluated,
                     }),
                 });
 
                 if (response.ok) {
                     reset();
-                    handleShowCompetencieRegister();
+                    handleShowPDIRegister();
                     console.log('Data sent successfully!');
                 } else {
                     console.error('Error in response:', response.status);

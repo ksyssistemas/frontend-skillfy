@@ -38,6 +38,9 @@ export async function employmentContractDataSearchAndProcess(apiCall, setData, e
                         case 'skillTypes':
                             id = item.id;
                             break;
+                        case 'admin':
+                            id = item.id;
+                            break;
                         default:
                             id = '';
                     }

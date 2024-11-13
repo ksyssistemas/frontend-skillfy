@@ -17,6 +17,8 @@ import {
     UncontrolledTooltip,
 } from "reactstrap";
 import { useFindAllPDI } from '../../../hooks/RecordsHooks/pdi/useFindAllPdi';
+import { useSweetAlert } from '../../../contexts/SweetAlertContext';
+import { useDeletePdi } from '../../../hooks/RecordsHooks/pdi/useDeletePdi';
 export function PDIList() {
     const [userPDIAccountData, setUserPDIAccountData] = useState([]);
     useEffect(() => {
@@ -32,6 +34,36 @@ export function PDIList() {
     }, [
         userPDIAccountData,
     ])
+    const { warningAlert } = useSweetAlert();
+
+    const handleDeletePdi = async (pdiId) => {
+        console.log(pdiId);
+        if (pdiId) {
+            try {
+                const deleteResponse = await useDeletePdi(pdiId);
+                console.log('DeleteResponse: ', deleteResponse);
+                if (deleteResponse !== null) {
+                    console.log("Deletado com sucesso!");
+                } else {
+                    console.error('Failed to delete pdi with ID:', pdiId, '. Response Status: ', deleteResponse.status);
+                }
+            } catch (error) {
+                console.error('Error in request:', error);
+            }
+        }
+    };
+
+    const showWarningAlert = (pdiId) => {
+        warningAlert(
+            `${pdiId}`,
+            "Atenção",
+            "Deletar",
+            `Você deseja realmente excluir ${pdiId}?`,
+            "lg",
+            () => handleDeletePdi(pdiId)
+        );
+    };
+
     return (
         <Card>
             {/** CardHeader with Button register and export */}
@@ -97,7 +129,7 @@ export function PDIList() {
                                         </DropdownItem>
                                         <DropdownItem
                                             href="#pablo"
-                                        // onClick={(e) => { e.preventDefault(); showWarningAlert(contactPerson.id, contactPerson.name, contactPerson.lastname); }}
+                                            onClick={(e) => { e.preventDefault(); showWarningAlert(pdi.id); }}
                                         >
                                             Deletar
                                         </DropdownItem>
