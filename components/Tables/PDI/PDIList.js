@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 // nodejs library that concatenates classes
 
 // reactstrap components
@@ -19,22 +19,89 @@ import {
 import { useFindAllPDI } from '../../../hooks/RecordsHooks/pdi/useFindAllPdi';
 import { useSweetAlert } from '../../../contexts/SweetAlertContext';
 import { useDeletePdi } from '../../../hooks/RecordsHooks/pdi/useDeletePdi';
+import { PdiContext } from '../../../contexts/RecordsContext/PdiContext';
+import ModalPdi from '../../Modals/pdi/ModalPdi';
+import ShowPdiDetailsModal from "../../Modals/pdi/ShowPdiDetailsModal";
 export function PDIList() {
-    const [userPDIAccountData, setUserPDIAccountData] = useState([]);
+
+    const {
+        pdiIdToUpdate,
+        handlePdiIdStatusCleanupToUpdate,
+        handlePdiIdToUpdate,
+        hasNewPdiRecordCreated,
+        handleCreatedPdiRecordStatusChange,
+        hasUpdatedPdiRecord,
+        handleUpdatedPdiRecordStatusChange,
+        hasDeletedPdiRecord,
+        handleDeletedPdiRecordStatusChange,
+    } = useContext(PdiContext);
+
+    const { warningAlert } = useSweetAlert();
+
+    const [userPdiAccountData, setUserPdiAccountData] = useState([]);
+
+    function handlePdiUpdate(pdiId) {
+        handlePdiIdToUpdate(pdiId);
+        handleOpenPdiUpdateModal();
+    }
+
+    const [selectedIdToShowPdiDetails, setSelectedIdToShowPdiDetails] = useState(null);
+    function handleCleaningSelectedIdToShowPdiDetails() {
+        setSelectedIdToShowPdiDetails(null)
+    }
+
+    const [modalShowDetailsOpen, setModalShowDetailsOpen] = useState(false);
+
+    function handleOpenPdiModal() {
+        setModalShowDetailsOpen(!modalShowDetailsOpen);
+    }
+
+    function handleShowPdiDetailsModal(pdiId) {
+        console.log(pdiId);
+        setSelectedIdToShowPdiDetails(pdiId);
+        handleOpenPdiModal();
+    }
+
+    const commonProps = {
+        handleShowPdiDetailsModal,
+        selectedIdToShowPdiDetails,
+        handleCleaningSelectedIdToShowPdiDetails,
+        handleOpenPdiModal,
+        modalShowDetailsOpen,
+    };
+
+    const shouldShowModal = (selectedIdToShowPdiDetails && selectedIdToShowPdiDetails !== 0) || (pdiIdToUpdate && pdiIdToUpdate !== 0);
+
+    const [modalPdiOpen, setModalPdiOpen] = React.useState(false);
+
+    const handleOpenPdiUpdateModal = () => {
+        setModalPdiOpen(!modalPdiOpen);
+    };
+
     useEffect(() => {
-        const fetchPDI = async () => {
-            try {
-                const foundPDIs = await useFindAllPDI();
-                setUserPDIAccountData(foundPDIs);
-            } catch (error) {
-                console.error('Error fetching pdi:', error);
+        const fetchPdi = async () => {
+            if (userPdiAccountData.length <= 0 || hasUpdatedPdiRecord || hasDeletedPdiRecord) {
+                try {
+                    const foundPdi = await useFindAllPDI();
+                    setUserPdiAccountData(foundPdi);
+                } catch (error) {
+                    console.error('Error fetching pdi:', error);
+                }
             }
         };
-        fetchPDI();
+        fetchPdi();
+        if (hasUpdatedPdiRecord) {
+            handleUpdatedPdiRecordStatusChange();
+        }
+        if (hasDeletedPdiRecord) {
+            handlePdiIdStatusCleanupToUpdate();
+            handleDeletedPdiRecordStatusChange();
+        }
     }, [
-        userPDIAccountData,
+        userPdiAccountData,
+        hasUpdatedPdiRecord,
+        hasDeletedPdiRecord,
     ])
-    const { warningAlert } = useSweetAlert();
 
     const handleDeletePdi = async (pdiId) => {
         console.log(pdiId);
@@ -64,6 +131,17 @@ export function PDIList() {
         );
     };
 
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const adjustedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+    
+        const day = String(adjustedDate.getDate()).padStart(2, '0');
+        const month = String(adjustedDate.getMonth() + 1).padStart(2, '0');
+        const year = adjustedDate.getFullYear();
+    
+        return `${day}/${month}/${year}`;
+      }
+
     return (
         <Card>
             {/** CardHeader with Button register and export */}
@@ -80,14 +158,14 @@ export function PDIList() {
                     <tr>
                         <th className="text-left">Nome</th>
                         <th className="text-left">Descrição</th>
-                        <th className="text-left">Data Início</th>
-                        <th className="text-left">Data final</th>
-                        <th className="text-left">Status</th>
+                        <th className="text-left">Prazo Inícial</th>
+                        <th className="text-left">Prazo final</th>
+                        <th className="text-left">Situação</th>
                         <th className="text-left">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {userPDIAccountData.map((pdi) => (
+                    {userPdiAccountData.map((pdi) => (
                         <tr>
                             <td className="text-left">
                                 <b className="text-left">{pdi.name}</b>
@@ -96,10 +174,10 @@ export function PDIList() {
                                 <b className="text-left">{pdi.description}</b>
                             </td>
                             <td className="text-left">
-                                <b className="text-left">{pdi.startDate}</b>
+                                <b className="text-left">{formatDate(pdi.startDate)}</b>
                             </td>
                             <td className="text-left">
-                                <b className="text-left">{pdi.endDate}</b>
+                                <b className="text-left">{formatDate(pdi.endDate)}</b>
                             </td>
                             <td className="text-left">
                                 <b className="text-left">{pdi.status}</b>
@@ -117,13 +195,13 @@ export function PDIList() {
                                     <DropdownMenu className="dropdown-menu-arrow" right>
                                         <DropdownItem
                                             href="#pablo"
-                                        // onClick={(e) => { e.preventDefault(); handleShowContactPersonDetailsModal(contactPerson.id, contactPerson.name, contactPerson.lastname) }}
+                                            onClick={(e) => { e.preventDefault(); handleShowPdiDetailsModal(pdi.id) }}
                                         >
                                             Detalhes
                                         </DropdownItem>
                                         <DropdownItem
                                             href="#pablo"
-                                        // onClick={(e) => { e.preventDefault(); handleContactPersonUpdate(contactPerson.id, contactPerson.name, contactPerson.lastname); }}
+                                            onClick={(e) => { e.preventDefault(); handlePdiUpdate(pdi.id); }}
                                         >
                                             Editar
                                         </DropdownItem>
@@ -140,6 +218,13 @@ export function PDIList() {
                     ))}
                 </tbody>
             </Table>
+            <ModalPdi
+                handleOpenPdiUpdateModal={handleOpenPdiUpdateModal}
+                modalOpen={modalPdiOpen}
+            />
+                <ShowPdiDetailsModal {...commonProps} />
         </Card>
-    )
-}
+    );
+};
+
+export default PDIList;
