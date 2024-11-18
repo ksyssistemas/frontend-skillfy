@@ -194,7 +194,7 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
         <Modal toggle={handleOpenPdiUpdateModal} isOpen={modalOpen} size="xl">
             <div className=" modal-header">
                 <h5 className=" modal-title" id="exampleModalLabel">
-                    Editar Competência
+                    Editar PDI
                 </h5>
                 <button
                     aria-label="Close"
@@ -422,7 +422,7 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
                     type="button"
                     onClick={handleUpdatePdi}
                 >
-                    {'Editar Competência'}
+                    {'Editar PDI'}
                 </Button>
             </ModalFooter>
         </Modal>

@@ -38,13 +38,17 @@ function DashboardPDI() {
                             <tr>
                                 <th scope="col">Avaliador</th>
                                 <th scope="col">Competência</th>
-                                <th scope="col" />
+                                <th scope="col">Sugestão</th>
+                                <th scope="col">Situação</th>
+                                <th scope="col">Progresso</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <th scope="row">Facebook</th>
-                                <td>1,480</td>
+                                <th scope="row">Pedro Chefe</th>
+                                <td>Melhorar a comunicação</td>
+                                <td>Mais atenção</td>
+                                <td>Em Progresso</td>
                                 <td>
                                     <div className="d-flex align-items-center">
                                         <span className="mr-2">60%</span>
@@ -59,64 +63,18 @@ function DashboardPDI() {
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="row">Facebook</th>
-                                <td>5,480</td>
+                                <th scope="row">João RH</th>
+                                <td>Melhorar o desempenho</td>
+                                <td>Mais atenção</td>
+                                <td>Finalizado</td>
                                 <td>
                                     <div className="d-flex align-items-center">
-                                        <span className="mr-2">70%</span>
+                                        <span className="mr-2">100%</span>
                                         <div>
                                             <Progress
                                                 max="100"
-                                                value="70"
+                                                value="100"
                                                 color="gradient-success"
-                                            />
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Google</th>
-                                <td>4,807</td>
-                                <td>
-                                    <div className="d-flex align-items-center">
-                                        <span className="mr-2">80%</span>
-                                        <div>
-                                            <Progress
-                                                max="100"
-                                                value="80"
-                                                clor="gradient-primary"
-                                            />
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Instagram</th>
-                                <td>3,678</td>
-                                <td>
-                                    <div className="d-flex align-items-center">
-                                        <span className="mr-2">75%</span>
-                                        <div>
-                                            <Progress
-                                                max="100"
-                                                value="75"
-                                                color="gradient-info"
-                                            />
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">twitter</th>
-                                <td>2,645</td>
-                                <td>
-                                    <div className="d-flex align-items-center">
-                                        <span className="mr-2">30%</span>
-                                        <div>
-                                            <Progress
-                                                max="100"
-                                                value="30"
-                                                color="gradient-warning"
                                             />
                                         </div>
                                     </div>

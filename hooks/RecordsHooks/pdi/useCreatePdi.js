@@ -17,6 +17,8 @@ const useCreatePdi = (handleShowPDIRegister) => {
     const [appraiserState, setAppraiserState] = React.useState(null);
     const [evaluated, setEvaluated] = React.useState("");
     const [evaluatedState, setEvaluatedState] = React.useState(null);
+    const [competencies, setCompetencies] = React.useState("");
+    const [competenciesState, setCompetenciesState] = React.useState(null);
 
     const validateAddPDIForm = () => {
         if (Name === "") {
@@ -54,6 +56,11 @@ const useCreatePdi = (handleShowPDIRegister) => {
         } else {
             setEvaluatedState("valid");
         }
+        if (competencies === "") {
+            setCompetenciesState("invalid");
+        } else {
+            setCompetenciesState("valid");
+        }
     };
 
     function handleValidateAddPDIForm() {
@@ -64,18 +71,19 @@ const useCreatePdi = (handleShowPDIRegister) => {
             FinalDateState === "valid" &&
             pdiStatusState === "valid" &&
             appraiserState === "valid" &&
-            evaluatedState === "valid"
+            evaluatedState === "valid" &&
+            competenciesState === "valid"
         ) {
-            handleSubmit(Name, Description, StartDate, FinalDate, pdiStatus, appraiser, evaluated);
+            handleSubmit(Name, Description, StartDate, FinalDate, pdiStatus, appraiser, evaluated, competencies);
         } else {
             return null;
         }
     }
 
-    const handleSubmit = async (Name, Description, StartDate, FinalDate, pdiStatus, appraiser, evaluated) => {
+    const handleSubmit = async (Name, Description, StartDate, FinalDate, pdiStatus, appraiser, evaluated, competencies) => {
         console.log(`Kaua = ${process.env.NEXT_PUBLIC_PDI}`);
-        console.log("name:", Name, "description:", Description, "startDate:", StartDate, "endDate:", FinalDate, "status:", pdiStatus, "assessorId:", appraiser, "assessorId:", evaluated);
-        if (Name, Description, StartDate, FinalDate, pdiStatus, appraiser, evaluated) {
+        console.log("name:", Name, "description:", Description, "startDate:", StartDate, "endDate:", FinalDate, "status:", pdiStatus, "assessorId:", appraiser, "assessorId:", evaluated, "competencies:", competencies);
+        if (Name, Description, StartDate, FinalDate, pdiStatus, appraiser, evaluated, competencies) {
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_PDI}`, {
                     method: 'POST',
@@ -90,6 +98,7 @@ const useCreatePdi = (handleShowPDIRegister) => {
                         startDate: StartDate,
                         endDate: FinalDate,
                         status: pdiStatus,
+                        competencies: competencies,
                     }),
                 });
 
@@ -121,6 +130,8 @@ const useCreatePdi = (handleShowPDIRegister) => {
         setAppraiserState(null);
         setEvaluated("");
         setEvaluatedState(null);
+        setCompetencies("");
+        setCompetenciesState(null);
     }
 
     return {
@@ -152,6 +163,10 @@ const useCreatePdi = (handleShowPDIRegister) => {
         setEvaluated,
         evaluatedState,
         setEvaluatedState,
+        competencies,
+        setCompetencies,
+        competenciesState,
+        setCompetenciesState,
         handleValidateAddPDIForm,
         reset
     };

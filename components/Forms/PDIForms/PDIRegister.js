@@ -20,6 +20,7 @@ import useCreatePdi from '../../../hooks/RecordsHooks/pdi/useCreatePdi';
 import { handleDateFormatting } from "../../../util/handleDateFormatting";
 import { useFindAllClientCompany } from '../../../hooks/RecordsHooks/customer/useFindAllClientCompany';
 import { useFindAllAdmin } from '../../../hooks/RecordsHooks/admin/useFindAllAdmin';
+import { useFindAllComptencies } from '../../../hooks/RecordsHooks/pdi/competencies/useFindAllCompetencies';
 import { employmentContractDataSearchAndProcess } from '../../../util/employmentContractDataSearchAndProcess';
 import { handleSelectionEmploymentContractData } from '../../../util/handleSelectionEmploymentContractData';
 import dynamic from "next/dynamic";
@@ -56,6 +57,10 @@ export function PDIRegister({ handleShowPDIRegister }) {
         setEvaluated,
         evaluatedState,
         setEvaluatedState,
+        competencies,
+        setCompetencies,
+        competenciesState,
+        setCompetenciesState,
         handleValidateAddPDIForm,
         reset
     } = useCreatePdi(handleShowPDIRegister);
@@ -78,6 +83,35 @@ export function PDIRegister({ handleShowPDIRegister }) {
     const [selectedBelongingToEvaluated, setselectedBelongingToEvaluated] = useState('');
     const [selectedBelongingToEvaluatedState, setselectedBelongingToEvaluatedState] = React.useState(null);
 
+    const [selectedBelongingToCompetencies, setselectedBelongingToCompetencies] = useState('');
+    const [selectedBelongingToCompetenciesState, setselectedBelongingToCompetenciesState] = React.useState(null);
+
+    const [competenciesDataList, setCompetenciesDataList] = useState([]);
+    const handleCompetenciesDataList = (competencies) => {
+        setCompetenciesDataList(competencies);
+    };
+
+    useEffect(() => {
+        if (competenciesDataList.length === 0) {
+            employmentContractDataSearchAndProcess(
+                useFindAllComptencies,
+                handleCompetenciesDataList,
+                'competencies',
+                'CompetenciesUserRegister'
+            );
+        }
+    }, [])
+
+    const handleCompetenciesChange = (e) => {
+        const value = Number(e.target.value);
+        setCompetencies(value);
+        if (value) {
+            setCompetenciesState("valid");
+        } else {
+            setCompetenciesState("invalid");
+        }
+    };
+
     const [adminDataList, setAdminDataList] = useState([]);
     const handleAdminDataList = (adminUser) => {
         setAdminDataList(adminUser);
@@ -86,16 +120,16 @@ export function PDIRegister({ handleShowPDIRegister }) {
     useEffect(() => {
         if (adminDataList.length === 0) {
             employmentContractDataSearchAndProcess(
-                useFindAllAdmin,       
-                handleAdminDataList,    
-                'admin',               
-                'AdminUserRegister'    
+                useFindAllAdmin,
+                handleAdminDataList,
+                'admin',
+                'AdminUserRegister'
             );
         }
     }, [])
 
     const handleAppraiserChange = (e) => {
-        const value = Number(e.target.value); 
+        const value = Number(e.target.value);
         setAppraiser(value);
         if (value) {
             setAppraiserState("valid");
@@ -103,9 +137,9 @@ export function PDIRegister({ handleShowPDIRegister }) {
             setAppraiserState("invalid");
         }
     };
-    
+
     const handleEvaluatedChange = (e) => {
-        const value = Number(e.target.value); 
+        const value = Number(e.target.value);
         setEvaluated(value);
         if (value) {
             setEvaluatedState("valid");
@@ -311,6 +345,66 @@ export function PDIRegister({ handleShowPDIRegister }) {
                                 )}
                             />
                             <div className="invalid-feedback">
+                            </div>
+                        </Col>
+                    </div>
+                    <div className="form-row">
+                        <Col className="mb-3" md="6">
+                            <label className="form-control-label"
+                                htmlFor="validationCompetencia">
+                                Competências
+                            </label>
+                            <Select2
+                                id="validationCompetencia"
+                                className="form-control"
+                                data-minimum-results-for-search="Infinity"
+                                options={{
+                                    placeholder: "Selecione uma competência",
+                                }}
+                                value={competencies}
+                                onChange={handleCompetenciesChange}
+                                data={competenciesDataList}
+                                onSelect={(e) => handleSelectionEmploymentContractData(
+                                    e.target.value,
+                                    competenciesDataList,
+                                    setCompetencies,
+                                    setselectedBelongingToCompetencies,
+                                    setselectedBelongingToCompetenciesState,
+                                    null,
+                                    null,
+                                    'id'
+                                )}
+                            />
+                            <div className="invalid-feedback">
+                            </div>
+                        </Col>
+                        <Col className="mb-3" md="6">
+                            <label
+                                className="form-control-label"
+                                htmlFor="validationSugetao"
+                            >
+                                Sugestão
+                            </label>
+                            <Input
+                                id="validationSugetao"
+                                placeholder="Insira a sugestão"
+                                type="text"
+                                // valid={pdiStatusState === "valid"}
+                                // invalid={pdiStatusState === "invalid"}
+                                // onChange={(e) => {
+                                //     setPdiStatus(e.target.value);
+                                //     if (e.target.value === "") {
+                                //         setPdiStatusState("invalid");
+                                //     } else {
+                                //         setPdiStatusState("valid");
+                                //     }
+                                // }}
+                            />
+                            <div className="invalid-feedback">
+                                É necessário preencher este campo.
+                            </div>
+                            <div className="valid-feedback">
+                                Parece bom!
                             </div>
                         </Col>
                     </div>
