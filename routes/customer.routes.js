@@ -110,6 +110,12 @@ const routes = () => {
           miniName: "C",
           layout: "/performance",
         },
+        {
+          path: "/add-appraisals-skills",
+          name: "Avaliação de Comp",
+          miniName: "A",
+          layout: "/performance",
+        },
       ],
     },
   ]
