@@ -4,11 +4,13 @@ import Performance from "../../layouts/Performance";
 import AppraisalCycleHeader from "../../components/Headers/PerformanceHeader/AppraisalCycleHeader";
 import AppraisalListHeader from "../../components/Headers/PerformanceHeader/AppraisalListHeader";
 import AppraisalCycleTable from "../../components/Tables/AppraisalTables/Appraisal/CycleAppraisal ";
+// import AppraisalsListTable from "../../components/Tables/AppraisalTables/Appraisal/AppraisalsListTable";
+import AppraisalsListTableCompetencies from "../../components/Tables/AppraisalTables/Appraisal/AppraisalsListTableCompetencies";
 import AddAppraisalCycleModal from "../../components/Modals/AppraisalModal/add-appraisal-cycle";
 import AppraisalsSkillsRegister from "../../components/Forms/PerformanceForms/AppraisalsSkillsRegister";
 
 
-function Appraisalsskills() {
+function Appraisalsskillslist() {
   const [admins, setAdmins] = useState([]);
   const [appraisalIdToBeShown, setAppraisalIdToBeShown] = useState(null);
 
@@ -69,13 +71,13 @@ function Appraisalsskills() {
     <>
       <AppraisalListHeader name="Avaliações" parentName="Desempenho" />
       <Container className="mt--6" fluid>
-        <AppraisalsSkillsRegister />
+        <AppraisalsListTableCompetencies />
       </Container>
     </>
    
   );
 }
 
-Appraisalsskills.layout = Performance;
+Appraisalsskillslist.layout = Performance;
 
-export default Appraisalsskills;
+export default Appraisalsskillslist;

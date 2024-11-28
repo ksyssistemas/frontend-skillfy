@@ -1,0 +1,4 @@
+td {
+    word-wrap: break-word !important; /* Quebra de palavras se necessário */
+    white-space: normal !important; /* Permite quebra de linha */
+}

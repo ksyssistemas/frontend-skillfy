@@ -166,7 +166,7 @@ function AppraisalsListTableCompetencies() {
                     <td>
                       {renderStatusBadge(appraisal.status)}
                     </td>
-                    <td className="text-right">
+                    <td className="text-left">
                       <UncontrolledDropdown>
                         <DropdownToggle
                           className="btn-icon-only text-light"
@@ -178,22 +178,10 @@ function AppraisalsListTableCompetencies() {
                         </DropdownToggle>
                         <DropdownMenu className="dropdown-menu-arrow" right>
                           <DropdownItem
-                            href="#pablo"
-                            onClick={(e) => e.preventDefault()}
+                            href="add-appraisals-skills"
+                            // onClick={(e) => e.preventDefault()}
                           >
-                            Action
-                          </DropdownItem>
-                          <DropdownItem
-                            href="#pablo"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            Another action
-                          </DropdownItem>
-                          <DropdownItem
-                            href="#pablo"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            Something else here
+                            Fazer a avaliação
                           </DropdownItem>
                         </DropdownMenu>
                       </UncontrolledDropdown>

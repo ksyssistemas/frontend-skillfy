@@ -25,7 +25,7 @@ import {
     Progress
 } from "reactstrap";
 import 'quill/dist/quill.snow.css'; // Importando o CSS do Quill
-
+import 'assets/css/styles/appraisalastable.css';
 export function AppraisalsSkillsRegister() {
     const quillRef = useRef(null); // Referência para o editor
 
@@ -78,6 +78,25 @@ export function AppraisalsSkillsRegister() {
             }
         };
     }, []);
+
+    const [selectedStatus, setSelectedStatus] = useState({});
+
+    const handleRadioChange = (e, rowIndex) => {
+        setSelectedStatus((prevState) => ({
+            ...prevState,
+            [rowIndex]: e.target.value,
+        }));
+    };
+
+    const evidencias = [
+        "Responde rapidamente às demandas e dificuldades que surgem em seu dia-a-dia.",
+        "Demonstra dinamismo em suas atividades, lidando de forma ágil com diferentes assuntos e/ou atribuições.",
+        "Possui senso de urgência e visão do todo em relação aos assuntos a serem tratados com prioridade."
+    ];
+
+    const options = [
+        "Nunca", "Quase Nunca", "Algumas Vezes", "Várias Vezes", "Quase Sempre", "Sempre"
+    ];
     return (
         <Card className="mb-4">
             <CardHeader>
@@ -108,65 +127,27 @@ export function AppraisalsSkillsRegister() {
                         </Col>
                     </div>
                     <div className="form-row">
-                        <Col className="mb-3" md="3">
-                            <label
-                                className="form-control-label"
-                                htmlFor="validationStartDate"
-                            >
-                                Data de início
-                            </label>
-                            <ReactDatetime
-                                inputProps={{
-                                    placeholder: "__/__/__",
-                                }}
-                                timeFormat={false}
-                                // onChange={(e) => handleDateFormatting(e, setStartDate, setStartDateState)}
-                            />
-                            <div className="invalid-feedback">
-                                É necessário selecionar uma data.
-                            </div>
-                        </Col>
-                        <Col md="3">
-                            <FormGroup>
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="validationFinalDate"
-                                >
-                                    Data de Fim
-                                </label>
-                                <ReactDatetime
-                                    inputProps={{
-                                        placeholder: "__/__/__",
-                                    }}
-                                    timeFormat={false}
-                                    // onChange={(e) => handleDateFormatting(e, setFinalDate, setFinalDateState)}
-                                />
-                                <div className="invalid-feedback">
-                                    É necessário selecionar uma data.
-                                </div>
-                            </FormGroup>
-                        </Col>
-                        <Col className="mb-3" md="6">
+                        <Col className="mb-3" md="12">
                             <label
                                 className="form-control-label"
                                 htmlFor="validationPDIStatus"
                             >
-                                Status
+                                Legenda
                             </label>
                             <Input
                                 id="validationPDIStatus"
-                                placeholder="Status do pdi"
+                                // placeholder="Status do pdi"
                                 type="text"
-                                // valid={pdiStatusState === "valid"}
-                                // invalid={pdiStatusState === "invalid"}
-                                // onChange={(e) => {
-                                //     setPdiStatus(e.target.value);
-                                //     if (e.target.value === "") {
-                                //         setPdiStatusState("invalid");
-                                //     } else {
-                                //         setPdiStatusState("valid");
-                                //     }
-                                // }}
+                            // valid={pdiStatusState === "valid"}
+                            // invalid={pdiStatusState === "invalid"}
+                            // onChange={(e) => {
+                            //     setPdiStatus(e.target.value);
+                            //     if (e.target.value === "") {
+                            //         setPdiStatusState("invalid");
+                            //     } else {
+                            //         setPdiStatusState("valid");
+                            //     }
+                            // }}
                             />
                             <div className="invalid-feedback">
                                 É necessário preencher este campo.
@@ -176,132 +157,100 @@ export function AppraisalsSkillsRegister() {
                             </div>
                         </Col>
                     </div>
+                    <Col className="py-3 d-flex justify-content-center" md="12">
+                        <p className="lead text-black">Classificação da Competência</p>
+                    </Col>
+                    <Card>
+                        <CardHeader>Tipo de competência 1</CardHeader>
+                        <CardBody>
+                            <div className="form-row">
+                                <Col className="mb-3" md="12">
+                                    <label
+                                        className="form-control-label"
+                                        htmlFor="validationPDIStatus"
+                                    >
+                                        Descrição da Competência a ser avaliada
+                                    </label>
+                                    <Input
+                                        id="validationPDIStatus"
+                                        type="text"
+                                    />
+                                    <div className="invalid-feedback">
+                                        É necessário preencher este campo.
+                                    </div>
+                                    <div className="valid-feedback">
+                                        Parece bom!
+                                    </div>
+                                </Col>
+                            </div>
+                            <div className="form-row">
+                                <Col className="mb-3" md="12">
+                                    <table className="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th className="text-center font-weight-bold">Evidência Comportamental</th>
+                                                {options.map((option, index) => (
+                                                    <th key={index} className="text-center font-weight-bold">{option}</th>
+                                                ))}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {evidencias.map((evidencia, rowIndex) => (
+                                                <tr key={rowIndex}>
+                                                    <td>{evidencia}</td>
+                                                    {options.map((option, colIndex) => (
+                                                        <td key={colIndex} align="center">
+                                                            <input
+                                                                type="radio"
+                                                                name={`status-${rowIndex}`}
+                                                                value={option}
+                                                                checked={selectedStatus[rowIndex] === option}
+                                                                onChange={(e) => handleRadioChange(e, rowIndex)}
+                                                            />
+                                                        </td>
+                                                    ))}
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </Col>
+                            </div>
+                        </CardBody>
+                    </Card>
                     <div className="form-row">
-                        <Col className="mb-3" md="6">
+                        <Col className="mb-7" md="12">
                             <label
                                 className="form-control-label"
-                                htmlFor="validationAvaliador"
+                                htmlFor="validationDescriptionReviewObjective"
                             >
-                                Avaliador
-                            </label>
-                            <Select2
-                                id="validationAvaliador"
-                                className="form-control"
-                                data-minimum-results-for-search="Infinity"
-                                options={{
-                                    placeholder: "Selecione um Avaliador",
-                                }}
-                                // value={appraiser}
-                                // onChange={handleAppraiserChange}
-                                // data={adminDataList}
-                                // onSelect={(e) => handleSelectionEmploymentContractData(
-                                //     e.target.value,
-                                //     adminDataList,
-                                //     setAppraiser,
-                                //     setSelectedBelongingToAdmin,
-                                //     setselectedBelongingToAdminState,
-                                //     null,
-                                //     null,
-                                //     'id'
-                                // )}
-                            />
-                            <div className="invalid-feedback">
-                                É necessário preencher este campo.
-                            </div>
-                        </Col>
-                        <Col className="mb-3" md="6">
-                            <label className="form-control-label"
-                                htmlFor="validationAvaliado">
-                                Avaliado
-                            </label>
-                            <Select2
-                                id="validationAvaliado"
-                                className="form-control"
-                                data-minimum-results-for-search="Infinity"
-                                options={{
-                                    placeholder: "Selecione um avaliado",
-                                }}
-                                // value={evaluated}
-                                // onChange={handleEvaluatedChange}
-                                // data={clientCompanyDataList}
-                                // onSelect={(e) => handleSelectionEmploymentContractData(
-                                //     e.target.value,
-                                //     clientCompanyDataList,
-                                //     setEvaluated,
-                                //     setselectedBelongingToEvaluated,
-                                //     setselectedBelongingToEvaluatedState,
-                                //     null,
-                                //     null,
-                                //     'id'
-                                // )}
-                            />
-                            <div className="invalid-feedback">
-                            </div>
-                        </Col>
-                    </div>
-                    <div className="form-row">
-                        <Col className="mb-3" md="6">
-                            <label className="form-control-label"
-                                htmlFor="validationCompetencia">
-                                Competências
-                            </label>
-                            <Select2
-                                id="validationCompetencia"
-                                className="form-control"
-                                data-minimum-results-for-search="Infinity"
-                                options={{
-                                    placeholder: "Selecione uma competência",
-                                }}
-                                // value={competencies}
-                                // onChange={handleCompetenciesChange}
-                                // data={competenciesDataList}
-                                // onSelect={(e) => handleSelectionEmploymentContractData(
-                                //     e.target.value,
-                                //     competenciesDataList,
-                                //     setCompetencies,
-                                //     setselectedBelongingToCompetencies,
-                                //     setselectedBelongingToCompetenciesState,
-                                //     null,
-                                //     null,
-                                //     'id'
-                                // )}
-                            />
-                            <div className="invalid-feedback">
-                            </div>
-                        </Col>
-                        <Col className="mb-3" md="6">
-                            <label
-                                className="form-control-label"
-                                htmlFor="validationSugetao"
-                            >
-                                Sugestão
+                                Descrição Informacional
                             </label>
                             <Input
-                                id="validationSugetao"
-                                placeholder="Insira a sugestão"
+                                id="validationPDIStatus"
                                 type="text"
-                                // valid={pdiStatusState === "valid"}
-                                // invalid={pdiStatusState === "invalid"}
-                                // onChange={(e) => {
-                                //     setPdiStatus(e.target.value);
-                                //     if (e.target.value === "") {
-                                //         setPdiStatusState("invalid");
-                                //     } else {
-                                //         setPdiStatusState("valid");
-                                //     }
-                                // }}
+                            // valid={pdiStatusState === "valid"}
+                            // invalid={pdiStatusState === "invalid"}
+                            // onChange={(e) => {
+                            //     setPdiStatus(e.target.value);
+                            //     if (e.target.value === "") {
+                            //         setPdiStatusState("invalid");
+                            //     } else {
+                            //         setPdiStatusState("valid");
+                            //     }
+                            // }}
                             />
+                            <div className="valid-feedback">Parece bom!</div>
                             <div className="invalid-feedback">
                                 É necessário preencher este campo.
-                            </div>
-                            <div className="valid-feedback">
-                                Parece bom!
                             </div>
                         </Col>
                     </div>
                     <Row>
                         <Col md="8" />
                         <Col className="d-flex justify-content-end align-items-center" md="4" >
+                            <Button className="px-5" color="secundary" size="lg" type="button">
+                                <span className="btn-inner--text">Limpar</span>
+                            </Button>
                             <Button className="px-5" color="primary" size="lg" type="button">
                                 <span className="btn-inner--text">Salvar</span>
                             </Button>
