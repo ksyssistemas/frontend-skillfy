@@ -378,35 +378,6 @@ export function PDIRegister({ handleShowPDIRegister }) {
                             <div className="invalid-feedback">
                             </div>
                         </Col>
-                        <Col className="mb-3" md="6">
-                            <label
-                                className="form-control-label"
-                                htmlFor="validationSugetao"
-                            >
-                                Sugestão
-                            </label>
-                            <Input
-                                id="validationSugetao"
-                                placeholder="Insira a sugestão"
-                                type="text"
-                                // valid={pdiStatusState === "valid"}
-                                // invalid={pdiStatusState === "invalid"}
-                                // onChange={(e) => {
-                                //     setPdiStatus(e.target.value);
-                                //     if (e.target.value === "") {
-                                //         setPdiStatusState("invalid");
-                                //     } else {
-                                //         setPdiStatusState("valid");
-                                //     }
-                                // }}
-                            />
-                            <div className="invalid-feedback">
-                                É necessário preencher este campo.
-                            </div>
-                            <div className="valid-feedback">
-                                Parece bom!
-                            </div>
-                        </Col>
                     </div>
                     <Row>
                         <Col md="8" />
