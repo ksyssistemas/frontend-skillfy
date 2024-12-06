@@ -112,18 +112,7 @@ export function AppraisalsSkillsRegister() {
                             >
                                 Objetivo
                             </label>
-                            <div
-                                data-quill-placeholder="Escreva aqui o objetivo da avaliação..."
-                                data-toggle="quill"
-                                id="validationDescriptionReviewObjective"
-                            // valid={reviewObjectiveState === "valid"}
-                            // invalid={reviewObjectiveState === "invalid"}
-                            // onChange={handleReviewObjectiveChange}
-                            />
-                            <div className="valid-feedback">Parece bom!</div>
-                            <div className="invalid-feedback">
-                                É necessário preencher este campo.
-                            </div>
+                            <p> Texto de teste para o objetivo desta avaliação. </p>
                         </Col>
                     </div>
                     <div className="form-row">
@@ -223,21 +212,15 @@ export function AppraisalsSkillsRegister() {
                                 className="form-control-label"
                                 htmlFor="validationDescriptionReviewObjective"
                             >
-                                Descrição Informacional
+                                Objetivo
                             </label>
-                            <Input
-                                id="validationPDIStatus"
-                                type="text"
-                            // valid={pdiStatusState === "valid"}
-                            // invalid={pdiStatusState === "invalid"}
-                            // onChange={(e) => {
-                            //     setPdiStatus(e.target.value);
-                            //     if (e.target.value === "") {
-                            //         setPdiStatusState("invalid");
-                            //     } else {
-                            //         setPdiStatusState("valid");
-                            //     }
-                            // }}
+                            <div
+                                data-quill-placeholder="Escreva aqui o objetivo da avaliação..."
+                                data-toggle="quill"
+                                id="validationDescriptionReviewObjective"
+                            // valid={reviewObjectiveState === "valid"}
+                            // invalid={reviewObjectiveState === "invalid"}
+                            // onChange={handleReviewObjectiveChange}
                             />
                             <div className="valid-feedback">Parece bom!</div>
                             <div className="invalid-feedback">
