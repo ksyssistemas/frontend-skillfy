@@ -24,24 +24,27 @@ import {
     ListGroupItem,
     Progress
 } from "reactstrap";
-import 'quill/dist/quill.snow.css'; // Importando o CSS do Quill
+import 'quill/dist/quill.snow.css'; 
 import 'assets/css/styles/appraisalastable.css';
+import { useRouter } from 'next/router';
+import { EvidencesContext } from '../../../contexts/PerformanceContext/AppraisalEvidencesContext';
 export function AppraisalsSkillsRegister() {
-    const quillRef = useRef(null); // Referência para o editor
+    const quillRef = useRef(null); 
 
+    const { evidencesIdToUpdate, handleEvidenceIdStatusCleanupToUpdate  } = useContext(EvidencesContext);
+    console.log("ID do register:", evidencesIdToUpdate); 
+    const handleBackToList = () => {
+        handleEvidenceIdStatusCleanupToUpdate(); // Limpa o ID
+      };
     useEffect(() => {
         let quillInstance;
         const initializeQuill = async () => {
             if (typeof window !== 'undefined' && document) {
-                // Apenas cria uma nova instância do Quill se não existir uma instância anterior
                 if (!quillRef.current) {
                     try {
-                        // we make a dynamic import for the QuillJS, as this component is not made to work on SSR
-                        // Somente cria uma nova instância do Quill se não existir uma instância anterior
                         const Quill = (await import("quill")).default;
                         const quillElement = document.querySelector('[data-toggle="quill"]');
 
-                        // Verificar se o elemento está presente e se ainda não tem um Quill
                         if (quillElement && !quillElement.__quill) {
                             quillInstance = new Quill(quillElement, {
                                 modules: {
@@ -56,9 +59,8 @@ export function AppraisalsSkillsRegister() {
                             });
                             quillRef.current = quillInstance;
 
-                            // Event listener for text change
                             quillInstance.on('text-change', () => {
-                                const text = quillInstance.root.innerText; // Get the editor content
+                                const text = quillInstance.root.innerText; 
                                 setReviewObjective(text);
                             });
                         }
@@ -70,11 +72,10 @@ export function AppraisalsSkillsRegister() {
         };
 
         initializeQuill();
-        // Cleanup function para desmontar o Quill ao desmontar o componente
         return () => {
             if (quillRef.current) {
-                quillRef.current.off('text-change'); // Remove event listeners if any
-                quillRef.current = null; // Clean up ref
+                quillRef.current.off('text-change'); 
+                quillRef.current = null; 
             }
         };
     }, []);
@@ -231,6 +232,7 @@ export function AppraisalsSkillsRegister() {
                     <Row>
                         <Col md="8" />
                         <Col className="d-flex justify-content-end align-items-center" md="4" >
+                            <Button className="px-5" color="primary" size="lg" onClick={handleBackToList}>Voltar</Button>
                             <Button className="px-5" color="secundary" size="lg" type="button">
                                 <span className="btn-inner--text">Limpar</span>
                             </Button>

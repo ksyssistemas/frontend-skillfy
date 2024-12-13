@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Badge,
   Button,
@@ -19,8 +19,10 @@ import {
   Table,
   UncontrolledDropdown
 } from 'reactstrap';
+import { useContext } from 'react';
 import { withRouter } from "next/router";
-
+import { useFindAllEvidencesPerformance } from '../../../../hooks/PerformanceReview/useFindAllEvidencesPerformance';
+import { EvidencesContext } from '../../../../contexts/PerformanceContext/AppraisalEvidencesContext'
 function AppraisalsListTableCompetencies() {
 
   const badgeConfig = {
@@ -91,36 +93,60 @@ function AppraisalsListTableCompetencies() {
     return `${day}/${month}/${year}`;
   }
 
-  const [performanceAppraisalData, setPerformanceAppraisalData] = useState([
-    {
-      id: 1,
-      name: "One appraisal name",
-      startDate: "2023-08-06T00:00:00Z",
-      endDate: "2024-08-06T00:00:00Z",
-      validation: "Concluída",
-      progress: "100%",
-      status: "completo",
-    },
-    {
-      id: 2,
-      name: "One appraisal name",
-      startDate: "2022-08-06T00:00:00Z",
-      endDate: "2023-08-06T00:00:00Z",
-      validation: "Solicitada",
-      progress: "50%",
-      status: "dentro do prazo",
-    },
-    {
-      id: 3,
-      name: "One appraisal name",
-      startDate: "2021-08-06T00:00:00Z",
-      endDate: "2022-08-06T00:00:00Z",
-      validation: "Negada",
-      progress: "0%",
-      status: "pendente",
-    },
-  ]);
+  // const [performanceAppraisalData, setPerformanceAppraisalData] = useState([]);
 
+  //   useEffect(() => {
+  //    const fetchPerformanceAppraisal = async () => {
+  //         if (performanceAppraisalData.length <= 0) {
+  //           try {
+  //             const foundPerformanceAppraisal = await useFindAllEvidencesPerformance();
+  //             setPerformanceAppraisalData(foundPerformanceAppraisal);
+  //           } catch (error) {
+  //             console.error('Error fetching performance appraisals:', error);
+  //           }
+  //         }
+  //       };
+  //     fetchPerformanceAppraisal();
+  //   }, []);
+  //   console.log(performanceAppraisalData);
+  // console.log(process.env.NEXT_PUBLIC_EVIDENCES_PERFORMANCE);
+  // const [admins, setAdmins] = useState([]);
+  // const [appraisalIdToBeShown, setAppraisalIdToBeShown] = useState(null);
+  const [performanceAppraisalData, setPerformanceAppraisalData] = useState([]);
+
+  useEffect(() => {
+    async function fetchPerformanceAppraisal() {
+      try {
+        const response = await fetch('https://dev.ksyssistemas.com.br/performance-review');
+        if (!response.ok) {
+          throw new Error('Network response was not ok.');
+        }
+        const data = await response.json();
+        setPerformanceAppraisalData(data);
+      } catch (error) {
+        console.error('There was a problem fetching the data:', error);
+      }
+    }
+  
+    fetchPerformanceAppraisal();
+  }, []);  
+  console.log(performanceAppraisalData);
+  
+  const { handleEvidencesIdToUpdate } = useContext(EvidencesContext);
+
+  const handleSetId = (id) => {
+    handleEvidencesIdToUpdate(id);  
+    console.log("ID da table:", id); 
+  };
+  // {
+  //   id: 1,
+  //   name: "One appraisal name",
+  //   startDate: "2023-08-06T00:00:00Z",
+  //   endDate: "2024-08-06T00:00:00Z",
+  //   validation: "Concluída",
+  //   progress: "100%",
+  //   status: "completo",
+  // },
   return (
     <Row>
       <div className="col">
@@ -152,7 +178,7 @@ function AppraisalsListTableCompetencies() {
                         href="#pablo"
                         onClick={(e) => e.preventDefault()}
                       >
-                        <p className="name mb-0 text-sm">{appraisal.name}</p>
+                        <p className="name mb-0 text-sm">{appraisal.reviewName}</p>
                       </Button>
                     </td>
                     <td className="budget">{formatDate(appraisal.startDate)}</td>
@@ -178,8 +204,8 @@ function AppraisalsListTableCompetencies() {
                         </DropdownToggle>
                         <DropdownMenu className="dropdown-menu-arrow" right>
                           <DropdownItem
-                            href="add-appraisals-skills"
-                            // onClick={(e) => e.preventDefault()}
+                            // href="add-appraisals-skills"
+                            onClick={() => handleSetId(appraisal.id)}
                           >
                             Fazer a avaliação
                           </DropdownItem>
