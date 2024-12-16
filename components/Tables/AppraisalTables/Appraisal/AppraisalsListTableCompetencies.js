@@ -21,7 +21,7 @@ import {
 } from 'reactstrap';
 import { useContext } from 'react';
 import { withRouter } from "next/router";
-import { useFindAllEvidencesPerformance } from '../../../../hooks/PerformanceReview/useFindAllEvidencesPerformance';
+import { useFindAllPerformanceReview } from '../../../../hooks/PerformanceReview/useFindAllPerformanceReview';
 import { EvidencesContext } from '../../../../contexts/PerformanceContext/AppraisalEvidencesContext'
 function AppraisalsListTableCompetencies() {
 
@@ -93,60 +93,27 @@ function AppraisalsListTableCompetencies() {
     return `${day}/${month}/${year}`;
   }
 
-  // const [performanceAppraisalData, setPerformanceAppraisalData] = useState([]);
-
-  //   useEffect(() => {
-  //    const fetchPerformanceAppraisal = async () => {
-  //         if (performanceAppraisalData.length <= 0) {
-  //           try {
-  //             const foundPerformanceAppraisal = await useFindAllEvidencesPerformance();
-  //             setPerformanceAppraisalData(foundPerformanceAppraisal);
-  //           } catch (error) {
-  //             console.error('Error fetching performance appraisals:', error);
-  //           }
-  //         }
-  //       };
-  //     fetchPerformanceAppraisal();
-  //   }, []);
-  //   console.log(performanceAppraisalData);
-  // console.log(process.env.NEXT_PUBLIC_EVIDENCES_PERFORMANCE);
-  // const [admins, setAdmins] = useState([]);
-  // const [appraisalIdToBeShown, setAppraisalIdToBeShown] = useState(null);
   const [performanceAppraisalData, setPerformanceAppraisalData] = useState([]);
 
   useEffect(() => {
     async function fetchPerformanceAppraisal() {
       try {
-        const response = await fetch('https://dev.ksyssistemas.com.br/performance-review');
-        if (!response.ok) {
-          throw new Error('Network response was not ok.');
-        }
-        const data = await response.json();
-        setPerformanceAppraisalData(data);
+        const foundPerformanceAppraisal = await useFindAllPerformanceReview();
+        setPerformanceAppraisalData(foundPerformanceAppraisal);
       } catch (error) {
-        console.error('There was a problem fetching the data:', error);
+        console.error('Error fetching performance:', error);
       }
     }
-  
+
     fetchPerformanceAppraisal();
-  }, []);  
-  console.log(performanceAppraisalData);
-  
+  }, []);
+
   const { handleEvidencesIdToUpdate } = useContext(EvidencesContext);
 
   const handleSetId = (id) => {
-    handleEvidencesIdToUpdate(id);  
-    console.log("ID da table:", id); 
+    handleEvidencesIdToUpdate(id);
   };
-  // {
-  //   id: 1,
-  //   name: "One appraisal name",
-  //   startDate: "2023-08-06T00:00:00Z",
-  //   endDate: "2024-08-06T00:00:00Z",
-  //   validation: "Concluída",
-  //   progress: "100%",
-  //   status: "completo",
-  // },
+
   return (
     <Row>
       <div className="col">

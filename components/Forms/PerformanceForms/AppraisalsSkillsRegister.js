@@ -24,18 +24,64 @@ import {
     ListGroupItem,
     Progress
 } from "reactstrap";
-import 'quill/dist/quill.snow.css'; 
+import 'quill/dist/quill.snow.css';
 import 'assets/css/styles/appraisalastable.css';
 import { useRouter } from 'next/router';
+import { useFindAllEvidences } from '../../../hooks/PerformanceReview/EvidencesReview/useFindAllEvidences';
+import { useFindAllEvaluationRoler } from '../../../hooks/PerformanceReview/EvaluationRoler/useFindAllEvaluationRoler';
+import { useFindAllRuleOption } from '../../../hooks/PerformanceReview/RuleOption/useFindAllRuleOption';
+import { useFindPerformanceReview } from '../../../hooks/PerformanceReview/useFindPerformanceReview';
 import { EvidencesContext } from '../../../contexts/PerformanceContext/AppraisalEvidencesContext';
 export function AppraisalsSkillsRegister() {
-    const quillRef = useRef(null); 
+    const quillRef = useRef(null);
 
-    const { evidencesIdToUpdate, handleEvidenceIdStatusCleanupToUpdate  } = useContext(EvidencesContext);
-    console.log("ID do register:", evidencesIdToUpdate); 
+    const { evidencesIdToUpdate, handleEvidenceIdStatusCleanupToUpdate } = useContext(EvidencesContext);
     const handleBackToList = () => {
-        handleEvidenceIdStatusCleanupToUpdate(); // Limpa o ID
-      };
+        handleEvidenceIdStatusCleanupToUpdate();
+    };
+
+    const [performanceAppraisalData, setPerformanceAppraisalData] = useState([]);
+    useEffect(() => {
+        const fetchPerformanceAppraisal = async () => {
+            if (!performanceAppraisalData.length) {
+                const foundAppraisal = await useFindPerformanceReview(evidencesIdToUpdate);
+                setPerformanceAppraisalData(foundAppraisal);
+            }
+        };
+
+        if (evidencesIdToUpdate) {
+            fetchPerformanceAppraisal();
+        }
+    }, [evidencesIdToUpdate]);
+
+    const [performanceEvidenceData, setPerformanceEvidenceData] = useState([]);
+    useEffect(() => {
+        const fetchPerformanceEvidence = async () => {
+            if (!performanceAppraisalData.length) {
+                const foundEvidences = await useFindAllEvidences();
+                setPerformanceEvidenceData(foundEvidences);
+            }
+        };
+
+        if (evidencesIdToUpdate) {
+            fetchPerformanceEvidence();
+        }
+    }, [evidencesIdToUpdate]);
+
+    const [performanceEvaluationRolerData, setPerformanceEvaluationRolerData] = useState([]);
+    useEffect(() => {
+        const fetchPerformanceEvaluationRoler = async () => {
+            if (!performanceAppraisalData.length) {
+                const foundEvaluationRoler = await useFindAllEvaluationRoler();
+                setPerformanceEvaluationRolerData(foundEvaluationRoler);
+            }
+        };
+
+        if (evidencesIdToUpdate) {
+            fetchPerformanceEvaluationRoler();
+        }
+    }, [evidencesIdToUpdate]);
+
     useEffect(() => {
         let quillInstance;
         const initializeQuill = async () => {
@@ -60,7 +106,7 @@ export function AppraisalsSkillsRegister() {
                             quillRef.current = quillInstance;
 
                             quillInstance.on('text-change', () => {
-                                const text = quillInstance.root.innerText; 
+                                const text = quillInstance.root.innerText;
                                 setReviewObjective(text);
                             });
                         }
@@ -74,26 +120,29 @@ export function AppraisalsSkillsRegister() {
         initializeQuill();
         return () => {
             if (quillRef.current) {
-                quillRef.current.off('text-change'); 
-                quillRef.current = null; 
+                quillRef.current.off('text-change');
+                quillRef.current = null;
             }
         };
     }, []);
-
     const [selectedStatus, setSelectedStatus] = useState({});
 
-    const handleRadioChange = (e, rowIndex) => {
+    const handleRadioChange = (e, evidenceId, rowIndex) => {
         setSelectedStatus((prevState) => ({
             ...prevState,
-            [rowIndex]: e.target.value,
+            [evidenceId]: {
+                ...prevState[evidenceId],
+                [rowIndex]: e.target.value,
+            },
         }));
     };
+    const evidencias = [];
 
-    const evidencias = [
-        "Responde rapidamente às demandas e dificuldades que surgem em seu dia-a-dia.",
-        "Demonstra dinamismo em suas atividades, lidando de forma ágil com diferentes assuntos e/ou atribuições.",
-        "Possui senso de urgência e visão do todo em relação aos assuntos a serem tratados com prioridade."
-    ];
+    for (let i = 0; i < performanceEvaluationRolerData.length; i++) {
+        if (performanceEvaluationRolerData[i].ruleType) {
+            evidencias.push(performanceEvaluationRolerData[i].ruleType);
+        }
+    }
 
     const options = [
         "Nunca", "Quase Nunca", "Algumas Vezes", "Várias Vezes", "Quase Sempre", "Sempre"
@@ -101,7 +150,7 @@ export function AppraisalsSkillsRegister() {
     return (
         <Card className="mb-4">
             <CardHeader>
-                <h3 className="mb-0">Nome da avaliação</h3>
+                <h3 className="mb-0">{performanceAppraisalData.reviewName}</h3>
             </CardHeader>
             <CardBody>
                 <Form className="needs-validation" noValidate>
@@ -113,7 +162,7 @@ export function AppraisalsSkillsRegister() {
                             >
                                 Objetivo
                             </label>
-                            <p> Texto de teste para o objetivo desta avaliação. </p>
+                            <p> {performanceAppraisalData.reviewObjective} </p>
                         </Col>
                     </div>
                     <div className="form-row">
@@ -124,89 +173,70 @@ export function AppraisalsSkillsRegister() {
                             >
                                 Legenda
                             </label>
-                            <Input
-                                id="validationPDIStatus"
-                                // placeholder="Status do pdi"
-                                type="text"
-                            // valid={pdiStatusState === "valid"}
-                            // invalid={pdiStatusState === "invalid"}
-                            // onChange={(e) => {
-                            //     setPdiStatus(e.target.value);
-                            //     if (e.target.value === "") {
-                            //         setPdiStatusState("invalid");
-                            //     } else {
-                            //         setPdiStatusState("valid");
-                            //     }
-                            // }}
-                            />
-                            <div className="invalid-feedback">
-                                É necessário preencher este campo.
-                            </div>
-                            <div className="valid-feedback">
-                                Parece bom!
-                            </div>
+                            <p>{performanceAppraisalData.reviewModel}</p>
                         </Col>
                     </div>
                     <Col className="py-3 d-flex justify-content-center" md="12">
                         <p className="lead text-black">Classificação da Competência</p>
                     </Col>
-                    <Card>
-                        <CardHeader>Tipo de competência 1</CardHeader>
-                        <CardBody>
-                            <div className="form-row">
-                                <Col className="mb-3" md="12">
-                                    <label
-                                        className="form-control-label"
-                                        htmlFor="validationPDIStatus"
-                                    >
-                                        Descrição da Competência a ser avaliada
-                                    </label>
-                                    <Input
-                                        id="validationPDIStatus"
-                                        type="text"
-                                    />
-                                    <div className="invalid-feedback">
-                                        É necessário preencher este campo.
+                    {performanceEvidenceData.length > 0 ? (
+                        performanceEvidenceData.map((evidence) => (
+                            <Card>
+                                <CardHeader>{evidence.evidenceName}</CardHeader>
+                                <CardBody>
+                                    <div className="form-row">
+                                        <Col className="mb-3" md="12">
+                                            <label
+                                                className="form-control-label"
+                                                htmlFor="validationPDIStatus"
+                                            >
+                                                Descrição da Competência a ser avaliada
+                                            </label>
+                                            <p>{evidence.description}</p>
+                                        </Col>
                                     </div>
-                                    <div className="valid-feedback">
-                                        Parece bom!
-                                    </div>
-                                </Col>
-                            </div>
-                            <div className="form-row">
-                                <Col className="mb-3" md="12">
-                                    <table className="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th className="text-center font-weight-bold">Evidência Comportamental</th>
-                                                {options.map((option, index) => (
-                                                    <th key={index} className="text-center font-weight-bold">{option}</th>
-                                                ))}
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {evidencias.map((evidencia, rowIndex) => (
-                                                <tr key={rowIndex}>
-                                                    <td>{evidencia}</td>
-                                                    {options.map((option, colIndex) => (
-                                                        <td key={colIndex} align="center">
-                                                            <input
-                                                                type="radio"
-                                                                name={`status-${rowIndex}`}
-                                                                value={option}
-                                                                checked={selectedStatus[rowIndex] === option}
-                                                                onChange={(e) => handleRadioChange(e, rowIndex)}
-                                                            />
-                                                        </td>
+                                    <div className="form-row">
+                                        <Col className="mb-3" md="12">
+                                            <table className="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th className="text-center font-weight-bold">Evidência Comportamental</th>
+                                                        {options.map((option, index) => (
+                                                            <th key={index} className="text-center font-weight-bold">{option}</th>
+                                                        ))}
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {evidencias.map((evidencia, rowIndex) => (
+                                                        <tr key={rowIndex}>
+                                                            <td>{evidencia}</td>
+                                                            {options.map((option, colIndex) => (
+                                                                <td key={colIndex} align="center">
+                                                                    <input
+                                                                        type="radio"
+                                                                        name={`status-${evidence.id}-${rowIndex}`}
+                                                                        value={option}
+                                                                        checked={
+                                                                            selectedStatus[evidence.id]?.[rowIndex] === option
+                                                                        }
+                                                                        onChange={(e) => handleRadioChange(e, evidence.id, rowIndex)}
+                                                                    />
+                                                                </td>
+                                                            ))}
+                                                        </tr>
                                                     ))}
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </Col>
-                            </div>
-                        </CardBody>
-                    </Card>
+                                                </tbody>
+                                            </table>
+                                        </Col>
+                                    </div>
+                                </CardBody>
+                            </Card>
+                        ))
+                    ) : (
+                        <Card>
+                            <CardBody><p>Nenhuma competência encontrada</p></CardBody>
+                        </Card>
+                    )}
                     <div className="form-row">
                         <Col className="mb-7" md="12">
                             <label

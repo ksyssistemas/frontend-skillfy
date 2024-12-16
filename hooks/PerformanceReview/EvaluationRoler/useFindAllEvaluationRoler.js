@@ -1,7 +1,7 @@
-export async function useFindAllEvidencesPerformance() {
+export async function useFindAllEvaluationRoler() {
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_EVIDENCES_PERFORMANCE}`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_EVALUATION_ROLER}`);
     if (!response.ok) {
       throw new Error('Network response was not ok.');
     }

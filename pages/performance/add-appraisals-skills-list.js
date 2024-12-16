@@ -12,11 +12,10 @@ import { EvidencesContext } from '../../contexts/PerformanceContext/AppraisalEvi
 
 function Appraisalsskillslist() {
   const { evidencesIdToUpdate } = useContext(EvidencesContext);
-  console.log(evidencesIdToUpdate);
   return (
-  
+
     <>
-       <AppraisalListHeader name="Avaliações" parentName="Desempenho" />
+      <AppraisalListHeader name="Avaliações" parentName="Desempenho" />
       <Container className="mt--6" fluid>
         {/* Se o ID estiver definido, exibe o registro de habilidades; caso contrário, a lista */}
         {evidencesIdToUpdate ? (
