@@ -82,6 +82,20 @@ export function AppraisalsSkillsRegister() {
         }
     }, [evidencesIdToUpdate]);
 
+    const [performanceRuleOptionData, setPerformanceRuleOptionData] = useState([]);
+    useEffect(() => {
+        const fetchPerformanceRuleOption = async () => {
+            if (!performanceAppraisalData.length) {
+                const foundRuleOption = await useFindAllRuleOption();
+                setPerformanceRuleOptionData(foundRuleOption);
+            }
+        };
+
+        if (evidencesIdToUpdate) {
+            fetchPerformanceRuleOption();
+        }
+    }, [evidencesIdToUpdate]);
+
     useEffect(() => {
         let quillInstance;
         const initializeQuill = async () => {
@@ -144,9 +158,13 @@ export function AppraisalsSkillsRegister() {
         }
     }
 
-    const options = [
-        "Nunca", "Quase Nunca", "Algumas Vezes", "Várias Vezes", "Quase Sempre", "Sempre"
-    ];
+    const options = [];
+
+    for (let i = 0; i < performanceRuleOptionData.length; i++) {
+        if (performanceRuleOptionData[i].label) {
+            options.push(performanceRuleOptionData[i].label);
+        }
+    }
     return (
         <Card className="mb-4">
             <CardHeader>

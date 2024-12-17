@@ -1,7 +1,7 @@
 export async function useFindAllEvaluationRoler() {
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_EVALUATION_ROLER}`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_EVALUATION_RULER}`);
     if (!response.ok) {
       throw new Error('Network response was not ok.');
     }
