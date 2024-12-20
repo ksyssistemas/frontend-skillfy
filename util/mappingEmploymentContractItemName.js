@@ -59,6 +59,10 @@ export function mappingEmploymentContractItemName(item, employmentContractItemNa
                 return item.competencieName;
             case 'skillTypes':
                 return item.competencieTypeName;
+            case 'admin':
+                return item.name;
+            case 'competencies':
+                return item.name;
             default:
                 return 'Unknown';
         }
