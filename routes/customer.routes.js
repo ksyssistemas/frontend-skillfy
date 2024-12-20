@@ -100,8 +100,8 @@ const routes = () => {
       views: [
         {
           path: "/appraisals",
-          name: "Realizar avaliação",
-          miniName: "R",
+          name: "Criar avaliação",
+          miniName: "C",
           layout: "/performance",
         },
         {
