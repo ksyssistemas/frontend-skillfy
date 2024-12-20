@@ -110,7 +110,27 @@ const routes = () => {
           miniName: "C",
           layout: "/performance",
         },
+        {
+          path: "/add-appraisals-skills-list",
+          name: "Avaliação de Comp",
+          miniName: "A",
+          layout: "/performance",
+        },
       ],
+    },
+    {
+      collapse: true,
+      name: "PDI",
+      icon: "ni ni-chart-bar-32",
+      state: "pdiCollapse",
+      views: [
+        {
+          path: "/dashboard-pdi",
+          name: "Dashboard",
+          miniName: "D",
+          layout: "/pdi",
+        },
+      ]
     },
   ]
 }

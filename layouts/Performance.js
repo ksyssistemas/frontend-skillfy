@@ -82,7 +82,7 @@ function Performance({ router, children }) {
         sidenavOpen={sidenavOpen}
         logo={{
           innerLink: "/",
-          imgSrc: require("assets/img/brand/skillfy-logo-login.png"),
+          imgSrc: require("assets/img/brand/skillfy-logo-white.png"),
           imgAlt: "...",
         }}
       />
