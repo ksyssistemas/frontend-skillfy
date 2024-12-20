@@ -24,7 +24,7 @@ jobs:
       - name: Build
         run: yarn build  
       - name: Start the application
-        run: yarn start &
+        run: yarn start & 
       - name: Wait for application to start
         run: sleep 5
       - name: Test application

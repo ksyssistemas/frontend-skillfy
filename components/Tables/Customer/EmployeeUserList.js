@@ -169,6 +169,7 @@ const EmployeeUserList = () => {
         })
       );
       setDetailedEmployeeData(updatedEmployees);
+      console.log(updatedEmployees);
     };
 
 

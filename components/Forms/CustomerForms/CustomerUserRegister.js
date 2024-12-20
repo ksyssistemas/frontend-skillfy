@@ -277,11 +277,11 @@ function CustomerUserRegister() {
         setStep(step - 1);
     };
 
-    // useEffect(() => {
-    //     if (checkbox !== null) {
-    //         validateCheckboxIsChecked();
-    //     }
-    // }, [checkbox])
+    useEffect(() => {
+        if (checkbox !== null) {
+            validateCheckboxIsChecked();
+        }
+    }, [checkbox]) 
 
     useEffect(() => {
         if (brasilAPICNPJData !== null) {

@@ -1,6 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+
+import { EmployeeFunctionContext } from '../../../contexts/RecordsContext/EmployeeFunctionContext';
 
 const useCreateEmployeeFunction = (handleShowRolesUserRegister) => {
+
+  const {
+    handleCreatedEmployeeFunctionRecordStatusChange,
+  } = useContext(EmployeeFunctionContext);
 
   const [employeeFunctionName, setEmployeeFunctionName] = useState("");
   const [employeeFunctionNameState, setEmployeeFunctionNameState] = useState(null);
@@ -21,34 +27,14 @@ const useCreateEmployeeFunction = (handleShowRolesUserRegister) => {
     } else {
       setEmployeeFunctionNameState("valid");
     }
-    if (employeeFunctiontDescription === "") {
-      if (employeeFunctiontDescription.length < 10) {
-        setEmployeeFunctiontDescriptionState("invalid");
-      } else {
-        setEmployeeFunctiontDescriptionState("valid");
-      }
-    }
   }
 
   function handleValidateAddEmployeeFunctionForm() {
     validateAddEmployeeFunctionForm();
-    if (employeeFunctionNameState === "valid" &&
-      funtionReportsToFuntionState === "" &&
-      employeeFunctiontDescriptionState === "") {
-      handleSubmit(employeeFunctionName);
-    } else if (employeeFunctionNameState === "valid" &&
-      funtionReportsToFuntionState === "" &&
-      employeeFunctiontDescriptionState !== "") {
-      handleSubmit(employeeFunctionName, employeeFunctiontDescription);
-    } else if (employeeFunctionNameState === "valid" &&
-      funtionReportsToFuntionState !== "" &&
-      employeeFunctiontDescriptionState !== "") {
-      handleSubmit(employeeFunctionName, employeeFunctiontDescription, funtionReportsToFuntion);
-    }
+    handleSubmit(employeeFunctionName, employeeFunctiontDescription, funtionReportsToFuntion);
   }
 
   const handleSubmit = async (employeeFunctionName, employeeFunctiontDescription, funtionReportsToFuntion) => {
-
     if (employeeFunctionName && employeeFunctionName !== "") {
       try {
         const payload = {
@@ -63,8 +49,6 @@ const useCreateEmployeeFunction = (handleShowRolesUserRegister) => {
           payload.responsible = funtionReportsToFuntion;
         }
 
-        console.log("Dados para a API: ", payload);
-
         const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE_FUNCTION}`, {
           method: 'POST',
           headers: {
@@ -76,6 +60,7 @@ const useCreateEmployeeFunction = (handleShowRolesUserRegister) => {
         if (response.ok) {
           resetFunction();
           handleShowRolesUserRegister();
+          handleCreatedEmployeeFunctionRecordStatusChange();
           console.log('Data sent successfully!');
         } else {
           console.error('Erro na resposta:', response.status);

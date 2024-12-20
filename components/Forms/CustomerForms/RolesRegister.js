@@ -65,10 +65,18 @@ function RolesRegister({ handleShowRolesUserRegister }) {
 
     useEffect(() => {
         if (employeeRoleDataList.length === 0) {
-            employmentContractDataSearchAndProcess(useFindAllRoles, handleEmployeeRoleDataList, 'role', 'EmployeeUserRegister');
+            employmentContractDataSearchAndProcess(useFindAllRoles, (roleData) => {
+                const noneOption = { id: 'none', text: 'Nenhum Cargo' };
+                const updatedRoleData = [noneOption, ...roleData];
+                handleEmployeeRoleDataList(updatedRoleData);
+            }, 'role', 'EmployeeUserRegister');
         }
         if (employeeFunctionDataList.length === 0) {
-            employmentContractDataSearchAndProcess(useFindAllRoles, handleEmployeeFunctionDataList, 'role', 'EmployeeUserRegister');
+            employmentContractDataSearchAndProcess(useFindAllRoles, (roleData) => {
+                const noneOption = { id: 'none', text: 'Nenhum Cargo' };
+                const updatedRoleData = [noneOption, ...roleData];
+                handleEmployeeFunctionDataList(updatedRoleData);
+            }, 'role', 'EmployeeUserRegister');
         }
     }, []);
 
@@ -107,22 +115,30 @@ function RolesRegister({ handleShowRolesUserRegister }) {
                             </div>
                         </Col>
                         <Col md="6">
-                            <FormGroup>
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="validationReportToRole"
-                                >
-                                    Reporta ao Cargo
-                                </label>
-                                <Select2
-                                    id="validationReportToRole"
-                                    className="form-control"
-                                    data-minimum-results-for-search="Infinity"
-                                    options={{ placeholder: "Selecione um cargo:" }}
-                                    value={selectedRole}
-                                    onChange={(e) => setSelectedRole(e.target.value)}
-                                    data={employeeRoleDataList}
-                                    onSelect={(e) => handleSelectionEmploymentContractData(
+                            <label
+                                className="form-control-label"
+                                htmlFor="validationReportToRole"
+                            >
+                                Reporta ao Cargo
+                            </label>
+                            <Select2
+                                id="validationReportToRole"
+                                className="form-control"
+                                data-minimum-results-for-search="Infinity"
+                                options={{ placeholder: "Selecione um cargo:" }}
+                                value={selectedRole}
+                                onChange={(e) => setSelectedRole(e.target.value)}
+                                data={employeeRoleDataList}
+                                onSelect={(e) => {
+                                    const selectedId = e.target.value;
+                                    if (selectedId === 'none') {
+                                        // Mantenha o estado inalterado ao selecionar "Nenhum Cargo"
+                                        console.log("Nenhum cargo selecionado");
+                                        return;
+                                    }
+
+                                    console.log("Reporta ao Cargo");
+                                    handleSelectionEmploymentContractData(
                                         e.target.value,
                                         employeeRoleDataList,
                                         setSelectedRole,
@@ -131,34 +147,33 @@ function RolesRegister({ handleShowRolesUserRegister }) {
                                         null,
                                         null,
                                         'id'
-                                    )}
-                                />
-                            </FormGroup>
+                                    )
+                                }
+                                }
+                            />
                         </Col>
                         <Col className="mb-3" md="12">
-                            <FormGroup>
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="validationEmployeeRoleDescription"
-                                >
-                                    Descrição
-                                </label>
-                                <Input
-                                    id="validationEmployeeRoleDescription"
-                                    rows="3"
-                                    type="textarea"
-                                    valid={employeeRoleDescriptionState === "valid"}
-                                    invalid={employeeRoleDescriptionState === "invalid"}
-                                    onChange={(e) => {
-                                        setEmployeeRoleDescription(e.target.value);
-                                        if (e.target.value === "") {
-                                            setEmployeeRoleDescriptionState("");
-                                        } else {
-                                            setEmployeeRoleDescriptionState("valid");
-                                        }
-                                    }}
-                                />
-                            </FormGroup>
+                            <label
+                                className="form-control-label"
+                                htmlFor="validationEmployeeRoleDescription"
+                            >
+                                Descrição
+                            </label>
+                            <Input
+                                id="validationEmployeeRoleDescription"
+                                rows="3"
+                                type="textarea"
+                                valid={employeeRoleDescriptionState === "valid"}
+                                invalid={employeeRoleDescriptionState === "invalid"}
+                                onChange={(e) => {
+                                    setEmployeeRoleDescription(e.target.value);
+                                    if (e.target.value === "") {
+                                        setEmployeeRoleDescriptionState("");
+                                    } else {
+                                        setEmployeeRoleDescriptionState("valid");
+                                    }
+                                }}
+                            />
                         </Col>
                     </Row>
                     <Row>
@@ -219,16 +234,27 @@ function RolesRegister({ handleShowRolesUserRegister }) {
                                 value={selectedFunction}
                                 onChange={(e) => setSelectedFunction(e.target.value)}
                                 data={employeeFunctionDataList}
-                                onSelect={(e) => handleSelectionEmploymentContractData(
-                                    e.target.value,
-                                    employeeFunctionDataList,
-                                    setSelectedFunction,
-                                    setFuntionReportsToFuntion,
-                                    setFuntionReportsToFuntionState,
-                                    null,
-                                    null,
-                                    'id'
-                                )}
+                                onSelect={(e) => {
+                                    const selectedId = e.target.value;
+                                    if (selectedId === 'none') {
+                                        // Mantenha o estado inalterado ao selecionar "Nenhum Cargo"
+                                        console.log("Nenhum cargo selecionado");
+                                        return;
+                                    }
+                                    
+                                    console.log("Reporta ao Função");
+                                    handleSelectionEmploymentContractData(
+                                        e.target.value,
+                                        employeeFunctionDataList,
+                                        setSelectedFunction,
+                                        setFuntionReportsToFuntion,
+                                        setFuntionReportsToFuntionState,
+                                        null,
+                                        null,
+                                        'id'
+                                    )
+                                }
+                                }
                             />
                         </Col>
                         <Col className="mb-3" md="12">
@@ -247,7 +273,7 @@ function RolesRegister({ handleShowRolesUserRegister }) {
                                 onChange={(e) => {
                                     setEmployeeFunctiontDescription(e.target.value);
                                     if (e.target.value === "") {
-                                        setEmployeeFunctiontDescriptionState("invalid");
+                                        setEmployeeFunctiontDescriptionState("");
                                     } else {
                                         setEmployeeFunctiontDescriptionState("valid");
                                     }
