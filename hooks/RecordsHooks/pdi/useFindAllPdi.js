@@ -1,6 +1,6 @@
 export async function useFindAllPDI() {
     try {
-        const response = await fetch('http://5.78.72.138:3015/pdi/findAll');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_PDI}`);
         if (!response.ok) {
             throw new Error('Network response was not ok.');
         }

@@ -1,6 +1,6 @@
 export async function useFindAllComptencies() {
     try {
-        const response = await fetch('http://5.78.72.138:3015/competencies');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_COMPETENCIES}`);
         if (!response.ok) {
             throw new Error('Network response was not ok.');
         }
