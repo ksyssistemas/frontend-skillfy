@@ -141,15 +141,19 @@ export function AppraisalsSkillsRegister() {
     }, []);
     const [selectedStatus, setSelectedStatus] = useState({});
 
-    const handleRadioChange = (e, evidenceId, rowIndex) => {
+    const handleRadioChange = (e, evidenceId, rowIndex, colIndex) => {
         setSelectedStatus((prevState) => ({
             ...prevState,
             [evidenceId]: {
                 ...prevState[evidenceId],
-                [rowIndex]: e.target.value,
+                [rowIndex]: {
+                    ...prevState[evidenceId]?.[rowIndex],
+                    [colIndex]: e.target.value,
+                },
             },
         }));
     };
+
     const evidencias = [];
 
     for (let i = 0; i < performanceEvaluationRolerData.length; i++) {
@@ -232,12 +236,12 @@ export function AppraisalsSkillsRegister() {
                                                                 <td key={colIndex} align="center">
                                                                     <input
                                                                         type="radio"
-                                                                        name={`status-${evidence.id}-${rowIndex}`}
+                                                                        name={`status-${evidence.id}-${rowIndex}-${colIndex}`}
                                                                         value={option}
                                                                         checked={
-                                                                            selectedStatus[evidence.id]?.[rowIndex] === option
+                                                                            selectedStatus[evidence.id]?.[rowIndex]?.[colIndex] === option
                                                                         }
-                                                                        onChange={(e) => handleRadioChange(e, evidence.id, rowIndex)}
+                                                                        onChange={(e) => handleRadioChange(e, evidence.id, rowIndex, colIndex)}
                                                                     />
                                                                 </td>
                                                             ))}
