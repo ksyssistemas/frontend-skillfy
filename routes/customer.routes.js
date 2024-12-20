@@ -100,8 +100,8 @@ const routes = () => {
       views: [
         {
           path: "/appraisals",
-          name: "Avaliações",
-          miniName: "A",
+          name: "Realizar avaliação",
+          miniName: "R",
           layout: "/performance",
         },
         {
@@ -112,7 +112,7 @@ const routes = () => {
         },
         {
           path: "/add-appraisals-skills-list",
-          name: "Avaliação de Comp",
+          name: "Avaliações",
           miniName: "A",
           layout: "/performance",
         },
