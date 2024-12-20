@@ -83,7 +83,7 @@ const useCreateEvidence = () => {
                     },
                     body: JSON.stringify(payload),
                 });
-
+                console.log("PAYLOAD: ", payload);
                 if (response.ok) {
                     console.log('Data sent successfully!');
                 } else {

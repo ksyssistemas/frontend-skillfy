@@ -41,9 +41,6 @@
 **/*.backup.*
 **/*.back.*
 
-node_modules
-next.config.js
-
 *.sublime*
 
 psd
@@ -56,18 +53,18 @@ sketch
 # misc
 *.example.*
 .DS_Store
-# .env
-# .env.*
-# .env.local
-# .env.development.local
-# .env.development
-# .env.development.*
-# .env.test.local
-# .env.test
-# .env.test.*
-# .env.production.local
-# .env.production
-# .env.production.*
+.env
+.env.*
+.env.local
+.env.development.local
+.env.development
+.env.development.*
+.env.test.local
+.env.test
+.env.test.*
+.env.production.local
+.env.production
+.env.production.*
 
 # debug
 npm-debug.log*

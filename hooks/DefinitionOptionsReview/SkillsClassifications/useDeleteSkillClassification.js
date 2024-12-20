@@ -5,15 +5,13 @@ export async function useDeleteSkillClassification(classificationId) {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to delete cycle.');
+      throw new Error('Failed to delete skill classification selected.');
     }
-    console.log("Response useDelete: ", response);
     const data = await response.json();
 
-    console.log("Data useDelete: ", data);
     return data;
 
   } catch (error) {
-    console.error('There was a problem deleting the admin:', error);
+    console.error('There was a problem deleting the skill classification:', error);
   }
 };

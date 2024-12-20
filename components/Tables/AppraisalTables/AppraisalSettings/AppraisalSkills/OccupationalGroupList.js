@@ -123,7 +123,6 @@ function OccupationalGroupList() {
         }
 
     }, [
-        detailedOccupationalGroupsData,
         hasNewAppraisalOccupationalGroupCreated,
         hasUpdatedAppraisalOccupationalGroup,
         hasDeletedAppraisalOccupationalGroup,

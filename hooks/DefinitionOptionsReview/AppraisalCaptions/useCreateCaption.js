@@ -88,7 +88,7 @@ const useCreateCaption = () => {
                     },
                     body: JSON.stringify({
                         ruleType: captionType,
-                        optionsCount: optionsCount
+                        optionsCount: Number(optionsCount)
                     }),
                 });
 
@@ -106,6 +106,8 @@ const useCreateCaption = () => {
     };
 
     const handleCaptionOptionSubmit = async (appraisalCaptionTypeId, option) => {
+        console.log('Legenda: ', typeof appraisalCaptionTypeId);
+        console.log('Opções: ', option);
         try {
             const payload = {
                 evaluationRulerId: appraisalCaptionTypeId,
