@@ -34,6 +34,7 @@ import { EmployeeProvider } from "../contexts/RecordsContext/EmployeeContext";
 import { AppraisalEvidencesProvider } from "../contexts/PerformanceContext/AppraisalEvidencesContext";
 import { AppraisalCaptionsProvider } from "../contexts/PerformanceContext/AprraisalCaptionsContext";
 import { ModelSelectionReviewProvider } from "../contexts/PerformanceContext/ModelSelectionReviewContext";
+import QueryProvider from "../lib/react-query";
 import { CompetenciesProvider } from "../contexts/RecordsContext/CompetenciesContext";
 import { PdiProvider } from "../contexts/RecordsContext/PdiContext";
 
@@ -90,6 +91,7 @@ export default class MyApp extends App {
 
     return (
       <React.Fragment>
+                    <QueryProvider>                    
         <AuthProvider>
           <AlertProvider>
             <AdminProvider>
@@ -135,6 +137,7 @@ export default class MyApp extends App {
             </AdminProvider>
           </AlertProvider>
         </AuthProvider>
+</QueryProvider>
       </React.Fragment >
     );
   }

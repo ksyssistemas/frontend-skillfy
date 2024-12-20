@@ -25,6 +25,9 @@ import { EvidencesContext } from "../../../../contexts/PerformanceContext/Apprai
 import { useFindAllEvidences } from "../../../../hooks/DefinitionOptionsReview/AppraisalEvidences/useFindAllEvidences";
 import { useDeleteEvidence } from "../../../../hooks/DefinitionOptionsReview/AppraisalEvidences/useDeleteEvidence";
 import { useFindSkillType } from "../../../../hooks/DefinitionOptionsReview/SkillsTypes/useFindSkillType";
+import ToolkitProvider, { Search } from "react-bootstrap-table2-toolkit";
+import BootstrapTable from "react-bootstrap-table-next";
+import paginationFactory from "react-bootstrap-table2-paginator";
 
 function EvidencesList() {
 
@@ -45,6 +48,78 @@ function EvidencesList() {
     const [detailedEvidencesData, setDetailedEvidencesData] = useState([]);
 
     const [evidencesModalOpen, setEvidencesModalOpen] = useState(false);
+
+    const { SearchBar } = Search;
+
+    const pagination = paginationFactory({
+        page: 1,
+        alwaysShowAllBtns: true,
+        showTotal: true,
+        withFirstAndLast: false,
+        sizePerPageRenderer: ({ options, currSizePerPage, onSizePerPageChange }) => (
+            <div className="dataTables_length" id="datatable-basic_length">
+                <label>
+                    Exibir{" "}
+                    {
+                        <select
+                            name="datatable-basic_length"
+                            aria-controls="datatable-basic"
+                            className="form-control form-control-sm"
+                            onChange={(e) => onSizePerPageChange(e.target.value)}
+                        >
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    }{" "}
+                    registros.{" "}
+                </label>
+            </div>
+        ),
+        paginationTotalRenderer: (from, to, size) => (
+            <span>
+                {' '}Exibindo as linhas {from} a {to} de {size}
+            </span>
+        ),
+    });
+
+    var today = new Date();
+    var y = today.getFullYear();
+    var m = today.getMonth();
+    var d = today.getDate();
+
+    const data = [
+        {
+            id: 1,
+            evidenceName: "Call with Dave",
+            createdAt: new Date(y, m, 1),
+            status: true,
+            className: "bg-red",
+            description:
+                "Nullam id dolor id nibh ultricies vehicula ut id elit. Cum abacaxi sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.",
+        },
+
+        {
+            id: 2,
+            evidenceName: "Lunch meeting",
+            createdAt: new Date(y, m, d - 1, 10, 30),
+            status: true,
+            className: "bg-orange",
+            description:
+                "Nullam id dolor id nibh ultricies vehicula ut id elit. Cum sorvete sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.",
+        },
+
+        {
+            id: 3,
+            evidenceName: "All day conference",
+            createdAt: new Date(y, m, d + 7, 12, 0),
+            status: true,
+            className: "bg-green",
+            description:
+                "Nullam id dolor id nibh ultricies vehicula ut id elit. Cum bolacha sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.",
+        },
+    ]
 
     function handleOpenEvidencesModal() {
         setEvidencesModalOpen(!evidencesModalOpen);
@@ -98,23 +173,25 @@ function EvidencesList() {
         const fetchSkillTypesName = async (evidences) => {
             const updatedEvidences = await Promise.all(
                 evidences.map(async (evidence) => {
-                try {
-                  const skillTypeData = await useFindSkillType(evidence.evidenceName);
-                  return {
-                    ...evidence,
-                    skillTypeName: skillTypeData.competencieTypeName,
-                  };
-                } catch (error) {
-                  console.error(`Error fetching skill type data. `, error);
-                  return {
-                    ...employee,
-                    skillTypeName: 'Unknown',
-                  };
-                }
-              })
+                    try {
+                        const skillTypeData = await useFindSkillType(evidence.evidenceName);
+                        return {
+                            ...evidence,
+                            skillTypeName: skillTypeData.competencieTypeName,
+                        };
+                    } catch (error) {
+                        console.log('Error => ', error);
+                        //console.error(`Error fetching skill type data. `, error);
+                        return {
+                            ...evidence,
+                            skillTypeName: 'Unknown',
+                        };
+                    }
+                })
             );
+            console.log("Updated Evidences: ", updatedEvidences);
             setDetailedEvidencesData(updatedEvidences);
-          };
+        };
 
         const fetchEvidences = async () => {
             try {
@@ -137,7 +214,6 @@ function EvidencesList() {
         }
 
     }, [
-        detailedEvidencesData,
         hasUpdatedAppraisalEvidences,
         hasNewAppraisalEvidencesCreated,
         hasDeletedAppraisalEvidences,
@@ -145,177 +221,105 @@ function EvidencesList() {
 
     return (
         <>
-            <Form>
-                <Card>
-                    <CardHeader className="bg-white border-0">
-                        <Row>
-                            <Col xs="6">
-                                <h3 className="mb-0">Evidências</h3>
-                            </Col>
-                            <Col className="text-right" xs="6">
-                                <Button
-                                    className="btn-round btn-icon"
-                                    color="primary"
-                                    href="#pablo"
-                                    id="tooltip3"
-                                    onClick={(e) => { e.preventDefault(); handleOpenEvidencesModal(); }}
-                                    size="sm"
-                                >
-                                    <span className="btn-inner--icon mr-1">
-                                        <i className="fas fa-solid fa-plus"></i>
-                                    </span>
-                                    <span className="btn-inner--text">Adicionar</span>
-                                </Button>
-                                <UncontrolledTooltip delay={0} target="tooltip3">
-                                    Novo Evidência
-                                </UncontrolledTooltip>
-                            </Col>
-                        </Row>
-                    </CardHeader>
-                    <CardBody>
-                        <ListGroup className="list my--4" flush>
-                            {detailedEvidencesData && detailedEvidencesData.length > 0 ? (
-                                detailedEvidencesData.map((evidence) => (
-                                    <ListGroupItem className="px--4" key={evidence.id}>
-                                        <Row className="align-items-center">
-                                            <Col md="8">
-                                                <h5 className="">{evidence.description}</h5>
-                                            </Col>
-                                            <Col md="4">
-                                                <div className="mb-2 d-flex">
-                                                    <small className="mr-2">Título:</small>
-                                                    <h5 className="mb-0">{evidence.skillTypeName}</h5>
-                                                </div>
-                                                {/* <div className="mb-2 d-flex">
-                                                    <small className="mr-2">Criado Em:</small>
-                                                    <h5 className="mb-0">{formatDate(evidence.createdAt)}</h5>
-                                                </div> */}
-                                                <div className="mb-2">
-                                                    <small className="mr-2">Ações:</small>
-                                                    <a
-                                                        className="table-action"
-                                                        href="#pablo"
-                                                        id="tooltip564981685"
-                                                        onClick={(e) => { e.preventDefault(); handleOpenEvidenceUpdateModal(evidence.id) }}
-                                                    >
-                                                        <i className="fas fa-user-edit" />
-                                                    </a>
-                                                    <UncontrolledTooltip delay={0} target="tooltip564981685">
-                                                        Edit product
-                                                    </UncontrolledTooltip>
-                                                    <a
-                                                        className="table-action table-action-delete"
-                                                        href="#pablo"
-                                                        id="tooltip601065234"
-                                                        onClick={(e) => { e.preventDefault(); showWarningAlert(evidence.id, evidence.evidenceName); }}
-                                                    >
-                                                        <i className="fas fa-trash" />
-                                                    </a>
-                                                    <UncontrolledTooltip delay={0} target="tooltip601065234">
-                                                        Delete product
-                                                    </UncontrolledTooltip>
-                                                </div>
-                                            </Col>
-                                            {/* <Col md="2"> */}
-                                            {/* <div className="mb-2 d-flex">
-                                                    <small className="mr-2">Estado:</small>
-                                                    <h5 className="mb-0">{evidence.status === true ? "Ativo" : "Inativo"}</h5>
-                                                </div> */}
-                                            {/* </Col> */}
-                                        </Row>
-                                    </ListGroupItem>
-                                ))
-                            ) : (
-                                <ListGroupItem className="px-0">
-                                    <div className="col">
-                                        <small>Nenhum dado de evidência encontrado.</small>
+            <Card>
+                <CardHeader className="bg-white border-0">
+                    <Row>
+                        <Col xs="6">
+                            <h3 className="mb-0">Evidências</h3>
+                        </Col>
+                        <Col className="text-right" xs="6">
+                            <Button
+                                className="btn-round btn-icon"
+                                color="primary"
+                                href="#pablo"
+                                id="tooltip3"
+                                onClick={(e) => { e.preventDefault(); handleOpenEvidencesModal(); }}
+                                size="sm"
+                            >
+                                <span className="btn-inner--icon mr-1">
+                                    <i className="fas fa-solid fa-plus"></i>
+                                </span>
+                                <span className="btn-inner--text">Adicionar</span>
+                            </Button>
+                            <UncontrolledTooltip delay={0} target="tooltip3">
+                                Nova Evidência
+                            </UncontrolledTooltip>
+                        </Col>
+                    </Row>
+                </CardHeader>
+                <CardBody>
+                    {data ? (
+                        <ToolkitProvider
+                            data={data}
+                            keyField="id"
+                            columns={[
+                                {
+                                    dataField: "description",
+                                    text: "Evidência",
+                                    sort: true,
+                                    headerStyle: { width: "65%", minWidth: "200px" },
+                                    style: { whiteSpace: "normal", wordWrap: "break-word" },
+                                },
+                                {
+                                    dataField: "evidenceName",
+                                    text: "Título",
+                                    sort: true,
+                                    headerStyle: { width: "20%", minWidth: "80px" },
+                                },
+                                {
+                                    dataField: "createdAt",
+                                    text: "Adicionada Em",
+                                    sort: true,
+                                    formatter: (cell) => new Date(cell).toLocaleDateString("pt-BR"),
+                                    headerStyle: { width: "10%", minWidth: "40px" },
+                                },
+                                {
+                                    dataField: "status",
+                                    text: "Estado",
+                                    sort: true,
+                                    formatter: (cell) => (cell ? "Ativo" : "Inativo"),
+                                    headerStyle: { width: "5%", minWidth: "20px" },
+                                },
+                            ]}
+                            search
+                        >
+                            {(props) => (
+                                <div className="table-responsive">
+                                    <div
+                                        id="datatable-basic_filter"
+                                        className="dataTables_filter pb-1 w-50"
+                                    >
+                                        <SearchBar
+                                            className="form-control-sm"
+                                            style={{
+                                                height: "40px",
+                                                width: 564,
+                                                fontSize: "16px",
+                                                padding: "10px",
+                                                borderRadius: "8px",
+                                            }}
+                                            placeholder="Pesquise por alguma evidência expecifica aqui ..."
+                                            {...props.searchProps}
+                                        />
                                     </div>
-                                </ListGroupItem>
+                                    <BootstrapTable
+                                        {...props.baseProps}
+                                        bootstrap4={true}
+                                        pagination={pagination}
+                                        bordered={false}
+                                    />
+                                </div>
                             )}
-                        </ListGroup>
-                    </CardBody>
-
-                    {/* <Table className="align-items-center table-flush" hover responsive>
-                            <thead className="thead-light">
-                                <tr>
-                                    <th className="sort" data-sort="name" scope="col" >Título</th>
-                                    <th className="sort" data-sort="createdAt" scope="col" >Criado Em</th>
-                                    <th className="sort" data-sort="classification" scope="col">Contúedo</th>
-                                    <th className="sort text-right" data-sort="actions" scope="col">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {detailedEvidencesData && detailedEvidencesData.length > 0 ? (
-                                    detailedEvidencesData.map((evidence) => (
-                                        <tr className="table-" key={evidence.id}>
-                                            <td className="table-user">
-                                                <b>{evidence.evidenceName}</b>
-                                            </td>
-                                            <td>
-                                                <span className="text-muted">
-                                                    {formatDate(evidence.createdAt)}
-                                                </span>
-                                            </td>
-                                            <td className="table-user">
-                                                <b>{evidence.description}</b>
-                                            </td>
-                                            <td className="text-right">
-                                                <UncontrolledDropdown>
-                                                    <DropdownToggle
-                                                        className="btn-icon-only text-light"
-                                                        color=""
-                                                        role="button"
-                                                        size="sm"
-                                                    >
-                                                        <i className="fas fa-ellipsis-v" />
-                                                    </DropdownToggle>
-                                                    <DropdownMenu className="dropdown-menu-arrow" right>
-                                                        <DropdownItem
-                                                            href="#pablo"
-                                                            onClick={(e) => e.preventDefault()}
-                                                        >
-                                                            Detalhes
-                                                        </DropdownItem>
-                                                        <DropdownItem
-                                                            href="#pablo"
-                                                        //onClick={(e) => { e.preventDefault(); handleOpenEvidenceUpdateModal(skillType.id) }}
-                                                        >
-                                                            Editar
-                                                        </DropdownItem>
-                                                        <DropdownItem
-                                                            href="#pablo"
-                                                        //onClick={(e) => { e.preventDefault(); showWarningAlert(skillType.id, skillType.competencieTypeName); }}
-                                                        >
-                                                            Deletar
-                                                        </DropdownItem>
-                                                    </DropdownMenu>
-                                                </UncontrolledDropdown>
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan="5">Nenhum dado de tipo de competência encontrado.</td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </Table> */}
-                </Card>
-
-
-                {/* <ShowRoleDescriptionsModal
-                handleShowRoleDescriptionsModal={handleShowRoleDescriptionsModal}
-                modalOpen={modalOpen}
-                roleDescription={descriptionSelectedRole}
-                roleName={nameSelectedRole}
-            />
-            <ShowFunctionsDescriptionsModal
-                handleShowFunctionsDescriptionsModal={handleShowFunctionsDescriptionsModal}
-                functionsDescriptionsModalOpen={functionsDescriptionsModalOpen}
-                employeeFunctionDescription={descriptionSelectedFunction}
-                employeeFunctionName={nameSelectedFunction}
-            /> */}
-            </Form>
+                        </ToolkitProvider>
+                    ) : (
+                        <div className="px-0">
+                            <div className="col">
+                                <small>Nenhum dado de evidência encontrado.</small>
+                            </div>
+                        </div>
+                    )}
+                </CardBody>
+            </Card>
             <EvidencesModal
                 handleOpenEvidencesModal={handleOpenEvidencesModal}
                 evidencesModalOpen={evidencesModalOpen}

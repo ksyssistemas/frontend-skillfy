@@ -114,7 +114,6 @@ function SkillClassificationList() {
         }
 
     }, [
-        detailedSkillClassificationData,
         hasNewAppraisalSkillClassificationCreated,
         hasUpdatedAppraisalSkillClassificaiton,
         hasDeletedAppraisalSkillClassification,
@@ -230,7 +229,7 @@ function SkillClassificationList() {
             <SkillClassificationModal
                 handleOpenAddSkillClassificationModal={handleOpenAddSkillClassificationModal}
                 skillClassificationModalOpen={skillClassificationModalOpen}
-                skillClassificationIdToUpdate={skillClassificationIdToUpdate}
+                skillClassificationIdToUpdate={Number(skillClassificationIdToUpdate)}
                 handleSkillClassificationIdToUpdate={handleSkillClassificationIdToUpdate}
             />
         </>

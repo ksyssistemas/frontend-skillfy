@@ -4,10 +4,6 @@ import {
     CardHeader,
     Form,
     Table,
-    Nav,
-    NavItem,
-    NavLink,
-    CardBody,
     UncontrolledDropdown,
     DropdownToggle,
     DropdownItem,
@@ -17,12 +13,10 @@ import {
     Col,
     Button,
 } from "reactstrap";
-import ShowRoleDescriptionsModal from "../../../../Modals/admin/show-role-descriptions";
-import ShowFunctionsDescriptionsModal from "../../../../Modals/admin/show-functions-descriptions";
 import { AppraisalSkillsContext } from "../../../../../contexts/PerformanceContext/AppraisalSkillsContext";
 import { useSweetAlert } from "../../../../../contexts/SweetAlertContext";
 import { useFindAllSkillTypes } from "../../../../../hooks/DefinitionOptionsReview/SkillsTypes/useFindAllSkillTypes";
-import { useDeleteSkillType, useDeleteSkillTypes } from "../../../../../hooks/DefinitionOptionsReview/SkillsTypes/useDeleteSkillType";
+import { useDeleteSkillType } from "../../../../../hooks/DefinitionOptionsReview/SkillsTypes/useDeleteSkillType";
 import SkillTypesModal from "../../../../Modals/AppraisalModal/SkillTypesModal";
 import { useFindSkillClassification } from "../../../../../hooks/DefinitionOptionsReview/SkillsClassifications/useFindSkillClassification";
 import { useFindOccupationalGroup } from "../../../../../hooks/DefinitionOptionsReview/OccupationalGroups/useFindOccupationalGroup";

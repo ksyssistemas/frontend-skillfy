@@ -1,197 +1,362 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
-import PropTypes from "prop-types";
+import React, { useState, useEffect, useContext, useRef, useReducer, useCallback } from "react";
 // react plugin used to create datetimepicker
 import ReactDatetime from "react-datetime";
 // plugin that creates slider
 import Slider from "nouislider";
 import {
-    Button,
     Card,
     CardHeader,
     CardBody,
-    FormGroup,
     Form,
-    Input,
-    InputGroupAddon,
-    InputGroupText,
-    InputGroup,
-    Container,
     Row,
     Col,
-    Badge,
-    ListGroup,
-    ListGroupItem,
     Progress
 } from "reactstrap";
 import { ModelSelectionReviewContext } from "../../../../../../contexts/PerformanceContext/ModelSelectionReviewContext";
-import useCreatePerformanceReview from "../../../../../../hooks/PerformanceReview/useCreatePerformanceReview";
-import { handleDateFormatting } from "../../../../../../util/handleDateFormatting";
+import { initialState, formReducer } from '../../../../../../reducers/ReviewForms/ReviewModelAndDeadlineFormReducer';
+import PageChange from "../../../../../PageChange/PageChange";
+import moment from 'moment'; // Certifique-se de adicionar isso no início do arquivo
+import 'moment/locale/pt-br'; // Caso precise de suporte ao idioma
+import { resetFormAndLocalStorage } from "../../../../../../util/resetReviewFormData";
+moment.locale('pt-br'); // Configura o idioma para português (opcional)
 
-export function ReviewModelAndDeadlineForm({ updateSessionData, sessionData = {} }) {
+export function ReviewModelAndDeadlineForm() {
+
+    const [state, dispatch] = useReducer(formReducer, initialState);
+
+    const latestReviewModelData = useRef(state.reviewModelData);
+
+    const [isLoadingReviewModelAndDeadlineData, setIsLoadingReviewModelAndDeadlineData] = useState(true);
 
     const {
-        hasPerformanceReviewOfLeaders,
-        deadlineToLeadersToRespondToPerformanceReview,
-        hasSelfReviewOfPerformance,
-        deadlineToRespondToPerformanceSelfReview,
-        hasPerformanceReviewOfEvaluators,
-        deadlineToEvaluatorsToRespondToPerformanceReview,
-        weightOfPerformanceReviewOfLeaders,
-        weightOfSelfReviewOfPerformance,
-        weightOfEvaluatorsPerformanceReview,
-        isFullPerformanceReviewWeigth,
-        setHasPerformanceReviewOfLeaders,
-        setDeadlineToLeadersToRespondToPerformanceReview,
-        setHasSelfReviewOfPerformance,
-        setDeadlineToRespondToPerformanceSelfReview,
-        setHasPerformanceReviewOfEvaluators,
-        setDeadlineToEvaluatorsToRespondToPerformanceReview,
-        setWeightOfPerformanceReviewOfLeaders,
-        setWeightOfSelfReviewOfPerformance,
-        setWeightOfEvaluatorsPerformanceReview,
-        setIsFullPerformanceReviewWeigth,
-    } = useCreatePerformanceReview();
-
-    // Referências para os valores anteriores
-    const prevStateRef = useRef({
-        hasPerformanceReviewOfLeaders: sessionData.hasPerformanceReviewOfLeaders || true,
-        deadlineToLeadersToRespondToPerformanceReview: sessionData.deadlineToLeadersToRespondToPerformanceReview || true,
-        hasSelfReviewOfPerformance: sessionData.hasSelfReviewOfPerformance || null,
-        deadlineToRespondToPerformanceSelfReview: sessionData.deadlineToRespondToPerformanceSelfReview || null,
-        hasPerformanceReviewOfEvaluators: sessionData.hasPerformanceReviewOfEvaluators || null,
-        deadlineToEvaluatorsToRespondToPerformanceReview: sessionData.deadlineToEvaluatorsToRespondToPerformanceReview || true
-    });
-
-    const [selectedPeriod, setSelectedPeriod] = useState('');
-
-    const { selectedReview,
-        handleSelectedReview,
-        handleCleanlinessReviewSelection
+        selectedReview,
+        clearStepIndex,
+        handleClearStepIndex
     } = useContext(ModelSelectionReviewContext);
 
-    // Função para lidar com a mudança do checkbox
+    // Ref para armazenar o estado anterior em formato de string
+    const previousStateRef = useRef(null);
+
+    const [sliderValues, setSliderValues] = useState([
+        state.reviewModelData.weightOfPerformanceReviewOfLeaders || 98,
+        state.reviewModelData.weightOfSelfReviewOfPerformance || 1,
+        state.reviewModelData.weightOfEvaluatorsPerformanceReview || 1,
+    ]);
+
+    // const sliderRefs = Array.from({ length: 3 }, () => useRef(null));
+    const sliderRefs = useRef(Array.from({ length: 3 }, () => React.createRef()));
+
+    const sliderLabels = ["Líderes", "Autoavaliação", "Avaliadores"];
+
+    // Função para lidar com a mudança do checkbox (líderes)
     const handleCheckboxHasPerformanceReviewOfLeadersChange = () => {
-        setHasPerformanceReviewOfLeaders(prevState => !prevState);
+        dispatch({
+            type: 'SET_HAS_PERFORMANCE_REVIEW_OF_LEADERS',
+            payload: !state.reviewModelData.hasPerformanceReviewOfLeaders,
+        });
     };
-    // Função para lidar com a mudança do checkbox
+
+    // Função para lidar com a mudança do checkbox (autoavaliação)
     const handleCheckboxHasSelfReviewOfPerformanceChange = () => {
-        setHasSelfReviewOfPerformance(prevState => !prevState);
+        dispatch({
+            type: 'SET_HAS_SELF_REVIEW_OF_PERFORMANCE',
+            payload: !state.reviewModelData.hasSelfReviewOfPerformance,
+        });
     };
-    // Função para lidar com a mudança do checkbox
+
+    // Função para lidar com a mudança do checkbox (avaliadores)
     const handleCheckboxHasPerformanceReviewOfEvaluatorsChange = () => {
-        setHasPerformanceReviewOfEvaluators(prevState => !prevState);
-    };
-
-    const handleDeadlineToLeadersToRespondToPerformanceReviewChange = (value) => {
-        handleDateFormatting(value, setDeadlineToLeadersToRespondToPerformanceReview);
-    };
-
-    const handleDeadlineToRespondToPerformanceSelfReviewChange = (value) => {
-        handleDateFormatting(value, setDeadlineToRespondToPerformanceSelfReview);
-    };
-
-    const handleDeadlineToEvaluatorsToRespondToPerformanceReviewChange = (value) => {
-        handleDateFormatting(value, setDeadlineToEvaluatorsToRespondToPerformanceReview);
-    };
-
-    const [slider1Value, setSlider1Value] = React.useState("100.00");
-    const [slider2Value, setSlider2Value] = React.useState("100.00");
-    const [slider3Value, setSlider3Value] = React.useState("100.00");
-    const slider1Ref = React.useRef(null);
-    const slider2Ref = React.useRef(null);
-    const slider3Ref = React.useRef(null);
-
-    React.useEffect(async () => {
-        Slider.create(slider1Ref.current, {
-            start: [100],
-            connect: [true, false],
-            step: 0.01,
-            range: { min: 100.0, max: 500.0 },
-        }).on("update", function (values, handle) {
-            setSlider1Value(values[0]);
+        dispatch({
+            type: 'SET_HAS_PERFORMANCE_REVIEW_OF_EVALUATORS',
+            payload: !state.reviewModelData.hasPerformanceReviewOfEvaluators,
         });
-        Slider.create(slider2Ref.current, {
-            start: [100],
-            connect: [true, false],
-            step: 0.01,
-            range: { min: 100.0, max: 500.0 },
-        }).on("update", function (values, handle) {
-            setSlider1Value(values[0]);
-        });
-        Slider.create(slider3Ref.current, {
-            start: [100],
-            connect: [true, false],
-            step: 0.01,
-            range: { min: 100.0, max: 500.0 },
-        }).on("update", function (values, handle) {
-            setSlider1Value(values[0]);
-        });
-    }, []);
+    };
 
-    // Efeito para sincronizar o estado inicial do `sessionData` com os inputs, apenas uma vez quando os dados forem carregados
+    const handleDateChange = (dispatch, value, dateAction, stateAction) => {
+        if (value && value._d && !isNaN(value._d)) {
+            const dateObj = value._d;
+            dispatch({ type: dateAction, payload: dateObj });
+            dispatch({ type: stateAction, payload: 'valid' });
+        } else {
+            dispatch({ type: stateAction, payload: 'invalid' });
+        }
+    };
+
+    const getVisibleSliders = () => {
+        switch (selectedReview) {
+            case '360':
+                return [true, true, true];
+            case '180':
+                return [true, false, true];
+            case 'leader':
+                return [true, true, false];
+            default:
+                return [false, false, false];
+        }
+    };
+
+    const visibleSliders = getVisibleSliders();
+
+    // Função utilitária para salvar os dados formatados no localStorage
+    const saveDataToLocalStorage = (data) => {
+        const dataToSave = {
+            ...data,
+            weightOfPerformanceReviewOfLeaders: data.weightOfPerformanceReviewOfLeaders || 98,
+            weightOfSelfReviewOfPerformance: data.weightOfSelfReviewOfPerformance || 1,
+            weightOfEvaluatorsPerformanceReview: data.weightOfEvaluatorsPerformanceReview || 1,
+            deadlineToLeadersToRespondToPerformanceReview: moment(data.deadlineToLeadersToRespondToPerformanceReview).format("YYYY-MM-DD"),
+            deadlineToRespondToPerformanceSelfReview: moment(data.deadlineToRespondToPerformanceSelfReview).format("YYYY-MM-DD"),
+            deadlineToEvaluatorsToRespondToPerformanceReview: moment(data.deadlineToEvaluatorsToRespondToPerformanceReview).format("YYYY-MM-DD"),
+        };
+        localStorage.setItem('reviewModelData', JSON.stringify(dataToSave));
+    };
+
+    const updateSliders = (index, newValue) => {
+        // Copiar os valores existentes
+        let values = [...sliderValues];
+
+        // Definir o novo valor do slider ajustado
+        values[index] = newValue;
+
+        // Calcular a diferença restante para atingir 100
+        let difference = 100 - values.reduce((sum, value) => sum + value, 0);
+
+        // Identificar os sliders restantes para redistribuição
+        const remainingIndices = sliderRefs.current
+            .map((_, idx) => (visibleSliders[idx] && idx !== index ? idx : null))
+            .filter((idx) => idx !== null);
+
+        if (remainingIndices.length > 0) {
+            // Ajustar os valores restantes proporcionalmente
+            let remainingTotal = remainingIndices.reduce((sum, idx) => sum + values[idx], 0);
+            const adjustments = remainingIndices.map((idx) => {
+                const proportion = remainingTotal > 0 ? values[idx] / remainingTotal : 1 / remainingIndices.length;
+                return Math.floor(proportion * difference);
+            });
+
+            // Aplicar os ajustes redistribuídos
+            remainingIndices.forEach((idx, i) => {
+                values[idx] += adjustments[i];
+            });
+
+            // Corrigir a diferença residual no último slider da lista
+            difference = 100 - values.reduce((sum, value) => sum + value, 0);
+            if (difference !== 0) {
+                const lastIndex = remainingIndices[remainingIndices.length - 1];
+                values[lastIndex] += difference;
+            }
+        }
+
+        console.log("SLIDER VALUES: ", [...values]);
+
+        // Atualizar o estado local
+        setSliderValues([...values]);
+    };
+
+    const syncWithReducerAndLocalStorage = useCallback(() => {
+        const currentValues = [
+            state.reviewModelData.weightOfPerformanceReviewOfLeaders,
+            state.reviewModelData.weightOfSelfReviewOfPerformance,
+            state.reviewModelData.weightOfEvaluatorsPerformanceReview,
+        ];
+
+        if (JSON.stringify(currentValues) !== JSON.stringify(sliderValues)) {
+            // Atualizar o estado global (Reducer)
+            dispatch({
+                type: 'SET_WEIGHT_SLIDER_OF_PERFORMANCE_REVIEW_OF_LEADERS',
+                payload: sliderValues[0],
+            });
+            dispatch({
+                type: 'SET_WEIGHT_SLIDER_OF_SELF_REVIEW_OF_PERFORMANCE',
+                payload: sliderValues[1],
+            });
+            dispatch({
+                type: 'SET_WEIGHT_SLIDER_OF_EVALUATORS_PERFORMANCE_REVIEW',
+                payload: sliderValues[2],
+            });
+
+            // Salvar no localStorage
+            const dataToSave = {
+                ...state.reviewModelData,
+                weightOfPerformanceReviewOfLeaders: sliderValues[0],
+                weightOfSelfReviewOfPerformance: sliderValues[1],
+                weightOfEvaluatorsPerformanceReview: sliderValues[2],
+            };
+            saveDataToLocalStorage(dataToSave);
+        }
+    }, [sliderValues, state.reviewModelData]);
+
     useEffect(() => {
-        if (sessionData.hasPerformanceReviewOfLeaders && sessionData.hasPerformanceReviewOfLeaders !== hasPerformanceReviewOfLeaders) {
-            setHasPerformanceReviewOfLeaders(sessionData.hasPerformanceReviewOfLeaders);
-        }
-        if (sessionData.hasSelfReviewOfPerformance && sessionData.hasSelfReviewOfPerformance !== hasSelfReviewOfPerformance) {
-            setHasSelfReviewOfPerformance(sessionData.hasSelfReviewOfPerformance);
-        }
-        if (sessionData.hasPerformanceReviewOfEvaluators && sessionData.hasPerformanceReviewOfEvaluators !== hasPerformanceReviewOfEvaluators) {
-            setHasPerformanceReviewOfEvaluators(sessionData.hasPerformanceReviewOfEvaluators);
-        }
+        syncWithReducerAndLocalStorage();
+    }, [sliderValues, syncWithReducerAndLocalStorage]);
 
-        if (sessionData.deadlineToLeadersToRespondToPerformanceReview && sessionData.deadlineToLeadersToRespondToPerformanceReview) {
-            setDeadlineToLeadersToRespondToPerformanceReview(new Date(sessionData.deadlineToLeadersToRespondToPerformanceReview));
-        }
-        if (sessionData.deadlineToRespondToPerformanceSelfReview && sessionData.deadlineToRespondToPerformanceSelfReview) {
-            setDeadlineToRespondToPerformanceSelfReview(new Date(sessionData.deadlineToRespondToPerformanceSelfReview));
-        }
-        if (sessionData.deadlineToEvaluatorsToRespondToPerformanceReview && sessionData.deadlineToEvaluatorsToRespondToPerformanceReview) {
-            setDeadlineToEvaluatorsToRespondToPerformanceReview(new Date(sessionData.deadlineToEvaluatorsToRespondToPerformanceReview));
-        }
-        console.log("Dados da sessão carregados no useEffect.");
-    }, [sessionData]);
-
+    // Lógica de inicialização com base em `selectedReview`
     useEffect(() => {
-        const prevState = prevStateRef.current;
-        const currentState = {
-            hasPerformanceReviewOfLeaders,
-            deadlineToLeadersToRespondToPerformanceReview,
-            hasSelfReviewOfPerformance,
-            deadlineToRespondToPerformanceSelfReview,
-            hasPerformanceReviewOfEvaluators,
-            deadlineToEvaluatorsToRespondToPerformanceReview
+        if (selectedReview === '360') {
+        } else if (selectedReview === '180') {
+            handleCheckboxHasSelfReviewOfPerformanceChange();
+        } else if (selectedReview === 'leader') {
+            handleCheckboxHasPerformanceReviewOfEvaluatorsChange();
+        }
+    }, [selectedReview]);
+
+    // Inicializa os sliders
+    useEffect(() => {
+        const initializeSliders = () => {
+            sliderRefs.current.forEach((ref, index) => {
+                if (ref.current && !ref.current.noUiSlider) {
+                    // Crie o slider se ele ainda não existir
+                    Slider.create(ref.current, {
+                        start: [sliderValues[index]],
+                        connect: [true, false],
+                        step: 1,
+                        range: { min: 1, max: 98 },
+                    });
+
+                    // Atualize os valores em tempo real (UI)
+                    ref.current.noUiSlider.on("update", (values) => {
+                        const value = parseInt(values[0], 10);
+                        if (sliderValues[index] !== value) {
+                            const updatedValues = [...sliderValues];
+                            updatedValues[index] = value;
+                            setSliderValues(updatedValues); // Reflete o valor em tempo real
+                        }
+                    });
+
+                    // Atualize o estado global ao soltar o slider
+                    ref.current.noUiSlider.on("change", (values) => {
+                        const newValue = parseInt(values[0], 10);
+                        updateSliders(index, newValue);
+                    });
+                }
+            });
         };
 
-        // Verificação profunda para mudanças reais
-        if (
-            prevState.hasPerformanceReviewOfLeaders !== currentState.hasPerformanceReviewOfLeaders ||
-            prevState.hasSelfReviewOfPerformance !== currentState.hasSelfReviewOfPerformance ||
-            prevState.hasPerformanceReviewOfEvaluators !== currentState.hasPerformanceReviewOfEvaluators ||
-            (prevState.deadlineToLeadersToRespondToPerformanceReview instanceof Date && currentState.deadlineToLeadersToRespondToPerformanceReview instanceof Date
-                ? prevState.deadlineToLeadersToRespondToPerformanceReview.getTime() !== currentState.deadlineToLeadersToRespondToPerformanceReview.getTime()
-                : prevState.deadlineToLeadersToRespondToPerformanceReview !== currentState.deadlineToLeadersToRespondToPerformanceReview) ||
-            (prevState.deadlineToRespondToPerformanceSelfReview instanceof Date && currentState.deadlineToRespondToPerformanceSelfReview instanceof Date
-                ? prevState.deadlineToRespondToPerformanceSelfReview.getTime() !== currentState.deadlineToRespondToPerformanceSelfReview.getTime()
-                : prevState.deadlineToRespondToPerformanceSelfReview !== currentState.deadlineToRespondToPerformanceSelfReview) ||
-            (prevState.deadlineToEvaluatorsToRespondToPerformanceReview instanceof Date && currentState.deadlineToEvaluatorsToRespondToPerformanceReview instanceof Date
-                ? prevState.deadlineToEvaluatorsToRespondToPerformanceReview.getTime() !== currentState.deadlineToEvaluatorsToRespondToPerformanceReview.getTime()
-                : prevState.deadlineToEvaluatorsToRespondToPerformanceReview !== currentState.deadlineToEvaluatorsToRespondToPerformanceReview)
-        ) {
-            updateSessionData('sessionTwoData', currentState);
+        const allRefsReady = sliderRefs.current.every((ref) => ref && ref.current);
+
+        if (allRefsReady) {
+            initializeSliders();
+        } else {
+            console.warn("Some slider refs are not ready:", sliderRefs.current);
         }
 
-        prevStateRef.current = currentState;
-        console.log("Verificação de mudança no estado profundo.");
-    }, [
-        hasPerformanceReviewOfLeaders,
-        deadlineToLeadersToRespondToPerformanceReview,
-        hasSelfReviewOfPerformance,
-        deadlineToRespondToPerformanceSelfReview,
-        hasPerformanceReviewOfEvaluators,
-        deadlineToEvaluatorsToRespondToPerformanceReview,
-        updateSessionData
-    ]);
+        return () => {
+            sliderRefs.current.forEach((ref) => {
+                if (ref.current && ref.current.noUiSlider) {
+                    ref.current.noUiSlider.destroy();
+                }
+            });
+        };
+    }, [sliderRefs, sliderValues, updateSliders]);
+
+    // Atualize os sliders com base nos valores do estado
+    useEffect(() => {
+        sliderRefs.current.forEach((ref, index) => {
+            if (ref.current && ref.current.noUiSlider) {
+                const currentSliderValue = parseInt(ref.current.noUiSlider.get(), 10);
+                if (currentSliderValue !== sliderValues[index]) {
+                    ref.current.noUiSlider.set(sliderValues[index]);
+                }
+            }
+        });
+    }, [sliderValues]);
+
+    useEffect(() => {
+        if (state.reviewModelData) {
+            const initialValues = [
+                state.reviewModelData.weightOfPerformanceReviewOfLeaders || 98,
+                state.reviewModelData.weightOfSelfReviewOfPerformance || 1,
+                state.reviewModelData.weightOfEvaluatorsPerformanceReview || 1,
+            ];
+
+            if (JSON.stringify(sliderValues) !== JSON.stringify(initialValues)) {
+                setSliderValues(initialValues);
+            }
+        }
+    }, [state.reviewModelData]);
+
+    // Execute o carregamento dos dados ao montar o componente
+    useEffect(() => {
+        // Função para carregar os dados do localStorage
+        const loadReviewModelData = async () => {
+            try {
+                const rawData = localStorage.getItem('reviewModelData');
+                if (rawData) {
+                    const parsedData = JSON.parse(rawData);
+                    if (parsedData && typeof parsedData === 'object') {
+                        // Verifique se selectedCycle está presente
+                        dispatch({
+                            type: 'LOAD_SAVED_REVIEW_DATA',
+                            payload: {
+                                ...parsedData,
+                                deadlineToLeadersToRespondToPerformanceReview: moment(parsedData.deadlineToLeadersToRespondToPerformanceReview, "YYYY-MM-DD").toDate(),
+                                deadlineToRespondToPerformanceSelfReview: moment(parsedData.deadlineToRespondToPerformanceSelfReview, "YYYY-MM-DD").toDate(),
+                                deadlineToEvaluatorsToRespondToPerformanceReview: moment(parsedData.deadlineToEvaluatorsToRespondToPerformanceReview, "YYYY-MM-DD").toDate(),
+                            },
+                        });
+
+                        setSliderValues([
+                            parsedData.weightOfPerformanceReviewOfLeaders || 98,
+                            parsedData.weightOfSelfReviewOfPerformance || 1,
+                            parsedData.weightOfEvaluatorsPerformanceReview || 1,
+                        ]);
+
+                        latestReviewModelData.current = parsedData; // Atualiza a ref para os dados carregados
+                    }
+                } else {
+                    dispatch({ type: 'RESET_REVIEW_STATE' }); // Limpa o estado para evitar inconsistências
+                }
+            } catch (error) {
+                console.error('Failed to parse reviewModelData from localStorage:', error);
+            } finally {
+                setIsLoadingReviewModelAndDeadlineData(false); // Marque como carregado
+            }
+        };
+        loadReviewModelData();
+    }, []);
+
+    // Atualize a lógica de persistência para incluir verificações e evitar sobrescrever valores críticos
+    useEffect(() => {
+        const currentStateString = JSON.stringify(state.reviewModelData);
+
+        if (previousStateRef.current !== currentStateString) {
+            // Salva o estado atualizado, preservando o ciclo selecionado
+            const dataToSave = {
+                ...state.reviewModelData,
+                weightOfPerformanceReviewOfLeaders: sliderValues[0],
+                weightOfSelfReviewOfPerformance: sliderValues[1],
+                weightOfEvaluatorsPerformanceReview: sliderValues[2],
+            };
+
+            saveDataToLocalStorage(dataToSave);
+            latestReviewModelData.current = dataToSave;
+
+            previousStateRef.current = currentStateString;
+        }
+
+        return () => {
+            saveDataToLocalStorage(latestReviewModelData.current);
+        };
+    }, [state.reviewModelData]);
+
+    useEffect(() => {
+        if (clearStepIndex === 2) {
+            resetFormAndLocalStorage(
+                true,
+                2,
+                clearStepIndex,
+                'reviewIdentityData',
+                'RESET_REVIEW_DATA',
+                handleClearStepIndex,
+                dispatch);
+        }
+    }, [clearStepIndex, dispatch]);
+
+    if (isLoadingReviewModelAndDeadlineData) {
+        return (
+            <PageChange />
+        );
+    }
 
     return (
         <>
@@ -214,7 +379,7 @@ export function ReviewModelAndDeadlineForm({ updateSessionData, sessionData = {}
                                         <label className="custom-toggle mr-1">
                                             <input
                                                 type="checkbox"
-                                                checked={hasPerformanceReviewOfLeaders}
+                                                checked={state.reviewModelData.hasPerformanceReviewOfLeaders}
                                                 onChange={handleCheckboxHasPerformanceReviewOfLeadersChange}
                                             />
                                             <span
@@ -247,10 +412,18 @@ export function ReviewModelAndDeadlineForm({ updateSessionData, sessionData = {}
                                             inputProps={{
                                                 placeholder: "__/__/__",
                                             }}
-                                            value={hasPerformanceReviewOfLeaders || (sessionData.hasPerformanceReviewOfLeaders && new Date(sessionData.hasPerformanceReviewOfLeaders))}
                                             timeFormat={false}
-                                            onChange={handleDeadlineToLeadersToRespondToPerformanceReviewChange}
+                                            dateFormat="DD/MM/YYYY"
+                                            value={state.reviewModelData.deadlineToLeadersToRespondToPerformanceReview || ''}
+                                            //onChange={handleDeadlineToLeadersToRespondToPerformanceReviewChange}
+                                            onChange={(value) =>
+                                                handleDateChange(dispatch, value, 'SET_DEADLINE_TO_LEADERS_TO_RESPOND_TO_PERFORMANCE_REVIEW', 'SET_DEADLINE_TO_LEADERS_TO_RESPOND_TO_PERFORMANCE_REVIEW_STATE')
+                                            }
+                                        // className={state.reviewIdentityData.realizationDateState === 'invalid' ? 'is-invalid' : ''}
                                         />
+                                        {/* {state.reviewIdentityData.realizationDateState === 'invalid' && (
+                                            <div className="invalid-feedback">Data de nascimento inválida.</div>
+                                        )} */}
                                     </Col>
                                 </Row>
                             </CardBody>
@@ -275,7 +448,7 @@ export function ReviewModelAndDeadlineForm({ updateSessionData, sessionData = {}
                                         <label className="custom-toggle mr-1">
                                             <input
                                                 type="checkbox"
-                                                checked={hasSelfReviewOfPerformance}
+                                                checked={state.reviewModelData.hasSelfReviewOfPerformance}
                                                 onChange={handleCheckboxHasSelfReviewOfPerformanceChange}
                                             />
                                             <span
@@ -308,10 +481,17 @@ export function ReviewModelAndDeadlineForm({ updateSessionData, sessionData = {}
                                             inputProps={{
                                                 placeholder: "__/__/__",
                                             }}
-                                            value={hasSelfReviewOfPerformance || (sessionData.hasSelfReviewOfPerformance && new Date(sessionData.hasSelfReviewOfPerformance))}
                                             timeFormat={false}
-                                            onChange={handleDeadlineToRespondToPerformanceSelfReviewChange}
+                                            dateFormat="DD/MM/YYYY"
+                                            value={state.reviewModelData.deadlineToRespondToPerformanceSelfReview || ''}
+                                            onChange={(value) =>
+                                                handleDateChange(dispatch, value, 'SET_DEADLINE_TO_RESPOND_TO_PERFORMANCE_SELF_REVIEW', 'SET_DEADLINE_TO_RESPOND_TO_PERFORMANCE_SELF_REVIEWSTATE')
+                                            }
+                                        // className={state.reviewModelData.hasSelfReviewOfPerformanceState === 'invalid' ? 'is-invalid' : ''}
                                         />
+                                        {/* {state.reviewIdentityData.realizationDateState === 'invalid' && (
+                                            <div className="invalid-feedback">Data de nascimento inválida.</div>
+                                        )} */}
                                     </Col>
                                 </Row>
                             </CardBody>
@@ -336,7 +516,7 @@ export function ReviewModelAndDeadlineForm({ updateSessionData, sessionData = {}
                                         <label className="custom-toggle mr-1">
                                             <input
                                                 type="checkbox"
-                                                checked={hasPerformanceReviewOfEvaluators}
+                                                checked={state.reviewModelData.hasPerformanceReviewOfEvaluators}
                                                 onChange={handleCheckboxHasPerformanceReviewOfEvaluatorsChange}
                                             />
                                             <span
@@ -369,10 +549,17 @@ export function ReviewModelAndDeadlineForm({ updateSessionData, sessionData = {}
                                             inputProps={{
                                                 placeholder: "__/__/__",
                                             }}
-                                            value={hasPerformanceReviewOfEvaluators || (sessionData.hasPerformanceReviewOfEvaluators && new Date(sessionData.hasPerformanceReviewOfEvaluators))}
+                                            value={state.reviewModelData.deadlineToEvaluatorsToRespondToPerformanceReview || ''}
                                             timeFormat={false}
-                                            onChange={handleDeadlineToEvaluatorsToRespondToPerformanceReviewChange}
+                                            dateFormat="DD/MM/YYYY"
+                                            onChange={(value) =>
+                                                handleDateChange(dispatch, value, 'SET_DEADLINE_TO_EVALUATORS_TO_RESPOND_TO_PERFORMANCE_REVIEW', 'SET_DEADLINE_TO_EVALUATORS_TO_RESPOND_TO_PERFORMANCE_REVIEWSTATE')
+                                            }
+                                        // className={state.reviewIdentityData.realizationDateState === 'invalid' ? 'is-invalid' : ''}
                                         />
+                                        {/* {state.reviewIdentityData.realizationDateState === 'invalid' && (
+                                            <div className="invalid-feedback">Data de nascimento inválida.</div>
+                                        )} */}
                                     </Col>
                                 </Row>
                             </CardBody>
@@ -387,78 +574,27 @@ export function ReviewModelAndDeadlineForm({ updateSessionData, sessionData = {}
                 <CardBody>
                     <div className="mb-4">
                         <div className="form-row">
-                            <Col className="mb-3" md="4">
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="validationReviewName"
-                                >
-                                    Líderes
-                                </label>
-                                <Form>
-                                    <div className="input-slider-container">
-                                        <div className="input-slider" ref={slider1Ref} />
-                                        <Row className="mt-3">
-                                            <Col xs="6">
-                                                <span className="range-slider-value">
-                                                    {slider1Value}
-                                                </span>
-                                            </Col>
-                                        </Row>
-                                    </div>
-                                </Form>
-                            </Col>
-                            <Col className="mb-3" md="4">
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="validationReviewName"
-                                >
-                                    Autoavaliação
-                                </label>
-                                <Form>
-                                    <div className="input-slider-container">
-                                        <div className="input-slider" ref={slider2Ref} />
-                                        <Row className="mt-3">
-                                            <Col xs="6">
-                                                <span className="range-slider-value">
-                                                    {slider2Value}
-                                                </span>
-                                            </Col>
-                                        </Row>
-                                    </div>
-                                </Form>
-                            </Col>
-                            <Col className="mb-3" md="4">
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="validationReviewName"
-                                >
-                                    Avaliadores
-                                </label>
-                                <Form>
-                                    <div className="input-slider-container">
-                                        <div className="input-slider" ref={slider3Ref} />
-                                        <Row className="mt-3">
-                                            <Col xs="6">
-                                                <span className="range-slider-value">
-                                                    {slider3Value}
-                                                </span>
-                                            </Col>
-                                        </Row>
-                                    </div>
-                                </Form>
-                            </Col>
-                        </div>
-                    </div>
-                    <div className="mb-4">
-                        <div className="form-row">
-                            <Col className="d-flex align-items-center justify-content-center" md="1">
-                                <span className="completion mr-2">100%</span>
-                            </Col>
-                            <Col md="11">
-                                <div className="h-auto mt-3" >
-                                    <Progress max="100" value="100" color="success" className="w-100" />
-                                </div>
-                            </Col>
+                            {sliderValues.map((label, index) => {
+                                return (
+                                    visibleSliders[index] && (
+                                        <Col className="mb-3" md="4" key={index}>
+                                            <label className="form-control-label">{sliderLabels[index]}</label>
+                                            <Form>
+                                                <div className="input-slider-container">
+                                                    <div id={`slider-${index}`} className="input-slider" ref={sliderRefs.current[index]} />
+                                                    <Row className="mt-3">
+                                                        <Col xs="6">
+                                                            <span className="range-slider-value">
+                                                                {sliderValues[index]}%
+                                                            </span>
+                                                        </Col>
+                                                    </Row>
+                                                </div>
+                                            </Form>
+                                        </Col>
+                                    )
+                                )
+                            })}
                         </div>
                     </div>
                 </CardBody>
@@ -466,8 +602,3 @@ export function ReviewModelAndDeadlineForm({ updateSessionData, sessionData = {}
         </>
     );
 }
-
-ReviewModelAndDeadlineForm.propTypes = {
-    updateSessionData: PropTypes.func,
-    sessionData: PropTypes.object
-};

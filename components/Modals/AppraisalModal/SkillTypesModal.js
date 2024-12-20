@@ -77,6 +77,15 @@ function SkillTypesModal(
     }
 
     const handleCloseSkillTipeModal = () => {
+        // Limpa os campos de entrada
+        setSkillTypeName('');
+        setSkillTypeDescription('');
+        setSelectedClassificationOfSkillType('');
+        setSelectedSkillTypeOccupationalGroup('');
+        setClassificationOfSkillType(null);
+        setClassificationOfSkillTypeState(null);
+        setskillTypeOccupationalGroup(null);
+        setskillTypeOccupationalGroupState(null);
         reset();
         handleOpenSkillTypeModal();
     };
@@ -99,6 +108,15 @@ function SkillTypesModal(
             handleCleanDetailedSkillTypesData
         )
     }
+
+    useEffect(() => {
+        if (!skillTypeIdToUpdate) {
+            setDetailedSkillTypesData([]);
+            setSkillTypeName('');
+            setSkillTypeDescription('');
+        }
+    }, [skillTypeIdToUpdate]);
+    
 
     useEffect(() => {
         const fetchData = async () => {

@@ -240,7 +240,7 @@ SkillClassificationModal.defaultProps = {
 SkillClassificationModal.propTypes = {
     handleOpenAddSkillClassificationModal: PropTypes.func,
     skillClassificationModalOpen: PropTypes.bool,
-    skillClassificationIdToUpdate: PropTypes.string,
+    skillClassificationIdToUpdate: PropTypes.number,
     handleSkillClassificationIdToUpdate: PropTypes.func,
 };
 
