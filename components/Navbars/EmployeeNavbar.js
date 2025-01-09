@@ -82,6 +82,12 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
     fetchData();
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+
+    window.location.href = "../../..";
+  };
+
   return (
     <>
       <Navbar
@@ -103,14 +109,14 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
             >
               <FormGroup className="mb-0">
                 <InputGroup className="input-group-alternative input-group-merge">
-                  
-                   <InputGroupAddon addonType="prepend">
+
+                  <InputGroupAddon addonType="prepend">
                     <InputGroupText>
                       <i className="fas fa-search" />
                     </InputGroupText>
                   </InputGroupAddon>
-                  
-                
+
+
                   <Input placeholder="Search" type="text" />
                 </InputGroup>
               </FormGroup>
@@ -415,7 +421,7 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                     </span>
                     <Media className="ml-2 d-none d-lg-block">
                       <span className="mb-0 text-sm font-weight-bold">
-                      {administratorData.name} 
+                        {administratorData.name}
                       </span>
                     </Media>
                   </Media>
@@ -453,10 +459,7 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                     <span>Suporte</span>
                   </DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem
-                    href="#pablo"
-                    onClick={(e) => e.preventDefault()}
-                  >
+                  <DropdownItem href="#logout" onClick={handleLogout}>
                     <i className="ni ni-user-run" />
                     <span>Sair</span>
                   </DropdownItem>
@@ -471,7 +474,7 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
 }
 
 RegisterNavbar.defaultProps = {
-  toggleSidenav: () => {},
+  toggleSidenav: () => { },
   sidenavOpen: false,
   theme: "dark",
 };

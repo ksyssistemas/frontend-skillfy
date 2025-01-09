@@ -117,6 +117,12 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
     fetchData();
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+
+    window.location.href = "../../..";
+  };
+
   return (
     <>
       <Navbar
@@ -529,10 +535,7 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                     <span>Suporte</span>
                   </DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem
-                    href="#pablo"
-                    onClick={(e) => e.preventDefault()}
-                  >
+                  <DropdownItem href="#logout" onClick={handleLogout}>
                     <i className="ni ni-user-run" />
                     <span>Sair</span>
                   </DropdownItem>
