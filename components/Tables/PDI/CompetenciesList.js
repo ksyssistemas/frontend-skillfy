@@ -17,6 +17,7 @@ import { useSweetAlert } from '../../../contexts/SweetAlertContext';
 import { useDeleteCompetencies } from '../../../hooks/RecordsHooks/pdi/competencies/useDeleteCompetencies';
 import { CompetenciesContext } from '../../../contexts/RecordsContext/CompetenciesContext';
 import ModalCompetencies from '../../Modals/pdi/ModalCompetencies';
+import { useAlert } from '../../../contexts/AlertContext';
 
 function CompetenciesList({ handleShowCompetencieRegister }) {
 
@@ -99,6 +100,10 @@ function CompetenciesList({ handleShowCompetencieRegister }) {
         );
     };
 
+    const [erro, setErro] = useState('');
+    const [success, setSuccess] = useState('');
+
+    const { showAlert } = useAlert();
     return (
         <Card>
             {/** CardHeader with Button register and export */}

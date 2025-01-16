@@ -19,6 +19,8 @@ const useCreatePdi = (handleShowPDIRegister) => {
     const [evaluatedState, setEvaluatedState] = React.useState(null);
     const [competencies, setCompetencies] = React.useState("");
     const [competenciesState, setCompetenciesState] = React.useState(null);
+    const [pdiCreateError, setPdiCreateError] = useState('');
+    const [pdiCreateSuccess, setPdiCreateSuccess] = useState('');
 
     const validateAddPDIForm = () => {
         if (Name === "") {
@@ -64,6 +66,23 @@ const useCreatePdi = (handleShowPDIRegister) => {
     };
 
     function handleValidateAddPDIForm() {
+        console.log("Verificando as validações dos campos!");
+        console.log("Name:", Name);
+        console.log("NameState:", NameState);
+        console.log("Description:", Description);
+        console.log("DescriptionState:", DescriptionState);
+        console.log("StartDate:", StartDate);
+        console.log("StartDateState:", StartDateState);
+        console.log("FinalDate:", FinalDate);
+        console.log("FinalDateState:", FinalDateState);
+        console.log("pdiStatus:", pdiStatus);
+        console.log("pdiStatusState:", pdiStatusState);
+        console.log("Appraiser:", appraiser);
+        console.log("AppraiserState:", appraiserState);
+        console.log("Evaluated:", evaluated);
+        console.log("EvaluatedState:", evaluatedState);
+        console.log("Competencies:", competencies);
+        console.log("CompetenciesState:", competenciesState);
         validateAddPDIForm();
         if (NameState === "valid" &&
             DescriptionState === "valid" &&
@@ -76,6 +95,7 @@ const useCreatePdi = (handleShowPDIRegister) => {
         ) {
             handleSubmit(Name, Description, StartDate, FinalDate, pdiStatus, appraiser, evaluated, competencies);
         } else {
+            console.log("Validações invalidas!");
             return null;
         }
     }
@@ -105,12 +125,15 @@ const useCreatePdi = (handleShowPDIRegister) => {
                 if (response.ok) {
                     reset();
                     handleShowPDIRegister();
+                    setPdiCreateSuccess("PDI criado com sucesso!");
                     console.log('Data sent successfully!');
                 } else {
                     console.error('Error in response:', response.status);
+                    setPdiCreateError("Erro ao criar PDI!");
                 }
             } catch (error) {
                 console.error('Error in request:', error);
+                setPdiCreateError("Erro ao criar PDI!");
             }
         }
     };
@@ -168,6 +191,8 @@ const useCreatePdi = (handleShowPDIRegister) => {
         competenciesState,
         setCompetenciesState,
         handleValidateAddPDIForm,
+        pdiCreateError,
+        pdiCreateSuccess,
         reset
     };
 };
