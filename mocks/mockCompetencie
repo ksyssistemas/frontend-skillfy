@@ -1,7 +1,7 @@
 const mockCompetencie = [
         {
           "id": 1,
-          "name": "Competência",
+          "name": "Competência Teste",
           "description": "Ability to communicate effectively in teams.",
           "createdAt": "2025-01-16T11:24:24.293Z",
           "updatedAt": "2025-01-16T11:24:24.293Z"

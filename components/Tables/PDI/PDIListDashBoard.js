@@ -116,7 +116,7 @@ export function PDIListDashBoard() {
             if (userPdiAccountData.length <= 0 || hasUpdatedPdiRecord || hasDeletedPdiRecord) {
                 try {
                     const foundPdi = await new Promise((resolve) => {
-                        setTimeout(() => resolve(mockPdi), 100); 
+                        setTimeout(() => resolve(mockPdi), 100);
                     });
                     setUserPdiAccountData(foundPdi);
                     console.log(foundPdi);
@@ -138,7 +138,7 @@ export function PDIListDashBoard() {
         hasUpdatedPdiRecord,
         hasDeletedPdiRecord,
     ]);
-    
+
 
     const handleDeletePdi = async (pdiId) => {
         console.log(pdiId);
@@ -220,7 +220,7 @@ export function PDIListDashBoard() {
                 adminDataResults.forEach(({ id, adminData }) => {
                     newCache[id] = adminData;
                 });
-                console.log("adminDataResults: ",adminDataResults);
+                console.log("adminDataResults: ", adminDataResults);
                 setAdminDataCache(newCache);
             } catch (error) {
                 console.error('Erro ao buscar dados dos administradores:', error);
@@ -239,12 +239,15 @@ export function PDIListDashBoard() {
         const fetchAllCompetencieData = async () => {
             try {
                 const uniqueCompetencieIds = [
-                    ...new Set(userPdiAccountData.map((pdi) => {pdi.competencies[0]?.competencyId})),
+                    ...new Set(
+                        userPdiAccountData
+                            .flatMap((pdi) => pdi.competencies.map((competency) => competency.id))
+                    ),
                 ];
 
                 const competencieDataPromises = uniqueCompetencieIds.map(async (id) => {
                     const competencieData = await new Promise((resolve) => {
-                        setTimeout(() => resolve(mockCompetencie), 100); 
+                        setTimeout(() => resolve(mockCompetencie), 100);
                     });
                     // const competencieData = await useFindCompetencies(id);
                     return { id, competencieData };
@@ -257,7 +260,7 @@ export function PDIListDashBoard() {
                 competencieDataResults.forEach(({ id, competencieData }) => {
                     newCache[id] = competencieData;
                 });
-                console.log("competencieDataResults: ",competencieDataResults);
+                console.log("competencieDataResults: ", competencieDataResults);
                 setCompetencieDataCache(newCache);
             } catch (error) {
                 console.error('Erro ao buscar dados das competências:', error);
@@ -298,11 +301,11 @@ export function PDIListDashBoard() {
                     ) : (
                         userPdiAccountData.map((pdi) => {
                             const adminData = adminDataCache[pdi.assessorId];
-                            console.log("pdi.competencies dentro da array de pdi: ",pdi.competencies);
+                            // console.log("pdi.competencies dentro da array de pdi: ",pdi.competencies);
                             const competencieDataList = pdi.competencies.map((competency) =>
-                                competencieDataCache[competency.competencyId]
+                                competencieDataCache[competency.id]
                             );
-
+                            console.log("competencieDataList: ", competencieDataList);
                             return (
                                 <tr key={pdi.id}>
                                     <td className="text-left">
@@ -314,13 +317,19 @@ export function PDIListDashBoard() {
                                     </td>
                                     <td className="text-left">
                                         {competencieDataList.length > 0 ? (
-                                            competencieDataList.map((competencieData, index) =>
-                                                competencieData ? (
-                                                    <b key={index}>{competencieDataList.name}</b>
+                                            competencieDataList.map((innerArray, index) =>
+                                                innerArray.length > 0 ? (
+                                                    innerArray.map((competencieData, subIndex) =>
+                                                        competencieData && competencieData.name ? (
+                                                            <b key={`${index}-${subIndex}`}>{competencieData.name}</b>
+                                                        ) : (
+                                                            <span key={`${index}-${subIndex}`}>Dados não encontrados</span>
+                                                        )
+                                                    )
                                                 ) : (
-                                                    <span key={index}>Dados não encontrados</span>
+                                                    <span key={index}>Sem competências</span>
                                                 )
-                                            ).reduce((prev, curr) => [prev, ', ', curr]) 
+                                            )
                                         ) : (
                                             <span>Sem competências</span>
                                         )}
