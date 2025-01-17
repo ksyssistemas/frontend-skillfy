@@ -27,6 +27,8 @@ import { useFindAllAdmin } from '../../../hooks/RecordsHooks/admin/useFindAllAdm
 import { employmentContractDataSearchAndProcess } from '../../../util/employmentContractDataSearchAndProcess';
 import ModalPdi from '../../Modals/pdi/ModalPdi';
 import ShowPdiDetailsModal from "../../Modals/pdi/ShowPdiDetailsModal";
+import mockPdi from '../../../mocks/mockPdi';
+import mockCompetencie from '../../../mocks/mockCompetencie';
 
 export function PDIListDashBoard() {
 
@@ -84,11 +86,38 @@ export function PDIListDashBoard() {
         setModalPdiOpen(!modalPdiOpen);
     };
 
+    // useEffect(() => {
+    //     const fetchPdi = async () => {
+    //         if (userPdiAccountData.length <= 0 || hasUpdatedPdiRecord || hasDeletedPdiRecord) {
+    //             try {
+    //                 const foundPdi = await useFindAllPDI();
+    //                 setUserPdiAccountData(foundPdi);
+    //                 console.log(foundPdi);
+    //             } catch (error) {
+    //                 console.error('Error fetching pdi:', error);
+    //             }
+    //         }
+    //     };
+    //     fetchPdi();
+    //     if (hasUpdatedPdiRecord) {
+    //         handleUpdatedPdiRecordStatusChange();
+    //     }
+    //     if (hasDeletedPdiRecord) {
+    //         handlePdiIdStatusCleanupToUpdate();
+    //         handleDeletedPdiRecordStatusChange();
+    //     }
+    // }, [
+    //     userPdiAccountData,
+    //     hasUpdatedPdiRecord,
+    //     hasDeletedPdiRecord,
+    // ])
     useEffect(() => {
         const fetchPdi = async () => {
             if (userPdiAccountData.length <= 0 || hasUpdatedPdiRecord || hasDeletedPdiRecord) {
                 try {
-                    const foundPdi = await useFindAllPDI();
+                    const foundPdi = await new Promise((resolve) => {
+                        setTimeout(() => resolve(mockPdi), 100); 
+                    });
                     setUserPdiAccountData(foundPdi);
                     console.log(foundPdi);
                 } catch (error) {
@@ -108,7 +137,8 @@ export function PDIListDashBoard() {
         userPdiAccountData,
         hasUpdatedPdiRecord,
         hasDeletedPdiRecord,
-    ])
+    ]);
+    
 
     const handleDeletePdi = async (pdiId) => {
         console.log(pdiId);
@@ -190,7 +220,7 @@ export function PDIListDashBoard() {
                 adminDataResults.forEach(({ id, adminData }) => {
                     newCache[id] = adminData;
                 });
-
+                console.log("adminDataResults: ",adminDataResults);
                 setAdminDataCache(newCache);
             } catch (error) {
                 console.error('Erro ao buscar dados dos administradores:', error);
@@ -208,13 +238,15 @@ export function PDIListDashBoard() {
     useEffect(() => {
         const fetchAllCompetencieData = async () => {
             try {
-                // Coletar todos os IDs únicos de administradores
                 const uniqueCompetencieIds = [
-                    ...new Set(userPdiAccountData.map((pdi) => pdi.competencyId)),
+                    ...new Set(userPdiAccountData.map((pdi) => {pdi.competencies[0]?.competencyId})),
                 ];
 
                 const competencieDataPromises = uniqueCompetencieIds.map(async (id) => {
-                    const competencieData = await useFindCompetencies(id);
+                    const competencieData = await new Promise((resolve) => {
+                        setTimeout(() => resolve(mockCompetencie), 100); 
+                    });
+                    // const competencieData = await useFindCompetencies(id);
                     return { id, competencieData };
                 });
 
@@ -225,7 +257,7 @@ export function PDIListDashBoard() {
                 competencieDataResults.forEach(({ id, competencieData }) => {
                     newCache[id] = competencieData;
                 });
-
+                console.log("competencieDataResults: ",competencieDataResults);
                 setCompetencieDataCache(newCache);
             } catch (error) {
                 console.error('Erro ao buscar dados das competências:', error);
@@ -254,7 +286,6 @@ export function PDIListDashBoard() {
                     <tr>
                         <th className="text-left">Avaliador</th>
                         <th className="text-left">Competência</th>
-                        <th className="text-left">Sugestão</th>
                         <th className="text-left">Situação</th>
                         <th className="text-left">Progresso</th>
                     </tr>
@@ -267,10 +298,9 @@ export function PDIListDashBoard() {
                     ) : (
                         userPdiAccountData.map((pdi) => {
                             const adminData = adminDataCache[pdi.assessorId];
-                            console.log("pdi.competencies",pdi.competencies);
+                            console.log("pdi.competencies dentro da array de pdi: ",pdi.competencies);
                             const competencieDataList = pdi.competencies.map((competency) =>
                                 competencieDataCache[competency.competencyId]
-
                             );
 
                             return (
@@ -286,7 +316,7 @@ export function PDIListDashBoard() {
                                         {competencieDataList.length > 0 ? (
                                             competencieDataList.map((competencieData, index) =>
                                                 competencieData ? (
-                                                    <b key={index}>{competencieData.name}</b>
+                                                    <b key={index}>{competencieDataList.name}</b>
                                                 ) : (
                                                     <span key={index}>Dados não encontrados</span>
                                                 )
@@ -294,9 +324,6 @@ export function PDIListDashBoard() {
                                         ) : (
                                             <span>Sem competências</span>
                                         )}
-                                    </td>
-                                    <td className="text-left">
-                                        <b className="text-left">{pdi.suggestion}</b>
                                     </td>
                                     <td className="text-left">
                                         <b className="text-left">{pdi.status}</b>
