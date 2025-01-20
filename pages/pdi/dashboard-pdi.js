@@ -18,6 +18,7 @@ import AppraisalSettingsHeader from "../../components/Headers/PerformanceHeader/
 import AdminHeader from "components/Headers/AdminHeader.js";
 import Admin from "layouts/Admin.js";
 import { TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT } from '../../contexts/AuthContext';
+import { PDIListDashBoard } from "../../components/Tables/PDI/PDIListDashBoard";
 
 function DashboardPDI() {
 
@@ -25,7 +26,7 @@ function DashboardPDI() {
         <>
             <AdminHeader name="Dashboard" parentName="Desempenho" />
             <Container className="mt--6" fluid>
-                <Card>
+                {/* <Card>
                     <CardHeader className="border-0">
                         <Row className="align-items-center">
                             <div className="col">
@@ -82,7 +83,8 @@ function DashboardPDI() {
                             </tr>
                         </tbody>
                     </Table>
-                </Card>
+                </Card> */}
+                <PDIListDashBoard />
             </Container>
         </>
     );

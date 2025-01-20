@@ -7,6 +7,8 @@ const useCreateCompetencies = (handleShowCompetencieRegister) => {
     const [NameState, setNameState] = React.useState(null);
     const [Description, setDescription] = React.useState("");
     const [DescriptionState, setDescriptionState] = React.useState(null);
+    const [competencieError, setCompetencieError] = useState('');
+    const [competencieSuccess, setCompetencieSuccess] = useState('');
 
     const validateAddCompetenciesForm = () => {
         if (Name === "") {
@@ -50,12 +52,15 @@ const useCreateCompetencies = (handleShowCompetencieRegister) => {
                 if (response.ok) {
                     reset();
                     handleShowCompetencieRegister();
+                    setCompetencieSuccess("Competência criada com sucesso!");
                     console.log('Data sent successfully!');
                 } else {
                     console.error('Error in response:', response.status);
+                    setCompetencieError("Ocorreu um erro na criação da competência!");
                 }
             } catch (error) {
                 console.error('Error in request:', error);
+                setCompetencieError("Ocorreu um erro na criação da competência!");
             }
         }
     };
@@ -77,6 +82,8 @@ const useCreateCompetencies = (handleShowCompetencieRegister) => {
         DescriptionState,
         setDescriptionState,
         handleValidateAddCompetenciesForm,
+        competencieError,
+        competencieSuccess,
         reset
     };
 };

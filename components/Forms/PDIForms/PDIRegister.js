@@ -24,6 +24,7 @@ import { useFindAllComptencies } from '../../../hooks/RecordsHooks/pdi/competenc
 import { employmentContractDataSearchAndProcess } from '../../../util/employmentContractDataSearchAndProcess';
 import { handleSelectionEmploymentContractData } from '../../../util/handleSelectionEmploymentContractData';
 import dynamic from "next/dynamic";
+import { useAlert } from '../../../contexts/AlertContext';
 const Select2 = dynamic(() => import("react-select2-wrapper"));
 
 export function PDIRegister({ handleShowPDIRegister }) {
@@ -62,6 +63,8 @@ export function PDIRegister({ handleShowPDIRegister }) {
         competenciesState,
         setCompetenciesState,
         handleValidateAddPDIForm,
+        pdiCreateError,
+        pdiCreateSuccess,
         reset
     } = useCreatePdi(handleShowPDIRegister);
 
@@ -147,6 +150,33 @@ export function PDIRegister({ handleShowPDIRegister }) {
             setEvaluatedState("invalid");
         }
     };
+
+    const [erro, setErro] = useState('');
+    const [success, setSuccess] = useState('');
+
+    const { showAlert } = useAlert();
+
+    useEffect(() => {
+        if (pdiCreateSuccess) {
+            showAlert(
+                "success",
+                "ni ni-check-bold",
+                "Sucesso!",
+                "PDI criado com sucesso!"
+            )
+        }
+    }, [pdiCreateSuccess]);
+
+    useEffect(() => {
+        if (pdiCreateError) {
+            showAlert(
+                "danger",
+                "ni ni-fat-remove",
+                "Erro!",
+                "Ocorreu um erro na criação do PDI!"
+            )
+        }
+    }, [pdiCreateError]);
 
     return (
         <Card className="mb-4">

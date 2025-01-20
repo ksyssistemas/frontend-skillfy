@@ -155,7 +155,7 @@ function AdminUserRegister({ handleShowAdminUserRegister }) {
                                         placeholder: "__/__/__",
                                     }}
                                     timeFormat={false}
-                                    onChange={(e) => handleDateFormatting(e, setBirthdate, setBirthdateState)}
+                                    onChange={(e) => handleDateFormatting(null, e, setBirthdate, setBirthdateState, null)}
                                 />
                                 {/* <div className="invalid-feedback">
                                     É necessário selecionar uma data.
