@@ -41,6 +41,8 @@ function CompetenciesList({ handleShowCompetencieRegister }) {
         handleOpenCompetenciesUpdateModal();
     }
 
+    const { showAlert } = useAlert();
+    
     const [modalCompetenciesOpen, setModalCompetenciesOpen] = React.useState(false);
 
     const handleOpenCompetenciesUpdateModal = () => {
@@ -49,7 +51,7 @@ function CompetenciesList({ handleShowCompetencieRegister }) {
 
     useEffect(() => {
         const fetchCompetencies = async () => {
-            if (userCompetenciesAccountData.length <= 0 || hasUpdatedCompetenciesRecord || hasDeletedCompetenciesRecord) {
+            if (userCompetenciesAccountData.length <= 0 || hasUpdatedCompetenciesRecord || hasDeletedCompetenciesRecord || competencieDeleteSuccess) {
                 try {
                     const foundCompetencies = await useFindAllComptencies();
                     setUserCompetenciesAccountData(foundCompetencies);
@@ -71,15 +73,18 @@ function CompetenciesList({ handleShowCompetencieRegister }) {
         hasUpdatedCompetenciesRecord,
         hasDeletedCompetenciesRecord,
     ])
+    const [competencieDeleteSuccess, setCompetencieDeleteSuccess] = useState(null);
+    const [competencieDeleteError, setCompetencieDeleteError] = useState(null);
 
     const handleDeleteCompetencie = async (competencieId) => {
         console.log(competencieId);
         if (competencieId) {
             try {
                 const deleteResponse = await useDeleteCompetencies(competencieId);
-                console.log('DeleteResponse: ', deleteResponse);
+                // console.log('DeleteResponse: ', deleteResponse);
                 if (deleteResponse !== null) {
-                    console.log("Deletado com sucesso!");
+                    setCompetencieDeleteSuccess("Competência deletada com sucesso!");
+                    // console.log("Deletado com sucesso!");
                 } else {
                     console.error('Failed to delete competencie with ID:', competencieId, '. Response Status: ', deleteResponse.status);
                 }
@@ -100,10 +105,30 @@ function CompetenciesList({ handleShowCompetencieRegister }) {
         );
     };
 
-    const [erro, setErro] = useState('');
-    const [success, setSuccess] = useState('');
+        useEffect(() => {
+            if (competencieDeleteSuccess) {
+                showAlert(
+                    "success",
+                    "ni ni-check-bold",
+                    "Sucesso!",
+                    "Competência deletada com sucesso!"
+                );
+                setCompetencieDeleteSuccess(null);
+            }
+        }, [competencieDeleteSuccess]);
+    
+        useEffect(() => {
+            if (competencieDeleteError) {
+                showAlert(
+                    "danger",
+                    "ni ni-fat-remove",
+                    "Erro!",
+                    "Ocorreu um erro para deletar a competência!"
+                );
+                setCompetencieDeleteError(null);
+            }
+        }, [competencieDeleteError]);
 
-    const { showAlert } = useAlert();
     return (
         <Card>
             {/** CardHeader with Button register and export */}

@@ -49,7 +49,7 @@ const useUpdateCompetencies = () => {
                 console.log(payload);
 
                 const response = await fetch(`${process.env.NEXT_PUBLIC_COMPETENCIES}/${competenciesIdToUpdate}`, {
-                    method: 'PUT',
+                    method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
                     },

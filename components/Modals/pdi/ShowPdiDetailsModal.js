@@ -30,6 +30,7 @@ import useCreatePdi from "../../../hooks/RecordsHooks/pdi/useCreatePdi";
 import { useFindAllClientCompany } from '../../../hooks/RecordsHooks/customer/useFindAllClientCompany';
 import { useFindClientCompany } from '../../../hooks/RecordsHooks/customer/useFindClientCompany';
 import { useFindAdmin } from '../../../hooks/RecordsHooks/admin/useFindAdmin'
+import { useFindAllEmployee } from "../../../hooks/RecordsHooks/employee/useFindAllEmployee";
 import dynamic from "next/dynamic";
 const Select2 = dynamic(() => import("react-select2-wrapper"));
 function ShowPdiDetailsModal({ handleShowPdiDetailsModal, selectedIdToShowPdiDetails, handleCleaningSelectedIdToShowPdiDetails, handleOpenPdiModal, modalShowDetailsOpen }) {
@@ -74,7 +75,7 @@ function ShowPdiDetailsModal({ handleShowPdiDetailsModal, selectedIdToShowPdiDet
     const fetchAdmin = async () => {
       if (detailedPdiData && detailedPdiData.assessorId) {
         try {
-          const foundAdmin = await useFindAdmin(detailedPdiData.assessorId);
+          const foundAdmin = await useFindClientCompany(detailedPdiData.assessorId);
           setadminData(foundAdmin);
           // console.log(foundAdmin);
         } catch (error) {
@@ -91,7 +92,7 @@ function ShowPdiDetailsModal({ handleShowPdiDetailsModal, selectedIdToShowPdiDet
     const fetchClientCompany = async () => {
       if (detailedPdiData && detailedPdiData.assessorId) {
         try {
-          const foundClientCompany = await useFindClientCompany(detailedPdiData.assessedId);
+          const foundClientCompany = await useFindAllEmployee(detailedPdiData.assessedId);
           setClientCompanyData(foundClientCompany);
           // console.log(foundClientCompany);
         } catch (error) {

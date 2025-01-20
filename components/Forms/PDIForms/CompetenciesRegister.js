@@ -33,6 +33,8 @@ export function CompetenciesRegister({ handleShowCompetencieRegister }) {
         handleValidateAddCompetenciesForm,
         competencieError,
         competencieSuccess,
+        setCompetencieError,
+        setCompetencieSuccess,
         reset
     } = useCreateCompetencies(handleShowCompetencieRegister);
 
@@ -48,7 +50,8 @@ export function CompetenciesRegister({ handleShowCompetencieRegister }) {
                 "ni ni-check-bold",
                 "Sucesso!",
                 "Competência criada com sucesso!"
-            )
+            );
+            setCompetencieSuccess(null);
         }
     }, [competencieSuccess]);
 
@@ -59,7 +62,8 @@ export function CompetenciesRegister({ handleShowCompetencieRegister }) {
                 "ni ni-fat-remove",
                 "Erro!",
                 "Ocorreu um erro na criação da competência!"
-            )
+            );
+            setCompetencieError(null);
         }
     }, [competencieError]);
 

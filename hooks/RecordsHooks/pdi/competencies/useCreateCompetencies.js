@@ -7,8 +7,8 @@ const useCreateCompetencies = (handleShowCompetencieRegister) => {
     const [NameState, setNameState] = React.useState(null);
     const [Description, setDescription] = React.useState("");
     const [DescriptionState, setDescriptionState] = React.useState(null);
-    const [competencieError, setCompetencieError] = useState('');
-    const [competencieSuccess, setCompetencieSuccess] = useState('');
+    const [competencieError, setCompetencieError] = useState(null);
+    const [competencieSuccess, setCompetencieSuccess] = useState(null);
 
     const validateAddCompetenciesForm = () => {
         if (Name === "") {
@@ -35,7 +35,7 @@ const useCreateCompetencies = (handleShowCompetencieRegister) => {
     }
 
     const handleSubmit = async (Name, Description) => {
-        console.log(`Kaua = ${process.env.NEXT_PUBLIC_COMPETENCIES}`)
+        // console.log(`Kaua = ${process.env.NEXT_PUBLIC_COMPETENCIES}`)
         if (Name, Description) {
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_COMPETENCIES}`, {
@@ -50,17 +50,15 @@ const useCreateCompetencies = (handleShowCompetencieRegister) => {
                 });
 
                 if (response.ok) {
+                    setCompetencieSuccess("Competência criada com sucesso!");
                     reset();
                     handleShowCompetencieRegister();
-                    setCompetencieSuccess("Competência criada com sucesso!");
-                    console.log('Data sent successfully!');
                 } else {
                     console.error('Error in response:', response.status);
                     setCompetencieError("Ocorreu um erro na criação da competência!");
                 }
             } catch (error) {
                 console.error('Error in request:', error);
-                setCompetencieError("Ocorreu um erro na criação da competência!");
             }
         }
     };
@@ -84,6 +82,8 @@ const useCreateCompetencies = (handleShowCompetencieRegister) => {
         handleValidateAddCompetenciesForm,
         competencieError,
         competencieSuccess,
+        setCompetencieError,
+        setCompetencieSuccess,
         reset
     };
 };

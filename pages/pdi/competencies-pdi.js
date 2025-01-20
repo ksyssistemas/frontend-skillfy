@@ -4,6 +4,7 @@ import AdminHeader from "components/Headers/AdminHeader.js";
 import { CompetenciesRegister } from "../../components/Forms/PDIForms/CompetenciesRegister";
 import CompetenciesList from "../../components/Tables/PDI/CompetenciesList";
 import Admin from "layouts/Admin.js";
+import { TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT } from '../../contexts/AuthContext';
 
 function CompetenciesPDI() {
     const [isAddingCompetency, setIsAddingCompetency] = useState(false);
@@ -47,5 +48,10 @@ function CompetenciesPDI() {
     );
 }
 
-CompetenciesPDI.layout = Admin;
+TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'administrator'
+    ? CompetenciesPDI.layout = Admin
+    : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'customer'
+        ? CompetenciesPDI.layout = Performance
+        : CompetenciesPDI.layout = Admin);
+
 export default CompetenciesPDI;

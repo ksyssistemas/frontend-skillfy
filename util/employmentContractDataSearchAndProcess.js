@@ -44,6 +44,9 @@ export async function employmentContractDataSearchAndProcess(apiCall, setData, e
                         case 'competencies':
                             id = item.id;
                             break;
+                        case 'employee':
+                            id = item.id;
+                            break;
                         default:
                             id = '';
                     }

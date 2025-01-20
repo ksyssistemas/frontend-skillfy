@@ -6,6 +6,7 @@ import AdminHeader from "components/Headers/AdminHeader.js";
 import Admin from "layouts/Admin.js";
 import { PDIRegister } from "../../components/Forms/PDIForms/PDIRegister";
 import { PDIList } from "../../components/Tables/PDI/PDIList";
+import { TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT } from '../../contexts/AuthContext';
 
 function AddPDI() {
     const [isAddingPDI, setIsAddingPDI] = useState(false);
@@ -39,5 +40,10 @@ function AddPDI() {
     );
 }
 
-AddPDI.layout = Admin;
+TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'administrator'
+    ? AddPDI.layout = Admin
+    : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'customer'
+        ? AddPDI.layout = Performance
+        : AddPDI.layout = Admin);
+
 export default AddPDI;

@@ -19,8 +19,8 @@ const useCreatePdi = (handleShowPDIRegister) => {
     const [evaluatedState, setEvaluatedState] = React.useState(null);
     const [competencies, setCompetencies] = React.useState("");
     const [competenciesState, setCompetenciesState] = React.useState(null);
-    const [pdiCreateError, setPdiCreateError] = useState('');
-    const [pdiCreateSuccess, setPdiCreateSuccess] = useState('');
+    const [pdiCreateError, setPdiCreateError] = useState(null);
+    const [pdiCreateSuccess, setPdiCreateSuccess] = useState(null);
 
     const validateAddPDIForm = () => {
         if (Name === "") {
@@ -66,23 +66,6 @@ const useCreatePdi = (handleShowPDIRegister) => {
     };
 
     function handleValidateAddPDIForm() {
-        console.log("Verificando as validações dos campos!");
-        console.log("Name:", Name);
-        console.log("NameState:", NameState);
-        console.log("Description:", Description);
-        console.log("DescriptionState:", DescriptionState);
-        console.log("StartDate:", StartDate);
-        console.log("StartDateState:", StartDateState);
-        console.log("FinalDate:", FinalDate);
-        console.log("FinalDateState:", FinalDateState);
-        console.log("pdiStatus:", pdiStatus);
-        console.log("pdiStatusState:", pdiStatusState);
-        console.log("Appraiser:", appraiser);
-        console.log("AppraiserState:", appraiserState);
-        console.log("Evaluated:", evaluated);
-        console.log("EvaluatedState:", evaluatedState);
-        console.log("Competencies:", competencies);
-        console.log("CompetenciesState:", competenciesState);
         validateAddPDIForm();
         if (NameState === "valid" &&
             DescriptionState === "valid" &&
@@ -95,15 +78,28 @@ const useCreatePdi = (handleShowPDIRegister) => {
         ) {
             handleSubmit(Name, Description, StartDate, FinalDate, pdiStatus, appraiser, evaluated, competencies);
         } else {
-            console.log("Validações invalidas!");
+            // console.log("Validações invalidas!");
             return null;
         }
     }
 
     const handleSubmit = async (Name, Description, StartDate, FinalDate, pdiStatus, appraiser, evaluated, competencies) => {
-        console.log(`Kaua = ${process.env.NEXT_PUBLIC_PDI}`);
-        console.log("name:", Name, "description:", Description, "startDate:", StartDate, "endDate:", FinalDate, "status:", pdiStatus, "assessorId:", appraiser, "assessorId:", evaluated, "competencies:", competencies);
-        if (Name, Description, StartDate, FinalDate, pdiStatus, appraiser, evaluated, competencies) {
+        // console.log("Antes da conversão:", competencies);
+    
+        competencies = Array.isArray(competencies) ? competencies : [competencies];
+    
+        // console.log("Depois da conversão:", competencies);
+        // console.log("Dados enviados:", {
+        //     name: Name,
+        //     description: Description,
+        //     startDate: StartDate,
+        //     endDate: FinalDate,
+        //     status: pdiStatus,
+        //     assessorId: appraiser,
+        //     assessedId: evaluated,
+        //     competencies: competencies,
+        // });
+        if (Name && Description && StartDate && FinalDate && pdiStatus && appraiser && evaluated && competencies) {
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_PDI}`, {
                     method: 'POST',
@@ -113,31 +109,34 @@ const useCreatePdi = (handleShowPDIRegister) => {
                     body: JSON.stringify({
                         name: Name,
                         description: Description,
-                        assessedId: Number(evaluated), 
+                        assessedId: Number(evaluated),
                         assessorId: Number(appraiser),
                         startDate: StartDate,
                         endDate: FinalDate,
                         status: pdiStatus,
-                        competencies: competencies,
+                        competencies: competencies, 
                     }),
                 });
-
+    
                 if (response.ok) {
+                    setPdiCreateSuccess("PDI criado com sucesso!");
                     reset();
                     handleShowPDIRegister();
-                    setPdiCreateSuccess("PDI criado com sucesso!");
-                    console.log('Data sent successfully!');
                 } else {
-                    console.error('Error in response:', response.status);
-                    setPdiCreateError("Erro ao criar PDI!");
+                    const errorMessage = await response.json();
+                    console.error('Erro na resposta da API:', errorMessage);
+                    setPdiCreateError(`Erro ao criar PDI: ${errorMessage.message || 'Desconhecido'}`);
                 }
             } catch (error) {
-                console.error('Error in request:', error);
-                setPdiCreateError("Erro ao criar PDI!");
+                console.error('Erro na requisição:', error);
+                // setPdiCreateError("Erro ao criar PDI!");
             }
+        } else {
+            console.error("Campos obrigatórios não preenchidos!");
+            setPdiCreateError("Preencha todos os campos obrigatórios.");
         }
     };
-
+    
     function reset() {
         setName("");
         setNameState(null);
@@ -193,6 +192,8 @@ const useCreatePdi = (handleShowPDIRegister) => {
         handleValidateAddPDIForm,
         pdiCreateError,
         pdiCreateSuccess,
+        setPdiCreateError,
+        setPdiCreateSuccess,
         reset
     };
 };

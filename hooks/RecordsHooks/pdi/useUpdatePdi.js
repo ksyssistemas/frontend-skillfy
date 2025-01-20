@@ -25,9 +25,10 @@ const useUpdatePdi = () => {
         appraiser,
         evaluated,
         handlePdiIdToUpdate,
+        competencies,
         handleCleanDetailedPdiAccountData
     ) {
-        await handleSubmit(pdiIdToUpdate, Name, Description, StartDate, FinalDate, pdiStatus, appraiser, evaluated);
+        await handleSubmit(pdiIdToUpdate, Name, Description, StartDate, FinalDate, pdiStatus, appraiser, evaluated, competencies);
         goBackToPdiList(handleClosePdiUpdateModal, handlePdiIdToUpdate, handleCleanDetailedPdiAccountData);
     }
 
@@ -38,7 +39,7 @@ const useUpdatePdi = () => {
         handleUpdatedPdiRecordStatusChange();
     }
 
-    const handleSubmit = async (pdiIdToUpdate, Name, Description, StartDate, FinalDate, pdiStatus, appraiser, evaluated) => {
+    const handleSubmit = async (pdiIdToUpdate, Name, Description, StartDate, FinalDate, pdiStatus, appraiser, evaluated, competencies) => {
         if (pdiIdToUpdate &&pdiIdToUpdate !== "") {
             try {
                 const payload = {};
@@ -71,10 +72,14 @@ const useUpdatePdi = () => {
                     payload.assessedId = evaluated;
                 };
 
+                if (competencies && competencies !== "") {
+                    payload.competencies = competencies;
+                };
+
                 console.log(payload);
 
                 const response = await fetch(`${process.env.NEXT_PUBLIC_PDI}/${pdiIdToUpdate}`, {
-                    method: 'PUT',
+                    method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
                     },

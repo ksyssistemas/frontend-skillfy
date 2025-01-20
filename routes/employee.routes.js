@@ -112,6 +112,20 @@ const routes = [
       },
     ],
   },
+  {
+    collapse: true,
+    name: "PDI",
+    icon: "ni ni-chart-bar-32",
+    state: "pdiCollapse",
+    views: [
+      {
+        path: "/dashboard-pdi",
+        name: "Dashboard",
+        miniName: "D",
+        layout: "/pdi",
+      },
+    ],
+  },
 ];
 
 export default routes;

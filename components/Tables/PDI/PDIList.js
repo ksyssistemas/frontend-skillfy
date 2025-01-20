@@ -22,6 +22,7 @@ import { useDeletePdi } from '../../../hooks/RecordsHooks/pdi/useDeletePdi';
 import { PdiContext } from '../../../contexts/RecordsContext/PdiContext';
 import ModalPdi from '../../Modals/pdi/ModalPdi';
 import ShowPdiDetailsModal from "../../Modals/pdi/ShowPdiDetailsModal";
+import { useAlert } from '../../../contexts/AlertContext';
 export function PDIList() {
 
     const {
@@ -39,6 +40,8 @@ export function PDIList() {
     const { warningAlert } = useSweetAlert();
 
     const [userPdiAccountData, setUserPdiAccountData] = useState([]);
+
+    const [pdiDeleteSuccess, setPdiDeleteSuccess] = useState(null);
 
     function handlePdiUpdate(pdiId) {
         handlePdiIdToUpdate(pdiId);
@@ -80,7 +83,7 @@ export function PDIList() {
 
     useEffect(() => {
         const fetchPdi = async () => {
-            if (userPdiAccountData.length <= 0 || hasUpdatedPdiRecord || hasDeletedPdiRecord) {
+            if (userPdiAccountData.length <= 0 || hasUpdatedPdiRecord || hasDeletedPdiRecord || pdiDeleteSuccess) {
                 try {
                     const foundPdi = await useFindAllPDI();
                     setUserPdiAccountData(foundPdi);
@@ -103,14 +106,14 @@ export function PDIList() {
         hasDeletedPdiRecord,
     ])
 
+    const { showAlert } = useAlert();
+
     const handleDeletePdi = async (pdiId) => {
-        console.log(pdiId);
         if (pdiId) {
             try {
                 const deleteResponse = await useDeletePdi(pdiId);
-                console.log('DeleteResponse: ', deleteResponse);
                 if (deleteResponse !== null) {
-                    console.log("Deletado com sucesso!");
+                    setPdiDeleteSuccess("PDI deletado com sucesso!");
                 } else {
                     console.error('Failed to delete pdi with ID:', pdiId, '. Response Status: ', deleteResponse.status);
                 }
@@ -119,6 +122,18 @@ export function PDIList() {
             }
         }
     };
+
+     useEffect(() => {
+            if (pdiDeleteSuccess) {
+                showAlert(
+                    "success",
+                    "ni ni-check-bold",
+                    "Sucesso!",
+                    "PDI deletado com sucesso!"
+                );
+                setPdiDeleteSuccess(null);
+            }
+        }, [pdiDeleteSuccess]);
 
     const showWarningAlert = (pdiId) => {
         warningAlert(

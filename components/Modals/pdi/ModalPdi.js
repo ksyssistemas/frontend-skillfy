@@ -21,7 +21,9 @@ import useUpdatePdi from "../../../hooks/RecordsHooks/pdi/useUpdatePdi";
 import { handleDateFormatting } from "../../../util/handleDateFormatting";
 import { useFindAllClientCompany } from '../../../hooks/RecordsHooks/customer/useFindAllClientCompany';
 import { useFindAllAdmin } from '../../../hooks/RecordsHooks/admin/useFindAllAdmin';
+import { useFindAllEmployee } from "../../../hooks/RecordsHooks/employee/useFindAllEmployee";
 import { employmentContractDataSearchAndProcess } from '../../../util/employmentContractDataSearchAndProcess';
+import { useFindAllComptencies } from '../../../hooks/RecordsHooks/pdi/competencies/useFindAllCompetencies';
 import { handleSelectionEmploymentContractData } from '../../../util/handleSelectionEmploymentContractData';
 import ReactDatetime from "react-datetime";
 import dynamic from "next/dynamic";
@@ -70,7 +72,13 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
         setEvaluated,
         evaluatedState,
         setEvaluatedState,
+        competencies,
+        setCompetencies,
+        competenciesState,
+        setCompetenciesState,
         handleValidateAddPDIForm,
+        pdiCreateError,
+        pdiCreateSuccess,
         reset
     } = useCreatePdi();
 
@@ -96,6 +104,7 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
             appraiser,
             evaluated,
             handlePdiIdToUpdate,
+            competencies,
             handleCleanDetailedPdiAccountData
         )
     }
@@ -109,6 +118,7 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
         const fetchPdi = async () => {
             if (!detailedPdiData.length) {
                 const foundPdi = await useFindPdi(pdiIdToUpdate);
+                console.log(foundPdi);
                 setDetailedPdiData(foundPdi);
                 setName(foundPdi.name);
                 setDescription(foundPdi.description);
@@ -117,6 +127,7 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
                 setEvaluated(foundPdi.assessedId);
                 setAppraiser(foundPdi.assessorId);
                 setPdiStatus(foundPdi.status);
+                setCompetencies(foundPdi.competencies);
             }
         };
 
@@ -133,7 +144,7 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
 
     useEffect(() => {
         if (clientCompanyDataList.length === 0) {
-            employmentContractDataSearchAndProcess(useFindAllClientCompany, handleClientCompanyDataList, 'client-company', 'EmployeeUserRegister');
+            employmentContractDataSearchAndProcess(useFindAllEmployee, handleClientCompanyDataList, 'employee', 'EmployeeUserRegister');
         }
     }, []);
 
@@ -151,9 +162,9 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
     useEffect(() => {
         if (adminDataList.length === 0) {
             employmentContractDataSearchAndProcess(
-                useFindAllAdmin,
+                useFindAllClientCompany,
                 handleAdminDataList,
-                'admin',
+                'client-company',
                 'AdminUserRegister'
             );
         }
@@ -179,6 +190,19 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
         }
     };
 
+    const handleCompetenciesChange = (e) => {
+        const selectedValues = Array.from(e.target.selectedOptions).map((option) =>
+            Number(option.value)
+        );
+        setCompetencies(selectedValues);
+
+        if (selectedValues.length > 0) {
+            setCompetenciesState("valid");
+        } else {
+            setCompetenciesState("invalid");
+        }
+    };
+
     function formatDate(dateString) {
         const date = new Date(dateString);
         const adjustedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
@@ -190,6 +214,23 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
         return `${day}/${month}/${year}`;
     }
 
+    const [selectedBelongingToCompetencies, setselectedBelongingToCompetencies] = useState('');
+    const [selectedBelongingToCompetenciesState, setselectedBelongingToCompetenciesState] = React.useState(null);
+    const [competenciesDataList, setCompetenciesDataList] = useState([]);
+    const handleCompetenciesDataList = (competencies) => {
+        setCompetenciesDataList(competencies);
+    };
+    useEffect(() => {
+        if (competenciesDataList.length === 0) {
+            employmentContractDataSearchAndProcess(
+                useFindAllComptencies,
+                handleCompetenciesDataList,
+                'competencies',
+                'CompetenciesUserRegister'
+            );
+        }
+    }, [])
+    
     return (
         <Modal toggle={handleOpenPdiUpdateModal} isOpen={modalOpen} size="xl">
             <div className=" modal-header">
@@ -285,7 +326,8 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
                                 }}
                                 value={formatDate(StartDate)}
                                 timeFormat={false}
-                                onChange={(e) => handleDateFormatting(e, setStartDate, setStartDateState)}
+                                dateFormat="YYYY/MM/DD"
+                                onChange={(e) => handleDateFormatting(null, e, setStartDate, setStartDateState, null)}
                             />
                             <div className="invalid-feedback">
                                 É necessário selecionar uma data.
@@ -306,7 +348,8 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
                                     }}
                                     value={formatDate(FinalDate)}
                                     timeFormat={false}
-                                    onChange={(e) => handleDateFormatting(e, setFinalDate, setFinalDateState)}
+                                    dateFormat="YYYY/MM/DD"
+                                    onChange={(e) => handleDateFormatting(null, e, setFinalDate, setFinalDateState, null)}
                                 />
                                 <div className="invalid-feedback">
                                     É necessário selecionar uma data.
@@ -402,6 +445,28 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
                                     null,
                                     'id'
                                 )}
+                            />
+                            <div className="invalid-feedback">
+                            </div>
+                        </Col>
+                    </div>
+                    <div className="form-row">
+                        <Col className="mb-3" md="6">
+                            <label className="form-control-label"
+                                htmlFor="validationCompetencia">
+                                Competências
+                            </label>
+                            <Select2
+                                id="validationCompetencia"
+                                className="form-control"
+                                data-minimum-results-for-search="Infinity"
+                                options={{
+                                    placeholder: "Selecione uma ou mais competências",
+                                }}
+                                value={competencies}
+                                multiple 
+                                onChange={handleCompetenciesChange} 
+                                data={competenciesDataList}
                             />
                             <div className="invalid-feedback">
                             </div>

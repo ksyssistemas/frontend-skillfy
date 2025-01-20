@@ -19,6 +19,7 @@ import InputMask from 'react-input-mask';
 import useCreatePdi from '../../../hooks/RecordsHooks/pdi/useCreatePdi';
 import { handleDateFormatting } from "../../../util/handleDateFormatting";
 import { useFindAllClientCompany } from '../../../hooks/RecordsHooks/customer/useFindAllClientCompany';
+import { useFindAllEmployee } from '../../../hooks/RecordsHooks/employee/useFindAllEmployee';
 import { useFindAllAdmin } from '../../../hooks/RecordsHooks/admin/useFindAllAdmin';
 import { useFindAllComptencies } from '../../../hooks/RecordsHooks/pdi/competencies/useFindAllCompetencies';
 import { employmentContractDataSearchAndProcess } from '../../../util/employmentContractDataSearchAndProcess';
@@ -65,6 +66,8 @@ export function PDIRegister({ handleShowPDIRegister }) {
         handleValidateAddPDIForm,
         pdiCreateError,
         pdiCreateSuccess,
+        setPdiCreateError,
+        setPdiCreateSuccess,
         reset
     } = useCreatePdi(handleShowPDIRegister);
 
@@ -76,7 +79,7 @@ export function PDIRegister({ handleShowPDIRegister }) {
 
     useEffect(() => {
         if (clientCompanyDataList.length === 0) {
-            employmentContractDataSearchAndProcess(useFindAllClientCompany, handleClientCompanyDataList, 'client-company', 'EmployeeUserRegister');
+            employmentContractDataSearchAndProcess(useFindAllEmployee, handleClientCompanyDataList, 'employee', 'EmployeeUserRegister');
         }
     }, []);
 
@@ -106,9 +109,12 @@ export function PDIRegister({ handleShowPDIRegister }) {
     }, [])
 
     const handleCompetenciesChange = (e) => {
-        const value = Number(e.target.value);
-        setCompetencies(value);
-        if (value) {
+        const selectedValues = Array.from(e.target.selectedOptions).map((option) =>
+            Number(option.value)
+        );
+        setCompetencies(selectedValues);
+
+        if (selectedValues.length > 0) {
             setCompetenciesState("valid");
         } else {
             setCompetenciesState("invalid");
@@ -123,9 +129,9 @@ export function PDIRegister({ handleShowPDIRegister }) {
     useEffect(() => {
         if (adminDataList.length === 0) {
             employmentContractDataSearchAndProcess(
-                useFindAllAdmin,
+                useFindAllClientCompany,
                 handleAdminDataList,
-                'admin',
+                'client-company',
                 'AdminUserRegister'
             );
         }
@@ -163,7 +169,8 @@ export function PDIRegister({ handleShowPDIRegister }) {
                 "ni ni-check-bold",
                 "Sucesso!",
                 "PDI criado com sucesso!"
-            )
+            );
+            setPdiCreateSuccess(null);
         }
     }, [pdiCreateSuccess]);
 
@@ -174,7 +181,8 @@ export function PDIRegister({ handleShowPDIRegister }) {
                 "ni ni-fat-remove",
                 "Erro!",
                 "Ocorreu um erro na criação do PDI!"
-            )
+            );
+            setPdiCreateError(null);
         }
     }, [pdiCreateError]);
 
@@ -259,7 +267,8 @@ export function PDIRegister({ handleShowPDIRegister }) {
                                     placeholder: "__/__/__",
                                 }}
                                 timeFormat={false}
-                                onChange={(e) => handleDateFormatting(e, setStartDate, setStartDateState)}
+                                dateFormat="YYYY/MM/DD"
+                                onChange={(e) => handleDateFormatting(null, e, setStartDate, setStartDateState, null)}
                             />
                             <div className="invalid-feedback">
                                 É necessário selecionar uma data.
@@ -278,7 +287,8 @@ export function PDIRegister({ handleShowPDIRegister }) {
                                         placeholder: "__/__/__",
                                     }}
                                     timeFormat={false}
-                                    onChange={(e) => handleDateFormatting(e, setFinalDate, setFinalDateState)}
+                                    dateFormat="YYYY/MM/DD"
+                                    onChange={(e) => handleDateFormatting(null, e, setFinalDate, setFinalDateState, null)}
                                 />
                                 <div className="invalid-feedback">
                                     É necessário selecionar uma data.
@@ -389,21 +399,12 @@ export function PDIRegister({ handleShowPDIRegister }) {
                                 className="form-control"
                                 data-minimum-results-for-search="Infinity"
                                 options={{
-                                    placeholder: "Selecione uma competência",
+                                    placeholder: "Selecione uma ou mais competências",
                                 }}
                                 value={competencies}
-                                onChange={handleCompetenciesChange}
+                                multiple 
+                                onChange={handleCompetenciesChange} 
                                 data={competenciesDataList}
-                                onSelect={(e) => handleSelectionEmploymentContractData(
-                                    e.target.value,
-                                    competenciesDataList,
-                                    setCompetencies,
-                                    setselectedBelongingToCompetencies,
-                                    setselectedBelongingToCompetenciesState,
-                                    null,
-                                    null,
-                                    'id'
-                                )}
                             />
                             <div className="invalid-feedback">
                             </div>

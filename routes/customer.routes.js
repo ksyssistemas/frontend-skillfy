@@ -130,6 +130,18 @@ const routes = () => {
           miniName: "D",
           layout: "/pdi",
         },
+        {
+          path: "/competencies-pdi",
+          name: "Competências",
+          miniName: "C",
+          layout: "/pdi",
+        },
+        {
+          path: "/add-pdi",
+          name: "Cadastro PDI",
+          miniName: "C",
+          layout: "/pdi",
+        },
       ]
     },
   ]
