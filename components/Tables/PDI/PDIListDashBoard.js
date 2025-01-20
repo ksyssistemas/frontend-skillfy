@@ -318,7 +318,7 @@ export function PDIListDashBoard() {
                                     <td className="text-left">
                                         {competencieDataList.length > 0 ? (
                                             competencieDataList.map((innerArray, index) =>
-                                                innerArray.length > 0 ? (
+                                                innerArray && innerArray.length > 0 ? ( 
                                                     innerArray.map((competencieData, subIndex) =>
                                                         competencieData && competencieData.name ? (
                                                             <b key={`${index}-${subIndex}`}>{competencieData.name}</b>
@@ -334,6 +334,7 @@ export function PDIListDashBoard() {
                                             <span>Sem competências</span>
                                         )}
                                     </td>
+
                                     <td className="text-left">
                                         <b className="text-left">{pdi.status}</b>
                                     </td>
