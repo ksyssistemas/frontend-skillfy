@@ -4,6 +4,9 @@ import { CompetenciesContext } from '../../../../contexts/RecordsContext/Compete
 
 const useUpdateCompetencies = () => {
 
+    const [competencieUpdateError, setCompetencieUpdateError] = useState(null);
+    const [competencieUpdateSuccess, setCompetencieUpdateSuccess] = useState(null);
+
     const {
         competenciesIdToUpdate,
         handleCompetenciesIdStatusCleanupToUpdate,
@@ -56,17 +59,24 @@ const useUpdateCompetencies = () => {
 
                 if (response.ok) {
                     console.log('Data sent successfully!');
+                    setCompetencieUpdateSuccess("Competência atualizada com sucesso!");
                 } else {
                     console.error('Error in response:', response.status);
+                    setCompetencieUpdateError("Erro ao atualizar a competência!");
                 }
             } catch (error) {
                 console.error('Error in request:', error);
+                setCompetencieUpdateError("Erro ao atualizar a competência!");
             }
         }
     };
 
     return {
-        handleValidateUpdateCompetenciesForm
+        handleValidateUpdateCompetenciesForm,
+        competencieUpdateError,
+        competencieUpdateSuccess,
+        setCompetencieUpdateError,
+        setCompetencieUpdateSuccess
     };
 };
 

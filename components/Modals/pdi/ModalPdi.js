@@ -25,6 +25,7 @@ import { useFindAllEmployee } from "../../../hooks/RecordsHooks/employee/useFind
 import { employmentContractDataSearchAndProcess } from '../../../util/employmentContractDataSearchAndProcess';
 import { useFindAllComptencies } from '../../../hooks/RecordsHooks/pdi/competencies/useFindAllCompetencies';
 import { handleSelectionEmploymentContractData } from '../../../util/handleSelectionEmploymentContractData';
+import { useAlert } from '../../../contexts/AlertContext';
 import ReactDatetime from "react-datetime";
 import dynamic from "next/dynamic";
 import moment from 'moment';
@@ -83,7 +84,11 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
     } = useCreatePdi();
 
     const {
-        handleValidateUpdatePdiForm
+        handleValidateUpdatePdiForm,
+        pdiUpdateSuccess,
+        pdiUpdateError,
+        setPdiUpdateError,
+        setPdiUpdateSuccess
     } = useUpdatePdi();
 
     const handleClosePdiUpdateModal = () => {
@@ -113,7 +118,7 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
     function handleCleanDetailedPdiData() {
         setDetailedPdiData([]);
     };
-
+    
     useEffect(() => {
         const fetchPdi = async () => {
             if (!detailedPdiData.length) {
@@ -121,16 +126,16 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
                 setDetailedPdiData(foundPdi);
                 setName(foundPdi.name);
                 setDescription(foundPdi.description);
-                setStartDate(foundPdi.startDate);
-                setFinalDate(foundPdi.endDate);
+                setStartDate(formatDate(foundPdi.startDate));
+                setFinalDate(formatDate(foundPdi.endDate));
                 setEvaluated(foundPdi.assessedId);
                 setAppraiser(foundPdi.assessorId);
                 setPdiStatus(foundPdi.status);
-    
+
                 setCompetencies(foundPdi.competencies.map((c) => c.competencyId));
             }
         };
-    
+
         if (pdiIdToUpdate) {
             fetchPdi();
         }
@@ -195,13 +200,15 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
             Number(option.value)
         );
         setCompetencies(selectedValues);
-    
+
         if (selectedValues.length > 0) {
             setCompetenciesState("valid");
         } else {
             setCompetenciesState("invalid");
         }
     };
+
+    const { showAlert } = useAlert();
 
     function formatDate(dateString) {
         const date = new Date(dateString);
@@ -230,6 +237,30 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
             );
         }
     }, [])
+
+    useEffect(() => {
+        if (pdiUpdateSuccess) {
+            showAlert(
+                "success",
+                "ni ni-check-bold",
+                "Sucesso!",
+                "PDI atualizado com sucesso!"
+            );
+            setPdiUpdateSuccess(null);
+        }
+    }, [pdiUpdateSuccess]);
+
+    useEffect(() => {
+        if (pdiUpdateError) {
+            showAlert(
+                "danger",
+                "ni ni-fat-remove",
+                "Erro!",
+                "Ocorreu um erro para atualizar o PDI!"
+            );
+            setPdiUpdateError(null);
+        }
+    }, [pdiUpdateError]);
 
     return (
         <Modal toggle={handleOpenPdiUpdateModal} isOpen={modalOpen} size="xl">
@@ -324,7 +355,7 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
                                 inputProps={{
                                     placeholder: "__/__/__",
                                 }}
-                                value={formatDate(StartDate)}
+                                value={StartDate}
                                 timeFormat={false}
                                 dateFormat="YYYY/MM/DD"
                                 onChange={(e) => handleDateFormatting(null, e, setStartDate, setStartDateState, null)}
@@ -346,7 +377,7 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
                                     inputProps={{
                                         placeholder: "__/__/__",
                                     }}
-                                    value={formatDate(FinalDate)}
+                                    value={FinalDate}
                                     timeFormat={false}
                                     dateFormat="YYYY/MM/DD"
                                     onChange={(e) => handleDateFormatting(null, e, setFinalDate, setFinalDateState, null)}
@@ -464,8 +495,8 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
                                     placeholder: "Selecione uma ou mais competências",
                                 }}
                                 value={competencies}
-                                multiple 
-                                onChange={handleCompetenciesChange} 
+                                multiple
+                                onChange={handleCompetenciesChange}
                                 data={competenciesDataList}
                             />
                             <div className="invalid-feedback">

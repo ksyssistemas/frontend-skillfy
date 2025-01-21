@@ -112,11 +112,11 @@ const useCreatePdi = (handleShowPDIRegister) => {
                 } else {
                     const errorMessage = await response.json();
                     console.error('Erro na resposta da API:', errorMessage);
-                    setPdiCreateError(`Erro ao criar PDI: ${errorMessage.message || 'Desconhecido'}`);
+                    setPdiCreateError("Erro ao criar PDI!");
                 }
             } catch (error) {
                 console.error('Erro na requisição:', error);
-                // setPdiCreateError("Erro ao criar PDI!");
+                setPdiCreateError("Erro ao criar PDI!");
             }
         } else {
             console.error("Campos obrigatórios não preenchidos!");

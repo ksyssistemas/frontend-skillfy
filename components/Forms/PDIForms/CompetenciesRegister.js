@@ -129,6 +129,12 @@ export function CompetenciesRegister({ handleShowCompetencieRegister }) {
                                     }
                                 }}
                             />
+                            <div className="invalid-feedback">
+                                É necessário preencher este campo.
+                            </div>
+                            <div className="valid-feedback">
+                                Parece bom!
+                            </div>
                         </Col>
                     </div>
                     <Row>

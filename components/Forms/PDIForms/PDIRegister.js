@@ -186,12 +186,19 @@ export function PDIRegister({ handleShowPDIRegister }) {
         }
     }, [pdiCreateError]);
 
+    const errorStyle = {
+        color: "#fb6340", 
+      };
+
     return (
         <Card className="mb-4">
             <CardHeader>
                 <h3 className="mb-0">Adicionar PDI</h3>
             </CardHeader>
             <CardBody>
+                <p className='description' style={errorStyle}>
+                    É necessário preencher todos os campos.
+                </p>
                 <Form className="needs-validation" noValidate>
                     <div className="form-row">
                         <Col className="mb-3" md="6">
@@ -271,7 +278,10 @@ export function PDIRegister({ handleShowPDIRegister }) {
                                 onChange={(e) => handleDateFormatting(null, e, setStartDate, setStartDateState, null)}
                             />
                             <div className="invalid-feedback">
-                                É necessário selecionar uma data.
+                                É necessário preencher este campo.
+                            </div>
+                            <div className="valid-feedback">
+                                Parece bom!
                             </div>
                         </Col>
                         <Col md="3">
@@ -291,7 +301,10 @@ export function PDIRegister({ handleShowPDIRegister }) {
                                     onChange={(e) => handleDateFormatting(null, e, setFinalDate, setFinalDateState, null)}
                                 />
                                 <div className="invalid-feedback">
-                                    É necessário selecionar uma data.
+                                    É necessário preencher este campo.
+                                </div>
+                                <div className="valid-feedback">
+                                    Parece bom!
                                 </div>
                             </FormGroup>
                         </Col>
@@ -357,6 +370,9 @@ export function PDIRegister({ handleShowPDIRegister }) {
                             <div className="invalid-feedback">
                                 É necessário preencher este campo.
                             </div>
+                            <div className="valid-feedback">
+                                Parece bom!
+                            </div>
                         </Col>
                         <Col className="mb-3" md="6">
                             <label className="form-control-label"
@@ -385,6 +401,10 @@ export function PDIRegister({ handleShowPDIRegister }) {
                                 )}
                             />
                             <div className="invalid-feedback">
+                                É necessário preencher este campo.
+                            </div>
+                            <div className="valid-feedback">
+                                Parece bom!
                             </div>
                         </Col>
                     </div>
@@ -402,11 +422,15 @@ export function PDIRegister({ handleShowPDIRegister }) {
                                     placeholder: "Selecione uma ou mais competências",
                                 }}
                                 value={competencies}
-                                multiple 
-                                onChange={handleCompetenciesChange} 
+                                multiple
+                                onChange={handleCompetenciesChange}
                                 data={competenciesDataList}
                             />
                             <div className="invalid-feedback">
+                                É necessário preencher este campo.
+                            </div>
+                            <div className="valid-feedback">
+                                Parece bom!
                             </div>
                         </Col>
                     </div>

@@ -45,16 +45,19 @@ function CompetenciesList({ handleShowCompetencieRegister }) {
     
     const [modalCompetenciesOpen, setModalCompetenciesOpen] = React.useState(false);
 
+    const [needsRefresh, setNeedsRefresh] = useState(false);
+
     const handleOpenCompetenciesUpdateModal = () => {
         setModalCompetenciesOpen(!modalCompetenciesOpen);
     };
 
     useEffect(() => {
         const fetchCompetencies = async () => {
-            if (userCompetenciesAccountData.length <= 0 || hasUpdatedCompetenciesRecord || hasDeletedCompetenciesRecord || competencieDeleteSuccess) {
+            if (userCompetenciesAccountData.length <= 0 || hasUpdatedCompetenciesRecord || hasDeletedCompetenciesRecord || needsRefresh ) {
                 try {
                     const foundCompetencies = await useFindAllComptencies();
                     setUserCompetenciesAccountData(foundCompetencies);
+                    if (needsRefresh) setNeedsRefresh(false);
                 } catch (error) {
                     console.error('Error fetching competencies:', error);
                 }
@@ -70,9 +73,11 @@ function CompetenciesList({ handleShowCompetencieRegister }) {
         }
     }, [
         userCompetenciesAccountData,
+        needsRefresh,
         hasUpdatedCompetenciesRecord,
         hasDeletedCompetenciesRecord,
     ])
+
     const [competencieDeleteSuccess, setCompetencieDeleteSuccess] = useState(null);
     const [competencieDeleteError, setCompetencieDeleteError] = useState(null);
 
@@ -81,12 +86,12 @@ function CompetenciesList({ handleShowCompetencieRegister }) {
         if (competencieId) {
             try {
                 const deleteResponse = await useDeleteCompetencies(competencieId);
-                // console.log('DeleteResponse: ', deleteResponse);
                 if (deleteResponse !== null) {
                     setCompetencieDeleteSuccess("Competência deletada com sucesso!");
-                    // console.log("Deletado com sucesso!");
+                    setNeedsRefresh(true);
                 } else {
                     console.error('Failed to delete competencie with ID:', competencieId, '. Response Status: ', deleteResponse.status);
+                    setCompetencieDeleteError("Erro ao deletear competência!");
                 }
             } catch (error) {
                 console.error('Error in request:', error);

@@ -42,6 +42,7 @@ export function PDIList() {
     const [userPdiAccountData, setUserPdiAccountData] = useState([]);
 
     const [pdiDeleteSuccess, setPdiDeleteSuccess] = useState(null);
+    const [pdiDeleteError, setPdiDeleteError] = useState(null);
 
     function handlePdiUpdate(pdiId) {
         handlePdiIdToUpdate(pdiId);
@@ -81,12 +82,15 @@ export function PDIList() {
         setModalPdiOpen(!modalPdiOpen);
     };
 
+    const [needsRefresh, setNeedsRefresh] = useState(false);
+
     useEffect(() => {
         const fetchPdi = async () => {
-            if (userPdiAccountData.length <= 0 || hasUpdatedPdiRecord || hasDeletedPdiRecord || pdiDeleteSuccess) {
+            if (userPdiAccountData.length <= 0 || hasUpdatedPdiRecord || hasDeletedPdiRecord || needsRefresh) {
                 try {
                     const foundPdi = await useFindAllPDI();
                     setUserPdiAccountData(foundPdi);
+                    if (needsRefresh) setNeedsRefresh(false);
                 } catch (error) {
                     console.error('Error fetching pdi:', error);
                 }
@@ -104,6 +108,7 @@ export function PDIList() {
         userPdiAccountData,
         hasUpdatedPdiRecord,
         hasDeletedPdiRecord,
+        needsRefresh,
     ])
 
     const { showAlert } = useAlert();
@@ -114,8 +119,10 @@ export function PDIList() {
                 const deleteResponse = await useDeletePdi(pdiId);
                 if (deleteResponse !== null) {
                     setPdiDeleteSuccess("PDI deletado com sucesso!");
+                    setNeedsRefresh(true);
                 } else {
                     console.error('Failed to delete pdi with ID:', pdiId, '. Response Status: ', deleteResponse.status);
+                    setPdiDeleteError("Erro ao deletar pdi!");
                 }
             } catch (error) {
                 console.error('Error in request:', error);
@@ -123,17 +130,17 @@ export function PDIList() {
         }
     };
 
-     useEffect(() => {
-            if (pdiDeleteSuccess) {
-                showAlert(
-                    "success",
-                    "ni ni-check-bold",
-                    "Sucesso!",
-                    "PDI deletado com sucesso!"
-                );
-                setPdiDeleteSuccess(null);
-            }
-        }, [pdiDeleteSuccess]);
+    useEffect(() => {
+        if (pdiDeleteSuccess) {
+            showAlert(
+                "success",
+                "ni ni-check-bold",
+                "Sucesso!",
+                "PDI deletado com sucesso!"
+            );
+            setPdiDeleteSuccess(null);
+        }
+    }, [pdiDeleteSuccess]);
 
     const showWarningAlert = (pdiId) => {
         warningAlert(
@@ -145,17 +152,28 @@ export function PDIList() {
             () => handleDeletePdi(pdiId)
         );
     };
+    useEffect(() => {
+        if (pdiDeleteError) {
+            showAlert(
+                "danger",
+                "ni ni-fat-remove",
+                "Erro!",
+                "Ocorreu um erro para deletar o pdi!"
+            );
+            setPdiDeleteError(null);
+        }
+    }, [pdiDeleteError]);
 
     function formatDate(dateString) {
         const date = new Date(dateString);
         const adjustedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-    
+
         const day = String(adjustedDate.getDate()).padStart(2, '0');
         const month = String(adjustedDate.getMonth() + 1).padStart(2, '0');
         const year = adjustedDate.getFullYear();
-    
+
         return `${day}/${month}/${year}`;
-      }
+    }
 
     return (
         <Card>
@@ -237,7 +255,7 @@ export function PDIList() {
                 handleOpenPdiUpdateModal={handleOpenPdiUpdateModal}
                 modalOpen={modalPdiOpen}
             />
-                <ShowPdiDetailsModal {...commonProps} />
+            <ShowPdiDetailsModal {...commonProps} />
         </Card>
     );
 };

@@ -27,10 +27,9 @@ import { employmentContractDataSearchAndProcess } from '../../../util/employment
 import { handleSelectionEmploymentContractData } from '../../../util/handleSelectionEmploymentContractData';
 import { useFindAllAdmin } from '../../../hooks/RecordsHooks/admin/useFindAllAdmin';
 import useCreatePdi from "../../../hooks/RecordsHooks/pdi/useCreatePdi";
-import { useFindAllClientCompany } from '../../../hooks/RecordsHooks/customer/useFindAllClientCompany';
 import { useFindClientCompany } from '../../../hooks/RecordsHooks/customer/useFindClientCompany';
 import { useFindAdmin } from '../../../hooks/RecordsHooks/admin/useFindAdmin'
-import { useFindAllEmployee } from "../../../hooks/RecordsHooks/employee/useFindAllEmployee";
+import { useFindEmployee } from "../../../hooks/RecordsHooks/employee/useFindEmployee";
 import dynamic from "next/dynamic";
 const Select2 = dynamic(() => import("react-select2-wrapper"));
 function ShowPdiDetailsModal({ handleShowPdiDetailsModal, selectedIdToShowPdiDetails, handleCleaningSelectedIdToShowPdiDetails, handleOpenPdiModal, modalShowDetailsOpen }) {
@@ -61,7 +60,7 @@ function ShowPdiDetailsModal({ handleShowPdiDetailsModal, selectedIdToShowPdiDet
         try {
           const foundPdi = await useFindPdi(selectedIdToShowPdiDetails);
           setDetailedPdiData(foundPdi);
-          // console.log(foundPdi);
+          console.log("foundPDIdetailsModal: " ,foundPdi);
         } catch (error) {
           console.error('Error fetching PDI data:', error);
         }
@@ -77,7 +76,7 @@ function ShowPdiDetailsModal({ handleShowPdiDetailsModal, selectedIdToShowPdiDet
         try {
           const foundAdmin = await useFindClientCompany(detailedPdiData.assessorId);
           setadminData(foundAdmin);
-          // console.log(foundAdmin);
+          console.log("foundAdmin q e clientCompany: ", foundAdmin);
         } catch (error) {
           console.error('Error fetching admin data:', error);
         }
@@ -92,9 +91,9 @@ function ShowPdiDetailsModal({ handleShowPdiDetailsModal, selectedIdToShowPdiDet
     const fetchClientCompany = async () => {
       if (detailedPdiData && detailedPdiData.assessorId) {
         try {
-          const foundClientCompany = await useFindAllEmployee(detailedPdiData.assessedId);
+          const foundClientCompany = await useFindEmployee(detailedPdiData.assessedId);
           setClientCompanyData(foundClientCompany);
-          // console.log(foundClientCompany);
+          console.log("foundClientCompany q e o employee :", foundClientCompany);
         } catch (error) {
           console.error('Error fetching admin data:', error);
         }
@@ -112,9 +111,7 @@ function ShowPdiDetailsModal({ handleShowPdiDetailsModal, selectedIdToShowPdiDet
   };
 
   return (
-    detailedPdiData && detailedPdiData.id ? (
-      adminData && adminData.name ? (
-        ClientCompanyData && ClientCompanyData.companyName ? (
+    detailedPdiData && detailedPdiData.id && adminData && ClientCompanyData ? (
           <Modal
             toggle={handleShowPdiDetailsModal}
             isOpen={modalShowDetailsOpen}
@@ -204,7 +201,7 @@ function ShowPdiDetailsModal({ handleShowPdiDetailsModal, selectedIdToShowPdiDet
                           Avaliador
                         </label>
                         <div className="mt-1 mb-3">
-                          <span className="name text-sm">{adminData.name}</span>
+                          <span className="name text-sm">{adminData.companyName}</span>
                         </div>
                       </Col>
                       <Col className="mb-3" md="4">
@@ -212,7 +209,7 @@ function ShowPdiDetailsModal({ handleShowPdiDetailsModal, selectedIdToShowPdiDet
                           Avaliado
                         </label>
                         <div className="mt-1 mb-3">
-                          <span className="name text-sm">{ClientCompanyData.companyName}</span>
+                          <span className="name text-sm">{ClientCompanyData.name}</span>
                         </div>
                       </Col>
                     </div>
@@ -226,10 +223,8 @@ function ShowPdiDetailsModal({ handleShowPdiDetailsModal, selectedIdToShowPdiDet
               </Button>
             </ModalFooter>
           </Modal>
-        ) : null
-      ) : null
     ) : null
-  );
+        )
 }
 
 ShowPdiDetailsModal.defaultProps = {

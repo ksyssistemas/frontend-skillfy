@@ -50,14 +50,15 @@ const useCreateCompetencies = (handleShowCompetencieRegister) => {
 
                 if (response.ok) {
                     setCompetencieSuccess("Competência criada com sucesso!");
+                    // handleShowCompetencieRegister();
                     reset();
-                    handleShowCompetencieRegister();
                 } else {
                     console.error('Error in response:', response.status);
                     setCompetencieError("Ocorreu um erro na criação da competência!");
                 }
             } catch (error) {
                 console.error('Error in request:', error);
+                setCompetencieError("Ocorreu um erro na criação da competência!");
             }
         }
     };

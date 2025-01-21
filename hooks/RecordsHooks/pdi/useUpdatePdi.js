@@ -42,6 +42,43 @@ const useUpdatePdi = () => {
         handleUpdatedPdiRecordStatusChange();
     }
 
+    function convertToISO(dateString) {
+        if (!dateString) {
+            return null; 
+        }
+    
+        const isoDateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (isoDateRegex.test(dateString)) {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) {
+                console.error("Data inválida no formato ISO: ", dateString);
+                return null;
+            }
+            return date.toISOString();  
+        }
+    
+        const dateParts = dateString.split('/');
+        if (dateParts.length !== 3) {
+            console.error("Formato de data inválido: ", dateString);
+            return null;
+        }
+    
+        const [day, month, year] = dateParts;
+        if (!day || !month || !year || isNaN(new Date(year, month - 1, day))) {
+            console.error("Data inválida após divisão: ", dateString);
+            return null;
+        }
+    
+        const date = new Date(`${year}-${month}-${day}T00:00:00.000Z`);
+        
+        if (isNaN(date.getTime())) {
+            return null;
+        }
+    
+        return date.toISOString();  
+    }
+    
+
     const handleSubmit = async (pdiIdToUpdate, Name, Description, StartDate, FinalDate, pdiStatus, appraiser, evaluated, competencies) => {
         if (pdiIdToUpdate && pdiIdToUpdate !== "") {
             try {
@@ -57,14 +94,20 @@ const useUpdatePdi = () => {
                     payload.description = Description;
                 };
 
+          
                 if (StartDate && StartDate !== "") {
-                    payload.startDate = StartDate;
-                };
-
+                    const formattedStartDate = convertToISO(StartDate);  // Formatação da data
+                    if (formattedStartDate) {
+                        payload.startDate = formattedStartDate;
+                    }
+                }
+    
                 if (FinalDate && FinalDate !== "") {
-                    payload.endDate = FinalDate;
-                };
-
+                    const formattedFinalDate = convertToISO(FinalDate);  // Formatação da data
+                    if (formattedFinalDate) {
+                        payload.endDate = formattedFinalDate;
+                    }
+                }
                 if (pdiStatus && pdiStatus !== "") {
                     payload.status = pdiStatus;
                 };
@@ -81,6 +124,8 @@ const useUpdatePdi = () => {
                     payloadCompetencies.competencies = competencies;
                 };
 
+                console.log(payload);
+                
                 const response = await fetch(`${process.env.NEXT_PUBLIC_PDI}/${pdiIdToUpdate}`, {
                     method: 'PATCH',
                     headers: {
@@ -108,14 +153,25 @@ const useUpdatePdi = () => {
                 } else {
                     console.error('Error in response:', response.status);
                 }
+
+                if(responseCompetencies.ok || response.ok){
+                    setPdiUpdateSuccess("PDI atualizado com sucesso!");
+                } else {
+                    setPdiUpdateError("Ocorreu um erro ao atualizar o PDI!");
+                }
             } catch (error) {
                 console.error('Error in request:', error);
+                setPdiUpdateError("Ocorreu um erro ao atualizar o PDI!");
             }
         }
     };
 
     return {
-        handleValidateUpdatePdiForm
+        handleValidateUpdatePdiForm,
+        pdiUpdateSuccess,
+        pdiUpdateError,
+        setPdiUpdateError,
+        setPdiUpdateSuccess
     };
 };
 
