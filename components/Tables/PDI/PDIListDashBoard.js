@@ -22,6 +22,7 @@ import { useSweetAlert } from '../../../contexts/SweetAlertContext';
 import { useDeletePdi } from '../../../hooks/RecordsHooks/pdi/useDeletePdi';
 import { PdiContext } from '../../../contexts/RecordsContext/PdiContext';
 import { useFindAdmin } from '../../../hooks/RecordsHooks/admin/useFindAdmin';
+import { useFindClientCompany } from '../../../hooks/RecordsHooks/customer/useFindClientCompany';
 import { useFindCompetencies } from '../../../hooks/RecordsHooks/pdi/competencies/useFindCompetencies';
 import { useFindAllAdmin } from '../../../hooks/RecordsHooks/admin/useFindAllAdmin';
 import { employmentContractDataSearchAndProcess } from '../../../util/employmentContractDataSearchAndProcess';
@@ -65,7 +66,6 @@ export function PDIListDashBoard() {
     }
 
     function handleShowPdiDetailsModal(pdiId) {
-        console.log(pdiId);
         setSelectedIdToShowPdiDetails(pdiId);
         handleOpenPdiModal();
     }
@@ -86,40 +86,12 @@ export function PDIListDashBoard() {
         setModalPdiOpen(!modalPdiOpen);
     };
 
-    // useEffect(() => {
-    //     const fetchPdi = async () => {
-    //         if (userPdiAccountData.length <= 0 || hasUpdatedPdiRecord || hasDeletedPdiRecord) {
-    //             try {
-    //                 const foundPdi = await useFindAllPDI();
-    //                 setUserPdiAccountData(foundPdi);
-    //                 console.log(foundPdi);
-    //             } catch (error) {
-    //                 console.error('Error fetching pdi:', error);
-    //             }
-    //         }
-    //     };
-    //     fetchPdi();
-    //     if (hasUpdatedPdiRecord) {
-    //         handleUpdatedPdiRecordStatusChange();
-    //     }
-    //     if (hasDeletedPdiRecord) {
-    //         handlePdiIdStatusCleanupToUpdate();
-    //         handleDeletedPdiRecordStatusChange();
-    //     }
-    // }, [
-    //     userPdiAccountData,
-    //     hasUpdatedPdiRecord,
-    //     hasDeletedPdiRecord,
-    // ])
     useEffect(() => {
         const fetchPdi = async () => {
             if (userPdiAccountData.length <= 0 || hasUpdatedPdiRecord || hasDeletedPdiRecord) {
                 try {
-                    const foundPdi = await new Promise((resolve) => {
-                        setTimeout(() => resolve(mockPdi), 100);
-                    });
+                    const foundPdi = await useFindAllPDI();
                     setUserPdiAccountData(foundPdi);
-                    console.log(foundPdi);
                 } catch (error) {
                     console.error('Error fetching pdi:', error);
                 }
@@ -137,11 +109,9 @@ export function PDIListDashBoard() {
         userPdiAccountData,
         hasUpdatedPdiRecord,
         hasDeletedPdiRecord,
-    ]);
-
+    ])
 
     const handleDeletePdi = async (pdiId) => {
-        console.log(pdiId);
         if (pdiId) {
             try {
                 const deleteResponse = await useDeletePdi(pdiId);
@@ -195,7 +165,6 @@ export function PDIListDashBoard() {
         }
 
     }, [])
-    // console.log(adminDataList);
 
     const [adminDataCache, setAdminDataCache] = useState({});
     const [loadingAdmins, setLoadingAdmins] = useState(true);
@@ -203,27 +172,24 @@ export function PDIListDashBoard() {
     useEffect(() => {
         const fetchAllAdminData = async () => {
             try {
-                // Coletar todos os IDs únicos de administradores
                 const uniqueAdminIds = [
                     ...new Set(userPdiAccountData.map((pdi) => pdi.assessorId)),
                 ];
 
                 const adminDataPromises = uniqueAdminIds.map(async (id) => {
-                    const adminData = await useFindAdmin(id);
+                    const adminData = await useFindClientCompany(id);
                     return { id, adminData };
                 });
 
                 const adminDataResults = await Promise.all(adminDataPromises);
 
-                // Atualizar o cache com os dados carregados
                 const newCache = {};
                 adminDataResults.forEach(({ id, adminData }) => {
                     newCache[id] = adminData;
                 });
-                console.log("adminDataResults: ", adminDataResults);
                 setAdminDataCache(newCache);
             } catch (error) {
-                console.error('Erro ao buscar dados dos administradores:', error);
+                console.error('Erro ao buscar dados dos customer:', error);
             } finally {
                 setLoadingAdmins(false);
             }
@@ -232,50 +198,35 @@ export function PDIListDashBoard() {
         fetchAllAdminData();
     }, [userPdiAccountData]);
 
-    const [competencieDataCache, setCompetencieDataCache] = useState({});
-    const [loadingCompetencies, setLoadingCompetencies] = useState(true);
+    const calculateProgress = (startDate, endDate) => {
+        const now = new Date(); 
+        const start = new Date(startDate); 
+        const end = new Date(endDate); 
 
-    useEffect(() => {
-        const fetchAllCompetencieData = async () => {
-            try {
-                const uniqueCompetencieIds = [
-                    ...new Set(
-                        userPdiAccountData
-                            .flatMap((pdi) => pdi.competencies.map((competency) => competency.id))
-                    ),
-                ];
+        if (now < start) return 0;
 
-                const competencieDataPromises = uniqueCompetencieIds.map(async (id) => {
-                    const competencieData = await new Promise((resolve) => {
-                        setTimeout(() => resolve(mockCompetencie), 100);
-                    });
-                    // const competencieData = await useFindCompetencies(id);
-                    return { id, competencieData };
-                });
+        if (now > end) return 100;
 
-                const competencieDataResults = await Promise.all(competencieDataPromises);
+        const totalDuration = end - start;
+        const elapsedDuration = now - start;
+        const progress = (elapsedDuration / totalDuration) * 100;
 
-                // Atualizar o cache com os dados carregados
-                const newCache = {};
-                competencieDataResults.forEach(({ id, competencieData }) => {
-                    newCache[id] = competencieData;
-                });
-                console.log("competencieDataResults: ", competencieDataResults);
-                setCompetencieDataCache(newCache);
-            } catch (error) {
-                console.error('Erro ao buscar dados das competências:', error);
-            } finally {
-                setLoadingCompetencies(false);
-            }
-        };
+        return progress;
+    };
 
-        fetchAllCompetencieData();
-    }, [userPdiAccountData]);
-
+    const getProgressColor = (progress) => {
+        if (progress <= 33) {
+          return "red"; 
+        } else if (progress <= 66) {
+          return "orange"; 
+        } else {
+          return "green"; // Verde
+        }
+      };
+      
 
     return (
         <Card>
-            {/** CardHeader with Button register and export */}
             <CardHeader className="border-0">
                 <Row className="align-items-center">
                     <Col xs="6">
@@ -283,69 +234,57 @@ export function PDIListDashBoard() {
                     </Col>
                 </Row>
             </CardHeader>
-
             <Table className="align-items-center table-flush" responsive>
                 <thead className="thead-light">
                     <tr>
-                        <th className="text-left">Avaliador</th>
-                        <th className="text-left">Competência</th>
-                        <th className="text-left">Situação</th>
-                        <th className="text-left">Progresso</th>
+                        <th className="text-left"><b>Avaliador</b></th>
+                        <th className="text-left"><b>Competência(s)</b></th>
+                        <th className="text-left"><b>Situação</b></th>
+                        <th className="text-left"><b>Progresso</b></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {loadingAdmins && loadingCompetencies ? (
+                    {loadingAdmins ? (
                         <tr>
                             <td colSpan="5">Carregando administradores...</td>
                         </tr>
                     ) : (
                         userPdiAccountData.map((pdi) => {
                             const adminData = adminDataCache[pdi.assessorId];
-                            // console.log("pdi.competencies dentro da array de pdi: ",pdi.competencies);
-                            const competencieDataList = pdi.competencies.map((competency) =>
-                                competencieDataCache[competency.id]
-                            );
-                            console.log("competencieDataList: ", competencieDataList);
+                            const competencies = pdi.competencies || [];
+                            const progress = calculateProgress(pdi.startDate, pdi.endDate);
+                            const progressColor = getProgressColor(progress);
                             return (
                                 <tr key={pdi.id}>
                                     <td className="text-left">
                                         {adminData ? (
-                                            <b>{adminData.name}</b>
+                                            <span>{adminData.companyName}</span>
                                         ) : (
                                             <span>Dados não encontrados</span>
                                         )}
                                     </td>
                                     <td className="text-left">
-                                        {competencieDataList.length > 0 ? (
-                                            competencieDataList.map((innerArray, index) =>
-                                                innerArray && innerArray.length > 0 ? ( 
-                                                    innerArray.map((competencieData, subIndex) =>
-                                                        competencieData && competencieData.name ? (
-                                                            <b key={`${index}-${subIndex}`}>{competencieData.name}</b>
-                                                        ) : (
-                                                            <span key={`${index}-${subIndex}`}>Dados não encontrados</span>
-                                                        )
-                                                    )
-                                                ) : (
-                                                    <span key={index}>Sem competências</span>
-                                                )
-                                            )
+                                        {competencies.length > 0 ? (
+                                            competencies
+                                                .map((competencyData) => competencyData.competency?.name || "Dados não encontrados")
+                                                .join(", ")
                                         ) : (
                                             <span>Sem competências</span>
                                         )}
                                     </td>
-
                                     <td className="text-left">
-                                        <b className="text-left">{pdi.status}</b>
+                                        <span>{pdi.status}</span>
                                     </td>
                                     <td>
                                         <div className="d-flex align-items-center">
-                                            <span className="mr-2">100%</span>
+                                            <span className="mr-2">
+                                                {Math.round(progress)}%
+                                            </span>
                                             <div>
                                                 <Progress
                                                     max="100"
-                                                    value="100"
-                                                    color="gradient-success"
+                                                    value={Math.round(progress)}
+                                                    color={progressColor}
                                                 />
                                             </div>
                                         </div>

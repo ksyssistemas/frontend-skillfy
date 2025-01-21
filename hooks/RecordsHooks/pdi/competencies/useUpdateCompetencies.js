@@ -46,8 +46,6 @@ const useUpdateCompetencies = () => {
                     payload.description = description;
                 };
 
-                console.log(payload);
-
                 const response = await fetch(`${process.env.NEXT_PUBLIC_COMPETENCIES}/${competenciesIdToUpdate}`, {
                     method: 'PATCH',
                     headers: {

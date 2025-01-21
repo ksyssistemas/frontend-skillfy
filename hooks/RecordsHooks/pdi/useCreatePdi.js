@@ -78,27 +78,14 @@ const useCreatePdi = (handleShowPDIRegister) => {
         ) {
             handleSubmit(Name, Description, StartDate, FinalDate, pdiStatus, appraiser, evaluated, competencies);
         } else {
-            // console.log("Validações invalidas!");
             return null;
         }
     }
 
     const handleSubmit = async (Name, Description, StartDate, FinalDate, pdiStatus, appraiser, evaluated, competencies) => {
-        // console.log("Antes da conversão:", competencies);
     
         competencies = Array.isArray(competencies) ? competencies : [competencies];
     
-        // console.log("Depois da conversão:", competencies);
-        // console.log("Dados enviados:", {
-        //     name: Name,
-        //     description: Description,
-        //     startDate: StartDate,
-        //     endDate: FinalDate,
-        //     status: pdiStatus,
-        //     assessorId: appraiser,
-        //     assessedId: evaluated,
-        //     competencies: competencies,
-        // });
         if (Name && Description && StartDate && FinalDate && pdiStatus && appraiser && evaluated && competencies) {
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_PDI}`, {

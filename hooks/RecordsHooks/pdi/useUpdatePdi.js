@@ -4,6 +4,9 @@ import { PdiContext } from '../../../contexts/RecordsContext/PdiContext';
 
 const useUpdatePdi = () => {
 
+    const [pdiUpdateError, setPdiUpdateError] = useState(null);
+    const [pdiUpdateSuccess, setPdiUpdateSuccess] = useState(null);
+
     const {
         pdiIdToUpdate,
         handlePdiIdStatusCleanupToUpdate,
@@ -40,9 +43,11 @@ const useUpdatePdi = () => {
     }
 
     const handleSubmit = async (pdiIdToUpdate, Name, Description, StartDate, FinalDate, pdiStatus, appraiser, evaluated, competencies) => {
-        if (pdiIdToUpdate &&pdiIdToUpdate !== "") {
+        if (pdiIdToUpdate && pdiIdToUpdate !== "") {
             try {
                 const payload = {};
+
+                const payloadCompetencies = {};
 
                 if (Name && Name !== "") {
                     payload.name = Name;
@@ -73,10 +78,8 @@ const useUpdatePdi = () => {
                 };
 
                 if (competencies && competencies !== "") {
-                    payload.competencies = competencies;
+                    payloadCompetencies.competencies = competencies;
                 };
-
-                console.log(payload);
 
                 const response = await fetch(`${process.env.NEXT_PUBLIC_PDI}/${pdiIdToUpdate}`, {
                     method: 'PATCH',
@@ -85,6 +88,20 @@ const useUpdatePdi = () => {
                     },
                     body: JSON.stringify(payload),
                 });
+
+                const responseCompetencies = await fetch(`${process.env.NEXT_PUBLIC_PDI}/${pdiIdToUpdate}/competencies`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payloadCompetencies),
+                });
+
+                if (responseCompetencies.ok) {
+                    console.log('Competencia editada!');
+                } else {
+                    console.error('Erro em editar a competencia:', response.status);
+                }
 
                 if (response.ok) {
                     console.log('Data sent successfully!');

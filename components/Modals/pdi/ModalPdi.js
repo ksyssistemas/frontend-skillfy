@@ -118,7 +118,6 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
         const fetchPdi = async () => {
             if (!detailedPdiData.length) {
                 const foundPdi = await useFindPdi(pdiIdToUpdate);
-                console.log(foundPdi);
                 setDetailedPdiData(foundPdi);
                 setName(foundPdi.name);
                 setDescription(foundPdi.description);
@@ -127,10 +126,11 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
                 setEvaluated(foundPdi.assessedId);
                 setAppraiser(foundPdi.assessorId);
                 setPdiStatus(foundPdi.status);
-                setCompetencies(foundPdi.competencies);
+    
+                setCompetencies(foundPdi.competencies.map((c) => c.competencyId));
             }
         };
-
+    
         if (pdiIdToUpdate) {
             fetchPdi();
         }
@@ -195,7 +195,7 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
             Number(option.value)
         );
         setCompetencies(selectedValues);
-
+    
         if (selectedValues.length > 0) {
             setCompetenciesState("valid");
         } else {
@@ -230,7 +230,7 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
             );
         }
     }, [])
-    
+
     return (
         <Modal toggle={handleOpenPdiUpdateModal} isOpen={modalOpen} size="xl">
             <div className=" modal-header">

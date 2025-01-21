@@ -35,7 +35,6 @@ const useCreateCompetencies = (handleShowCompetencieRegister) => {
     }
 
     const handleSubmit = async (Name, Description) => {
-        // console.log(`Kaua = ${process.env.NEXT_PUBLIC_COMPETENCIES}`)
         if (Name, Description) {
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_COMPETENCIES}`, {
