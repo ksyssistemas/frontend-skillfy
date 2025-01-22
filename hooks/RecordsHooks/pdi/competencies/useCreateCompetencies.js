@@ -50,7 +50,7 @@ const useCreateCompetencies = (handleShowCompetencieRegister) => {
 
                 if (response.ok) {
                     setCompetencieSuccess("Competência criada com sucesso!");
-                    // handleShowCompetencieRegister();
+                    handleShowCompetencieRegister();
                     reset();
                 } else {
                     console.error('Error in response:', response.status);

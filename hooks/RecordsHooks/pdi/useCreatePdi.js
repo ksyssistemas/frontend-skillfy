@@ -83,9 +83,9 @@ const useCreatePdi = (handleShowPDIRegister) => {
     }
 
     const handleSubmit = async (Name, Description, StartDate, FinalDate, pdiStatus, appraiser, evaluated, competencies) => {
-    
+
         competencies = Array.isArray(competencies) ? competencies : [competencies];
-    
+
         if (Name && Description && StartDate && FinalDate && pdiStatus && appraiser && evaluated && competencies) {
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_PDI}`, {
@@ -101,10 +101,10 @@ const useCreatePdi = (handleShowPDIRegister) => {
                         startDate: StartDate,
                         endDate: FinalDate,
                         status: pdiStatus,
-                        competencies: competencies, 
+                        competencies: competencies,
                     }),
                 });
-    
+
                 if (response.ok) {
                     setPdiCreateSuccess("PDI criado com sucesso!");
                     reset();
@@ -123,7 +123,7 @@ const useCreatePdi = (handleShowPDIRegister) => {
             setPdiCreateError("Preencha todos os campos obrigatórios.");
         }
     };
-    
+
     function reset() {
         setName("");
         setNameState(null);

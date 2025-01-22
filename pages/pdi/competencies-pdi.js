@@ -26,7 +26,7 @@ function CompetenciesPDI() {
                                 handleShowCustomerUserRegister={handleToggleCompetencyForm} 
                             />
                             <Container className="mt--6" fluid>
-                                <CompetenciesList handleToggleCompetencyForm={handleToggleCompetencyForm} />
+                                <CompetenciesList handleShowCompetencieRegister={handleToggleCompetencyForm} />
                             </Container>
                         </>
                     )
@@ -39,7 +39,7 @@ function CompetenciesPDI() {
                                 handleShowCustomerUserRegister={handleToggleCompetencyForm} 
                             />
                             <Container className="mt--6" fluid>
-                                <CompetenciesRegister handleToggleCompetencyForm={handleToggleCompetencyForm} />
+                                <CompetenciesRegister handleShowCompetencieRegister={handleToggleCompetencyForm} />
                             </Container>
                         </>
                     )

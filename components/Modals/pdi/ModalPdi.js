@@ -29,6 +29,8 @@ import { useAlert } from '../../../contexts/AlertContext';
 import ReactDatetime from "react-datetime";
 import dynamic from "next/dynamic";
 import moment from 'moment';
+import 'moment/locale/pt-br'; 
+moment.locale('pt-br');
 const Select2 = dynamic(() => import("react-select2-wrapper"));
 function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData, modalOpen }) {
 
@@ -98,13 +100,15 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
     };
 
     function handleUpdatePdi() {
+        console.log("formateStartDate2 :", formateStartDate);
+        console.log("formateFinalDate2 :", formateFinalDate);
         handleValidateUpdatePdiForm(
             handleClosePdiUpdateModal,
             pdiIdToUpdate,
             Name,
             Description,
-            StartDate,
-            FinalDate,
+            formateStartDate,
+            formateFinalDate,
             pdiStatus,
             appraiser,
             evaluated,
@@ -115,19 +119,29 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
     }
 
     const [detailedPdiData, setDetailedPdiData] = useState([]);
+
     function handleCleanDetailedPdiData() {
         setDetailedPdiData([]);
     };
     
+    const [formateStartDate , setFormateStartDate] = useState('');
+    const [formateFinalDate , setFormateFinalDate] = useState('');
+
     useEffect(() => {
         const fetchPdi = async () => {
             if (!detailedPdiData.length) {
                 const foundPdi = await useFindPdi(pdiIdToUpdate);
+                console.log("formateStartDate :", foundPdi.startDate);
+                console.log("formateFinalDate :", foundPdi.endDate);
+                console.log("formateStartDateNewDate :", new Date(foundPdi.startDate));
+                console.log("formateFinalDateNewDate :", new Date(foundPdi.endDate));
                 setDetailedPdiData(foundPdi);
                 setName(foundPdi.name);
                 setDescription(foundPdi.description);
-                setStartDate(formatDate(foundPdi.startDate));
-                setFinalDate(formatDate(foundPdi.endDate));
+                setStartDate(moment(foundPdi.startDate, "YYYY-MM-DD").toDate());
+                setFinalDate(moment(foundPdi.endDate, "YYYY-MM-DD").toDate());
+                setFormateStartDate(foundPdi.startDate);
+                setFormateFinalDate(foundPdi.endDate);
                 setEvaluated(foundPdi.assessedId);
                 setAppraiser(foundPdi.assessorId);
                 setPdiStatus(foundPdi.status);
@@ -355,10 +369,10 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
                                 inputProps={{
                                     placeholder: "__/__/__",
                                 }}
-                                value={StartDate}
+                                value={StartDate || ''}
                                 timeFormat={false}
-                                dateFormat="YYYY/MM/DD"
-                                onChange={(e) => handleDateFormatting(null, e, setStartDate, setStartDateState, null)}
+                                dateFormat="DD/MM/YYYY"
+                                onChange={(e) => handleDateFormatting(null, e, setStartDate, setStartDateState, setFormateStartDate)}
                             />
                             <div className="invalid-feedback">
                                 É necessário selecionar uma data.
@@ -377,10 +391,10 @@ function ModalPdi({ handleOpenPdiUpdateModal, handleCleanDetailedPdiAccountData,
                                     inputProps={{
                                         placeholder: "__/__/__",
                                     }}
-                                    value={FinalDate}
+                                    value={FinalDate || ''}
                                     timeFormat={false}
-                                    dateFormat="YYYY/MM/DD"
-                                    onChange={(e) => handleDateFormatting(null, e, setFinalDate, setFinalDateState, null)}
+                                    dateFormat="DD/MM/YYYY"
+                                    onChange={(e) => handleDateFormatting(null, e, setFinalDate, setFinalDateState, setFormateFinalDate)}
                                 />
                                 <div className="invalid-feedback">
                                     É necessário selecionar uma data.

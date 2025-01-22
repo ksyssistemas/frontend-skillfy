@@ -274,7 +274,7 @@ export function PDIRegister({ handleShowPDIRegister }) {
                                     placeholder: "__/__/__",
                                 }}
                                 timeFormat={false}
-                                dateFormat="YYYY/MM/DD"
+                                dateFormat="DD/MM/YYYY"
                                 onChange={(e) => handleDateFormatting(null, e, setStartDate, setStartDateState, null)}
                             />
                             <div className="invalid-feedback">
@@ -297,7 +297,7 @@ export function PDIRegister({ handleShowPDIRegister }) {
                                         placeholder: "__/__/__",
                                     }}
                                     timeFormat={false}
-                                    dateFormat="YYYY/MM/DD"
+                                    dateFormat="DD/MM/YYYY"
                                     onChange={(e) => handleDateFormatting(null, e, setFinalDate, setFinalDateState, null)}
                                 />
                                 <div className="invalid-feedback">
