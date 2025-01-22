@@ -6,9 +6,10 @@ import AdminHeader from "components/Headers/AdminHeader.js";
 import Admin from "layouts/Admin.js";
 import { PDIRegister } from "../../components/Forms/PDIForms/PDIRegister";
 import { PDIList } from "../../components/Tables/PDI/PDIList";
+import { TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT } from '../../contexts/AuthContext';
 
 function AddPDI() {
-    const [isAddingPDI, setIsAddingPDI] = useState(false);
+    const [isAddingPDI, setIsAddingPDI] = useState(null);
 
     function handleTogglePDIForm() {
         setIsAddingPDI(!isAddingPDI);
@@ -22,7 +23,7 @@ function AddPDI() {
                         <>
                             <AdminHeader name="PDI" parentName="Desempenho" newRegistrationButtonText="Adicionar PDI" handleShowCustomerUserRegister={handleTogglePDIForm} />
                             <Container className="mt--6" fluid>
-                                <PDIList handleTogglePDIForm={handleTogglePDIForm} />
+                                <PDIList handleShowPDIRegister={handleTogglePDIForm} />
                             </Container>
                         </>
                     )
@@ -30,7 +31,7 @@ function AddPDI() {
                         <>
                             <AdminHeader name="PDI" parentName="Desempenho" newRegistrationButtonText="Voltar para Lista" handleShowCustomerUserRegister={handleTogglePDIForm} />
                             <Container className="mt--6" fluid>
-                                <PDIRegister handleTogglePDIForm={handleTogglePDIForm} />
+                                <PDIRegister handleShowPDIRegister={handleTogglePDIForm} />
                             </Container>
                         </>
                     )
@@ -39,5 +40,10 @@ function AddPDI() {
     );
 }
 
-AddPDI.layout = Admin;
+TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'administrator'
+    ? AddPDI.layout = Admin
+    : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'customer'
+        ? AddPDI.layout = Performance
+        : AddPDI.layout = Admin);
+
 export default AddPDI;

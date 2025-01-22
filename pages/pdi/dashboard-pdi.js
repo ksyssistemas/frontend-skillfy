@@ -94,6 +94,8 @@ TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'administrator'
     ? DashboardPDI.layout = Admin
     : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'customer'
         ? DashboardPDI.layout = Performance
-        : DashboardPDI.layout = Admin);
+        : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'employee'
+            ? DashboardPDI.layout = Employee
+            : DashboardPDI.layout = Admin));
 
 export default DashboardPDI;

@@ -18,6 +18,7 @@ import { CompetenciesContext } from "../../../contexts/RecordsContext/Competenci
 import useCreateCompetencies from "../../../hooks/RecordsHooks/pdi/competencies/useCreateCompetencies";
 import { useFindCompetencies } from "../../../hooks/RecordsHooks/pdi/competencies/useFindCompetencies";
 import useUpdateCompetencies from "../../../hooks/RecordsHooks/pdi/competencies/useUpdateCompetencies";
+import { useAlert } from '../../../contexts/AlertContext';
 function ModalCompetencies({ handleOpenCompetenciesUpdateModal, handleCleanDetailedCompetenciesAccountData, modalOpen }) {
 
     const {
@@ -46,7 +47,11 @@ function ModalCompetencies({ handleOpenCompetenciesUpdateModal, handleCleanDetai
     } = useCreateCompetencies();
 
     const {
-        handleValidateUpdateCompetenciesForm
+        handleValidateUpdateCompetenciesForm,
+        competencieUpdateError,
+        competencieUpdateSuccess,
+        setCompetencieUpdateError,
+        setCompetencieUpdateSuccess
     } = useUpdateCompetencies();
 
     const handleCloseCompetenciesUpdateModal = () => {
@@ -71,6 +76,8 @@ function ModalCompetencies({ handleOpenCompetenciesUpdateModal, handleCleanDetai
         setDetailedCompetenciesData([]);
     };
 
+    const { showAlert } = useAlert();
+
     useEffect(() => {
         const fetchCompetencies = async () => {
             if (!detailedCompetenciesData.length) {
@@ -85,6 +92,30 @@ function ModalCompetencies({ handleOpenCompetenciesUpdateModal, handleCleanDetai
             fetchCompetencies();
         }
     }, [competenciesIdToUpdate]);
+
+    useEffect(() => {
+        if (competencieUpdateSuccess) {
+            showAlert(
+                "success",
+                "ni ni-check-bold",
+                "Sucesso!",
+                "Competência atualizada com sucesso!"
+            );
+            setCompetencieUpdateSuccess(null);
+        }
+    }, [competencieUpdateSuccess]);
+
+    useEffect(() => {
+        if (competencieUpdateError) {
+            showAlert(
+                "danger",
+                "ni ni-fat-remove",
+                "Erro!",
+                "Ocorreu um erro para atualizar a competência!"
+            );
+            setCompetencieUpdateError(null);
+        }
+    }, [competencieUpdateError]);
 
     return (
         <Modal toggle={handleOpenCompetenciesUpdateModal} isOpen={modalOpen} size="xl">
