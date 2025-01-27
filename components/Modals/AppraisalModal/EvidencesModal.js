@@ -20,6 +20,7 @@ import useUpdateEvidence from "../../../hooks/DefinitionOptionsReview/AppraisalE
 import { useFindAllSkillTypes } from "../../../hooks/DefinitionOptionsReview/SkillsTypes/useFindAllSkillTypes";
 import { employmentContractDataSearchAndProcess } from "../../../util/employmentContractDataSearchAndProcess";
 import { handleSelectionEmploymentContractData } from "../../../util/handleSelectionEmploymentContractData";
+import { useAlert } from '../../../contexts/AlertContext';
 
 function EvidencesModal(
     {
@@ -51,11 +52,22 @@ function EvidencesModal(
         skillRelatedDataList,
         handleSkillRelatedDataList,
         handleValidateAddEvidenceForm,
+        evidenceCreateSuccess,
+        evidenceCreateError,
+        setEvidenceCreateSuccess,
+        setEvidenceCreateError,
         reset
     } = useCreateEvidence();
 
+    const { showAlert } = useAlert();
 
-    const { handleValidateUpdateAppraisalEvidenceForm } = useUpdateEvidence();
+    const {
+        handleValidateUpdateAppraisalEvidenceForm,
+        setEvidenceUpdateError,
+        setEvidenceUpdateSuccess,
+        evidenceUpdateError,
+        evidenceUpdateSuccess
+    } = useUpdateEvidence();
 
     const [hasSkillRegisterRecorded, setHasSkillRegisterRecorded] = useState(false);
     const handleHasSkillRegisterRecorded = () => {
@@ -111,9 +123,9 @@ function EvidencesModal(
         const skillRelated = skillRelatedDataList.find(p => p.id === skillRelatedText);
         if (skillRelated) {
             setSelectedSkillRelated(skillRelated.id);
-          handleSelectionEmploymentContractData(skillRelated.id, skillRelatedDataList, setSelectedSkillRelated, setSkillRelated, setSkillRelatedState);
+            handleSelectionEmploymentContractData(skillRelated.id, skillRelatedDataList, setSelectedSkillRelated, setSkillRelated, setSkillRelatedState);
         }
-      };
+    };
 
     const [detailedEvidencesData, setDetailedEvidencesData] = useState([]);
     function handleCleanDetailedEvidencesData() {
@@ -134,6 +146,54 @@ function EvidencesModal(
             fetchData();
         }
     }, [evidencesIdToUpdate]);
+
+    useEffect(() => {
+        if (evidenceCreateSuccess) {
+            showAlert(
+                "success",
+                "ni ni-check-bold",
+                "Sucesso!",
+                "Evidência criada com sucesso!"
+            );
+            setEvidenceCreateSuccess(null);
+        }
+    }, [evidenceCreateSuccess]);
+
+    useEffect(() => {
+        if (evidenceCreateError) {
+            showAlert(
+                "danger",
+                "ni ni-fat-remove",
+                "Erro!",
+                evidenceCreateError
+            );
+            setEvidenceCreateError(null);
+        }
+    }, [evidenceCreateError]);
+
+    useEffect(() => {
+        if (evidenceUpdateSuccess) {
+            showAlert(
+                "success",
+                "ni ni-check-bold",
+                "Sucesso!",
+                evidenceUpdateSuccess
+            );
+            setEvidenceUpdateError(null);
+        }
+    }, [evidenceUpdateSuccess]);
+
+    useEffect(() => {
+        if (evidenceUpdateError) {
+            showAlert(
+                "danger",
+                "ni ni-fat-remove",
+                "Erro!",
+                evidenceUpdateError
+            );
+            setEvidenceUpdateError(null);
+        }
+    }, [evidenceUpdateError]);
 
     return (
         <Modal
@@ -177,10 +237,10 @@ function EvidencesModal(
                                     onChange={(e) => setSelectedSkillRelated(e.target.value)}
                                     data={skillRelatedDataList}
                                     onSelect={(e) => handleSelectionEmploymentContractData(
-                                        e.target.value, 
-                                        skillRelatedDataList, 
-                                        setSelectedSkillRelated, 
-                                        setSkillRelated, 
+                                        e.target.value,
+                                        skillRelatedDataList,
+                                        setSelectedSkillRelated,
+                                        setSkillRelated,
                                         setSkillRelatedState,
                                         null,
                                         null,

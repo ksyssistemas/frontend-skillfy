@@ -4,6 +4,9 @@ import { EvidencesContext } from '../../../contexts/PerformanceContext/Appraisal
 
 const useCreateEvidence = () => {
 
+    const [evidenceCreateError, setEvidenceCreateError] = useState(null);
+    const [evidenceCreateSuccess, setEvidenceCreateSuccess] = useState(null);
+
     const {
         handleEvidenceIdStatusCleanupToUpdate,
         handleCreatedAppraisalEvidencesStatusChange
@@ -65,7 +68,7 @@ const useCreateEvidence = () => {
     }
 
     const handleSubmit = async (skillRelated, evidenceContent) => {
-        if (evidenceContent && evidenceContent !== '') {
+        if (evidenceContent && skillRelated && evidenceContent !== '' && skillRelated !== '') {
             try {
                 const payload = {
                     description: evidenceContent,
@@ -86,12 +89,18 @@ const useCreateEvidence = () => {
                 console.log("PAYLOAD: ", payload);
                 if (response.ok) {
                     console.log('Data sent successfully!');
+                    setEvidenceCreateSuccess("Evidência criada com sucesso!");
                 } else {
                     console.error('Error in response:', response.status);
+                    setEvidenceCreateError("Erro ao criar a evidência!");
                 }
             } catch (error) {
                 console.error('Error in request:', error);
+                setEvidenceCreateError("Erro ao criar a evidência!");
             }
+        } else {
+            console.log("É necessário preencher todos os campos!");
+            setEvidenceCreateError("É necessário preencher todos os campos!");
         }
     };
 
@@ -123,6 +132,10 @@ const useCreateEvidence = () => {
         skillRelatedDataList,
         handleSkillRelatedDataList,
         handleValidateAddEvidenceForm,
+        evidenceCreateSuccess,
+        evidenceCreateError,
+        setEvidenceCreateSuccess,
+        setEvidenceCreateError,
         reset
     };
 };
