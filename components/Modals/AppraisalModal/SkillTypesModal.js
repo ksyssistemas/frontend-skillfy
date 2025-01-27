@@ -104,6 +104,8 @@ function SkillTypesModal(
             skillTypeIdToUpdate,
             skillTypeName,
             skillTypeDescription,
+            selectedClassificationOfSkillType,
+            selectedSkillTypeOccupationalGroup,
             handleSkillTypeIdToUpdate,
             handleCleanDetailedSkillTypesData
         )
