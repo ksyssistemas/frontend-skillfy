@@ -104,6 +104,8 @@ function SkillTypesModal(
             skillTypeIdToUpdate,
             skillTypeName,
             skillTypeDescription,
+            selectedClassificationOfSkillType,
+            selectedSkillTypeOccupationalGroup,
             handleSkillTypeIdToUpdate,
             handleCleanDetailedSkillTypesData
         )
@@ -152,6 +154,8 @@ function SkillTypesModal(
                 setDetailedSkillTypesData(foundSkillClassification);
                 setSkillTypeName(foundSkillClassification.competencieTypeName)
                 setSkillTypeDescription(foundSkillClassification.description)
+                setSelectedClassificationOfSkillType(foundSkillClassification.skillClassificationId)
+                setSelectedSkillTypeOccupationalGroup(foundSkillClassification.occupationalGroupId)
             }
         };
         if (skillTypeIdToUpdate) {

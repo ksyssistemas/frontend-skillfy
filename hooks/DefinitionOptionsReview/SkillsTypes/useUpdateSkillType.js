@@ -28,6 +28,8 @@ const useUpdateSkillType = () => {
     skillTypeIdToUpdate,
     skillTypeName,
     skillTypeDescription,
+    selectedClassificationOfSkillType,
+    selectedSkillTypeOccupationalGroup,
     handleSkillTypeIdToUpdate,
     handleCleanDetailedSkillTypesData
   ) {
@@ -43,7 +45,7 @@ const useUpdateSkillType = () => {
     // } else {
     //   return null;
     // }
-    await handleSubmit(skillTypeIdToUpdate, skillTypeName, skillTypeDescription);
+    await handleSubmit(skillTypeIdToUpdate, skillTypeName, skillTypeDescription, selectedClassificationOfSkillType, selectedSkillTypeOccupationalGroup);
     goBackToSkillTypesList(handleCloseSkillTipeModal, handleSkillTypeIdToUpdate, handleCleanDetailedSkillTypesData);
   }
 
@@ -55,14 +57,16 @@ const useUpdateSkillType = () => {
     handleUpdatedAppraisalSkillTypeStatusChange();
   }
 
-  const handleSubmit = async (skillTypeIdToUpdate, skillTypeName, skillTypeDescription) => {
+  const handleSubmit = async (skillTypeIdToUpdate, skillTypeName, skillTypeDescription, selectedClassificationOfSkillType , selectedSkillTypeOccupationalGroup) => {
     if (skillTypeIdToUpdate && skillTypeIdToUpdate !== ""
       && skillTypeName && skillTypeName !== ""
       && skillTypeDescription && skillTypeDescription !== "") {
       try {
         const payload = {
           competencieTypeName: skillTypeName,
-          description: skillTypeDescription
+          description: skillTypeDescription,
+          skillClassificationId: Number(selectedClassificationOfSkillType),
+          occupationalGroupId: Number(selectedSkillTypeOccupationalGroup)
         };
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_COMPETENCE_TYPE}/${skillTypeIdToUpdate}`, {

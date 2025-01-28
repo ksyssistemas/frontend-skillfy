@@ -28,6 +28,7 @@ import { useFindSkillType } from "../../../../hooks/DefinitionOptionsReview/Skil
 import ToolkitProvider, { Search } from "react-bootstrap-table2-toolkit";
 import BootstrapTable from "react-bootstrap-table-next";
 import paginationFactory from "react-bootstrap-table2-paginator";
+import { useAlert } from '../../../../contexts/AlertContext';
 
 function EvidencesList() {
 
@@ -50,6 +51,11 @@ function EvidencesList() {
     const [evidencesModalOpen, setEvidencesModalOpen] = useState(false);
 
     const { SearchBar } = Search;
+
+    const [evidenceDeleteError, setEvidenceDeleteError] = useState(null);
+    const [evidenceDeleteSuccess, setEvidenceDeleteSuccess] = useState(null);
+
+    const { showAlert } = useAlert();
 
     const pagination = paginationFactory({
         page: 1,
@@ -89,38 +95,6 @@ function EvidencesList() {
     var m = today.getMonth();
     var d = today.getDate();
 
-    const data = [
-        {
-            id: 1,
-            evidenceName: "Call with Dave",
-            createdAt: new Date(y, m, 1),
-            status: true,
-            className: "bg-red",
-            description:
-                "Nullam id dolor id nibh ultricies vehicula ut id elit. Cum abacaxi sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.",
-        },
-
-        {
-            id: 2,
-            evidenceName: "Lunch meeting",
-            createdAt: new Date(y, m, d - 1, 10, 30),
-            status: true,
-            className: "bg-orange",
-            description:
-                "Nullam id dolor id nibh ultricies vehicula ut id elit. Cum sorvete sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.",
-        },
-
-        {
-            id: 3,
-            evidenceName: "All day conference",
-            createdAt: new Date(y, m, d + 7, 12, 0),
-            status: true,
-            className: "bg-green",
-            description:
-                "Nullam id dolor id nibh ultricies vehicula ut id elit. Cum bolacha sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.",
-        },
-    ]
-
     function handleOpenEvidencesModal() {
         setEvidencesModalOpen(!evidencesModalOpen);
     }
@@ -145,27 +119,30 @@ function EvidencesList() {
         handleOpenEvidencesModal();
     }
 
-    const handleDeleteEvidence = async (evidenceId, evidenceName) => {
+    const handleDeleteEvidence = async (evidenceId) => {
         try {
             const deleteResponse = await useDeleteEvidence(evidenceId);
             if (deleteResponse !== null) {
                 handleDeletedAppraisalEvidencesStatusChange();
+                setEvidenceDeleteSuccess("Evidência deletada com sucesso!");
             } else {
                 console.error('Failed to delete evidence with ID:', evidenceId, '. Response Status: ', deleteResponse.status);
+                setEvidenceDeleteError("Ocorreu um erro ao deletar a evidência!");
             }
         } catch (error) {
             console.error('Error in request:', error);
+            setEvidenceDeleteError("Ocorreu um erro ao deletar a evidência!");
         }
     };
 
-    const showWarningAlert = (evidenceId, evidenceName) => {
+    const showWarningAlert = (evidenceId) => {
         warningAlert(
             `${evidenceId}`,
             "Atenção",
             "Deletar",
             `Você deseja realmente excluir esta evidência?`,
             "lg",
-            () => handleDeleteEvidence(evidenceId, evidenceName)
+            () => handleDeleteEvidence(evidenceId)
         );
     };
 
@@ -180,7 +157,7 @@ function EvidencesList() {
                             skillTypeName: skillTypeData.competencieTypeName,
                         };
                     } catch (error) {
-                        console.log('Error => ', error);
+                        // console.log('Error => ', error);
                         //console.error(`Error fetching skill type data. `, error);
                         return {
                             ...evidence,
@@ -219,6 +196,30 @@ function EvidencesList() {
         hasDeletedAppraisalEvidences,
     ]);
 
+    useEffect(() => {
+        if (evidenceDeleteSuccess) {
+            showAlert(
+                "success",
+                "ni ni-check-bold",
+                "Sucesso!",
+                evidenceDeleteSuccess
+            );
+            setEvidenceDeleteSuccess(null);
+        }
+    }, [evidenceDeleteSuccess]);
+
+    useEffect(() => {
+        if (evidenceDeleteError) {
+            showAlert(
+                "danger",
+                "ni ni-fat-remove",
+                "Erro!",
+                evidenceDeleteError
+            );
+            setEvidenceDeleteError(null);
+        }
+    }, [evidenceDeleteError]);
+
     return (
         <>
             <Card>
@@ -248,9 +249,9 @@ function EvidencesList() {
                     </Row>
                 </CardHeader>
                 <CardBody>
-                    {data ? (
+                    {detailedEvidencesData ? (
                         <ToolkitProvider
-                            data={data}
+                            data={detailedEvidencesData}
                             keyField="id"
                             columns={[
                                 {
@@ -261,8 +262,8 @@ function EvidencesList() {
                                     style: { whiteSpace: "normal", wordWrap: "break-word" },
                                 },
                                 {
-                                    dataField: "evidenceName",
-                                    text: "Título",
+                                    dataField: "skillTypeName",
+                                    text: "Competência",
                                     sort: true,
                                     headerStyle: { width: "20%", minWidth: "80px" },
                                 },
@@ -279,6 +280,43 @@ function EvidencesList() {
                                     sort: true,
                                     formatter: (cell) => (cell ? "Ativo" : "Inativo"),
                                     headerStyle: { width: "5%", minWidth: "20px" },
+                                },
+                                {
+                                    dataField: "actions",
+                                    text: "Ações",
+                                    formatter: (cell, row) => (
+                                        <UncontrolledDropdown>
+                                            <DropdownToggle
+                                                className="btn-icon-only text-light"
+                                                color=""
+                                                role="button"
+                                                size="sm"
+                                            >
+                                                <i className="fas fa-ellipsis-v" />
+                                            </DropdownToggle>
+                                            <DropdownMenu className="dropdown-menu-arrow" right>
+                                                <DropdownItem
+                                                    href="#pablo"
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        handleOpenEvidenceUpdateModal(row.id);
+                                                    }}
+                                                >
+                                                    Editar
+                                                </DropdownItem>
+                                                <DropdownItem
+                                                    href="#pablo"
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        showWarningAlert(row.id);
+                                                    }}
+                                                >
+                                                    Deletar
+                                                </DropdownItem>
+                                            </DropdownMenu>
+                                        </UncontrolledDropdown>
+                                    ),
+                                    headerStyle: { width: "10%", minWidth: "100px" }, // Ajuste conforme necessário
                                 },
                             ]}
                             search

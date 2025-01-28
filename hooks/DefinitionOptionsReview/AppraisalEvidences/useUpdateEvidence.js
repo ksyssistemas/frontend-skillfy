@@ -6,6 +6,9 @@ const useUpdateEvidence = () => {
 
   const { hasUpdatedAppraisalEvidences, handleUpdatedAppraisalEvidencesStatusChange } = useContext(EvidencesContext);
 
+  const [evidenceUpdateError, setEvidenceUpdateError] = useState(null);
+  const [evidenceUpdateSuccess, setEvidenceUpdateSuccess] = useState(null);
+
   const { reset } = useCreateEvidence();
 
   // const validateAddDepartmentForm = () => {
@@ -84,17 +87,24 @@ const useUpdateEvidence = () => {
 
         if (response.ok) {
           console.log('Data sent successfully!');
+          setEvidenceUpdateSuccess("Evidência editada com sucesso!");
         } else {
           console.error('Error in response:', response.status);
+          setEvidenceUpdateError("Ocorreu um erro na edição da evidência!");
         }
       } catch (error) {
         console.error('Error in request:', error);
+        setEvidenceUpdateError("Ocorreu um erro na edição da evidência!");
       }
     }
   };
 
   return {
     handleValidateUpdateAppraisalEvidenceForm,
+    setEvidenceUpdateError,
+    setEvidenceUpdateSuccess,
+    evidenceUpdateError,
+    evidenceUpdateSuccess
   };
 };
 

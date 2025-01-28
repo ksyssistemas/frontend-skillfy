@@ -227,12 +227,12 @@ function SkillsList() {
                                                     <i className="fas fa-ellipsis-v" />
                                                 </DropdownToggle>
                                                 <DropdownMenu className="dropdown-menu-arrow" right>
-                                                    <DropdownItem
+                                                    {/* <DropdownItem
                                                         href="#pablo"
                                                         onClick={(e) => e.preventDefault()}
                                                     >
                                                         Detalhes
-                                                    </DropdownItem>
+                                                    </DropdownItem> */}
                                                     <DropdownItem
                                                         href="#pablo"
                                                         onClick={(e) => { e.preventDefault(); handleOpenSkillTypeUpdateModal(skillType.id) }}
