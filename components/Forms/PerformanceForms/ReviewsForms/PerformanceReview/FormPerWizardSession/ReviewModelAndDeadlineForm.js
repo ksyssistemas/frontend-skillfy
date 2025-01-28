@@ -114,11 +114,15 @@ export function ReviewModelAndDeadlineForm() {
     const updateSliders = (index, newValue) => {
         // Copiar os valores existentes
         let values = [...sliderValues];
-
-        // Definir o novo valor do slider ajustado
         values[index] = newValue;
 
-        // Calcular a diferença restante para atingir 100
+        // Verificar se o valor realmente mudou antes de continuar
+        const previousValue = sliderValues[index];
+        if (newValue === previousValue) {
+            return; // Evitar atualização se não houve mudança
+        }
+
+        // Calcular a diferença restante para atingir 100%
         let difference = 100 - values.reduce((sum, value) => sum + value, 0);
 
         // Identificar os sliders restantes para redistribuição
@@ -127,19 +131,17 @@ export function ReviewModelAndDeadlineForm() {
             .filter((idx) => idx !== null);
 
         if (remainingIndices.length > 0) {
-            // Ajustar os valores restantes proporcionalmente
             let remainingTotal = remainingIndices.reduce((sum, idx) => sum + values[idx], 0);
             const adjustments = remainingIndices.map((idx) => {
                 const proportion = remainingTotal > 0 ? values[idx] / remainingTotal : 1 / remainingIndices.length;
-                return Math.floor(proportion * difference);
+                return Math.round(proportion * difference);
             });
 
-            // Aplicar os ajustes redistribuídos
             remainingIndices.forEach((idx, i) => {
                 values[idx] += adjustments[i];
             });
 
-            // Corrigir a diferença residual no último slider da lista
+            // Corrigir a diferença residual no último slider
             difference = 100 - values.reduce((sum, value) => sum + value, 0);
             if (difference !== 0) {
                 const lastIndex = remainingIndices[remainingIndices.length - 1];
@@ -147,11 +149,12 @@ export function ReviewModelAndDeadlineForm() {
             }
         }
 
-        console.log("SLIDER VALUES: ", [...values]);
-
-        // Atualizar o estado local
-        setSliderValues([...values]);
+        setTimeout(() => {
+            console.log("Updating slider values: ", values);
+            setSliderValues(values);
+        }, 500); 
     };
+
 
     const syncWithReducerAndLocalStorage = useCallback(() => {
         const currentValues = [
