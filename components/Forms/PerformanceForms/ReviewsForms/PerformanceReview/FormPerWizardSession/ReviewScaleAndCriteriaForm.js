@@ -22,6 +22,8 @@ import BootstrapTable from "react-bootstrap-table-next";
 import paginationFactory from "react-bootstrap-table2-paginator";
 import { useFindAllEvidences } from "../../../../../../hooks/DefinitionOptionsReview/AppraisalEvidences/useFindAllEvidences";
 import { useFindSkillType } from "../../../../../../hooks/DefinitionOptionsReview/SkillsTypes/useFindSkillType";
+import { useFindAllComptencies } from '../../../../../../hooks/RecordsHooks/pdi/competencies/useFindAllCompetencies';
+import { employmentContractDataSearchAndProcess } from '../../../../../../util/employmentContractDataSearchAndProcess';
 
 export function ReviewScaleAndCriteriaForm() {
 
@@ -299,6 +301,30 @@ export function ReviewScaleAndCriteriaForm() {
         };
     }, [state.reviewScaleAndCriteriaData]);
 
+    const [competencies, setCompetencies] = useState([]);
+    const [competenciesDataList, setCompetenciesDataList] = useState([]);
+    const handleCompetenciesDataList = (competencies) => {
+        setCompetenciesDataList(competencies);
+    };
+
+    useEffect(() => {
+        if (competenciesDataList.length === 0) {
+            employmentContractDataSearchAndProcess(
+                useFindAllComptencies,
+                handleCompetenciesDataList,
+                'competencies',
+                'CompetenciesUserRegister'
+            );
+        }
+    }, [])
+
+    const handleCompetenciesChange = (e) => {
+        const selectedValues = Array.from(e.target.selectedOptions).map((option) =>
+            Number(option.value)
+        );
+        setCompetencies(selectedValues);
+    };
+
     // useEffect(() => {
     //     const fetchSkillTypesName = async (evidences) => {
     //         const updatedEvidences = await Promise.all(
@@ -340,9 +366,40 @@ export function ReviewScaleAndCriteriaForm() {
             <PageChange />
         );
     }
+    
+
 
     return (
         <>
+            <Card>
+                <CardHeader>
+                    <h3 className="mb-0">Competências</h3>
+                </CardHeader>
+                <CardBody>
+                    <div className="mb-4">
+                        <div className="form-row">
+                            <Col className="mb-3" md="4">
+                                <label
+                                    className="form-control-label"
+                                    htmlFor="validationRulerType"
+                                >
+                                    Selecionar a Competência
+                                </label>
+                                <Select2
+                                id="validationCompetencia"
+                                className="form-control"
+                                data-minimum-results-for-search="Infinity"
+                                options={{ placeholder: "Selecione uma ou mais competências",}}
+                                value={competencies}
+                                multiple
+                                onChange={handleCompetenciesChange}
+                                data={competenciesDataList || []}
+                            />
+                            </Col>
+                        </div>
+                    </div>
+                </CardBody>
+            </Card>
             <Card>
                 <CardHeader>
                     <h3 className="mb-0">Respostas</h3>
