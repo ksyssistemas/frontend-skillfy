@@ -22,7 +22,9 @@ import BootstrapTable from "react-bootstrap-table-next";
 import paginationFactory from "react-bootstrap-table2-paginator";
 import { useFindAllEvidences } from "../../../../../../hooks/DefinitionOptionsReview/AppraisalEvidences/useFindAllEvidences";
 import { useFindSkillType } from "../../../../../../hooks/DefinitionOptionsReview/SkillsTypes/useFindSkillType";
-import { useFindAllComptencies } from '../../../../../../hooks/RecordsHooks/pdi/competencies/useFindAllCompetencies';
+import { useFindAllSkillTypes } from '../../../../../../hooks/DefinitionOptionsReview/SkillsTypes/useFindAllSkillTypes';
+import { useFindSkillClassification } from '../../../../../../hooks/DefinitionOptionsReview/SkillsClassifications/useFindSkillClassification';
+import { useFindOccupationalGroup } from '../../../../../../hooks/DefinitionOptionsReview/OccupationalGroups/useFindOccupationalGroup';
 import { employmentContractDataSearchAndProcess } from '../../../../../../util/employmentContractDataSearchAndProcess';
 
 export function ReviewScaleAndCriteriaForm() {
@@ -302,7 +304,13 @@ export function ReviewScaleAndCriteriaForm() {
     }, [state.reviewScaleAndCriteriaData]);
 
     const [competencies, setCompetencies] = useState([]);
+    console.log(competencies);
     const [competenciesDataList, setCompetenciesDataList] = useState([]);
+    const [competenciesDetails, setCompetenciesDetails] = useState([]);
+    const [occupationalGroups, setOccupationalGroups] = useState([]);
+    const [skillClassifications, setSkillClassifications] = useState([]);
+    const [evidenceDataList, setEvidenceDataList] = useState([]);
+
     const handleCompetenciesDataList = (competencies) => {
         setCompetenciesDataList(competencies);
     };
@@ -310,13 +318,23 @@ export function ReviewScaleAndCriteriaForm() {
     useEffect(() => {
         if (competenciesDataList.length === 0) {
             employmentContractDataSearchAndProcess(
-                useFindAllComptencies,
+                useFindAllSkillTypes,
                 handleCompetenciesDataList,
-                'competencies',
+                'skillTypes',
                 'CompetenciesUserRegister'
             );
         }
     }, [])
+
+    useEffect(() => {
+        if (competencies.length > 0) {
+            Promise.all(competencies.map(id => useFindSkillType(id)))
+                .then(details => setCompetenciesDetails(details))
+                .catch(error => console.error("Erro ao buscar competências:", error));
+        } else {
+            setCompetenciesDetails([]);
+        }
+    }, [competencies]);
 
     const handleCompetenciesChange = (e) => {
         const selectedValues = Array.from(e.target.selectedOptions).map((option) =>
@@ -324,6 +342,46 @@ export function ReviewScaleAndCriteriaForm() {
         );
         setCompetencies(selectedValues);
     };
+
+    useEffect(() => {
+        if (competenciesDetails.length > 0) {
+            const occupationalPromises = Promise.all(
+                competenciesDetails.map(({ occupationalGroupId }) =>
+                    useFindOccupationalGroup(occupationalGroupId)
+                )
+            );
+
+            const skillPromises = Promise.all(
+                competenciesDetails.map(({ skillClassificationId }) =>
+                    useFindSkillClassification(skillClassificationId)
+                )
+            );
+
+            Promise.all([occupationalPromises, skillPromises])
+                .then(([occupationalResults, skillResults]) => {
+                    setOccupationalGroups(occupationalResults);
+                    setSkillClassifications(skillResults);
+                })
+                .catch((error) =>
+                    console.error("Erro ao buscar dados adicionais:", error)
+                );
+        }
+    }, [competenciesDetails]);
+
+    useEffect(() => {
+        const fetchEvidences = async () => {
+            if (competenciesDetails.length > 0) {
+                try {
+                    const foundEvidence = await useFindAllEvidences();
+                    setEvidenceDataList(foundEvidence);
+                } catch (error) {
+                    console.error('Error fetching evidences:', error);
+                }
+            }
+        };
+        fetchEvidences();
+    }, [competenciesDetails]);
+
 
     // useEffect(() => {
     //     const fetchSkillTypesName = async (evidences) => {
@@ -366,8 +424,6 @@ export function ReviewScaleAndCriteriaForm() {
             <PageChange />
         );
     }
-    
-
 
     return (
         <>
@@ -379,23 +435,58 @@ export function ReviewScaleAndCriteriaForm() {
                     <div className="mb-4">
                         <div className="form-row">
                             <Col className="mb-3" md="4">
-                                <label
-                                    className="form-control-label"
-                                    htmlFor="validationRulerType"
-                                >
-                                    Selecionar a Competência
+                                <label className="form-control-label" htmlFor="validationCompetencia">
+                                    Selecione a(s) Competência(s)
                                 </label>
                                 <Select2
-                                id="validationCompetencia"
-                                className="form-control"
-                                data-minimum-results-for-search="Infinity"
-                                options={{ placeholder: "Selecione uma ou mais competências",}}
-                                value={competencies}
-                                multiple
-                                onChange={handleCompetenciesChange}
-                                data={competenciesDataList || []}
-                            />
+                                    id="validationCompetencia"
+                                    className="form-control"
+                                    data-minimum-results-for-search="Infinity"
+                                    options={{ placeholder: "Selecione uma ou mais competências" }}
+                                    value={competencies}
+                                    multiple
+                                    onChange={handleCompetenciesChange}
+                                    data={competenciesDataList || []}
+                                />
                             </Col>
+                        </div>
+                        <div>
+                            {competencies.length > 0  ? (
+                                <>
+                                    <h3>Detalhes das Competências:</h3>
+                                    {competenciesDetails.map((competency, index) => (
+                                        <div key={competency.id}>
+                                            <p>
+                                                <strong>Nome:</strong> {competency.competencieTypeName || "Carregando..."}
+                                            </p>
+                                            <p>
+                                                <strong>Descrição:</strong> {competency.description || "Carregando..."}
+                                            </p>
+                                            <p>
+                                                <strong>Grupo Ocupacional:</strong>{" "}
+                                                {occupationalGroups[index]?.competencieName || "Carregando..."}
+                                            </p>
+                                            <p>
+                                                <strong>Classificação da Habilidade:</strong>{" "}
+                                                {skillClassifications[index]?.competenceClassificationName || "Carregando..."}
+                                            </p>
+                                            <h4>Evidências Relacionadas:</h4>
+                                            {evidenceDataList.some(evidence => evidence.evidenceName == competency.id) ? (
+                                                <ul>
+                                                    {evidenceDataList
+                                                        .filter(evidence => evidence.evidenceName == competency.id)
+                                                        .map(evidence => (
+                                                            <li key={evidence.id}>{evidence.description || "Carregando..."}</li>
+                                                        ))}
+                                                </ul>
+                                            ) : (
+                                                <p>Nenhuma evidência encontrada.</p>
+                                            )}
+                                            <hr />
+                                        </div>
+                                    ))}
+                                </>
+                            ) : null}
                         </div>
                     </div>
                 </CardBody>
