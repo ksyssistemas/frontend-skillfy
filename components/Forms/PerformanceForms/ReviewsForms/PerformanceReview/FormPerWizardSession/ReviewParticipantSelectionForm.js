@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useContext, useEffect, useReducer, useRef, useState } from "react";
 import { Button, Card, CardBody, CardHeader, Col, Form, Input, Row, Table } from "reactstrap";
 import dynamic from "next/dynamic";
 import { handleSelectionEmploymentContractData } from "../../../../../../util/handleSelectionEmploymentContractData";
@@ -8,77 +8,118 @@ const Select2 = dynamic(() => import("react-select2-wrapper"));
 import TagsInput from "components/TagsInput/TagsInput.js";
 import { useFindAllEmployee } from "../../../../../../hooks/RecordsHooks/employee/useFindAllEmployee";
 import EmployeePairsInput from "../EmployeePairsInput";
+import { initialState, formReducer } from '../../../../../../reducers/ReviewForms/ReviewParticipantSelectionFormReducer';
+import { ModelSelectionReviewContext } from "../../../../../../contexts/PerformanceContext/ModelSelectionReviewContext";
+import PageChange from "../../../../../PageChange/PageChange";
 
 export function ReviewParticipantSelectionForm() {
-    const [isAllEmployeesSelectedToParticipate, setIsAllEmployeesSelectedToParticipate] = useState(false);
-    const [listEmployeeDataToReview, setListEmployeeDataToReview] = useState([]);
-    const [listLeaderEmployeeDataToReview, setListLeaderEmployeeDataToReview] = useState([]);
-    const [listLedEmployeeDataToReview, setListLedEmployeeDataToReview] = useState([]);
-    const [employeesSelectedAmount, setEmployeesSelectedAmount] = useState(0);
 
-    const [isRandomSelectionParticipantsToReview, setIsRandomSelectionParticipantsToReview] = useState(false);
-    const [isShouldPresentParticipantSelectionButtons, setIsShouldPresentParticipantSelectionButtons] = useState(false);
+    const [state, dispatch] = useReducer(formReducer, initialState);
 
-    const [isSholdPresentNamesSelectedLeaders, setIsSholdPresentNamesSelectedLeaders] = useState(false);
-    const [isSholdPresentNamesSelectedSelfReview, setIsSholdPresentNamesSelectedSelfReview] = useState(false);
-    const [isSholdPresentNamesSelectedPairs, setIsSholdPresentNamesSelectedPairs] = useState(false);
+    const latestReviewParticipantsSelectionData = useRef(state.reviewParticipantsSelectionData);
 
-    const [leadersNumberToDrawn, setleadersNumberToDrawn] = useState(0);
-    const [selfReviewsNumberToDrawn, setSelfReviewsNumberToDrawn] = useState(0);
-    const [pairsNumberToDrawn, setPairsNumberToDrawn] = useState(0);
+    const [isLoadingReviewParticipantsSelectionData, setIsLoadingReviewParticipantsSelectionData] = useState(true);
+
+    const {
+        selectedReview,
+        clearStepIndex,
+        handleClearStepIndex
+    } = useContext(ModelSelectionReviewContext);
+
+    // Ref para armazenar o estado anterior em formato de string
+    const previousStateRef = useRef(null);
 
     // Verificações para habilitar/desabilitar os botões
     const isLeadersButtonEnabled =
-        leadersNumberToDrawn > 0 &&
-        leadersNumberToDrawn <= listEmployeeDataToReview.filter((employee) => employee.isLead === true).length;
+        state.reviewParticipantsSelectionData.leadersNumberToDrawn > 0 &&
+        state.reviewParticipantsSelectionData.leadersNumberToDrawn <=
+        state.reviewParticipantsSelectionData.listEmployeeDataToReview
+            .filter((employee) => employee.isLead === true).length;
+
     const isSelfReviewsButtonEnabled =
-        selfReviewsNumberToDrawn > 0 && selfReviewsNumberToDrawn <= listEmployeeDataToReview.length;
+        state.reviewParticipantsSelectionData.selfReviewsNumberToDrawn > 0 &&
+        state.reviewParticipantsSelectionData.selfReviewsNumberToDrawn <=
+        state.reviewParticipantsSelectionData.listEmployeeDataToReview.length;
+
     const isPairsButtonEnabled =
-        pairsNumberToDrawn > 0 && pairsNumberToDrawn <= listEmployeeDataToReview.length;
+        state.reviewParticipantsSelectionData.pairsNumberToDrawn > 0 &&
+        state.reviewParticipantsSelectionData.pairsNumberToDrawn <=
+        state.reviewParticipantsSelectionData.listEmployeeDataToReview.length;
 
-    const [listLeaderEmployeeDataSelectedToReview, setListLeaderEmployeeDataSelectedToReview] = useState([]);
-    const [leaderTagsInput, setLeaderTagsInput] = useState([]);
-    const [listEmployeeDataToSelfReview, setListEmployeeDataToSelfReview] = useState([]);
-    const [selfReviewTagsInput, setSelfReviewTagsInput] = useState([]);
-    const [listPairEmployeeDataToReview, setListPairEmployeeDataToReview] = useState([]);
+    // Função utilitária para salvar os dados formatados no localStorage
+    const saveDataToLocalStorage = (data) => {
+        const dataToSave = { ...data };
+        localStorage.setItem('reviewParticipantsSelectionData', JSON.stringify(dataToSave));
+    };
 
-    const [isHandPickedSelectionParticipantsToReview, setIsHandPickedSelectionParticipantsToReview] = useState(false);
-    const [leaderEmployeeSelected, setLeaderEmployeeSelected] = useState('');
-    const [ledEmployeeSelected, setLedEmployeeSelected] = useState('');
-    const [pairsEmployeeSelected, setPairsEmployeeSelected] = useState('');
-
+    // Função para selecionar todos os usuários registrados
     async function handleSelectionAllRegisteredUsers() {
-        setIsAllEmployeesSelectedToParticipate(!isAllEmployeesSelectedToParticipate);
-        setEmployeesSelectedAmount(listEmployeeDataToReview.length)
+        dispatch({
+            type: 'SET_ALL_EMPLOYEE_SELECTED',
+            payload: !state.reviewParticipantsSelectionData.isAllEmployeesSelectedToParticipate,
+        });
+        dispatch({
+            type: 'SET_EMPLOYEES_SELECTED_AMOUNT',
+            payload: state.reviewParticipantsSelectionData.listEmployeeDataToReview.length,
+        });
     }
 
+    // Função para desmarcar todos os usuários registrados
     function handleUnselectionAllRegisteredUsers() {
-        setIsAllEmployeesSelectedToParticipate(!isAllEmployeesSelectedToParticipate);
-        setEmployeesSelectedAmount(0);
+        dispatch({
+            type: 'SET_ALL_EMPLOYEE_SELECTED',
+            payload: !state.reviewParticipantsSelectionData.isAllEmployeesSelectedToParticipate,
+        });
+        dispatch({
+            type: 'SET_EMPLOYEES_SELECTED_AMOUNT',
+            payload: 0,
+        });
     }
 
+    // Função para seleção aleatória de usuários registrados
     async function handleRandomSelectionRegisteredUsers() {
-        setIsRandomSelectionParticipantsToReview(!isRandomSelectionParticipantsToReview);
-        setIsShouldPresentParticipantSelectionButtons(!isShouldPresentParticipantSelectionButtons);
+        dispatch({
+            type: 'SET_RANDOM_SELECTION_PARTICIPANTS',
+            payload: !state.reviewParticipantsSelectionData.isRandomSelectionParticipantsToReview,
+        });
+        dispatch({
+            type: 'SET_SHOULD_PRESENT_PARTICIPANT_SELECTION_BUTTONS',
+            payload: !state.reviewParticipantsSelectionData.isShouldPresentParticipantSelectionButtons,
+        });
     }
 
     function handleRandomUnselectionRegisteredUsers() {
-        setIsRandomSelectionParticipantsToReview(!isRandomSelectionParticipantsToReview);
-        setIsShouldPresentParticipantSelectionButtons(!isShouldPresentParticipantSelectionButtons);
-        setIsSholdPresentNamesSelectedLeaders(false);
-        setIsSholdPresentNamesSelectedPairs(false);
-        setIsSholdPresentNamesSelectedSelfReview(false);
+        dispatch({
+            type: 'SET_RANDOM_SELECTION_PARTICIPANTS',
+            payload: false,
+        });
+        dispatch({
+            type: 'SET_SHOULD_PRESENT_PARTICIPANT_SELECTION_BUTTONS',
+            payload: false,
+        });
+        dispatch({
+            type: 'SET_SHOULD_PRESENT_NAMES_SELECTED_LEADERS',
+            payload: false,
+        });
+        dispatch({
+            type: 'SET_SHOULD_PRESENT_NAMES_SELECTED_SELF_REVIEW',
+            payload: false,
+        });
+        dispatch({
+            type: 'SET_SHOULD_PRESENT_NAMES_SELECTED_PAIRS',
+            payload: false,
+        });
     }
 
     function handleRandomSelectionLeaderEmployees() {
-        if (leadersNumberToDrawn > 0) {
+        if (state.reviewParticipantsSelectionData.leadersNumberToDrawn > 0) {
             // Filtrar apenas os colaboradores que possuem "isLead: true"
-            const eligibleLeaders = listEmployeeDataToReview.filter(
+            const eligibleLeaders = state.reviewParticipantsSelectionData.listEmployeeDataToReview.filter(
                 (employee) => employee.isLead === true
             );
 
             // Garantir que não sorteamos mais do que o total disponível
-            const drawCount = Math.min(leadersNumberToDrawn, eligibleLeaders.length);
+            const drawCount = Math.min(state.reviewParticipantsSelectionData.leadersNumberToDrawn, eligibleLeaders.length);
 
             // Embaralhar a lista de elegíveis
             const shuffledLeaders = [...eligibleLeaders].sort(() => 0.5 - Math.random());
@@ -86,47 +127,61 @@ export function ReviewParticipantSelectionForm() {
             // Selecionar os primeiros "drawCount" elementos da lista embaralhada
             const selectedLeaders = shuffledLeaders.slice(0, drawCount);
 
-            setLeaderTagsInput(selectedLeaders.map((leader) => leader.name));
+            dispatch({
+                type: 'SET_LEADER_TAGS_INPUT',
+                payload: selectedLeaders.map((leader) => leader.name),
+            });
 
-            // Atualizar o estado com os líderes sorteados
-            setListLeaderEmployeeDataSelectedToReview(selectedLeaders);
+            dispatch({
+                type: 'SET_LIST_LEADER_EMPLOYEE_DATA_SELECTED_TO_REVIEW',
+                payload: selectedLeaders,
+            });
 
-            // Atualizar o total de colaboradores selecionados
-            setEmployeesSelectedAmount((prevAmount) => prevAmount + selectedLeaders.length);
+            dispatch({
+                type: 'SET_EMPLOYEES_SELECTED_AMOUNT',
+                payload:
+                    state.reviewParticipantsSelectionData.employeesSelectedAmount +
+                    selectedLeaders.length,
+            });
 
-            setIsSholdPresentNamesSelectedLeaders(true);
+            dispatch({
+                type: 'SET_SHOULD_PRESENT_NAMES_SELECTED_LEADERS',
+                payload: true,
+            });
         }
     }
 
     function handleRandomSelectionSelfReviews() {
-        if (selfReviewsNumberToDrawn > 0 && selfReviewsNumberToDrawn <= listEmployeeDataToReview.length) {
+        if (state.reviewParticipantsSelectionData.selfReviewsNumberToDrawn > 0 &&
+            state.reviewParticipantsSelectionData.selfReviewsNumberToDrawn <=
+            state.reviewParticipantsSelectionData.listEmployeeDataToReview.length) {
             // Realiza o sorteio de colaboradores
             const shuffled = [...listEmployeeDataToReview].sort(() => 0.5 - Math.random()); // Embaralha os colaboradores
             const selectedEmployees = shuffled.slice(0, selfReviewsNumberToDrawn); // Seleciona o número solicitado
 
-            // Atualiza a lista de colaboradores para autoavaliação
-            setListEmployeeDataToSelfReview(selectedEmployees);
+            dispatch({ type: 'SET_LIST_EMPLOYEE_DATA_TO_SELF_REVIEW', payload: selectedEmployees });
 
-            // Atualiza os nomes no campo de TagsInput
-            const selectedNames = selectedEmployees.map((employee) => employee.name);
-            setSelfReviewTagsInput(selectedNames);
-
-            // Atualiza a contagem de colaboradores selecionados
-            setEmployeesSelectedAmount((prev) => prev + selectedEmployees.length);
-
-            // Torna visível a lista de nomes selecionados
-            setIsSholdPresentNamesSelectedSelfReview(true);
+            dispatch({
+                type: 'SET_SELF_REVIEW_TAGS_INPUT',
+                payload: selectedEmployees.map((employee) => employee.name),
+            });
+            dispatch({
+                type: 'SET_EMPLOYEES_SELECTED_AMOUNT',
+                payload: state.reviewParticipantsSelectionData.employeesSelectedAmount + selectedEmployees.length,
+            });
+            dispatch({ type: 'SET_SHOULD_PRESENT_NAMES_SELECTED_SELF_REVIEW', payload: true });
         } else {
             console.warn("Número de participantes inválido para autoavaliação.");
         }
     }
 
     function handleRandomSelectionPairsEmployees() {
-        if (pairsNumberToDrawn > 0 && listEmployeeDataToSelfReview.length > 0) {
+        if (state.reviewParticipantsSelectionData.pairsNumberToDrawn > 0 &&
+            state.reviewParticipantsSelectionData.listEmployeeDataToSelfReview.length > 0) {
             let newPairs = [];
             let totalSelected = 0;
 
-            listEmployeeDataToSelfReview.forEach((selfReviewEmployee) => {
+            handleSelectionAllRegisteredUserslistEmployeeDataToSelfReview.forEach((selfReviewEmployee) => {
                 // Filtra os colaboradores do mesmo departamento
                 const sameDepartmentEmployees = listEmployeeDataToReview.filter(
                     (employee) => employee.departmentId === selfReviewEmployee.departmentId
@@ -138,93 +193,360 @@ export function ReviewParticipantSelectionForm() {
                 // Seleciona a quantidade de pares solicitada
                 const selectedPairs = shuffled.slice(0, pairsNumberToDrawn);
 
-                // Cria a estrutura de dados para o colaborador e seus pares
-                const employeeOnSelfReview = {
+                newPairs.push({
                     employeeId: selfReviewEmployee.id,
                     employeeName: `${selfReviewEmployee.name} ${selfReviewEmployee.lastName}`,
                     pairs: selectedPairs.map((pair) => ({
                         pairIdOnReview: pair.id,
                         pairNameOnReview: `${pair.name} ${pair.lastName}`,
                     })),
-                };
-
-                // Adiciona ao array final
-                newPairs.push(employeeOnSelfReview);
+                });
 
                 // Incrementa o total selecionado
                 totalSelected += selectedPairs.length;
             });
 
-            // Atualiza o estado com os pares sorteados
-            setListPairEmployeeDataToReview(newPairs);
-
-            // Atualiza o total de colaboradores selecionados
-            setEmployeesSelectedAmount((prev) => prev + totalSelected);
-
-            // Torna visível a lista de pares sorteados
-            setIsSholdPresentNamesSelectedPairs(true);
+            dispatch({ type: 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW', payload: newPairs });
+            dispatch({
+                type: 'SET_EMPLOYEES_SELECTED_AMOUNT',
+                payload: state.reviewParticipantsSelectionData.employeesSelectedAmount + totalSelected,
+            });
+            dispatch({ type: 'SET_SHOULD_PRESENT_NAMES_SELECTED_PAIRS', payload: true });
         } else {
             console.warn("Número de pares inválido ou lista de autoavaliação vazia.");
         }
     }
 
     function handleCleanupRandomSelectionRegisteredUsers() {
-        setEmployeesSelectedAmount(0);
-        setIsSholdPresentNamesSelectedLeaders(false);
-        setIsSholdPresentNamesSelectedSelfReview(false);
-        setIsSholdPresentNamesSelectedPairs(false);
-        setleadersNumberToDrawn(0);
-        setSelfReviewsNumberToDrawn(0);
-        setPairsNumberToDrawn(0);
-        setListLeaderEmployeeDataSelectedToReview([]);
-        setLeaderTagsInput([]);
-        setListEmployeeDataToSelfReview([]);
-        setSelfReviewTagsInput([]);
-        setListPairEmployeeDataToReview([]);
+        // setEmployeesSelectedAmount(0);
+        // setIsSholdPresentNamesSelectedLeaders(false);
+        // setIsSholdPresentNamesSelectedSelfReview(false);
+        // setIsSholdPresentNamesSelectedPairs(false);
+        // setleadersNumberToDrawn(0);
+        // setSelfReviewsNumberToDrawn(0);
+        // setPairsNumberToDrawn(0);
+        // setListLeaderEmployeeDataSelectedToReview([]);
+        // setLeaderTagsInput([]);
+        // setListEmployeeDataToSelfReview([]);
+        // setSelfReviewTagsInput([]);
+        // setListPairEmployeeDataToReview([]);
+        dispatch({ type: 'SET_LEADERS_NUMBER_TO_DRAWN', payload: 0 });
+        dispatch({ type: 'SET_SELF_REVIEW_NUMBER_TO_DRAWN', payload: 0 });
+        dispatch({ type: 'SET_PAIRS_NUMBER_TO_DRAWN', payload: 0 });
+        dispatch({ type: 'RESET_REVIEW_DATA' });
     }
 
     async function handleHandPickedSelectionParticipantsToReview() {
-        setIsHandPickedSelectionParticipantsToReview(!isHandPickedSelectionParticipantsToReview);
+        dispatch({
+            type: 'SET_HAND_PICKED_SELECTION_PARTICIPANTS_TO_REVIEW',
+            payload: !state.reviewParticipantsSelectionData.isHandPickedSelectionParticipantsToReview,
+        });
         //setIsShouldPresentParticipantSelectionButtons(!isShouldPresentParticipantSelectionButtons);
     }
 
     async function handleHandPickedUnselectionParticipantsToReview() {
-        setIsHandPickedSelectionParticipantsToReview(!isHandPickedSelectionParticipantsToReview);
+        dispatch({
+            type: 'SET_HAND_PICKED_SELECTION_PARTICIPANTS_TO_REVIEW',
+            payload: !state.reviewParticipantsSelectionData.isHandPickedSelectionParticipantsToReview,
+        });
         //setIsShouldPresentParticipantSelectionButtons(!isShouldPresentParticipantSelectionButtons);
     }
 
-    const handleSelectionEmploymentContractDataWrapper = (
+    async function handleLeaderSelection(
         selectedId,
         dataList,
-        setSelectedAction,
-        setFieldAction,
-        setStateAction,
-        setSelectedDepartmentIdAction = null,
-        setHasDepartmentSelectedAction = null,
-        savedDataType = 'id'
-    ) => {
-        // Despache o estado 'valid' antes de iniciar o processo de seleção
-        if (setStateAction) dispatch({ type: setStateAction, payload: 'valid' });
-        if (setHasDepartmentSelectedAction) dispatch({ type: setHasDepartmentSelectedAction, payload: true });
+        leaderTagsInput,
+        removedLeaderItems,
+        dispatch
+    ) {
+        try {
+            if (!Array.isArray(dataList)) {
+                console.error("Erro: dataList não é um array.", dataList);
+                return;
+            }
 
-        // Chama a função de processamento de seleção de dados
-        handleSelectionEmploymentContractData(
-            selectedId,
-            dataList,
-            (value) => dispatch({ type: setSelectedAction, payload: value }),
-            (value) => dispatch({ type: setFieldAction, payload: value }), // Agora definirá o valor correto
-            (state) => dispatch({ type: setStateAction, payload: state }),
-            (id) => dispatch({ type: setSelectedDepartmentIdAction, payload: id }),
-            () => dispatch({ type: setHasDepartmentSelectedAction, payload: true }),
-            savedDataType
-        );
-    };
+            if (typeof selectedId !== "string" || selectedId.trim() === "") {
+                console.error("Erro: ID selecionado inválido.", selectedId);
+                return;
+            }
+
+            const selectedItem = dataList.find((item) => item.id === selectedId);
+            if (!selectedItem) {
+                console.error("Erro: Item selecionado não encontrado na lista.");
+                return;
+            }
+
+            const updatedTags = [...leaderTagsInput, selectedItem.text];
+
+            const updatedDataList = dataList.filter((item) => item.id !== selectedId);
+            const updatedRemovedItems = [...removedLeaderItems, selectedItem];
+
+            await dispatch({ type: 'SET_LEADER_TAGS_INPUT', payload: updatedTags });
+            await dispatch({ type: 'SET_LIST_LEADER_EMPLOYEE_DATA_TO_REVIEW', payload: updatedDataList });
+            await dispatch({ type: 'SET_REMOVED_LEADER_ITEMS', payload: updatedRemovedItems });
+
+        } catch (error) {
+            console.error("Erro ao processar a seleção de líderes:", error);
+        }
+    }
+
+    async function handleTagLeaderRemoval(
+        tagToRemove,
+        leaderTagsInput,
+        removedLeaderItems,
+        dataList,
+        dispatch
+    ) {
+        try {
+
+            if (!tagToRemove || !Array.isArray(removedLeaderItems)) return;
+
+            const updatedTags = leaderTagsInput.filter((tag) => tag !== tagToRemove);
+
+            const removedItem = removedLeaderItems.find((item) => item.text === tagToRemove);
+
+            if (!removedItem) {
+                console.warn("Tag removida não encontrada na lista original.");
+                return;
+            }
+
+            const updatedRemovedItems = removedLeaderItems.filter((item) => item.text !== tagToRemove);
+
+            const updatedDataList = [...dataList];
+            updatedDataList.splice(removedItem.originalIndex, 0, removedItem);
+
+            await dispatch({ type: 'SET_LEADER_TAGS_INPUT', payload: updatedTags });
+            await dispatch({ type: 'SET_LIST_LEADER_EMPLOYEE_DATA_TO_REVIEW', payload: updatedDataList });
+            await dispatch({ type: 'SET_REMOVED_LEADER_ITEMS', payload: updatedRemovedItems });
+
+        } catch (error) {
+            console.error("Erro ao remover tag de líderes:", error);
+        }
+    }
+
+    async function handleLedSelection(
+        selectedId,
+        dataList,
+        selfReviewTagsInput,
+        removedLedItems,
+        listEmployeeDataToReview,
+        listPairEmployeeDataToReview,
+        dispatch
+    ) {
+        try {
+            if (!Array.isArray(dataList)) {
+                console.error("Erro: dataList não é um array.", dataList);
+                return;
+            }
+
+            if (typeof selectedId !== "string" || selectedId.trim() === "") {
+                console.error("Erro: ID selecionado inválido.", selectedId);
+                return;
+            }
+
+            const selectedItem = dataList.find((item) => item.id === selectedId);
+            if (!selectedItem) {
+                console.error("Erro: Item selecionado não encontrado na lista.");
+                return;
+            }
+
+            const sameDepartmentEmployees = listEmployeeDataToReview
+                .filter(
+                    (employee) =>
+                        employee.departmentId === selectedItem.departmentId &&
+                        employee.id !== selectedItem.employeeId
+                )
+                .map((employee, index) => ({
+                    id: (index + 1).toString(),
+                    text: `${employee.name} ${employee.lastName}`,
+                    originalIndex: index,
+                }));
+
+            const updatedListPair = {
+                ...listPairEmployeeDataToReview,
+                [selectedId]: sameDepartmentEmployees,
+            };
+
+            const updatedTags = [...selfReviewTagsInput, selectedItem.text];
+            const updatedDataList = dataList.filter((item) => item.id !== selectedId);
+            const updatedRemovedItems = [...removedLedItems, selectedItem];
+
+            await dispatch({ type: 'SET_SELF_REVIEW_TAGS_INPUT', payload: updatedTags });
+            await dispatch({ type: 'SET_LIST_LED_EMPLOYEE_DATA_TO_REVIEW', payload: updatedDataList });
+            await dispatch({ type: 'SET_REMOVED_LED_ITEMS', payload: updatedRemovedItems });
+
+            await dispatch({ type: 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW', payload: updatedListPair });
+            await dispatch({ type: 'SET_PAIR_TAGS_INPUT', payload: { lideradoId: selectedId, tags: [] } });
+            await dispatch({ type: 'SET_REMOVED_PAIR_ITEMS', payload: { lideradoId: selectedId, items: [] } });
+        } catch (error) {
+            console.error("Erro ao processar a seleção de liderados:", error);
+        }
+    }
+
+    async function handleTagLedRemoval(
+        tagToRemove,
+        selfReviewTagsInput,
+        removedLedItems,
+        dataList,
+        dispatch
+    ) {
+        try {
+            if (!tagToRemove || !Array.isArray(removedLedItems)) return;
+
+            const updatedTags = selfReviewTagsInput.filter((tag) => tag !== tagToRemove);
+
+            const removedItem = removedLedItems.find((item) => item.text === tagToRemove);
+
+            if (!removedItem) {
+                console.warn("Tag removida não encontrada na lista original.");
+                return;
+            }
+
+            const updatedRemovedItems = removedLedItems.filter((item) => item.text !== tagToRemove);
+
+            const updatedDataList = [...dataList];
+            updatedDataList.splice(removedItem.originalIndex, 0, removedItem);
+
+            await dispatch({ type: 'SET_SELF_REVIEW_TAGS_INPUT', payload: updatedTags });
+            await dispatch({ type: 'SET_LIST_LED_EMPLOYEE_DATA_TO_REVIEW', payload: updatedDataList });
+            await dispatch({ type: 'SET_REMOVED_LED_ITEMS', payload: updatedRemovedItems });
+
+        } catch (error) {
+            console.error("Erro ao remover tag de liderados:", error);
+        }
+    }
+
+    async function handlePairSelection(
+        lideradoId,
+        tagToRemove,
+        pairTagsInput,
+        removedPairItems,
+        dataList,
+        dispatch
+    ) {
+        try {
+            if (!pairTagsInput || typeof pairTagsInput !== "object") {
+                console.error("Erro: pairTagsInput inválido ou ausente.", pairTagsInput);
+                return;
+            }
+
+            if (!removedPairItems || typeof removedPairItems !== "object") {
+                console.error("Erro: removedPairItems inválido ou ausente.", removedPairItems);
+                return;
+            }
+
+            const currentTags = pairTagsInput[lideradoId] || [];
+            if (!Array.isArray(currentTags)) {
+                console.error("Erro: pairTagsInput[lideradoId] não é um array.", currentTags);
+                return;
+            }
+
+            const updatedTags = currentTags.filter((tag) => tag !== tagToRemove);
+
+            const removedItemsForLiderado = removedPairItems[lideradoId] || [];
+            const removedItem = removedItemsForLiderado.find((item) => item.text === tagToRemove);
+
+            if (!removedItem) {
+                console.warn("Tag removida não encontrada na lista original.", { tagToRemove, removedItemsForLiderado });
+                return;
+            }
+
+            const updatedRemovedItems = removedItemsForLiderado.filter((item) => item.text !== tagToRemove);
+
+            const updatedDataList = { ...dataList };
+            const pairList = updatedDataList[lideradoId] || [];
+            pairList.splice(removedItem.originalIndex, 0, removedItem);
+
+            const updatedPairTagsInput = {
+                ...pairTagsInput,
+                [lideradoId]: updatedTags,
+            };
+
+            const updatedRemovedPairItems = {
+                ...removedPairItems,
+                [lideradoId]: updatedRemovedItems,
+            };
+
+            await dispatch({ type: 'SET_PAIR_TAGS_INPUT', payload: updatedPairTagsInput });
+            await dispatch({ type: 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW', payload: updatedDataList });
+            await dispatch({ type: 'SET_REMOVED_PAIR_ITEMS', payload: updatedRemovedPairItems });
+
+        } catch (error) {
+            console.error("Erro ao processar a seleção de pares:", error);
+        }
+    }
+
+    async function handleTagPairRemoval(
+        tagToRemove,
+        pairTagsInput,
+        removedPairItems,
+        dataList,
+        dispatch
+    ) {
+        try {
+            if (!tagToRemove || !Array.isArray(removedPairItems)) return;
+
+            const updatedTags = pairTagsInput.filter((tag) => tag !== tagToRemove);
+
+            const removedItem = removedPairItems.find((item) => item.text === tagToRemove);
+
+            if (!removedItem) {
+                console.warn("Tag removida não encontrada na lista original.");
+                return;
+            }
+
+            const updatedRemovedItems = removedPairItems.filter((item) => item.text !== tagToRemove);
+
+            const updatedDataList = dataList.map((pairList) => {
+                if (
+                    pairList.length > 0 &&
+                    pairList[0].departmentId === removedItem.departmentId
+                ) {
+                    return [...pairList, removedItem];
+                }
+                return pairList;
+            });
+
+            await dispatch({ type: 'SET_PAIR_TAGS_INPUT', payload: updatedTags });
+            await dispatch({ type: 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW', payload: updatedDataList });
+            await dispatch({ type: 'SET_REMOVED_PAIR_ITEMS', payload: updatedRemovedItems });
+
+        } catch (error) {
+            console.error("Erro ao remover tag de liderados:", error);
+        }
+    }
+
+    useEffect(() => { }, [
+        state.reviewParticipantsSelectionData.listLeaderEmployeeDataToReview,
+        state.reviewParticipantsSelectionData.leaderTagsInput,
+        state.reviewParticipantsSelectionData.removedLeaderItems
+    ]);
+
+    useEffect(() => { }, [
+        state.reviewParticipantsSelectionData.listLedEmployeeDataToReview,
+        state.reviewParticipantsSelectionData.selfReviewTagsInput,
+        state.reviewParticipantsSelectionData.removedLedItems
+    ]);
+
+    useEffect(() => {
+        console.log("listPairEmployeeDataToReview: ", state.reviewParticipantsSelectionData.listPairEmployeeDataToReview);
+        console.log("pairTagsInput: ", state.reviewParticipantsSelectionData.pairTagsInput);
+        console.log("removedPairItems: ", state.reviewParticipantsSelectionData.removedPairItems);
+    }, [
+        state.reviewParticipantsSelectionData.listPairEmployeeDataToReview,
+        state.reviewParticipantsSelectionData.pairTagsInput,
+        state.reviewParticipantsSelectionData.removedPairItems
+    ]);
 
     useEffect(() => {
         const fetchEmployees = async () => {
             try {
                 const foundEmployees = await useFindAllEmployee();
-                setListEmployeeDataToReview(foundEmployees);
+                dispatch({
+                    type: 'SET_LIST_EMPLOYEE_DATA_TO_REVIEW',
+                    payload: foundEmployees,
+                });
+
 
                 const leaderData = foundEmployees
                     .filter((employee) => employee.isLead)
@@ -232,21 +554,101 @@ export function ReviewParticipantSelectionForm() {
                         id: (index + 1).toString(),
                         text: `${employee.name} ${employee.lastName}`,
                     }));
-                setListLeaderEmployeeDataToReview(leaderData);
+                dispatch({
+                    type: 'SET_LIST_LEADER_EMPLOYEE_DATA_TO_REVIEW',
+                    payload: leaderData,
+                });
 
                 const ledData = foundEmployees
                     .filter((employee) => !employee.isLead)
                     .map((employee, index) => ({
                         id: (index + 1).toString(),
                         text: `${employee.name} ${employee.lastName}`,
+                        originalIndex: index,
+                        employeeId: employee.id,
+                        departmentId: employee.departmentId
                     }));
-                setListLedEmployeeDataToReview(ledData);
+                dispatch({
+                    type: 'SET_LIST_LED_EMPLOYEE_DATA_TO_REVIEW',
+                    payload: ledData,
+                });
             } catch (error) {
                 console.error('Error fetching employees:', error);
             }
         }
         fetchEmployees();
     }, []);
+
+    // Execute o carregamento dos dados ao montar o componente
+    useEffect(() => {
+        // Função para carregar os dados do localStorage
+        const loadReviewParticipantsSelectionData = async () => {
+            try {
+                const rawData = localStorage.getItem('reviewParticipantsSelectionData');
+                if (rawData) {
+                    const parsedData = JSON.parse(rawData);
+                    if (parsedData && typeof parsedData === 'object') {
+                        // Verifique se selectedCycle está presente
+                        dispatch({
+                            type: 'LOAD_SAVED_REVIEW_DATA',
+                            payload: { ...parsedData },
+                        });
+                        latestReviewParticipantsSelectionData.current = parsedData; // Atualiza a ref para os dados carregados
+                    }
+                } else {
+                    dispatch({ type: 'RESET_REVIEW_STATE' }); // Limpa o estado para evitar inconsistências
+                }
+            } catch (error) {
+                console.error('Failed to parse reviewParticipantsSelectionData from localStorage:', error);
+            } finally {
+                setIsLoadingReviewParticipantsSelectionData(false); // Marque como carregado
+            }
+        };
+
+        loadReviewParticipantsSelectionData();
+    }, []);
+
+    // Atualize a lógica de persistência para incluir verificações e evitar sobrescrever valores críticos
+    useEffect(() => {
+        const currentStateString = JSON.stringify(state.reviewParticipantsSelectionData);
+
+        if (previousStateRef.current !== currentStateString) {
+            // Salva o estado atualizado, preservando o ciclo selecionado
+            const currentSelectedCycle = state.reviewParticipantsSelectionData.selectedCycle;
+            const dataToSave = {
+                ...state.reviewParticipantsSelectionData,
+                selectedCycle: currentSelectedCycle || state.reviewParticipantsSelectionData.selectedCycle,
+            };
+
+            saveDataToLocalStorage(dataToSave);
+            latestReviewParticipantsSelectionData.current = dataToSave;
+
+            previousStateRef.current = currentStateString;
+        }
+
+        return () => {
+            saveDataToLocalStorage(latestReviewParticipantsSelectionData.current);
+        };
+    }, [state.reviewParticipantsSelectionData]);
+
+    useEffect(() => {
+        if (clearStepIndex === 5) {
+            resetFormAndLocalStorage(
+                true,
+                5,
+                clearStepIndex,
+                'reviewParticipantsSelectionData',
+                'RESET_REVIEW_DATA',
+                handleClearStepIndex,
+                dispatch);
+        }
+    }, [clearStepIndex, dispatch]);
+
+    if (isLoadingReviewParticipantsSelectionData) {
+        return (
+            <PageChange />
+        );
+    }
 
     return (
         <Form>
@@ -269,10 +671,10 @@ export function ReviewParticipantSelectionForm() {
                                             Selecione todos os usuários registrados no Skillfy.
                                         </p>
                                         {
-                                            isAllEmployeesSelectedToParticipate && (
+                                            state.reviewParticipantsSelectionData.isAllEmployeesSelectedToParticipate && (
                                                 <span className="text-muted text-md">
                                                     <span className="font-weith-bold text-lg text-dark">
-                                                        {employeesSelectedAmount}
+                                                        {state.reviewParticipantsSelectionData.employeesSelectedAmount}
                                                     </span>{'  '}
                                                     usuários foram selecionados entre líderes e liderados
                                                 </span>
@@ -281,7 +683,7 @@ export function ReviewParticipantSelectionForm() {
                                     </div>
                                     <Col className="col-auto">
                                         {
-                                            isAllEmployeesSelectedToParticipate ? (
+                                            state.reviewParticipantsSelectionData.isAllEmployeesSelectedToParticipate ? (
                                                 <Button
                                                     color="secondary"
                                                     size="sm"
@@ -320,11 +722,11 @@ export function ReviewParticipantSelectionForm() {
                                             Selecione todos os usuários registrados como funcionários na empresa.
                                         </p>
                                         {
-                                            isRandomSelectionParticipantsToReview &&
-                                            employeesSelectedAmount > 0 && (
+                                            state.reviewParticipantsSelectionData.isRandomSelectionParticipantsToReview &&
+                                            state.reviewParticipantsSelectionData.employeesSelectedAmount > 0 && (
                                                 <span className="text-muted text-md">
                                                     <span className="font-weith-bold text-lg text-dark">
-                                                        {employeesSelectedAmount}
+                                                        {state.reviewParticipantsSelectionData.employeesSelectedAmount}
                                                     </span>{'  '}
                                                     usuários foram selecionados entre líderes e liderados
                                                 </span>
@@ -333,13 +735,13 @@ export function ReviewParticipantSelectionForm() {
                                     </div>
                                     <Col className="col-auto">
                                         {
-                                            isRandomSelectionParticipantsToReview ? (
+                                            state.reviewParticipantsSelectionData.isRandomSelectionParticipantsToReview ? (
                                                 <>
                                                     <Button
                                                         color="secondary"
                                                         size="sm"
                                                         type="button"
-                                                        onClick={handleRandomSelectionRegisteredUsers}
+                                                        onClick={handleRandomUnselectionRegisteredUsers}
                                                     >
                                                         Remove
                                                     </Button>
@@ -357,7 +759,7 @@ export function ReviewParticipantSelectionForm() {
                                                     color="primary"
                                                     size="sm"
                                                     type="button"
-                                                    onClick={handleRandomUnselectionRegisteredUsers}
+                                                    onClick={handleRandomSelectionRegisteredUsers}
                                                 >
                                                     Selecionar
                                                 </Button>
@@ -368,8 +770,8 @@ export function ReviewParticipantSelectionForm() {
                                 </Row>
                                 <Row>
                                     {
-                                        isShouldPresentParticipantSelectionButtons &&
-                                        isRandomSelectionParticipantsToReview && (
+                                        state.reviewParticipantsSelectionData.isShouldPresentParticipantSelectionButtons &&
+                                        state.reviewParticipantsSelectionData.isRandomSelectionParticipantsToReview && (
                                             <Col className="mb-3 d-flex align-items-center justify-content-start" md="4">
                                                 <Button
                                                     className="btn-darker"
@@ -386,10 +788,10 @@ export function ReviewParticipantSelectionForm() {
                                                     type="number"
                                                     defaultValue="0"
                                                     min="1"
-                                                    max={listEmployeeDataToReview.length - 1}
+                                                    max={state.reviewParticipantsSelectionData.listEmployeeDataToReview.length - 1}
                                                     className="form-control"
-                                                    value={leadersNumberToDrawn}
-                                                    onChange={(e) => setleadersNumberToDrawn(Number(e.target.value))}
+                                                    value={state.reviewParticipantsSelectionData.leadersNumberToDrawn}
+                                                    onChange={(e) => dispatch({ type: 'SET_LEADERS_NUMBER_TO_DRAWN', payload: Number(e.target.value) })}
                                                     size="sm"
                                                     style={{ width: 72 }}
                                                 />
@@ -398,8 +800,8 @@ export function ReviewParticipantSelectionForm() {
                                     }
                                     <Col className="mb-3 d-flex flex-column" md="8">
                                         {
-                                            isSholdPresentNamesSelectedLeaders &&
-                                            isRandomSelectionParticipantsToReview && (
+                                            state.reviewParticipantsSelectionData.isSholdPresentNamesSelectedLeaders &&
+                                            state.reviewParticipantsSelectionData.isRandomSelectionParticipantsToReview && (
                                                 <>
                                                     <label
                                                         className="form-control-label"
@@ -410,24 +812,24 @@ export function ReviewParticipantSelectionForm() {
                                                     <TagsInput
                                                         onlyUnique
                                                         className="bootstrap-tagsinput"
-                                                        value={leaderTagsInput}
+                                                        value={state.reviewParticipantsSelectionData.leaderTagsInput}
                                                         tagProps={{ className: "tag badge mr-1 bg-orange" }}
                                                         inputProps={{
                                                             className: "",
                                                             placeholder: "",
                                                         }}
                                                         onChange={(updatedTags) => {
-                                                            setLeaderTagsInput(updatedTags);
+                                                            dispatch({ type: 'SET_LEADER_TAGS_INPUT', payload: updatedTags });
 
                                                             // Atualizar a lista original com base nos nomes selecionados
-                                                            const updatedLeaders = listLeaderEmployeeDataSelectedToReview.filter((leader) =>
-                                                                updatedTags.includes(leader.name)
-                                                            );
-                                                            setListLeaderEmployeeDataSelectedToReview(updatedLeaders);
+                                                            const updatedLeaders = state.reviewParticipantsSelectionData.listLeaderEmployeeDataSelectedToReview
+                                                                .filter((leader) => updatedTags.includes(leader.name));
+
+                                                            dispatch({ type: 'SET_LIST_LEADER_EMPLOYEE_DATA_SELECTED_TO_REVIEW', payload: updatedLeaders });
 
                                                             // Verificação do tamanho de leaderTagsInput
                                                             if (updatedTags.length < 1) {
-                                                                setIsSholdPresentNamesSelectedLeaders(false);
+                                                                dispatch({ type: 'SET_SHOULD_PRESENT_NAMES_SELECTED_LEADERS', payload: false });
                                                             }
                                                         }}
                                                     />
@@ -438,8 +840,8 @@ export function ReviewParticipantSelectionForm() {
                                 </Row>
                                 <Row>
                                     {
-                                        isShouldPresentParticipantSelectionButtons &&
-                                        isRandomSelectionParticipantsToReview && (
+                                        state.reviewParticipantsSelectionData.isShouldPresentParticipantSelectionButtons &&
+                                        state.reviewParticipantsSelectionData.isRandomSelectionParticipantsToReview && (
                                             <Col className="mb-3 d-flex align-items-center justify-content-start" md="4">
                                                 <Button
                                                     className="btn-darker"
@@ -456,10 +858,13 @@ export function ReviewParticipantSelectionForm() {
                                                     type="number"
                                                     defaultValue="0"
                                                     min="1"
-                                                    max={listEmployeeDataToReview.length}
+                                                    max={state.reviewParticipantsSelectionData.listEmployeeDataToReview.length}
                                                     className="form-control"
-                                                    value={selfReviewsNumberToDrawn}
-                                                    onChange={(e) => setSelfReviewsNumberToDrawn(Number(e.target.value))}
+                                                    value={state.reviewParticipantsSelectionData.selfReviewsNumberToDrawn}
+                                                    onChange={(e) => dispatch({
+                                                        type: 'SET_SELF_REVIEW_NUMBER_TO_DRAWN',
+                                                        payload: Number(e.target.value),
+                                                    })}
                                                     size="sm"
                                                     style={{ width: 72 }}
                                                 />
@@ -468,8 +873,8 @@ export function ReviewParticipantSelectionForm() {
                                     }
                                     <Col className="mb-3 d-flex flex-column" md="8">
                                         {
-                                            isSholdPresentNamesSelectedSelfReview &&
-                                            isRandomSelectionParticipantsToReview && (
+                                            state.reviewParticipantsSelectionData.isSholdPresentNamesSelectedSelfReview &&
+                                            state.reviewParticipantsSelectionData.isRandomSelectionParticipantsToReview && (
                                                 <>
                                                     <label
                                                         className="form-control-label"
@@ -481,21 +886,29 @@ export function ReviewParticipantSelectionForm() {
                                                         onlyUnique
                                                         className="bootstrap-tagsinput"
                                                         onChange={(updatedTags) => {
-                                                            // Atualiza o estado dos nomes
-                                                            setSelfReviewTagsInput(updatedTags);
+                                                            dispatch({
+                                                                type: 'SET_SELF_REVIEW_TAGS_INPUT',
+                                                                payload: updatedTags,
+                                                            });
 
                                                             // Atualiza a lista original com base nos nomes selecionados
-                                                            const updatedSelfReviewList = listEmployeeDataToSelfReview.filter((employee) =>
+                                                            const updatedSelfReviewList = state.reviewParticipantsSelectionData.listEmployeeDataToSelfReview.filter((employee) =>
                                                                 updatedTags.includes(employee.name)
                                                             );
-                                                            setListEmployeeDataToSelfReview(updatedSelfReviewList);
+                                                            dispatch({
+                                                                type: 'SET_LIST_EMPLOYEE_DATA_TO_SELF_REVIEW',
+                                                                payload: updatedSelfReviewList,
+                                                            });
 
                                                             // Verifica se não há mais tags
                                                             if (updatedTags.length < 1) {
-                                                                setIsSholdPresentNamesSelectedSelfReview(false);
+                                                                dispatch({
+                                                                    type: 'SET_SHOULD_PRESENT_NAMES_SELECTED_SELF_REVIEW',
+                                                                    payload: false,
+                                                                });
                                                             }
                                                         }}
-                                                        value={selfReviewTagsInput}
+                                                        value={state.reviewParticipantsSelectionData.selfReviewTagsInput}
                                                         tagProps={{ className: "tag badge mr-1  bg-secondary text-dark" }}
                                                         inputProps={{
                                                             className: "",
@@ -509,8 +922,8 @@ export function ReviewParticipantSelectionForm() {
                                 </Row>
                                 <Row>
                                     {
-                                        isShouldPresentParticipantSelectionButtons &&
-                                        isRandomSelectionParticipantsToReview && (
+                                        state.reviewParticipantsSelectionData.isShouldPresentParticipantSelectionButtons &&
+                                        state.reviewParticipantsSelectionData.isRandomSelectionParticipantsToReview && (
                                             <Col className="mb-3 d-flex align-items-center justify-content-start" md="4">
                                                 <Button
                                                     className="btn-darker"
@@ -527,10 +940,13 @@ export function ReviewParticipantSelectionForm() {
                                                     type="number"
                                                     defaultValue="0"
                                                     min="1"
-                                                    max={listEmployeeDataToReview.length}
+                                                    max={state.reviewParticipantsSelectionData.listEmployeeDataToReview.length}
                                                     className="form-control"
-                                                    value={pairsNumberToDrawn}
-                                                    onChange={(e) => setPairsNumberToDrawn(Number(e.target.value))}
+                                                    value={state.reviewParticipantsSelectionData.pairsNumberToDrawn}
+                                                    onChange={(e) => dispatch({
+                                                        type: 'SET_PAIRS_NUMBER_TO_DRAWN',
+                                                        payload: Number(e.target.value),
+                                                    })}
                                                     size="sm"
                                                     style={{ width: 72 }}
                                                 />
@@ -539,8 +955,8 @@ export function ReviewParticipantSelectionForm() {
                                     }
                                     <Col className="mb-3 d-flex flex-column" md="8">
                                         {
-                                            isSholdPresentNamesSelectedPairs &&
-                                            isRandomSelectionParticipantsToReview && (
+                                            state.reviewParticipantsSelectionData.isSholdPresentNamesSelectedPairs &&
+                                            state.reviewParticipantsSelectionData.isRandomSelectionParticipantsToReview && (
                                                 <>
                                                     <label
                                                         className="form-control-label"
@@ -549,8 +965,12 @@ export function ReviewParticipantSelectionForm() {
                                                         Pares
                                                     </label>
                                                     <EmployeePairsInput
-                                                        listPairEmployeeDataToReview={listPairEmployeeDataToReview}
-                                                        setListPairEmployeeDataToReview={setListPairEmployeeDataToReview}
+                                                        listPairEmployeeDataToReview={state.reviewParticipantsSelectionData.listPairEmployeeDataToReview}
+                                                        setListPairEmployeeDataToReview={(payload) =>
+                                                            dispatch({
+                                                                type: 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW',
+                                                                payload,
+                                                            })}
                                                     />
                                                 </>
                                             )
@@ -572,11 +992,11 @@ export function ReviewParticipantSelectionForm() {
                                             Selecione todos os usuários registrados como funcionários na empresa.
                                         </p>
                                         {
-                                            isHandPickedSelectionParticipantsToReview &&
-                                            employeesSelectedAmount > 0 && (
+                                            state.reviewParticipantsSelectionData.isHandPickedSelectionParticipantsToReview &&
+                                            state.reviewParticipantsSelectionData.employeesSelectedAmount > 0 && (
                                                 <span className="text-muted text-md">
                                                     <span className="font-weith-bold text-lg text-dark">
-                                                        {employeesSelectedAmount}
+                                                        {state.reviewParticipantsSelectionData.employeesSelectedAmount}
                                                     </span>{'  '}
                                                     usuários foram selecionados entre líderes e liderados
                                                 </span>
@@ -585,7 +1005,7 @@ export function ReviewParticipantSelectionForm() {
                                     </div>
                                     <Col className="col-auto">
                                         {
-                                            isHandPickedSelectionParticipantsToReview ? (
+                                            state.reviewParticipantsSelectionData.isHandPickedSelectionParticipantsToReview ? (
                                                 <>
                                                     <Button
                                                         color="secondary"
@@ -619,10 +1039,10 @@ export function ReviewParticipantSelectionForm() {
                                         }
                                     </Col>
                                 </Row>
-                                {
-                                    isHandPickedSelectionParticipantsToReview && (
-                                        <Row>
-                                            <Col className="mb-3" md="6">
+                                <Row>
+                                    {
+                                        state.reviewParticipantsSelectionData.isHandPickedSelectionParticipantsToReview && (
+                                            <Col className="mb-3" md="4">
                                                 <label
                                                     className="form-control-label"
                                                     htmlFor="handPickedLeaderSelectionInput"
@@ -634,33 +1054,30 @@ export function ReviewParticipantSelectionForm() {
                                                     className="form-control"
                                                     data-minimum-results-for-search="Infinity"
                                                     options={{ placeholder: "Selecionar usuários:" }}
-                                                    value={leaderEmployeeSelected}
-                                                    data={listLeaderEmployeeDataToReview || []}
-                                                // onSelect={(e) => {
-                                                //     const selectedValue = e.target.value;
-                                                //     handleSelectionEmploymentContractDataWrapper(
-                                                //         selectedValue,
-                                                //         Array.isArray(state.reviewParticipantsSelectionData.reviewCycleDataList)
-                                                //             ? state.reviewParticipantsSelectionData.reviewCycleDataList
-                                                //             : [],
-                                                //         'SET_SELECTED_CYCLE',
-                                                //         'SET_REVIEW_CYCLE',
-                                                //         'SET_REVIEW_CYCLE_STATE',
-                                                //         null,
-                                                //         null,
-                                                //         'id'
-                                                //     );
-                                                // }}
+                                                    data={state.reviewParticipantsSelectionData.listLeaderEmployeeDataToReview.map(({ id, text }) => (
+                                                        { id, text }
+                                                    )) || []}
+                                                    onSelect={async (e) => {
+                                                        const selectedValue = e.target.value;
+                                                        if (selectedValue && selectedValue !== "") {
+                                                            await handleLeaderSelection(
+                                                                selectedValue,
+                                                                state.reviewParticipantsSelectionData.listLeaderEmployeeDataToReview,
+                                                                state.reviewParticipantsSelectionData.leaderTagsInput,
+                                                                state.reviewParticipantsSelectionData.removedLeaderItems,
+                                                                dispatch
+                                                            );
+                                                        }
+                                                    }}
                                                 />
                                             </Col>
-                                        </Row>
-                                    )
-                                }
-                                {
-                                    isSholdPresentNamesSelectedLeaders &&
-                                    isHandPickedSelectionParticipantsToReview && (
-                                        <Row>
-                                            <Col className="mb-3" md="8">
+                                        )
+                                    }
+                                    {
+                                        state.reviewParticipantsSelectionData.leaderTagsInput.length > 0 &&
+                                        state.reviewParticipantsSelectionData.removedLeaderItems.length > 0 &&
+                                        state.reviewParticipantsSelectionData.isHandPickedSelectionParticipantsToReview && (
+                                            <Col className="d-flex flex-column align-items-start justify-content-start mb-3" md="8">
                                                 <label
                                                     className="form-control-label"
                                                     htmlFor="validationReviewName"
@@ -670,22 +1087,37 @@ export function ReviewParticipantSelectionForm() {
                                                 <TagsInput
                                                     onlyUnique
                                                     className="bootstrap-tagsinput"
-                                                    //onChange={(value) => setTagsinput(value)}
-                                                    //value={tagsinput}
+                                                    onChange={async (updatedTags) => {
+                                                        const removedTag = state.reviewParticipantsSelectionData.leaderTagsInput.find(
+                                                            (tag) => !updatedTags.includes(tag)
+                                                        );
+
+                                                        if (removedTag) {
+                                                            await handleTagLeaderRemoval(
+                                                                removedTag,
+                                                                state.reviewParticipantsSelectionData.leaderTagsInput,
+                                                                state.reviewParticipantsSelectionData.removedLeaderItems,
+                                                                state.reviewParticipantsSelectionData.listLeaderEmployeeDataToReview,
+                                                                dispatch
+                                                            );
+                                                        }
+                                                    }}
+                                                    value={state.reviewParticipantsSelectionData.leaderTagsInput}
                                                     tagProps={{ className: "tag badge mr-1 bg-orange" }}
                                                     inputProps={{
-                                                        className: "",
-                                                        placeholder: "",
+                                                        readOnly: true, // Torna o campo não editável
+                                                        placeholder: "", // Remove o placeholder
+                                                        style: { display: "none" }, // Remove visualmente o input
                                                     }}
                                                 />
                                             </Col>
-                                        </Row>
-                                    )
-                                }
+                                        )
+                                    }
+                                </Row>
                                 {
-                                    isHandPickedSelectionParticipantsToReview && (
+                                    state.reviewParticipantsSelectionData.isHandPickedSelectionParticipantsToReview && (
                                         <Row>
-                                            <Col className="mb-3" md="6">
+                                            <Col className="mb-3" md="4">
                                                 <label
                                                     className="form-control-label"
                                                     htmlFor="handPickedParticipantsSelectionInput"
@@ -697,48 +1129,22 @@ export function ReviewParticipantSelectionForm() {
                                                     className="form-control"
                                                     data-minimum-results-for-search="Infinity"
                                                     options={{ placeholder: "Selecionar usuários:" }}
-                                                    value={ledEmployeeSelected}
-                                                    data={listLedEmployeeDataToReview || []}
-                                                // onSelect={(e) => {
-                                                //     const selectedValue = e.target.value;
-                                                //     handleSelectionEmploymentContractDataWrapper(
-                                                //         selectedValue,
-                                                //         Array.isArray(state.reviewIdentityData.reviewCycleDataList)
-                                                //             ? state.reviewIdentityData.reviewCycleDataList
-                                                //             : [],
-                                                //         'SET_SELECTED_CYCLE',
-                                                //         'SET_REVIEW_CYCLE',
-                                                //         'SET_REVIEW_CYCLE_STATE',
-                                                //         null,
-                                                //         null,
-                                                //         'id'
-                                                //     );
-                                                // }}
-                                                />
-                                            </Col>
-                                        </Row>
-                                    )
-                                }
-                                {
-                                    isSholdPresentNamesSelectedSelfReview &&
-                                    isHandPickedSelectionParticipantsToReview && (
-                                        <Row>
-                                            <Col className="mb-3" md="8">
-                                                <label
-                                                    className="form-control-label"
-                                                    htmlFor="validationReviewName"
-                                                >
-                                                    Autoavaliação
-                                                </label>
-                                                <TagsInput
-                                                    onlyUnique
-                                                    className="bootstrap-tagsinput"
-                                                    //onChange={(value) => setTagsinput(value)}
-                                                    //value={tagsinput}
-                                                    tagProps={{ className: "tag badge mr-1  bg-secondary text-dark" }}
-                                                    inputProps={{
-                                                        className: "",
-                                                        placeholder: "",
+                                                    data={state.reviewParticipantsSelectionData.listLedEmployeeDataToReview.map(({ id, text }) => (
+                                                        { id, text }
+                                                    )) || []}
+                                                    onSelect={async (e) => {
+                                                        const selectedValue = e.target.value;
+                                                        if (selectedValue && selectedValue !== "") {
+                                                            await handleLedSelection(
+                                                                selectedValue,
+                                                                state.reviewParticipantsSelectionData.listLedEmployeeDataToReview,
+                                                                state.reviewParticipantsSelectionData.selfReviewTagsInput,
+                                                                state.reviewParticipantsSelectionData.removedLedItems,
+                                                                state.reviewParticipantsSelectionData.listEmployeeDataToReview,
+                                                                state.reviewParticipantsSelectionData.listPairEmployeeDataToReview,
+                                                                dispatch
+                                                            );
+                                                        }
                                                     }}
                                                 />
                                             </Col>
@@ -746,67 +1152,142 @@ export function ReviewParticipantSelectionForm() {
                                     )
                                 }
                                 {
-                                    isHandPickedSelectionParticipantsToReview && (
-                                        <Row>
-                                            <Col className="mb-3" md="6">
-                                                <label
-                                                    className="form-control-label"
-                                                    htmlFor="handPickedPairsSelectionInput"
-                                                >
-                                                    Selecionar pares
-                                                </label>
-                                                <Select2
-                                                    id="handPickedPairsSelectionInput"
-                                                    className="form-control"
-                                                    data-minimum-results-for-search="Infinity"
-                                                    options={{ placeholder: "Selecionar usuários:" }}
-                                                // value={state.reviewIdentityData.selectedCycle}
-                                                //data={tagsinput || []}
-                                                // data={state.reviewIdentityData.reviewCycleDataList || []}
-                                                // onSelect={(e) => {
-                                                //     const selectedValue = e.target.value;
-                                                //     handleSelectionEmploymentContractDataWrapper(
-                                                //         selectedValue,
-                                                //         Array.isArray(state.reviewIdentityData.reviewCycleDataList)
-                                                //             ? state.reviewIdentityData.reviewCycleDataList
-                                                //             : [],
-                                                //         'SET_SELECTED_CYCLE',
-                                                //         'SET_REVIEW_CYCLE',
-                                                //         'SET_REVIEW_CYCLE_STATE',
-                                                //         null,
-                                                //         null,
-                                                //         'id'
-                                                //     );
-                                                // }}
-                                                />
-                                            </Col>
-                                        </Row>
-                                    )
-                                }
-                                {
-                                    isSholdPresentNamesSelectedPairs &&
-                                    isHandPickedSelectionParticipantsToReview && (
-                                        <Row>
-                                            <Col className="mb-3" md="8">
-                                                <label
-                                                    className="form-control-label"
-                                                    htmlFor="validationReviewName"
-                                                >
-                                                    Pares
-                                                </label>
-                                                <TagsInput
-                                                    onlyUnique
-                                                    className="bootstrap-tagsinput"
-                                                    //onChange={(value) => setTagsinput(value)}
-                                                    //value={tagsinput}
-                                                    tagProps={{ className: "tag badge mr-1" }}
-                                                    inputProps={{
-                                                        className: "",
-                                                        placeholder: "",
-                                                    }}
-                                                />
-                                            </Col>
-                                        </Row>
+                                    state.reviewParticipantsSelectionData.selfReviewTagsInput.length > 0 &&
+                                    state.reviewParticipantsSelectionData.removedLedItems.length > 0 &&
+                                    state.reviewParticipantsSelectionData.isHandPickedSelectionParticipantsToReview && (
+                                        <div>
+                                            <label
+                                                className="form-control-label"
+                                                htmlFor={`validationReviewName`}
+                                            >
+                                                Autoavaliação
+                                            </label>
+                                            {state.reviewParticipantsSelectionData.selfReviewTagsInput.map((tag, index) => {
+                                                const lideradoId = state.reviewParticipantsSelectionData.removedLedItems[index]?.id;
+                                                console.log("lideradoId: ", lideradoId);
+                                                console.log("listPairEmployeeDataToReview[lideradoId]: ", state.reviewParticipantsSelectionData.listPairEmployeeDataToReview[lideradoId]);
+
+                                                return (
+                                                    <Row key={index} className="align-items-center mb-3">
+                                                        <Col className="d-flex flex-column align-items-start justify-content-start mb-2 " md="2">
+                                                            <TagsInput
+                                                                onlyUnique
+                                                                className="bootstrap-tagsinput"
+                                                                onChange={async (updatedTags) => {
+                                                                    const removedTag = state.reviewParticipantsSelectionData.selfReviewTagsInput.find(
+                                                                        (tag) => !updatedTags.includes(tag)
+                                                                    );
+
+                                                                    if (removedTag) {
+                                                                        await handleTagLedRemoval(
+                                                                            removedTag,
+                                                                            state.reviewParticipantsSelectionData.selfReviewTagsInput,
+                                                                            state.reviewParticipantsSelectionData.removedLedItems,
+                                                                            state.reviewParticipantsSelectionData.listLedEmployeeDataToReview,
+                                                                            dispatch
+                                                                        );
+                                                                    }
+                                                                }}
+                                                                value={[tag]}
+                                                                tagProps={{ className: "tag badge mr-1 bg-secondary text-dark" }}
+                                                                inputProps={{
+                                                                    readOnly: true,
+                                                                    placeholder: "",
+                                                                    style: { display: "none" },
+                                                                }}
+                                                            />
+                                                        </Col>
+
+                                                        <Col className="mb-2" md="4">
+                                                            <label
+                                                                className="form-control-label"
+                                                                htmlFor={`handPickedPairsSelectionInput-${index}`}
+                                                            >
+                                                                Selecionar pares
+                                                            </label>
+                                                            <Select2
+                                                                id={`handPickedPairsSelectionInput-${index}`}
+                                                                className="form-control"
+                                                                data-minimum-results-for-search="Infinity"
+                                                                options={{ placeholder: "Selecionar usuários:" }}
+                                                                data={
+                                                                    lideradoId && state.reviewParticipantsSelectionData.listPairEmployeeDataToReview[lideradoId]
+                                                                        ? state.reviewParticipantsSelectionData.listPairEmployeeDataToReview[lideradoId]?.map(
+                                                                            ({ id, text }) => ({ id, text })
+                                                                        )
+                                                                        : []
+                                                                }
+                                                                onSelect={async (e) => {
+                                                                    const selectedValue = e.target.value;
+                                                                    if (selectedValue && selectedValue !== "") {
+                                                                        await handlePairSelection(
+                                                                            lideradoId,
+                                                                            selectedValue,
+                                                                            state.reviewParticipantsSelectionData.listPairEmployeeDataToReview,
+                                                                            state.reviewParticipantsSelectionData.pairTagsInput,
+                                                                            state.reviewParticipantsSelectionData.removedPairItems,
+                                                                            dispatch
+                                                                        );
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </Col>
+
+                                                        {
+                                                            state.reviewParticipantsSelectionData.removedLedItems.length > 0 &&
+                                                            state.reviewParticipantsSelectionData.isHandPickedSelectionParticipantsToReview &&
+                                                            state.reviewParticipantsSelectionData.removedLedItems.map((liderado, index) => {
+                                                                const lideradoId = liderado.id;
+                                                                const currentPairTagsInput = state.reviewParticipantsSelectionData.pairTagsInput[lideradoId] || [];
+                                                                <Col className="d-flex flex-column align-items-start justify-content-start mb-3" md="6" key={lideradoId}>
+                                                                    <label
+                                                                        className="form-control-label"
+                                                                        htmlFor={`pairTags-${lideradoId}`}
+                                                                    >
+                                                                        Pares
+                                                                    </label>
+                                                                    <TagsInput
+                                                                        onlyUnique
+                                                                        className="bootstrap-tagsinput"
+                                                                        onChange={async (updatedTags) => {
+                                                                            const removedTag = currentPairTagsInput.find((tag) => !updatedTags.includes(tag));
+
+                                                                            if (removedTag) {
+                                                                                await handleTagPairRemoval(
+                                                                                    lideradoId,
+                                                                                    removedTag,
+                                                                                    currentPairTagsInput,
+                                                                                    state.reviewParticipantsSelectionData.removedPairItems,
+                                                                                    state.reviewParticipantsSelectionData.listPairEmployeeDataToReview,
+                                                                                    dispatch
+                                                                                );
+                                                                            } else {
+                                                                                const updatedTagsInput = {
+                                                                                    ...state.reviewParticipantsSelectionData.pairTagsInput,
+                                                                                    [lideradoId]: updatedTags,
+                                                                                };
+                                                                                dispatch({
+                                                                                    type: 'SET_PAIR_TAGS_INPUT',
+                                                                                    payload: updatedTagsInput,
+                                                                                });
+                                                                            }
+                                                                        }}
+                                                                        value={currentPairTagsInput}
+                                                                        tagProps={{ className: "tag badge mr-1 bg-default" }}
+                                                                        inputProps={{
+                                                                            readOnly: true,
+                                                                            placeholder: "",
+                                                                            style: { display: "none" },
+                                                                        }}
+                                                                    />
+                                                                </Col>
+                                                            }
+                                                            )
+                                                        }
+                                                    </Row>
+                                                )
+                                            })}
+                                        </div>
                                     )
                                 }
                             </CardBody>
@@ -814,6 +1295,6 @@ export function ReviewParticipantSelectionForm() {
                     </div>
                 </CardBody>
             </Card>
-        </Form>
+        </Form >
     );
 }
