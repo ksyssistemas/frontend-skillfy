@@ -28,6 +28,7 @@ export function ModalRulerType({
     handleOpenRulerTypeModal,
     handleClosewRulerTypeModal,
     selectedRulerType,
+    confirmedRulerType,
     modalOpen,
     handleSelectRulerOptionsButton,
     handleRulerOptionSelected,
@@ -38,8 +39,11 @@ export function ModalRulerType({
     } = useCreatePerformanceReview();
 
     function handleSelectedRulerOptionId(rulerOptionId, isChecked) {
+        console.log('rulerOptionId: ', rulerOptionId)
         if (isChecked && rulerOptionId) {
             handleRulerOptionSelected(rulerOptionId);
+        } else {
+            handleRulerOptionSelected(null);
         }
     }
 
@@ -78,6 +82,7 @@ export function ModalRulerType({
                 }
             })
         );
+        console.log("Rulers: ", updatedRulers);
         setDetailedRulerTypeData(updatedRulers);
     };
 
@@ -85,10 +90,7 @@ export function ModalRulerType({
         if (!detailedRulerTypeData.length) {
             try {
                 // Encontre o objeto no array que corresponde a selectedRulerType
-                console.log('selectedRulerType: ', selectedRulerType);
-                console.log('rulerTypeDataList: ', rulerTypeDataList);
                 const foundRuler = rulerTypeDataList.find(ruler => ruler.id === selectedRulerType);
-                console.log('foundRuler: ', foundRuler);
                 if (foundRuler) {
                     // Pegue o valor do campo 'text' correspondente
                     const captionType = foundRuler.text;
@@ -106,7 +108,6 @@ export function ModalRulerType({
     };
 
     useEffect(() => {
-        console.log('selectedRulerType: ', selectedRulerType);
         if (modalOpen) {
             fetchCapitons();
         }
@@ -137,62 +138,63 @@ export function ModalRulerType({
                     {detailedRulerTypeData && detailedRulerTypeData.length > 0 ? (
                         detailedRulerTypeData.map((rulerType) => (
                             <>
-                                <CardBody className="py-1">
+                                <CardBody className="py-1" key={rulerType.id}>
                                     <Row>
-                                        {rulerType.options && rulerType.options.length > 0 ? (
-                                            rulerType.options.map((option, index) => (
-                                                <>
-                                                    <Col className="my-2 ml-1" md="4">
-                                                        <Row className="flex-column">
-                                                            <h6 className="text-uppercase ls-1 mb-1" style={{ color: "#ff623f" }} >
-                                                                Régua do tipo{' '}
-                                                            </h6>
-                                                            <h5 className="font-weith-bold text-lg text-dark mb-0">{rulerType.ruleType}</h5>
-                                                        </Row>
-                                                        <Row className="flex-column">
-                                                            <h6 className="text-uppercase ls-1 mb-1" style={{ color: "#ff623f" }} >
-                                                                Alternativas{' '}
-                                                            </h6>
-                                                            <h5 className="font-weith-bold text-lg text-dark mb-0">{rulerType.optionsCount}</h5>
-                                                        </Row>
-                                                        <Row>
-                                                            <p className="font-weith-bold text-sm text-dark mb-1 mr-2">
-                                                                Definir está reguá para a avaliação
-                                                            </p>
-                                                            <div className="custom-control custom-checkbox custom-checkbox-primary mb-1">
-                                                                <input
-                                                                    className="custom-control-input"
-                                                                    id="chk-ruler-type"
-                                                                    type="checkbox"
-                                                                    onChange={(e) => handleSelectedRulerOptionId(rulerType.id, e.target.checked)}
-                                                                />
-                                                                <label
-                                                                    className="custom-control-label"
-                                                                    htmlFor="chk-ruler-type"
-                                                                />
+                                        <Col className="my-2" md="4">
+                                            <Row className="flex-column">
+                                                <h6 className="text-uppercase ls-1 mb-1" style={{ color: "#ff623f" }} >
+                                                    Régua do tipo{' '}
+                                                </h6>
+                                                <h5 className="font-weith-bold text-lg text-dark mb-0">{rulerType.ruleType}</h5>
+                                            </Row>
+                                            <Row className="flex-column">
+                                                <h6 className="text-uppercase ls-1 mb-1" style={{ color: "#ff623f" }} >
+                                                    Alternativas{' '}
+                                                </h6>
+                                                <h5 className="font-weith-bold text-lg text-dark mb-0">{rulerType.optionsCount}</h5>
+                                            </Row>
+                                            <Row>
+                                                <p className="font-weith-bold text-sm text-dark mb-1 mr-2">
+                                                    Definir está reguá para a avaliação
+                                                </p>
+                                                <div className="custom-control custom-checkbox custom-checkbox-primary mb-1">
+                                                    <input
+                                                        className="custom-control-input"
+                                                        id={`chk-ruler-type-${rulerType.id}`}
+                                                        type="checkbox"
+                                                        checked={
+                                                            confirmedRulerType === rulerType.id
+                                                        }
+                                                        onChange={(e) => handleSelectedRulerOptionId(rulerType.id, e.target.checked)}
+                                                    />
+                                                    <label
+                                                        className="custom-control-label"
+                                                        htmlFor={`chk-ruler-type-${rulerType.id}`}
+                                                    />
+                                                </div>
+                                            </Row>
+                                        </Col>
+                                        <Col className="mb-2 d-flex flex-row justify-content-start align-items-center" md="8">
+                                            {rulerType.options && rulerType.options.length > 0 ? (
+                                                rulerType.options.map((option, index) => (
+                                                    <Card key={index} className="bg-orange m-2" style={{ width: 96, height: 96 }}>
+                                                        <CardBody className="d-flex flex-column justify-content-start align-items-center">
+                                                            <div>
+                                                                <h3 className="mb-0 text-lighter text-center">{option.label}</h3>
                                                             </div>
-                                                        </Row>
-                                                    </Col>
-                                                    <Col className="my-2 mx-0" md="6" key={index}>
-                                                        <Card className="bg-secondary border border-darker mb-0 mt-2" style={{ width: 120 }}>
-                                                            <CardBody className="d-flex flex-column justify-content-center align-items-center">
-                                                                <div className="mx-4 bg-dark">
-                                                                    <h5 style={{ fontSize: 16 }} className="mb-0 text-darker text-center">{option.label}</h5>
-                                                                </div>
-                                                                <div className="mb-2 d-flex">
-                                                                    <small className="text-darker mr-2">Peso</small>
-                                                                    <h5 className="mb-0 text-darker">{option.weight}</h5>
-                                                                </div>
-                                                            </CardBody>
-                                                        </Card>
-                                                    </Col>
-                                                </>
-                                            ))
-                                        ) : (
-                                            <Col md="12">
-                                                <small>Nenhuma opção encontrada.</small>
-                                            </Col>
-                                        )}
+                                                            <div className="mb-2 d-flex">
+                                                                <h4 className="text-lighter mr-2">Nota</h4>
+                                                                <h4 className="mb-0 text-lighter">{option.weight}</h4>
+                                                            </div>
+                                                        </CardBody>
+                                                    </Card>
+                                                ))
+                                            ) : (
+                                                <Col md="12">
+                                                    <small>Nenhuma opção encontrada.</small>
+                                                </Col>
+                                            )}
+                                        </Col>
                                     </Row>
                                 </CardBody>
                             </>
@@ -242,6 +244,7 @@ ModalRulerType.propTypes = {
     handleOpenRulerTypeModal: PropTypes.func,
     handleClosewRulerTypeModal: PropTypes.func,
     selectedRulerType: PropTypes.string,
+    confirmedRulerType: PropTypes.string,
     modalOpen: PropTypes.bool,
     handleSelectRulerOptionsButton: PropTypes.func,
     handleRulerOptionSelected: PropTypes.func,

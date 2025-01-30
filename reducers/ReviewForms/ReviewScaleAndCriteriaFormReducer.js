@@ -4,18 +4,18 @@ export const initialState = {
             { id: "1", text: "Conceitual" },
             { id: "2", text: "Numérica" },
             { id: "3", text: "Percentual" },
-            { id: "4", text: "Cor" },
-            { id: "5", text: "Emoji" },
+            // { id: "4", text: "Cor" },
+            // { id: "5", text: "Emoji" },
         ],
         selectedRulerType: '',
-        employeeContractType: null,
-        employeeContractTypeState: '',
+        reviewRulerType: null,
+        reviewRulerTypeState: '',
         showSelectRulerOptionsButton: false,
         rulerOptionData: [],
         rulerOptionSelected: null,
-        performanceReviewRulerTypeSelected: null,
-        performanceReviewRulerOptionSelected: null,
-        performanceReviewRulerOptionSelectedState: null,
+        reviewRulerOptionSelected: null,
+        reviewRulerOptionSelectedState: null,
+        reviewEvidenceData: [],
     },
 };
 
@@ -36,20 +36,20 @@ export const formReducer = (state, action) => {
             };
         case 'RESET_REVIEW_DATA':
             return initialState;
-        case 'SET_EMPLOYEE_CONTRACT_TYPE':
+        case 'SET_REVIEW_RULER_TYPE':
             return {
                 ...state,
                 reviewScaleAndCriteriaData: {
                     ...state.reviewScaleAndCriteriaData,
-                    employeeContractType: action.payload,
+                    reviewRulerType: action.payload,
                 },
             };
-        case 'SET_EMPLOYEE_CONTRACT_TYPE_STATE':
+        case 'SET_REVIEW_RULER_TYPE_STATE':
             return {
                 ...state,
                 reviewScaleAndCriteriaData: {
                     ...state.reviewScaleAndCriteriaData,
-                    employeeContractTypeState: action.payload,
+                    reviewRulerTypeState: action.payload,
                 },
             };
         case 'SET_SELECTED_RULER_TYPE':
@@ -77,28 +77,20 @@ export const formReducer = (state, action) => {
                 },
             };
 
-        case 'SET_PERFORMANCE_REVIEW_RULER_TYPE_SELECTED':
+        case 'SET_REVIEW_RULER_TYPE_SELECTED':
             return {
                 ...state,
                 reviewScaleAndCriteriaData: {
                     ...state.reviewScaleAndCriteriaData,
-                    performanceReviewRulerTypeSelected: action.payload,
+                    reviewRulerOptionSelected: action.payload,
                 },
             };
-        case 'SET_PERFORMANCE_REVIEW_RULER_OPTION_SELECTED':
+        case 'SET_REVIEW_RULER_TYPE_SELECTED_STATE':
             return {
                 ...state,
                 reviewScaleAndCriteriaData: {
                     ...state.reviewScaleAndCriteriaData,
-                    performanceReviewRulerOptionSelected: action.payload,
-                },
-            };
-        case 'SET_PERFORMANCE_REVIEW_RULER_OPTION_SELECTED_STATE':
-            return {
-                ...state,
-                reviewScaleAndCriteriaData: {
-                    ...state.reviewScaleAndCriteriaData,
-                    performanceReviewRulerOptionSelectedState: action.payload,
+                    reviewRulerOptionSelectedState: action.payload,
                 },
             };
         case 'SET_RULER_TYPE_DATA_LIST':
@@ -123,6 +115,16 @@ export const formReducer = (state, action) => {
                 reviewScaleAndCriteriaData: {
                     ...state.reviewScaleAndCriteriaData,
                     rulerOptionSelected: Array.isArray(action.payload) ? action.payload : [],
+                },
+            };
+        case 'SET_REVIEW_EVIDENCE_DATA_LIST':
+            return {
+                ...state,
+                reviewScaleAndCriteriaData: {
+                    ...state.reviewScaleAndCriteriaData,
+                    reviewEvidenceData: Array.isArray(action.payload)
+                        ? action.payload // Para onSelectAll
+                        : action.payload(state), // Para onSelect
                 },
             };
         case 'CLEAR_FORM':

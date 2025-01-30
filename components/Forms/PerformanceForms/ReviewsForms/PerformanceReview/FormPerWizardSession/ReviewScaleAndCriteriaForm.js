@@ -9,6 +9,7 @@ import {
     CardBody,
     Row,
     Col,
+    ListGroupItem,
 } from "reactstrap";
 import { ModelSelectionReviewContext } from "../../../../../../contexts/PerformanceContext/ModelSelectionReviewContext";
 import { initialState, formReducer } from '../../../../../../reducers/ReviewForms/ReviewScaleAndCriteriaFormReducer';
@@ -26,16 +27,13 @@ import { useFindAllSkillTypes } from '../../../../../../hooks/DefinitionOptionsR
 import { useFindSkillClassification } from '../../../../../../hooks/DefinitionOptionsReview/SkillsClassifications/useFindSkillClassification';
 import { useFindOccupationalGroup } from '../../../../../../hooks/DefinitionOptionsReview/OccupationalGroups/useFindOccupationalGroup';
 import { employmentContractDataSearchAndProcess } from '../../../../../../util/employmentContractDataSearchAndProcess';
+import { useFindCaptionOptionByCaptionType } from "../../../../../../hooks/DefinitionOptionsReview/AppraisalCaptions/useFindCaptionOptionByCaptionType";
 
 export function ReviewScaleAndCriteriaForm() {
 
     const {
         rulerTypeDataList,
         handleRulerTypeDataList,
-        employeeContractType,
-        setEmployeeContractType,
-        employeeContractTypeState,
-        setEmployeeContractTypeState,
         performanceReviewRulerOptionSelected,
         setPerformanceReviewRulerOptionSelected,
         performanceReviewRulerOptionSelectedState,
@@ -60,6 +58,57 @@ export function ReviewScaleAndCriteriaForm() {
     const [modalOpen, setModalOpen] = React.useState(false);
 
     const SELECTED_RULER_TYPE = state.reviewScaleAndCriteriaData.selectedRulerType;
+    const CONFIRMED_RULER_TYPE = state.reviewScaleAndCriteriaData.reviewRulerOptionSelected;
+
+    const [selectedIds, setSelectedIds] = useState([]);
+
+    // Configuração para seleção de linhas
+    const selectRow = {
+        mode: "checkbox", // Alternativa: "radio" para seleção única
+        clickToSelect: true, // Permite selecionar clicando na linha
+        onSelect: (row, isSelected) => {
+            dispatch({
+                type: "SET_REVIEW_EVIDENCE_DATA_LIST",
+                payload: (prevState) => {
+                    const currentList = prevState.reviewScaleAndCriteriaData.reviewEvidenceData;
+                    if (isSelected) {
+                        return [...currentList, row]; // Adiciona o item selecionado
+                    }
+                    return currentList.filter((item) => item.id !== row.id); // Remove o item desmarcado
+                },
+            });
+        },
+        onSelectAll: (isSelect, rows) => {
+            dispatch({
+                type: "SET_REVIEW_EVIDENCE_DATA_LIST",
+                payload: isSelect ? rows : [], // Seleciona todos ou limpa
+            });
+        },
+    };
+
+    // Colunas da tabela de evidências 
+    const evidenceColumns = [
+        {
+            dataField: "description",
+            text: "Evidência",
+            sort: true,
+            headerStyle: { width: "65%", minWidth: "200px" },
+            style: { whiteSpace: "normal", wordWrap: "break-word" },
+        },
+        {
+            dataField: "skillTypeName",
+            text: "Título",
+            sort: true,
+            headerStyle: { width: "20%", minWidth: "80px" },
+        },
+        {
+            dataField: "createdAt",
+            text: "Adicionada Em",
+            sort: true,
+            formatter: (cell) => new Date(cell).toLocaleDateString("pt-BR"),
+            headerStyle: { width: "10%", minWidth: "40px" },
+        },
+    ]
 
     const pagination = paginationFactory({
         page: 1,
@@ -94,43 +143,6 @@ export function ReviewScaleAndCriteriaForm() {
         ),
     });
 
-    var today = new Date();
-    var y = today.getFullYear();
-    var m = today.getMonth();
-    var d = today.getDate();
-
-    const data = [
-        {
-            id: 1,
-            evidenceName: "Call with Dave",
-            createdAt: new Date(y, m, 1),
-            status: true,
-            className: "bg-red",
-            description:
-                "Nullam id dolor id nibh ultricies vehicula ut id elit. Cum abacaxi sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.",
-        },
-
-        {
-            id: 2,
-            evidenceName: "Lunch meeting",
-            createdAt: new Date(y, m, d - 1, 10, 30),
-            status: true,
-            className: "bg-orange",
-            description:
-                "Nullam id dolor id nibh ultricies vehicula ut id elit. Cum sorvete sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.",
-        },
-
-        {
-            id: 3,
-            evidenceName: "All day conference",
-            createdAt: new Date(y, m, d + 7, 12, 0),
-            status: true,
-            className: "bg-green",
-            description:
-                "Nullam id dolor id nibh ultricies vehicula ut id elit. Cum bolacha sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.",
-        },
-    ]
-
     const handleSelectionEmploymentContractDataWrapper = (
         selectedId,
         dataList,
@@ -144,7 +156,7 @@ export function ReviewScaleAndCriteriaForm() {
         // Despache o estado 'valid' antes de iniciar o processo de seleção
         if (setStateAction) dispatch({ type: setStateAction, payload: 'valid' });
         if (setHasDepartmentSelectedAction) dispatch({ type: setHasDepartmentSelectedAction, payload: true });
-
+        console.log("Passou aqui!")
         // Chama a função de processamento de seleção de dados
         handleSelectionEmploymentContractData(
             selectedId,
@@ -175,38 +187,23 @@ export function ReviewScaleAndCriteriaForm() {
     const handleSelectRulerOptionsButton = () => {
         dispatch({
             type: 'SET_SHOW_SELECT_RULER_OPTIONS_BUTTON',
-            payload: !state.reviewScaleAndCriteriaData.showSelectRulerOptionsButton,
+            payload: false,
         });
     };
 
     // Selecionar uma opção de legenda
     const handleRulerOptionSelected = (rulerOption) => {
         dispatch({
-            type: 'SET_PERFORMANCE_REVIEW_RULER_OPTION_SELECTED',
+            type: 'SET_REVIEW_RULER_TYPE_SELECTED',
             payload: rulerOption,
         });
-    };
-
-    // Fetch de dados para opções de legenda
-    const fetchRulerOption = async () => {
-        try {
-            const rulerData = await useFindCaptionOptionByCaptionId(state.reviewScaleAndCriteriaData.rulerOptionSelected);
-            if (rulerData?.msg || rulerData === null) return;
-
-            dispatch({ type: 'SET_RULER_OPTION_DATA_LIST', payload: rulerData });
-            dispatch({
-                type: 'SET_PERFORMANCE_REVIEW_RULER_OPTION_SELECTED_STATE',
-                payload: rulerData === "" ? "invalid" : "valid",
-            });
-        } catch (error) {
-            console.error(`Error fetching ruler options data for id ${state.reviewScaleAndCriteriaData.performanceReviewRulerOptionSelected}:`, error);
-        }
     };
 
     const commonProps = {
         handleOpenRulerTypeModal,
         handleClosewRulerTypeModal,
-        selectedRulerType: state.reviewScaleAndCriteriaData.selectedRulerType,
+        selectedRulerType: SELECTED_RULER_TYPE,
+        confirmedRulerType: CONFIRMED_RULER_TYPE,
         modalOpen,
         handleSelectRulerOptionsButton,
         handleRulerOptionSelected
@@ -226,12 +223,66 @@ export function ReviewScaleAndCriteriaForm() {
         localStorage.setItem('reviewScaleAndCriteriaData', JSON.stringify(dataToSave));
     };
 
+    const fetchCaptionOption = async (rulers) => {
+        let updatedRulers = [];
+
+        if (!Array.isArray(rulers)) {
+            rulers = [rulers];
+        }
+
+        updatedRulers = await Promise.all(
+            rulers.map(async (ruler) => {
+                try {
+                    const rulerOptionData = await useFindCaptionOptionByCaptionId(ruler.id);
+                    return {
+                        ...ruler,
+                        options: rulerOptionData
+                    };
+                } catch (error) {
+                    console.error(`Error fetching ruler options data for id ${ruler.id}:`, error);
+                    return {
+                        ...ruler,
+                        options: 'Não registrada',
+                    };
+                }
+            })
+        );
+        dispatch({ type: 'SET_RULER_OPTION_DATA_LIST', payload: updatedRulers });
+        dispatch({
+            type: 'SET_REVIEW_RULER_TYPE_SELECTED_STATE',
+            payload: updatedRulers === "" ? "invalid" : "valid",
+        });
+    };
+
+    const fetchCapitons = async () => {
+        if (!state.reviewScaleAndCriteriaData.rulerOptionData.length) {
+            try {
+                // Encontre o objeto no array que corresponde a selectedRulerType
+                const foundRuler = rulerTypeDataList.find(ruler =>
+                    ruler.id === state.reviewScaleAndCriteriaData.selectedRulerType);
+                if (foundRuler) {
+                    // Pegue o valor do campo 'text' correspondente
+                    const captionType = foundRuler.text;
+                    // Use o valor de 'captionType' como parâmetro para o hook
+                    const foundCaption = await useFindCaptionOptionByCaptionType(captionType);
+                    // Chame fetchCaptionOption com o resultado do hook
+                    await fetchCaptionOption(foundCaption);
+                } else {
+                    console.error('Ruler type not found');
+                }
+            } catch (error) {
+                console.error('Error fetching types:', error);
+            }
+        }
+    };
+
+    // Fetch de dados para opções de legenda
     useEffect(() => {
         // Executa o fetch apenas se a opção selecionada não for null
-        if (state.reviewScaleAndCriteriaData.rulerOptionSelected) {
-            fetchRulerOption();
+        if (state.reviewScaleAndCriteriaData.reviewRulerOptionSelected) {
+            fetchCapitons();
         }
-    }, [state.reviewScaleAndCriteriaData.rulerOptionSelected]);
+    }, [state.reviewScaleAndCriteriaData.reviewRulerOptionSelected]);
 
     // Atualizar o estado do botão "Selecionar Opções" baseado no tipo de legenda
     useEffect(() => {
@@ -406,18 +457,40 @@ export function ReviewScaleAndCriteriaForm() {
     //         console.log('UP Evidence: ', updatedEvidences);
     //         setEvidenceDataTable(updatedEvidences);
     //     };
+    useEffect(() => {
+        const fetchSkillTypesName = async (evidences) => {
+            const updatedEvidences = await Promise.all(
+                evidences.map(async (evidence) => {
+                    try {
+                        const skillTypeData = await useFindSkillType(evidence.evidenceName);
+                        return {
+                            ...evidence,
+                            skillTypeName: skillTypeData.competencieTypeName,
+                        };
+                    } catch (error) {
+                        console.log('Error => ', error);
+                        //console.error(`Error fetching skill type data. `, error);
+                        return {
+                            ...evidence,
+                            skillTypeName: 'Não há',
+                        };
+                    }
+                })
+            );
+            setEvidenceDataTable(updatedEvidences);
+        };
 
-    //     const fetchEvidences = async () => {
-    //         try {
-    //             const foundEvidence = await useFindAllEvidences();
-    //             await fetchSkillTypesName(foundEvidence);
-    //         } catch (error) {
-    //             console.error('Error fetching types:', error);
-    //         }
-    //     };
+        const fetchEvidences = async () => {
+            try {
+                const foundEvidence = await useFindAllEvidences();
+                await fetchSkillTypesName(foundEvidence);
+            } catch (error) {
+                console.error('Error fetching types:', error);
+            }
+        };
 
-    //     fetchEvidences();
-    // }, [])
+        fetchEvidences();
+    }, [])
 
     if (isLoadingReviewScaleAndCriteriaData) {
         return (
@@ -520,69 +593,83 @@ export function ReviewScaleAndCriteriaForm() {
                                                 ? state.reviewScaleAndCriteriaData.rulerTypeDataList
                                                 : [],
                                             'SET_SELECTED_RULER_TYPE',
-                                            'SET_EMPLOYEE_CONTRACT_TYPE',
-                                            'SET_EMPLOYEE_CONTRACT_TYPE_STATE',
+                                            'SET_REVIEW_RULER_TYPE',
+                                            'SET_REVIEW_RULER_TYPE_STATE',
                                             null,
                                             null,
                                             'id'
                                         );
                                     }}
                                 />
+                                <Button
+                                    className="mt-2 w-100"
+                                    color="primary"
+                                    type="button"
+                                    size="md"
+                                    disabled={!SELECTED_RULER_TYPE}
+                                    onClick={() => {
+                                        handleOpenRulerTypeModal();
+                                    }}
+                                >
+                                    Selecionar
+                                </Button>
                             </Col>
-                            {
-                                state.reviewScaleAndCriteriaData.showSelectRulerOptionsButton && (
-                                    <Col className="mb-3 mt-2 pt-4" md="3" name="draw_lots_peer">
-                                        <Button
-                                            color="primary"
-                                            type="button"
-                                            onClick={() => {
-                                                handleOpenRulerTypeModal();
-                                            }}
-                                        >
-                                            Selecionar Legendas
-                                        </Button>
-                                    </Col>
-                                )
-                            }
                             <Col
                                 className="mb-3 mt-2"
                                 name="draw_lots_peer"
                                 md={
                                     !state.reviewScaleAndCriteriaData.showSelectRulerOptionsButton
-                                        ? "8" : "5"
+                                        ? "8" : "6"
                                 }
                             >
-                                {
-                                    !state.reviewScaleAndCriteriaData.rulerOptionData && !state.reviewScaleAndCriteriaData.rulerOptionData !== undefined ? (
-                                        !state.reviewScaleAndCriteriaData.rulerOptionData.length > 0 ? (
-                                            <Row className="">
-                                                {
-                                                    !state.reviewScaleAndCriteriaData.rulerOptionData.map((option, index) => (
-                                                        <Col className="" key={index}>
-                                                            <Card className="bg-primary mb-0">
-                                                                <CardBody className="py-2 px-2 d-flex flex-column justify-content-center align-items-center">
-                                                                    <div className="mb-2">
-                                                                        <h5 style={{ fontSize: 14 }} className="mb-0 text-light text-center">{option.label}</h5>
-                                                                    </div>
-                                                                    <div className="mb-2 d-flex">
-                                                                        <small className="text-light mr-2">Peso:</small>
-                                                                        <h5 className="mb-0 text-light">{option.weight}</h5>
-                                                                    </div>
-                                                                </CardBody>
-                                                            </Card>
+                                <Row>
+                                    {state.reviewScaleAndCriteriaData.reviewRulerOptionSelected ? (
+
+                                        state.reviewScaleAndCriteriaData.rulerOptionData.map((rulerType) => (
+                                            <>
+                                                <CardBody className="py-1 mx-2" key={rulerType.id}>
+                                                    <Row>
+                                                        <Col className="my-2" md="4">
+                                                            <Row className="flex-column">
+                                                                <h6 className="text-uppercase ls-1 mb-1" style={{ color: "#ff623f" }} >
+                                                                    Régua do tipo{' '}
+                                                                </h6>
+                                                                <h5 className="font-weith-bold text-lg text-dark mb-0">{rulerType.ruleType}</h5>
+                                                            </Row>
+                                                            <Row className="flex-column">
+                                                                <h6 className="text-uppercase ls-1 mb-1" style={{ color: "#ff623f" }} >
+                                                                    Alternativas{' '}
+                                                                </h6>
+                                                                <h5 className="font-weith-bold text-lg text-dark mb-0">{rulerType.optionsCount}</h5>
+                                                            </Row>
                                                         </Col>
-                                                    ))
-                                                }
-                                            </Row>
-                                        ) : (
-                                            !state.reviewScaleAndCriteriaData.rulerOptionData.msg && !state.reviewScaleAndCriteriaData.showSelectRulerOptionsButton && (
-                                                <Col md="12">
-                                                    <small>Nenhuma opção encontrada.</small>
-                                                </Col>
-                                            )
-                                        )
-                                    ) : null
-                                }
+                                                        <Col className="mb-2 d-flex flex-row justify-content-start align-items-center" md="8">
+                                                            {rulerType.options && rulerType.options.length > 0 ? (
+                                                                rulerType.options.map((option, index) => (
+                                                                    <Card key={index} className="bg-orange m-2" style={{ width: 96, height: 96 }}>
+                                                                        <CardBody className="d-flex flex-column justify-content-start align-items-center">
+                                                                            <div>
+                                                                                <h3 className="mb-0 text-lighter text-center">{option.label}</h3>
+                                                                            </div>
+                                                                            <div className="mb-2 d-flex">
+                                                                                <h4 className="text-lighter mr-2">Peso</h4>
+                                                                                <h4 className="mb-0 text-lighter">{option.weight}</h4>
+                                                                            </div>
+                                                                        </CardBody>
+                                                                    </Card>
+                                                                ))
+                                                            ) : (
+                                                                <Col md="12">
+                                                                    <small>Nenhuma opção encontrada.</small>
+                                                                </Col>
+                                                            )}
+                                                        </Col>
+                                                    </Row>
+                                                </CardBody>
+                                            </>
+                                        ))
+                                    ) : (<></>)}
+                                </Row>
                             </Col>
                         </div>
                     </div>
@@ -603,37 +690,9 @@ export function ReviewScaleAndCriteriaForm() {
                     </p> */}
                 </CardHeader>
                 <ToolkitProvider
-                    data={data}
+                    data={evidenceDataTable || []}
                     keyField="id"
-                    columns={[
-                        {
-                            dataField: "description",
-                            text: "Evidência",
-                            sort: true,
-                            headerStyle: { width: "65%", minWidth: "200px" },
-                            style: { whiteSpace: "normal", wordWrap: "break-word" },
-                        },
-                        {
-                            dataField: "evidenceName",
-                            text: "Título",
-                            sort: true,
-                            headerStyle: { width: "20%", minWidth: "80px" },
-                        },
-                        {
-                            dataField: "createdAt",
-                            text: "Adicionada Em",
-                            sort: true,
-                            formatter: (cell) => new Date(cell).toLocaleDateString("pt-BR"),
-                            headerStyle: { width: "10%", minWidth: "40px" },
-                        },
-                        {
-                            dataField: "status",
-                            text: "Estado",
-                            sort: true,
-                            formatter: (cell) => (cell ? "Ativo" : "Inativo"),
-                            headerStyle: { width: "5%", minWidth: "20px" },
-                        },
-                    ]}
+                    columns={evidenceColumns}
                     search
                 >
                     {(props) => (
@@ -660,6 +719,7 @@ export function ReviewScaleAndCriteriaForm() {
                                 bootstrap4={true}
                                 pagination={pagination}
                                 bordered={false}
+                                selectRow={selectRow}
                             />
                         </div>
                     )}
