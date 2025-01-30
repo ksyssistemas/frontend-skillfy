@@ -178,77 +178,62 @@ function CaptionsList() {
                 <CardBody>
                     {detailedCaptionData && detailedCaptionData.length > 0 ? (
                         detailedCaptionData.map((caption) => (
-                            <Card className="bg-lighter mb-2" key={caption.id}>
-                                <CardHeader className="bg-transparent">
+                            <Card className="mb-2" key={caption.id}>
+                                <CardBody className="py-1">
                                     <Row>
-                                        <Col md="4">
-                                            <h4 className="text-dark mb-0">
-                                                {caption.ruleType}
-                                            </h4>
+                                        <Col className="my-2" md="4">
+                                            <Row className="flex-column">
+                                                <h6 className="text-uppercase ls-1 mb-1" style={{ color: "#ff623f" }} >
+                                                    Régua do tipo{' '}
+                                                </h6>
+                                                <h5 className="font-weith-bold text-lg text-dark mb-0">{caption.ruleType}</h5>
+                                            </Row>
+                                            <Row className="flex-column">
+                                                <h6 className="text-uppercase ls-1 mb-1" style={{ color: "#ff623f" }} >
+                                                    Alternativas{' '}
+                                                </h6>
+                                                <h5 className="font-weith-bold text-lg text-dark mb-0">{caption.optionsCount}</h5>
+                                            </Row>
+                                            <Row>
+                                                <p className="font-weith-bold text-sm text-dark mb-1 mr-2">
+                                                    Definir está reguá para a avaliação
+                                                </p>
+                                                <div className="custom-control custom-checkbox custom-checkbox-primary mb-1">
+                                                    <input
+                                                        className="custom-control-input"
+                                                        id="chk-ruler-type"
+                                                        type="checkbox"
+                                                        onChange={(e) => handleSelectedRulerOptionId(caption.id, e.target.checked)}
+                                                    />
+                                                    <label
+                                                        className="custom-control-label"
+                                                        htmlFor="chk-ruler-type"
+                                                    />
+                                                </div>
+                                            </Row>
                                         </Col>
-                                        <Col md="4 d-flex justify-content-center">
-                                            <div className="d-flex">
-                                                <h4 className="text-dark mb-0 mr-2">Alternativas:</h4>
-                                                <h4 className="text-dark mb-0">{caption.optionsCount}</h4>
-                                            </div>
-                                        </Col>
-                                        <Col md="4">
-                                            <div className="d-flex justify-content-end">
-                                                <h4 className="text-dark mb-0 mr-2">Ações:</h4>
-                                                <a
-                                                    className="table-action mb-0"
-                                                    href="#pablo"
-                                                    id="tooltip564981685"
-                                                    onClick={(e) => { e.preventDefault(); handleWithUpdatingAppraisalCaption(caption.id) }}
-                                                >
-                                                    <i className="fas fa-user-edit" />
-                                                </a>
-                                                <UncontrolledTooltip delay={0} target="tooltip564981685">
-                                                    Edit product
-                                                </UncontrolledTooltip>
-                                                <a
-                                                    className="table-action table-action-delete mb-0"
-                                                    href="#pablo"
-                                                    id="tooltip601065234"
-                                                    onClick={(e) => { e.preventDefault(); showWarningAlert(caption.id); }}
-                                                >
-                                                    <i className="fas fa-trash" />
-                                                </a>
-                                                <UncontrolledTooltip delay={0} target="tooltip601065234">
-                                                    Delete product
-                                                </UncontrolledTooltip>
-                                            </div>
+                                        <Col className="mb-2 d-flex flex-row justify-content-start align-items-center" md="8">
+                                            {caption.options && caption.options.length > 0 ? (
+                                                caption.options.map((option, index) => (
+                                                    <Card className="bg-orange m-2" style={{ width: 96, height: 96 }}>
+                                                        <CardBody className="d-flex flex-column justify-content-start align-items-center">
+                                                            <div>
+                                                                <h3 className="mb-0 text-lighter text-center">{option.label}</h3>
+                                                            </div>
+                                                            <div className="mb-2 d-flex">
+                                                                <h4 className="text-lighter mr-2">Nota</h4>
+                                                                <h4 className="mb-0 text-lighter">{option.weight}</h4>
+                                                            </div>
+                                                        </CardBody>
+                                                    </Card>
+                                                ))
+                                            ) : (
+                                                <Col md="12">
+                                                    <small>Nenhuma opção encontrada.</small>
+                                                </Col>
+                                            )}
                                         </Col>
                                     </Row>
-                                </CardHeader>
-                                <CardBody>
-                                    <ListGroup className="list my--4" flush>
-                                        <ListGroupItem className="px--4 bg-lighter" key={caption.id}>
-                                            <Row className="bg-lighter">
-                                                {caption.options && caption.options.length > 0 ? (
-                                                    caption.options.map((option, index) => (
-                                                        <Col key={index}>
-                                                            <Card className="bg-primary">
-                                                                <CardBody className="py-2 px-2 d-flex flex-column justify-content-center align-items-center">
-                                                                    <div className="mb-2">
-                                                                        <h5 style={{ fontSize: 14 }} className="mb-0 text-light text-center">{option.label}</h5>
-                                                                    </div>
-                                                                    <div className="mb-2 d-flex">
-                                                                        <small className="text-light mr-2">Peso:</small>
-                                                                        <h5 className="mb-0 text-light">{option.weight}</h5>
-                                                                    </div>
-                                                                </CardBody>
-                                                            </Card>
-                                                        </Col>
-                                                    ))
-                                                ) : (
-                                                    <Col md="12">
-                                                        <small>Nenhuma opção encontrada.</small>
-                                                    </Col>
-                                                )}
-                                            </Row>
-                                        </ListGroupItem>
-                                    </ListGroup>
                                 </CardBody>
                             </Card>
                         ))
