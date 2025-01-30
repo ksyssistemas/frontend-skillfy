@@ -388,11 +388,21 @@ export function ReviewScaleAndCriteriaForm() {
     }, [competencies]);
 
     const handleCompetenciesChange = (e) => {
-        const selectedValues = Array.from(e.target.selectedOptions).map((option) =>
+        const selectedCompetencies = Array.from(e.target.selectedOptions).map((option) =>
             Number(option.value)
         );
-        setCompetencies(selectedValues);
+    
+        const formattedCompetencies = selectedCompetencies.map((competencyId) => ({
+            idCompence: competencyId,
+            evidences: evidenceDataList
+                .filter((evidence) => evidence.evidenceName == competencyId)
+                .map((evidence) => ({ idEvidence: evidence.id })),
+        }));
+    
+        setCompetencies(selectedCompetencies);
+        dispatch({ type: 'SET_REVIEW_COMPETENCIE_DATA_LIST', payload: formattedCompetencies });
     };
+    
 
     useEffect(() => {
         if (competenciesDetails.length > 0) {
@@ -564,6 +574,52 @@ export function ReviewScaleAndCriteriaForm() {
                     </div>
                 </CardBody>
             </Card>
+            
+            <Card>
+                <CardHeader>
+                    <h3 className="mb-0">Evidecias</h3>
+                    {/* <p className="text-sm mb-0">
+                        This is an exmaple of data table using the well known
+                        react-bootstrap-table2 plugin. This is a minimal setup in
+                        order to get started fast.
+                    </p> */}
+                </CardHeader>
+                <ToolkitProvider
+                    data={evidenceDataTable || []}
+                    keyField="id"
+                    columns={evidenceColumns}
+                    search
+                >
+                    {(props) => (
+                        <div className="table-responsive">
+                            <div
+                                id="datatable-basic_filter"
+                                className="dataTables_filter pb-1 w-50"
+                            >
+                                <SearchBar
+                                    className="form-control-sm"
+                                    style={{
+                                        height: "40px",
+                                        width: 564,
+                                        fontSize: "16px",
+                                        padding: "10px",
+                                        borderRadius: "8px",
+                                    }}
+                                    placeholder="Pesquise por alguma evidência expecifica aqui ..."
+                                    {...props.searchProps}
+                                />
+                            </div>
+                            <BootstrapTable
+                                {...props.baseProps}
+                                bootstrap4={true}
+                                pagination={pagination}
+                                bordered={false}
+                                selectRow={selectRow}
+                            />
+                        </div>
+                    )}
+                </ToolkitProvider>
+            </Card>
             <Card>
                 <CardHeader>
                     <h3 className="mb-0">Respostas</h3>
@@ -679,51 +735,6 @@ export function ReviewScaleAndCriteriaForm() {
                         <ModalRulerType {...commonProps} />
                     )
                 }
-            </Card>
-            <Card>
-                <CardHeader>
-                    <h3 className="mb-0">Evidecias</h3>
-                    {/* <p className="text-sm mb-0">
-                        This is an exmaple of data table using the well known
-                        react-bootstrap-table2 plugin. This is a minimal setup in
-                        order to get started fast.
-                    </p> */}
-                </CardHeader>
-                <ToolkitProvider
-                    data={evidenceDataTable || []}
-                    keyField="id"
-                    columns={evidenceColumns}
-                    search
-                >
-                    {(props) => (
-                        <div className="table-responsive">
-                            <div
-                                id="datatable-basic_filter"
-                                className="dataTables_filter pb-1 w-50"
-                            >
-                                <SearchBar
-                                    className="form-control-sm"
-                                    style={{
-                                        height: "40px",
-                                        width: 564,
-                                        fontSize: "16px",
-                                        padding: "10px",
-                                        borderRadius: "8px",
-                                    }}
-                                    placeholder="Pesquise por alguma evidência expecifica aqui ..."
-                                    {...props.searchProps}
-                                />
-                            </div>
-                            <BootstrapTable
-                                {...props.baseProps}
-                                bootstrap4={true}
-                                pagination={pagination}
-                                bordered={false}
-                                selectRow={selectRow}
-                            />
-                        </div>
-                    )}
-                </ToolkitProvider>
             </Card>
         </>
     );
