@@ -10,6 +10,7 @@ import {
     Row,
     Col,
     ListGroupItem,
+    Table,
 } from "reactstrap";
 import { ModelSelectionReviewContext } from "../../../../../../contexts/PerformanceContext/ModelSelectionReviewContext";
 import { initialState, formReducer } from '../../../../../../reducers/ReviewForms/ReviewScaleAndCriteriaFormReducer';
@@ -355,7 +356,6 @@ export function ReviewScaleAndCriteriaForm() {
     }, [state.reviewScaleAndCriteriaData]);
 
     const [competencies, setCompetencies] = useState([]);
-    console.log(competencies);
     const [competenciesDataList, setCompetenciesDataList] = useState([]);
     const [competenciesDetails, setCompetenciesDetails] = useState([]);
     const [occupationalGroups, setOccupationalGroups] = useState([]);
@@ -391,18 +391,18 @@ export function ReviewScaleAndCriteriaForm() {
         const selectedCompetencies = Array.from(e.target.selectedOptions).map((option) =>
             Number(option.value)
         );
-    
+
         const formattedCompetencies = selectedCompetencies.map((competencyId) => ({
             idCompence: competencyId,
             evidences: evidenceDataList
                 .filter((evidence) => evidence.evidenceName == competencyId)
                 .map((evidence) => ({ idEvidence: evidence.id })),
         }));
-    
+
         setCompetencies(selectedCompetencies);
         dispatch({ type: 'SET_REVIEW_COMPETENCIE_DATA_LIST', payload: formattedCompetencies });
     };
-    
+
 
     useEffect(() => {
         if (competenciesDetails.length > 0) {
@@ -442,7 +442,6 @@ export function ReviewScaleAndCriteriaForm() {
         };
         fetchEvidences();
     }, [competenciesDetails]);
-
 
     // useEffect(() => {
     //     const fetchSkillTypesName = async (evidences) => {
@@ -501,7 +500,7 @@ export function ReviewScaleAndCriteriaForm() {
 
         fetchEvidences();
     }, [])
-
+    console.log(evidenceDataList);
     if (isLoadingReviewScaleAndCriteriaData) {
         return (
             <PageChange />
@@ -534,9 +533,10 @@ export function ReviewScaleAndCriteriaForm() {
                             </Col>
                         </div>
                         <div>
-                            {competencies.length > 0  ? (
+                            {competencies.length > 0 ? (
                                 <>
                                     <h3>Detalhes das Competências:</h3>
+                                    
                                     {competenciesDetails.map((competency, index) => (
                                         <div key={competency.id}>
                                             <p>
@@ -554,17 +554,32 @@ export function ReviewScaleAndCriteriaForm() {
                                                 {skillClassifications[index]?.competenceClassificationName || "Carregando..."}
                                             </p>
                                             <h4>Evidências Relacionadas:</h4>
-                                            {evidenceDataList.some(evidence => evidence.evidenceName == competency.id) ? (
-                                                <ul>
-                                                    {evidenceDataList
-                                                        .filter(evidence => evidence.evidenceName == competency.id)
-                                                        .map(evidence => (
-                                                            <li key={evidence.id}>{evidence.description || "Carregando..."}</li>
-                                                        ))}
-                                                </ul>
-                                            ) : (
-                                                <p>Nenhuma evidência encontrada.</p>
-                                            )}
+                                            <Table className="align-items-center table-flush" responsive>
+                                                <thead className="thead-light">
+                                                    <tr>
+                                                        <th>Evidência</th>
+                                                        <th>Descrição</th>
+                                                        <th>Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {evidenceDataList.some(evidence => evidence.evidenceName == competency.id) ? (
+                                                        evidenceDataList
+                                                            .filter(evidence => evidence.evidenceName == competency.id)
+                                                            .map(evidence => (
+                                                                <tr key={evidence.id}>
+                                                                    <td>{evidence.evidenceName}</td>
+                                                                    <td>{evidence.description || "Carregando..."}</td>
+                                                                    <td>{evidence.status ? "Ativo" : "Inativo"}</td>
+                                                                </tr>
+                                                            ))
+                                                    ) : (
+                                                        <tr>
+                                                            <td colSpan="3">Nenhuma evidência encontrada.</td>
+                                                        </tr>
+                                                    )}
+                                                </tbody>
+                                            </Table>
                                             <hr />
                                         </div>
                                     ))}
@@ -574,7 +589,7 @@ export function ReviewScaleAndCriteriaForm() {
                     </div>
                 </CardBody>
             </Card>
-            
+
             <Card>
                 <CardHeader>
                     <h3 className="mb-0">Evidecias</h3>
