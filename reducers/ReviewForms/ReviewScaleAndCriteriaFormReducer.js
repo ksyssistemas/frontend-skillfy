@@ -16,6 +16,7 @@ export const initialState = {
         reviewRulerOptionSelected: null,
         reviewRulerOptionSelectedState: null,
         reviewEvidenceData: [],
+        reviewCompetenceData: [],
     },
 };
 
@@ -125,6 +126,14 @@ export const formReducer = (state, action) => {
                     reviewEvidenceData: Array.isArray(action.payload)
                         ? action.payload // Para onSelectAll
                         : action.payload(state), // Para onSelect
+                },
+            };
+        case 'SET_REVIEW_COMPETENCIE_DATA_LIST':
+            return {
+                ...state,
+                reviewScaleAndCriteriaData: {
+                    ...state.reviewScaleAndCriteriaData,
+                    reviewCompetenceData: Array.isArray(action.payload) ? action.payload : [],
                 },
             };
         case 'CLEAR_FORM':

@@ -10,6 +10,7 @@ import {
     Row,
     Col,
     ListGroupItem,
+    Table,
 } from "reactstrap";
 import { ModelSelectionReviewContext } from "../../../../../../contexts/PerformanceContext/ModelSelectionReviewContext";
 import { initialState, formReducer } from '../../../../../../reducers/ReviewForms/ReviewScaleAndCriteriaFormReducer';
@@ -23,6 +24,10 @@ import BootstrapTable from "react-bootstrap-table-next";
 import paginationFactory from "react-bootstrap-table2-paginator";
 import { useFindAllEvidences } from "../../../../../../hooks/DefinitionOptionsReview/AppraisalEvidences/useFindAllEvidences";
 import { useFindSkillType } from "../../../../../../hooks/DefinitionOptionsReview/SkillsTypes/useFindSkillType";
+import { useFindAllSkillTypes } from '../../../../../../hooks/DefinitionOptionsReview/SkillsTypes/useFindAllSkillTypes';
+import { useFindSkillClassification } from '../../../../../../hooks/DefinitionOptionsReview/SkillsClassifications/useFindSkillClassification';
+import { useFindOccupationalGroup } from '../../../../../../hooks/DefinitionOptionsReview/OccupationalGroups/useFindOccupationalGroup';
+import { employmentContractDataSearchAndProcess } from '../../../../../../util/employmentContractDataSearchAndProcess';
 import { useFindCaptionOptionByCaptionType } from "../../../../../../hooks/DefinitionOptionsReview/AppraisalCaptions/useFindCaptionOptionByCaptionType";
 
 export function ReviewScaleAndCriteriaForm() {
@@ -350,6 +355,117 @@ export function ReviewScaleAndCriteriaForm() {
         };
     }, [state.reviewScaleAndCriteriaData]);
 
+    const [competencies, setCompetencies] = useState([]);
+    const [competenciesDataList, setCompetenciesDataList] = useState([]);
+    const [competenciesDetails, setCompetenciesDetails] = useState([]);
+    const [occupationalGroups, setOccupationalGroups] = useState([]);
+    const [skillClassifications, setSkillClassifications] = useState([]);
+    const [evidenceDataList, setEvidenceDataList] = useState([]);
+
+    const handleCompetenciesDataList = (competencies) => {
+        setCompetenciesDataList(competencies);
+    };
+
+    useEffect(() => {
+        if (competenciesDataList.length === 0) {
+            employmentContractDataSearchAndProcess(
+                useFindAllSkillTypes,
+                handleCompetenciesDataList,
+                'skillTypes',
+                'CompetenciesUserRegister'
+            );
+        }
+    }, [])
+
+    useEffect(() => {
+        if (competencies.length > 0) {
+            Promise.all(competencies.map(id => useFindSkillType(id)))
+                .then(details => setCompetenciesDetails(details))
+                .catch(error => console.error("Erro ao buscar competências:", error));
+        } else {
+            setCompetenciesDetails([]);
+        }
+    }, [competencies]);
+
+    const handleCompetenciesChange = (e) => {
+        const selectedCompetencies = Array.from(e.target.selectedOptions).map((option) =>
+            Number(option.value)
+        );
+
+        const formattedCompetencies = selectedCompetencies.map((competencyId) => ({
+            idCompence: competencyId,
+            evidences: evidenceDataList
+                .filter((evidence) => evidence.evidenceName == competencyId)
+                .map((evidence) => ({ idEvidence: evidence.id })),
+        }));
+
+        setCompetencies(selectedCompetencies);
+        dispatch({ type: 'SET_REVIEW_COMPETENCIE_DATA_LIST', payload: formattedCompetencies });
+    };
+
+
+    useEffect(() => {
+        if (competenciesDetails.length > 0) {
+            const occupationalPromises = Promise.all(
+                competenciesDetails.map(({ occupationalGroupId }) =>
+                    useFindOccupationalGroup(occupationalGroupId)
+                )
+            );
+
+            const skillPromises = Promise.all(
+                competenciesDetails.map(({ skillClassificationId }) =>
+                    useFindSkillClassification(skillClassificationId)
+                )
+            );
+
+            Promise.all([occupationalPromises, skillPromises])
+                .then(([occupationalResults, skillResults]) => {
+                    setOccupationalGroups(occupationalResults);
+                    setSkillClassifications(skillResults);
+                })
+                .catch((error) =>
+                    console.error("Erro ao buscar dados adicionais:", error)
+                );
+        }
+    }, [competenciesDetails]);
+
+    useEffect(() => {
+        const fetchEvidences = async () => {
+            if (competenciesDetails.length > 0) {
+                try {
+                    const foundEvidence = await useFindAllEvidences();
+                    setEvidenceDataList(foundEvidence);
+                } catch (error) {
+                    console.error('Error fetching evidences:', error);
+                }
+            }
+        };
+        fetchEvidences();
+    }, [competenciesDetails]);
+
+    // useEffect(() => {
+    //     const fetchSkillTypesName = async (evidences) => {
+    //         const updatedEvidences = await Promise.all(
+    //             evidences.map(async (evidence) => {
+    //                 try {
+    //                     const skillTypeData = await useFindSkillType(evidence.evidenceName);
+    //                     return {
+    //                         ...evidence,
+    //                         skillTypeName: skillTypeData.competencieTypeName,
+    //                     };
+    //                 } catch (error) {
+    //                     console.log('Error => ', error);
+    //                     //console.error(`Error fetching skill type data. `, error);
+    //                     return {
+    //                         ...evidence,
+    //                         skillTypeName: 'Unknown',
+    //                     };
+    //                 }
+    //             })
+    //         );
+    //         console.log('UP Evidence: ', updatedEvidences);
+    //         setEvidenceDataTable(updatedEvidences);
+    //     };
     useEffect(() => {
         const fetchSkillTypesName = async (evidences) => {
             const updatedEvidences = await Promise.all(
@@ -384,7 +500,7 @@ export function ReviewScaleAndCriteriaForm() {
 
         fetchEvidences();
     }, [])
-
+    console.log(evidenceDataList);
     if (isLoadingReviewScaleAndCriteriaData) {
         return (
             <PageChange />
@@ -393,6 +509,132 @@ export function ReviewScaleAndCriteriaForm() {
 
     return (
         <>
+            <Card>
+                <CardHeader>
+                    <h3 className="mb-0">Competências</h3>
+                </CardHeader>
+                <CardBody>
+                    <div className="mb-4">
+                        <div className="form-row">
+                            <Col className="mb-3" md="4">
+                                <label className="form-control-label" htmlFor="validationCompetencia">
+                                    Selecione a(s) Competência(s)
+                                </label>
+                                <Select2
+                                    id="validationCompetencia"
+                                    className="form-control"
+                                    data-minimum-results-for-search="Infinity"
+                                    options={{ placeholder: "Selecione uma ou mais competências" }}
+                                    value={competencies}
+                                    multiple
+                                    onChange={handleCompetenciesChange}
+                                    data={competenciesDataList || []}
+                                />
+                            </Col>
+                        </div>
+                        <div>
+                            {competencies.length > 0 ? (
+                                <>
+                                    <h3>Detalhes das Competências:</h3>
+                                    
+                                    {competenciesDetails.map((competency, index) => (
+                                        <div key={competency.id}>
+                                            <p>
+                                                <strong>Nome:</strong> {competency.competencieTypeName || "Carregando..."}
+                                            </p>
+                                            <p>
+                                                <strong>Descrição:</strong> {competency.description || "Carregando..."}
+                                            </p>
+                                            <p>
+                                                <strong>Grupo Ocupacional:</strong>{" "}
+                                                {occupationalGroups[index]?.competencieName || "Carregando..."}
+                                            </p>
+                                            <p>
+                                                <strong>Classificação da Habilidade:</strong>{" "}
+                                                {skillClassifications[index]?.competenceClassificationName || "Carregando..."}
+                                            </p>
+                                            <h4>Evidências Relacionadas:</h4>
+                                            <Table className="align-items-center table-flush" responsive>
+                                                <thead className="thead-light">
+                                                    <tr>
+                                                        <th>Evidência</th>
+                                                        <th>Descrição</th>
+                                                        <th>Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {evidenceDataList.some(evidence => evidence.evidenceName == competency.id) ? (
+                                                        evidenceDataList
+                                                            .filter(evidence => evidence.evidenceName == competency.id)
+                                                            .map(evidence => (
+                                                                <tr key={evidence.id}>
+                                                                    <td>{evidence.evidenceName}</td>
+                                                                    <td>{evidence.description || "Carregando..."}</td>
+                                                                    <td>{evidence.status ? "Ativo" : "Inativo"}</td>
+                                                                </tr>
+                                                            ))
+                                                    ) : (
+                                                        <tr>
+                                                            <td colSpan="3">Nenhuma evidência encontrada.</td>
+                                                        </tr>
+                                                    )}
+                                                </tbody>
+                                            </Table>
+                                            <hr />
+                                        </div>
+                                    ))}
+                                </>
+                            ) : null}
+                        </div>
+                    </div>
+                </CardBody>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <h3 className="mb-0">Evidecias</h3>
+                    {/* <p className="text-sm mb-0">
+                        This is an exmaple of data table using the well known
+                        react-bootstrap-table2 plugin. This is a minimal setup in
+                        order to get started fast.
+                    </p> */}
+                </CardHeader>
+                <ToolkitProvider
+                    data={evidenceDataTable || []}
+                    keyField="id"
+                    columns={evidenceColumns}
+                    search
+                >
+                    {(props) => (
+                        <div className="table-responsive">
+                            <div
+                                id="datatable-basic_filter"
+                                className="dataTables_filter pb-1 w-50"
+                            >
+                                <SearchBar
+                                    className="form-control-sm"
+                                    style={{
+                                        height: "40px",
+                                        width: 564,
+                                        fontSize: "16px",
+                                        padding: "10px",
+                                        borderRadius: "8px",
+                                    }}
+                                    placeholder="Pesquise por alguma evidência expecifica aqui ..."
+                                    {...props.searchProps}
+                                />
+                            </div>
+                            <BootstrapTable
+                                {...props.baseProps}
+                                bootstrap4={true}
+                                pagination={pagination}
+                                bordered={false}
+                                selectRow={selectRow}
+                            />
+                        </div>
+                    )}
+                </ToolkitProvider>
+            </Card>
             <Card>
                 <CardHeader>
                     <h3 className="mb-0">Respostas</h3>
@@ -508,51 +750,6 @@ export function ReviewScaleAndCriteriaForm() {
                         <ModalRulerType {...commonProps} />
                     )
                 }
-            </Card>
-            <Card>
-                <CardHeader>
-                    <h3 className="mb-0">Evidecias</h3>
-                    {/* <p className="text-sm mb-0">
-                        This is an exmaple of data table using the well known
-                        react-bootstrap-table2 plugin. This is a minimal setup in
-                        order to get started fast.
-                    </p> */}
-                </CardHeader>
-                <ToolkitProvider
-                    data={evidenceDataTable || []}
-                    keyField="id"
-                    columns={evidenceColumns}
-                    search
-                >
-                    {(props) => (
-                        <div className="table-responsive">
-                            <div
-                                id="datatable-basic_filter"
-                                className="dataTables_filter pb-1 w-50"
-                            >
-                                <SearchBar
-                                    className="form-control-sm"
-                                    style={{
-                                        height: "40px",
-                                        width: 564,
-                                        fontSize: "16px",
-                                        padding: "10px",
-                                        borderRadius: "8px",
-                                    }}
-                                    placeholder="Pesquise por alguma evidência expecifica aqui ..."
-                                    {...props.searchProps}
-                                />
-                            </div>
-                            <BootstrapTable
-                                {...props.baseProps}
-                                bootstrap4={true}
-                                pagination={pagination}
-                                bordered={false}
-                                selectRow={selectRow}
-                            />
-                        </div>
-                    )}
-                </ToolkitProvider>
             </Card>
         </>
     );
