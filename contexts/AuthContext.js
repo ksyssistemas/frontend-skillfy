@@ -14,7 +14,7 @@ function AuthProvider({ children }) {
     }
 
     TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT = authenticationDataLoggedInUser.role;
-
+    console.log("TypeUser no AuthContext :",TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT);
     return (
         <AuthContext.Provider
             value={{
