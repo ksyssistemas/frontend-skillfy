@@ -182,7 +182,7 @@ function Login() {
         const data = await response.json();
         handleSaveAuthenticationDataLoggedInUser(data);
         handleCustomerIdToLinkToEmployee(data.data.id);
-
+        console.log(data);
         let redirectUrl = `${process.env.NEXT_PUBLIC_HOME_PAGE}`;
 
         switch (data.role) {
