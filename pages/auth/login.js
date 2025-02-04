@@ -83,7 +83,6 @@ function Login() {
 
     const isEmailValid = await validateEmailInSystem(formData.email);
     if (isEmailValid) {
-      console.log('Enviar email de recuperação para:', formData.email);
       setFormLogin(false);
       setForgotPassword(true);
       setEmailForgot(false);
@@ -182,24 +181,19 @@ function Login() {
         const data = await response.json();
         handleSaveAuthenticationDataLoggedInUser(data);
         handleCustomerIdToLinkToEmployee(data.data.id);
-        console.log(data);
         let redirectUrl = `${process.env.NEXT_PUBLIC_HOME_PAGE}`;
 
         switch (data.role) {
           case 'administrator':
-            console.log('Redirecionando para o painel do administrador');
             redirectUrl += '/dashboard/admin';
             break;
           case 'customer':
-            console.log('Redirecionando para o painel da empresa');
             redirectUrl += '/dashboard/customer';
             break;
           case 'employee':
-            console.log('Redirecionando para o perfil do funcionário');
             redirectUrl += '/employee/profile';
             break;
           default:
-            console.log('Redirecionando para a página padrão');
             redirectUrl = `${process.env.NEXT_PUBLIC_HOME_PAGE}/default`;
         }
 

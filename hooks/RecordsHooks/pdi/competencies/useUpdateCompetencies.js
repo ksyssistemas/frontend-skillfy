@@ -58,7 +58,7 @@ const useUpdateCompetencies = () => {
                 });
 
                 if (response.ok) {
-                    console.log('Data sent successfully!');
+                    // console.log('Data sent successfully!');
                     setCompetencieUpdateSuccess("Competência atualizada com sucesso!");
                 } else {
                     console.error('Error in response:', response.status);
