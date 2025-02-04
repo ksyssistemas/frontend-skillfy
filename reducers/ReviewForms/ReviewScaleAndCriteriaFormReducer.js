@@ -15,7 +15,7 @@ export const initialState = {
         rulerOptionSelected: null,
         reviewRulerOptionSelected: null,
         reviewRulerOptionSelectedState: null,
-        reviewEvidenceData: [],
+        reviewCompetenceEvidenceData: [],
         reviewCompetenceData: [],
     },
 };
@@ -118,16 +118,16 @@ export const formReducer = (state, action) => {
                     rulerOptionSelected: Array.isArray(action.payload) ? action.payload : [],
                 },
             };
-        case 'SET_REVIEW_EVIDENCE_DATA_LIST':
-            return {
-                ...state,
-                reviewScaleAndCriteriaData: {
-                    ...state.reviewScaleAndCriteriaData,
-                    reviewEvidenceData: Array.isArray(action.payload)
-                        ? action.payload // Para onSelectAll
-                        : action.payload(state), // Para onSelect
-                },
-            };
+        // case 'SET_REVIEW_EVIDENCE_DATA_LIST':
+        //     return {
+        //         ...state,
+        //         reviewScaleAndCriteriaData: {
+        //             ...state.reviewScaleAndCriteriaData,
+        //             reviewEvidenceData: Array.isArray(action.payload)
+        //                 ? action.payload // Para onSelectAll
+        //                 : action.payload(state), // Para onSelect
+        //         },
+        //     };
         case 'SET_REVIEW_COMPETENCIE_DATA_LIST':
             return {
                 ...state,
@@ -136,6 +136,77 @@ export const formReducer = (state, action) => {
                     reviewCompetenceData: Array.isArray(action.payload) ? action.payload : [],
                 },
             };
+        case 'SET_REVIEW_COMPETENCE': {
+            const { competenceId } = action.payload;
+            // Verifica se a competência já está na lista
+            const exists = state.reviewScaleAndCriteriaData.reviewCompetenceEvidenceData
+                .some(item => item.competenceId === competenceId);
+
+            if (!exists) {
+                return {
+                    ...state,
+                    reviewScaleAndCriteriaData: {
+                        ...state.reviewScaleAndCriteriaData,
+                        reviewCompetenceEvidenceData: [
+                            ...state.reviewScaleAndCriteriaData.reviewCompetenceEvidenceData,
+                            { competenceId, evidence: [] }
+                        ],
+                    },
+                };
+            }
+            return state; // Se já existir, não faz nada
+        }
+
+        case 'SET_REVIEW_EVIDENCE': {
+            const { competenceId, evidenceId } = action.payload;
+            return {
+                ...state,
+                reviewScaleAndCriteriaData: {
+                    ...state.reviewScaleAndCriteriaData,
+                    reviewCompetenceEvidenceData: state.reviewScaleAndCriteriaData.reviewCompetenceEvidenceData
+                        .map(item =>
+                            item.competenceId === competenceId
+                                ? {
+                                    ...item,
+                                    evidence: [...item.evidence, { id: evidenceId }]
+                                }
+                                : item
+                        ),
+                },
+            };
+        }
+
+        case 'REMOVE_REVIEW_EVIDENCE': {
+            const { competenceId, evidenceId } = action.payload;
+            return {
+                ...state,
+                reviewScaleAndCriteriaData: {
+                    ...state.reviewScaleAndCriteriaData,
+                    reviewCompetenceEvidenceData: state.reviewScaleAndCriteriaData.reviewCompetenceEvidenceData
+                        .map(item =>
+                            item.competenceId === competenceId
+                                ? {
+                                    ...item,
+                                    evidence: item.evidence.filter(e => e.id !== evidenceId)
+                                }
+                                : item
+                        ),
+                },
+            };
+        }
+
+        case 'REMOVE_REVIEW_COMPETENCE': {
+            const { competenceId } = action.payload;
+            return {
+                ...state,
+                reviewScaleAndCriteriaData: {
+                    ...state.reviewScaleAndCriteriaData,
+                    reviewCompetenceEvidenceData: state.reviewScaleAndCriteriaData.reviewCompetenceEvidenceData
+                        .filter(item => item.competenceId !== competenceId),
+                },
+            };
+        }
+
         case 'CLEAR_FORM':
             return initialState;
 

@@ -64,27 +64,32 @@ export function ReviewScaleAndCriteriaForm() {
     const [selectedIds, setSelectedIds] = useState([]);
 
     // Configuração para seleção de linhas
-    const selectRow = {
-        mode: "checkbox", // Alternativa: "radio" para seleção única
-        clickToSelect: true, // Permite selecionar clicando na linha
+    const selectRow = (competenceId) => ({
+        mode: "checkbox",
+        clickToSelect: true,
         onSelect: (row, isSelected) => {
-            dispatch({
-                type: "SET_REVIEW_EVIDENCE_DATA_LIST",
-                payload: (prevState) => {
-                    const currentList = prevState.reviewScaleAndCriteriaData.reviewEvidenceData;
-                    if (isSelected) {
-                        return [...currentList, row]; // Adiciona o item selecionado
-                    }
-                    return currentList.filter((item) => item.id !== row.id); // Remove o item desmarcado
-                },
-            });
+            console.log(row, isSelected, competenceId);
+            if (isSelected) {
+                dispatch({ type: "SET_REVIEW_EVIDENCE", payload: { competenceId, evidenceId: row.id } });
+            } else {
+                dispatch({ type: "REMOVE_REVIEW_EVIDENCE", payload: { competenceId, evidenceId: row.id } });
+            }
         },
         onSelectAll: (isSelect, rows) => {
-            dispatch({
-                type: "SET_REVIEW_EVIDENCE_DATA_LIST",
-                payload: isSelect ? rows : [], // Seleciona todos ou limpa
-            });
-        },
+            if (isSelect) {
+                rows.forEach(row => {
+                    dispatch({ type: "SET_REVIEW_EVIDENCE", payload: { competenceId, evidenceId: row.id } });
+                });
+            } else {
+                rows.forEach(row => {
+                    dispatch({ type: "REMOVE_REVIEW_EVIDENCE", payload: { competenceId, evidenceId: row.id } });
+                });
+            }
+        }
+    });
+
+    const removeCompetence = (competenceId) => {
+        dispatch({ type: 'REMOVE_REVIEW_COMPETENCE', payload: { competenceId } });
     };
 
     // Colunas da tabela de evidências 
@@ -318,6 +323,9 @@ export function ReviewScaleAndCriteriaForm() {
                         });
 
                         latestreviewScaleAndCriteriaData.current = parsedData; // Atualiza a ref para os dados carregados
+
+                        // setCompetencies(parsedData.reviewCompetenceEvidenceData);
+                        console.log("parsedData", parsedData.reviewCompetenceEvidenceData);
                     }
                 } else {
                     dispatch({ type: 'RESET_REVIEW_STATE' }); // Limpa o estado para evitar inconsistências
@@ -356,8 +364,10 @@ export function ReviewScaleAndCriteriaForm() {
     }, [state.reviewScaleAndCriteriaData]);
 
     const [competencies, setCompetencies] = useState([]);
+
     const [competenciesDataList, setCompetenciesDataList] = useState([]);
     const [competenciesDetails, setCompetenciesDetails] = useState([]);
+    
     const [occupationalGroups, setOccupationalGroups] = useState([]);
     const [skillClassifications, setSkillClassifications] = useState([]);
     const [evidenceDataList, setEvidenceDataList] = useState([]);
@@ -388,28 +398,26 @@ export function ReviewScaleAndCriteriaForm() {
     }, [competencies]);
 
     const handleCompetenciesChange = (e) => {
-        const selectedCompetencies = Array.from(e.target.selectedOptions).map((option) =>
-            Number(option.value)
-        );
+        const selectedCompetencies = Array.from(e.target.selectedOptions).map(option => Number(option.value));
 
-        const formattedCompetencies = selectedCompetencies.map((competencyId) => ({
-            idCompence: competencyId,
-            evidences: evidenceDataList
-                .filter((evidence) => evidence.evidenceName == competencyId)
-                .map((evidence) => ({ idEvidence: evidence.id })),
-        }));
+        console.log("selectedCompetencies",selectedCompetencies);
 
         setCompetencies(selectedCompetencies);
-        dispatch({ type: 'SET_REVIEW_COMPETENCIE_DATA_LIST', payload: formattedCompetencies });
-    };
+        selectedCompetencies.forEach(competenceId => {
+            dispatch({ type: 'SET_REVIEW_COMPETENCE', payload: { competenceId } });
+        });
 
+        const removedCompetencies = competencies.filter(id => !selectedCompetencies.includes(id));
+
+        removedCompetencies.forEach(competenceId => removeCompetence(competenceId));
+    };
 
     useEffect(() => {
         if (competenciesDetails.length > 0) {
             const occupationalPromises = Promise.all(
                 competenciesDetails.map(({ occupationalGroupId }) =>
                     useFindOccupationalGroup(occupationalGroupId)
-                )
+                )   
             );
 
             const skillPromises = Promise.all(
@@ -512,12 +520,14 @@ export function ReviewScaleAndCriteriaForm() {
         return `${day}/${month}/${year}`;
     }
 
+    console.log("competenciesDetails",competenciesDetails);
     if (isLoadingReviewScaleAndCriteriaData) {
         return (
             <PageChange />
         );
     }
-
+    const competenceValue = competencies ? competencies : latestreviewScaleAndCriteriaData;
+    console.log("competenceValue",competenceValue);
     return (
         <>
             <Card>
@@ -547,50 +557,58 @@ export function ReviewScaleAndCriteriaForm() {
                             {competencies.length > 0 ? (
                                 <>
                                     <h3>Detalhes das Competências:</h3>
-                                    
                                     {competenciesDetails.map((competency, index) => (
                                         <div key={competency.id}>
                                             <p>
-                                                <strong>Nome:</strong> {competency.competencieTypeName || "Carregando..."}
+                                                <strong>Nome:</strong> {competency.competencieTypeName ?? "Carregando..."}
                                             </p>
                                             <p>
-                                                <strong>Descrição:</strong> {competency.description || "Carregando..."}
+                                                <strong>Descrição:</strong> {competency.description ?? "Carregando..."}
                                             </p>
                                             <p>
                                                 <strong>Grupo Ocupacional:</strong>{" "}
-                                                {occupationalGroups[index]?.competencieName || "Carregando..."}
+                                                {occupationalGroups[index]?.competencieName ?? "Carregando..."}
                                             </p>
                                             <p>
                                                 <strong>Classificação da Habilidade:</strong>{" "}
-                                                {skillClassifications[index]?.competenceClassificationName || "Carregando..."}
+                                                {skillClassifications[index]?.competenceClassificationName ?? "Carregando..."}
                                             </p>
                                             <h4>Evidências Relacionadas:</h4>
-                                            <Table className="align-items-center table-flush" responsive>
-                                                <thead className="thead-light">
-                                                    <tr>
-                                                        <th>Descrição</th>
-                                                        <th>Status</th>
-                                                        <th>Adicionada Em</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {evidenceDataList.some(evidence => evidence.evidenceName == competency.id) ? (
-                                                        evidenceDataList
-                                                            .filter(evidence => evidence.evidenceName == competency.id)
-                                                            .map(evidence => (
-                                                                <tr key={evidence.id}>
-                                                                    <td>{evidence.description ?? "Carregando..."}</td>
-                                                                    <td>{evidence.status ? "Ativo" : "Inativo"}</td>
-                                                                    <td>{formatDate(evidence.createdAt) ?? "Não informado"}</td>
-                                                                </tr>
-                                                            ))
-                                                    ) : (
-                                                        <tr>
-                                                            <td colSpan="3">Nenhuma evidência encontrada.</td>
-                                                        </tr>
-                                                    )}
-                                                </tbody>
-                                            </Table>
+                                            <ToolkitProvider
+                                                data={evidenceDataList.filter(evidence => evidence.evidenceName == competency.id)}
+                                                keyField="id"
+                                                columns={evidenceColumns}
+                                                search
+                                            >
+                                                {(props) => (
+                                                    <div className="table-responsive">
+                                                        <div
+                                                            id="datatable-basic_filter"
+                                                            className="dataTables_filter pb-1 w-50"
+                                                        >
+                                                            <SearchBar
+                                                                className="form-control-sm"
+                                                                style={{
+                                                                    height: "40px",
+                                                                    width: 564,
+                                                                    fontSize: "16px",
+                                                                    padding: "10px",
+                                                                    borderRadius: "8px",
+                                                                }}
+                                                                placeholder="Pesquise por alguma evidência específica aqui ..."
+                                                                {...props.searchProps}
+                                                            />
+                                                        </div>
+                                                        <BootstrapTable
+                                                            {...props.baseProps}
+                                                            bootstrap4={true}
+                                                            pagination={pagination}
+                                                            bordered={false}
+                                                            selectRow={selectRow(competency.id)}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </ToolkitProvider>
                                             <hr />
                                         </div>
                                     ))}
@@ -599,52 +617,6 @@ export function ReviewScaleAndCriteriaForm() {
                         </div>
                     </div>
                 </CardBody>
-            </Card>
-
-            <Card>
-                <CardHeader>
-                    <h3 className="mb-0">Evidecias</h3>
-                    {/* <p className="text-sm mb-0">
-                        This is an exmaple of data table using the well known
-                        react-bootstrap-table2 plugin. This is a minimal setup in
-                        order to get started fast.
-                    </p> */}
-                </CardHeader>
-                <ToolkitProvider
-                    data={evidenceDataTable || []}
-                    keyField="id"
-                    columns={evidenceColumns}
-                    search
-                >
-                    {(props) => (
-                        <div className="table-responsive">
-                            <div
-                                id="datatable-basic_filter"
-                                className="dataTables_filter pb-1 w-50"
-                            >
-                                <SearchBar
-                                    className="form-control-sm"
-                                    style={{
-                                        height: "40px",
-                                        width: 564,
-                                        fontSize: "16px",
-                                        padding: "10px",
-                                        borderRadius: "8px",
-                                    }}
-                                    placeholder="Pesquise por alguma evidência expecifica aqui ..."
-                                    {...props.searchProps}
-                                />
-                            </div>
-                            <BootstrapTable
-                                {...props.baseProps}
-                                bootstrap4={true}
-                                pagination={pagination}
-                                bordered={false}
-                                selectRow={selectRow}
-                            />
-                        </div>
-                    )}
-                </ToolkitProvider>
             </Card>
             <Card>
                 <CardHeader>
