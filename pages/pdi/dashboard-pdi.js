@@ -39,8 +39,6 @@ function DashboardPDI() {
     );
 }
 
-console.log("typeUser :", TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT);
-
 TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'administrator'
     ? DashboardPDI.layout = Admin
     : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'customer'
@@ -48,6 +46,5 @@ TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'administrator'
         : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'employee'
             ? DashboardPDI.layout = Employee
             : DashboardPDI.layout = Admin));
-// DashboardPDI.layout = Performance;
 
 export default DashboardPDI;

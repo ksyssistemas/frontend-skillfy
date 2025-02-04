@@ -57,7 +57,6 @@ function CompetenciesPDI() {
         </>
     );
 }
-console.log("typeUser :", TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT);
 
 TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'administrator'
     ? CompetenciesPDI.layout = Admin
@@ -66,6 +65,5 @@ TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'administrator'
         : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'employee'
             ? CompetenciesPDI.layout = Employee
             : CompetenciesPDI.layout = Admin));
-// CompetenciesPDI.layout = Performance;
 
 export default CompetenciesPDI;

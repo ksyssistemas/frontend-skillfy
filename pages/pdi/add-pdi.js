@@ -48,7 +48,6 @@ function AddPDI() {
         </>
     );
 }
-console.log("typeUser :", TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT);
 
 TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'administrator'
     ? AddPDI.layout = Admin
@@ -57,6 +56,5 @@ TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'administrator'
         : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'employee'
             ? AddPDI.layout = Employee
             : AddPDI.layout = Admin));
-// AddPDI.layout = Performance;
 
 export default AddPDI;

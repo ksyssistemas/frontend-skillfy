@@ -61,7 +61,6 @@ export function PDIList() {
     }
 
     function handleShowPdiDetailsModal(pdiId) {
-        console.log(pdiId);
         setSelectedIdToShowPdiDetails(pdiId);
         handleOpenPdiModal();
     }
@@ -142,12 +141,12 @@ export function PDIList() {
         }
     }, [pdiDeleteSuccess]);
 
-    const showWarningAlert = (pdiId) => {
+    const showWarningAlert = (pdiId, pdiName) => {
         warningAlert(
             `${pdiId}`,
             "Atenção",
             "Deletar",
-            `Você deseja realmente excluir ${pdiId}?`,
+            `Você deseja realmente excluir ${pdiName}?`,
             "lg",
             () => handleDeletePdi(pdiId)
         );
@@ -240,7 +239,7 @@ export function PDIList() {
                                         </DropdownItem>
                                         <DropdownItem
                                             href="#pablo"
-                                            onClick={(e) => { e.preventDefault(); showWarningAlert(pdi.id); }}
+                                            onClick={(e) => { e.preventDefault(); showWarningAlert(pdi.id, pdi.name); }}
                                         >
                                             Deletar
                                         </DropdownItem>

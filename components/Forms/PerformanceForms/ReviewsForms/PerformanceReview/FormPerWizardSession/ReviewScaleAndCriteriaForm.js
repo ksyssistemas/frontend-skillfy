@@ -500,7 +500,18 @@ export function ReviewScaleAndCriteriaForm() {
 
         fetchEvidences();
     }, [])
-    console.log(evidenceDataList);
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const adjustedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+
+        const day = String(adjustedDate.getDate()).padStart(2, '0');
+        const month = String(adjustedDate.getMonth() + 1).padStart(2, '0');
+        const year = adjustedDate.getFullYear();
+
+        return `${day}/${month}/${year}`;
+    }
+
     if (isLoadingReviewScaleAndCriteriaData) {
         return (
             <PageChange />
@@ -557,9 +568,9 @@ export function ReviewScaleAndCriteriaForm() {
                                             <Table className="align-items-center table-flush" responsive>
                                                 <thead className="thead-light">
                                                     <tr>
-                                                        <th>Evidência</th>
                                                         <th>Descrição</th>
                                                         <th>Status</th>
+                                                        <th>Adicionada Em</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -568,9 +579,9 @@ export function ReviewScaleAndCriteriaForm() {
                                                             .filter(evidence => evidence.evidenceName == competency.id)
                                                             .map(evidence => (
                                                                 <tr key={evidence.id}>
-                                                                    <td>{evidence.evidenceName}</td>
-                                                                    <td>{evidence.description || "Carregando..."}</td>
+                                                                    <td>{evidence.description ?? "Carregando..."}</td>
                                                                     <td>{evidence.status ? "Ativo" : "Inativo"}</td>
+                                                                    <td>{formatDate(evidence.createdAt) ?? "Não informado"}</td>
                                                                 </tr>
                                                             ))
                                                     ) : (

@@ -36,7 +36,6 @@ function CompetenciesList({ handleShowCompetencieRegister }) {
     const [userCompetenciesAccountData, setUserCompetenciesAccountData] = useState([]);
 
     function handleCompetenciesUpdate(competencieId) {
-        console.log(competencieId);
         handleCompetenciesIdToUpdate(competencieId);
         handleOpenCompetenciesUpdateModal();
     }
@@ -82,7 +81,6 @@ function CompetenciesList({ handleShowCompetencieRegister }) {
     const [competencieDeleteError, setCompetencieDeleteError] = useState(null);
 
     const handleDeleteCompetencie = async (competencieId) => {
-        console.log(competencieId);
         if (competencieId) {
             try {
                 const deleteResponse = await useDeleteCompetencies(competencieId);
@@ -99,12 +97,12 @@ function CompetenciesList({ handleShowCompetencieRegister }) {
         }
     };
 
-    const showWarningAlert = (competencieId) => {
+    const showWarningAlert = (competencieId, competencieName) => {
         warningAlert(
             `${competencieId}`,
             "Atenção",
             "Deletar",
-            `Você deseja realmente excluir ${competencieId}?`,
+            `Você deseja realmente excluir ${competencieName}?`,
             "lg",
             () => handleDeleteCompetencie(competencieId)
         );
@@ -181,7 +179,7 @@ function CompetenciesList({ handleShowCompetencieRegister }) {
                                         </DropdownItem>
                                         <DropdownItem
                                             href="#pablo"
-                                            onClick={(e) => { e.preventDefault(); showWarningAlert(competencies.id); }}
+                                            onClick={(e) => { e.preventDefault(); showWarningAlert(competencies.id , competencies.name); }}
                                         >
                                             Deletar
                                         </DropdownItem>

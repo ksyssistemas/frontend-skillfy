@@ -124,7 +124,7 @@ const useUpdatePdi = () => {
                     payloadCompetencies.competencies = competencies;
                 };
 
-                console.log(payload);
+                // console.log(payload);
                 
                 const response = await fetch(`${process.env.NEXT_PUBLIC_PDI}/${pdiIdToUpdate}`, {
                     method: 'PATCH',
@@ -143,13 +143,13 @@ const useUpdatePdi = () => {
                 });
 
                 if (responseCompetencies.ok) {
-                    console.log('Competencia editada!');
+                    // console.log('Competencia editada!');
                 } else {
                     console.error('Erro em editar a competencia:', response.status);
                 }
 
                 if (response.ok) {
-                    console.log('Data sent successfully!');
+                    // console.log('Data sent successfully!');
                 } else {
                     console.error('Error in response:', response.status);
                 }
