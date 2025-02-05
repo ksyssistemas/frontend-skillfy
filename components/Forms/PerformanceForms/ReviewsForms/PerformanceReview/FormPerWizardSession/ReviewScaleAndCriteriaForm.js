@@ -323,9 +323,11 @@ export function ReviewScaleAndCriteriaForm() {
                         });
 
                         latestreviewScaleAndCriteriaData.current = parsedData; // Atualiza a ref para os dados carregados
-
+                        setCompetencies(parsedData.reviewCompetenceEvidenceData.map(c => c.competenceId));
+                        console.log("Competencies Array:", parsedData.reviewCompetenceEvidenceData.map(c => c.competenceId));
+                       
                         // setCompetencies(parsedData.reviewCompetenceEvidenceData);
-                        console.log("parsedData", parsedData.reviewCompetenceEvidenceData);
+                        // console.log("parsedData", parsedData.reviewCompetenceEvidenceData);
                     }
                 } else {
                     dispatch({ type: 'RESET_REVIEW_STATE' }); // Limpa o estado para evitar inconsistências
@@ -398,19 +400,28 @@ export function ReviewScaleAndCriteriaForm() {
     }, [competencies]);
 
     const handleCompetenciesChange = (e) => {
-        const selectedCompetencies = Array.from(e.target.selectedOptions).map(option => Number(option.value));
-
-        console.log("selectedCompetencies",selectedCompetencies);
-
+        // Converte as opções selecionadas em array
+        const selectedOptions = Array.from(e.target.selectedOptions);
+        
+        // Se houver opções selecionadas, mapeia para números; senão, usa o valor padrão.
+        const selectedCompetencies = selectedOptions.length > 0 
+          ? selectedOptions.map(option => Number(option.value))
+          : competenceValue;
+      
+        console.log("selectedCompetencies", selectedCompetencies);
+      
         setCompetencies(selectedCompetencies);
+      
+        // Para cada competência selecionada, atualiza o reducer
         selectedCompetencies.forEach(competenceId => {
-            dispatch({ type: 'SET_REVIEW_COMPETENCE', payload: { competenceId } });
+          dispatch({ type: 'SET_REVIEW_COMPETENCE', payload: { competenceId } });
         });
-
+      
+        // Calcula as competências removidas (aquelas que estavam no estado anterior mas não foram selecionadas agora)
         const removedCompetencies = competencies.filter(id => !selectedCompetencies.includes(id));
-
         removedCompetencies.forEach(competenceId => removeCompetence(competenceId));
-    };
+      };
+      
 
     useEffect(() => {
         if (competenciesDetails.length > 0) {
@@ -527,7 +538,9 @@ export function ReviewScaleAndCriteriaForm() {
         );
     }
     const competenceValue = competencies ? competencies : latestreviewScaleAndCriteriaData;
+    // const competenceValue = [1];
     console.log("competenceValue",competenceValue);
+    console.log("competencies", competencies);
     return (
         <>
             <Card>
@@ -546,7 +559,7 @@ export function ReviewScaleAndCriteriaForm() {
                                     className="form-control"
                                     data-minimum-results-for-search="Infinity"
                                     options={{ placeholder: "Selecione uma ou mais competências" }}
-                                    value={competencies}
+                                    value={competencies || competenceValue}
                                     multiple
                                     onChange={handleCompetenciesChange}
                                     data={competenciesDataList || []}
