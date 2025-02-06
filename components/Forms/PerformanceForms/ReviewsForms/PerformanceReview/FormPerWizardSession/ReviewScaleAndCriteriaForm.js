@@ -12,6 +12,7 @@ import {
     ListGroupItem,
     Table,
 } from "reactstrap";
+// import { useSelector } from 'react-redux';
 import { ModelSelectionReviewContext } from "../../../../../../contexts/PerformanceContext/ModelSelectionReviewContext";
 import { initialState, formReducer } from '../../../../../../reducers/ReviewForms/ReviewScaleAndCriteriaFormReducer';
 import PageChange from "../../../../../PageChange/PageChange";
@@ -64,29 +65,50 @@ export function ReviewScaleAndCriteriaForm() {
     const [selectedIds, setSelectedIds] = useState([]);
 
     // Configuração para seleção de linhas
-    const selectRow = (competenceId) => ({
-        mode: "checkbox",
-        clickToSelect: true,
-        onSelect: (row, isSelected) => {
-            console.log(row, isSelected, competenceId);
-            if (isSelected) {
-                dispatch({ type: "SET_REVIEW_EVIDENCE", payload: { competenceId, evidenceId: row.id } });
-            } else {
-                dispatch({ type: "REMOVE_REVIEW_EVIDENCE", payload: { competenceId, evidenceId: row.id } });
-            }
-        },
-        onSelectAll: (isSelect, rows) => {
-            if (isSelect) {
-                rows.forEach(row => {
-                    dispatch({ type: "SET_REVIEW_EVIDENCE", payload: { competenceId, evidenceId: row.id } });
-                });
-            } else {
-                rows.forEach(row => {
-                    dispatch({ type: "REMOVE_REVIEW_EVIDENCE", payload: { competenceId, evidenceId: row.id } });
-                });
-            }
-        }
-    });
+    const selectRow = (competenceId) => {
+        // Acesse os dados do reducer através de state
+        const selectedEvidenceIds = getSelectedEvidenceIds(
+            competenceId,
+            state.reviewScaleAndCriteriaData.reviewCompetenceEvidenceData
+        );
+
+        return {
+            mode: "checkbox",
+            clickToSelect: true,
+            selected: selectedEvidenceIds, // Linhas que já devem estar selecionadas
+            onSelect: (row, isSelected) => {
+                console.log(row, isSelected, competenceId);
+                if (isSelected) {
+                    dispatch({
+                        type: "SET_REVIEW_EVIDENCE",
+                        payload: { competenceId, evidenceId: row.id },
+                    });
+                } else {
+                    dispatch({
+                        type: "REMOVE_REVIEW_EVIDENCE",
+                        payload: { competenceId, evidenceId: row.id },
+                    });
+                }
+            },
+            onSelectAll: (isSelect, rows) => {
+                if (isSelect) {
+                    rows.forEach(row => {
+                        dispatch({
+                            type: "SET_REVIEW_EVIDENCE",
+                            payload: { competenceId, evidenceId: row.id },
+                        });
+                    });
+                } else {
+                    rows.forEach(row => {
+                        dispatch({
+                            type: "REMOVE_REVIEW_EVIDENCE",
+                            payload: { competenceId, evidenceId: row.id },
+                        });
+                    });
+                }
+            },
+        };
+    };
 
     const removeCompetence = (competenceId) => {
         dispatch({ type: 'REMOVE_REVIEW_COMPETENCE', payload: { competenceId } });
@@ -322,12 +344,9 @@ export function ReviewScaleAndCriteriaForm() {
                             },
                         });
 
-                        latestreviewScaleAndCriteriaData.current = parsedData; // Atualiza a ref para os dados carregados
+                        latestreviewScaleAndCriteriaData.current = parsedData; 
                         setCompetencies(parsedData.reviewCompetenceEvidenceData.map(c => c.competenceId));
-                        console.log("Competencies Array:", parsedData.reviewCompetenceEvidenceData.map(c => c.competenceId));
-                       
-                        // setCompetencies(parsedData.reviewCompetenceEvidenceData);
-                        // console.log("parsedData", parsedData.reviewCompetenceEvidenceData);
+
                     }
                 } else {
                     dispatch({ type: 'RESET_REVIEW_STATE' }); // Limpa o estado para evitar inconsistências
@@ -340,6 +359,12 @@ export function ReviewScaleAndCriteriaForm() {
         };
         loadreviewScaleAndCriteriaData();
     }, []);
+
+    const getSelectedEvidenceIds = (competenceId, reviewCompetenceEvidenceData) => {
+        const competenceData = reviewCompetenceEvidenceData.find(item => item.competenceId === competenceId);
+        return competenceData ? competenceData.evidence.map(e => e.id) : [];
+    };
+
 
     // Atualize a lógica de persistência para incluir verificações e evitar sobrescrever valores críticos
     useEffect(() => {
@@ -369,7 +394,7 @@ export function ReviewScaleAndCriteriaForm() {
 
     const [competenciesDataList, setCompetenciesDataList] = useState([]);
     const [competenciesDetails, setCompetenciesDetails] = useState([]);
-    
+
     const [occupationalGroups, setOccupationalGroups] = useState([]);
     const [skillClassifications, setSkillClassifications] = useState([]);
     const [evidenceDataList, setEvidenceDataList] = useState([]);
@@ -400,35 +425,29 @@ export function ReviewScaleAndCriteriaForm() {
     }, [competencies]);
 
     const handleCompetenciesChange = (e) => {
-        // Converte as opções selecionadas em array
         const selectedOptions = Array.from(e.target.selectedOptions);
-        
-        // Se houver opções selecionadas, mapeia para números; senão, usa o valor padrão.
-        const selectedCompetencies = selectedOptions.length > 0 
-          ? selectedOptions.map(option => Number(option.value))
-          : competenceValue;
-      
-        console.log("selectedCompetencies", selectedCompetencies);
-      
+
+        const selectedCompetencies = selectedOptions.length > 0
+            ? selectedOptions.map(option => Number(option.value))
+            : competenceValue;
+
         setCompetencies(selectedCompetencies);
-      
-        // Para cada competência selecionada, atualiza o reducer
+
         selectedCompetencies.forEach(competenceId => {
-          dispatch({ type: 'SET_REVIEW_COMPETENCE', payload: { competenceId } });
+            dispatch({ type: 'SET_REVIEW_COMPETENCE', payload: { competenceId } });
         });
-      
-        // Calcula as competências removidas (aquelas que estavam no estado anterior mas não foram selecionadas agora)
+
         const removedCompetencies = competencies.filter(id => !selectedCompetencies.includes(id));
         removedCompetencies.forEach(competenceId => removeCompetence(competenceId));
-      };
-      
+    };
+
 
     useEffect(() => {
         if (competenciesDetails.length > 0) {
             const occupationalPromises = Promise.all(
                 competenciesDetails.map(({ occupationalGroupId }) =>
                     useFindOccupationalGroup(occupationalGroupId)
-                )   
+                )
             );
 
             const skillPromises = Promise.all(
@@ -531,16 +550,13 @@ export function ReviewScaleAndCriteriaForm() {
         return `${day}/${month}/${year}`;
     }
 
-    console.log("competenciesDetails",competenciesDetails);
     if (isLoadingReviewScaleAndCriteriaData) {
         return (
             <PageChange />
         );
     }
     const competenceValue = competencies ? competencies : latestreviewScaleAndCriteriaData;
-    // const competenceValue = [1];
-    console.log("competenceValue",competenceValue);
-    console.log("competencies", competencies);
+
     return (
         <>
             <Card>
@@ -567,7 +583,7 @@ export function ReviewScaleAndCriteriaForm() {
                             </Col>
                         </div>
                         <div>
-                            {competencies.length > 0 ? (
+                            {competencies.length > 0 && (
                                 <>
                                     <h3>Detalhes das Competências:</h3>
                                     {competenciesDetails.map((competency, index) => (
@@ -595,10 +611,7 @@ export function ReviewScaleAndCriteriaForm() {
                                             >
                                                 {(props) => (
                                                     <div className="table-responsive">
-                                                        <div
-                                                            id="datatable-basic_filter"
-                                                            className="dataTables_filter pb-1 w-50"
-                                                        >
+                                                        <div id="datatable-basic_filter" className="dataTables_filter pb-1 w-50">
                                                             <SearchBar
                                                                 className="form-control-sm"
                                                                 style={{
@@ -614,7 +627,7 @@ export function ReviewScaleAndCriteriaForm() {
                                                         </div>
                                                         <BootstrapTable
                                                             {...props.baseProps}
-                                                            bootstrap4={true}
+                                                            bootstrap4
                                                             pagination={pagination}
                                                             bordered={false}
                                                             selectRow={selectRow(competency.id)}
@@ -626,7 +639,7 @@ export function ReviewScaleAndCriteriaForm() {
                                         </div>
                                     ))}
                                 </>
-                            ) : null}
+                            )}
                         </div>
                     </div>
                 </CardBody>

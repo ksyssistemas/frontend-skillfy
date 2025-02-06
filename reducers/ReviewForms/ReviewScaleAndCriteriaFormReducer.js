@@ -118,16 +118,6 @@ export const formReducer = (state, action) => {
                     rulerOptionSelected: Array.isArray(action.payload) ? action.payload : [],
                 },
             };
-        // case 'SET_REVIEW_EVIDENCE_DATA_LIST':
-        //     return {
-        //         ...state,
-        //         reviewScaleAndCriteriaData: {
-        //             ...state.reviewScaleAndCriteriaData,
-        //             reviewEvidenceData: Array.isArray(action.payload)
-        //                 ? action.payload // Para onSelectAll
-        //                 : action.payload(state), // Para onSelect
-        //         },
-        //     };
         case 'SET_REVIEW_COMPETENCIE_DATA_LIST':
             return {
                 ...state,
@@ -138,7 +128,7 @@ export const formReducer = (state, action) => {
             };
         case 'SET_REVIEW_COMPETENCE': {
             const { competenceId } = action.payload;
-            // Verifica se a competência já está na lista
+
             const exists = state.reviewScaleAndCriteriaData.reviewCompetenceEvidenceData
                 .some(item => item.competenceId === competenceId);
 
@@ -154,9 +144,8 @@ export const formReducer = (state, action) => {
                     },
                 };
             }
-            return state; // Se já existir, não faz nada
+            return state; 
         }
-
         case 'SET_REVIEW_EVIDENCE': {
             const { competenceId, evidenceId } = action.payload;
             return {
@@ -175,7 +164,6 @@ export const formReducer = (state, action) => {
                 },
             };
         }
-
         case 'REMOVE_REVIEW_EVIDENCE': {
             const { competenceId, evidenceId } = action.payload;
             return {
@@ -194,7 +182,6 @@ export const formReducer = (state, action) => {
                 },
             };
         }
-
         case 'REMOVE_REVIEW_COMPETENCE': {
             const { competenceId } = action.payload;
             return {
@@ -206,7 +193,6 @@ export const formReducer = (state, action) => {
                 },
             };
         }
-
         case 'CLEAR_FORM':
             return initialState;
 
