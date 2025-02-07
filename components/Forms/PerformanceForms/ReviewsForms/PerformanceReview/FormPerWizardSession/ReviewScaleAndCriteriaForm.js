@@ -344,7 +344,7 @@ export function ReviewScaleAndCriteriaForm() {
                             },
                         });
 
-                        latestreviewScaleAndCriteriaData.current = parsedData; 
+                        latestreviewScaleAndCriteriaData.current = parsedData;
                         setCompetencies(parsedData.reviewCompetenceEvidenceData.map(c => c.competenceId));
 
                     }
@@ -550,6 +550,12 @@ export function ReviewScaleAndCriteriaForm() {
         return `${day}/${month}/${year}`;
     }
 
+    const removeOptionRulerData = (id) => {
+        dispatch({ type: 'REMOVE_RULER_OPTION_DATA', payload: { id } });
+        dispatch({ type: 'RESET_REVIEW_RULER_TYPE' });
+        dispatch({ type: 'RESET_SELECTED_RULER_TYPE' });
+    };
+
     if (isLoadingReviewScaleAndCriteriaData) {
         return (
             <PageChange />
@@ -704,51 +710,62 @@ export function ReviewScaleAndCriteriaForm() {
                             >
                                 <Row>
                                     {state.reviewScaleAndCriteriaData.reviewRulerOptionSelected ? (
-
                                         state.reviewScaleAndCriteriaData.rulerOptionData.map((rulerType) => (
-                                            <>
-                                                <CardBody className="py-1 mx-2" key={rulerType.id}>
-                                                    <Row>
-                                                        <Col className="my-2" md="4">
-                                                            <Row className="flex-column">
-                                                                <h6 className="text-uppercase ls-1 mb-1" style={{ color: "#ff623f" }} >
-                                                                    Régua do tipo{' '}
-                                                                </h6>
-                                                                <h5 className="font-weith-bold text-lg text-dark mb-0">{rulerType.ruleType}</h5>
-                                                            </Row>
-                                                            <Row className="flex-column">
-                                                                <h6 className="text-uppercase ls-1 mb-1" style={{ color: "#ff623f" }} >
-                                                                    Alternativas{' '}
-                                                                </h6>
-                                                                <h5 className="font-weith-bold text-lg text-dark mb-0">{rulerType.optionsCount}</h5>
-                                                            </Row>
-                                                        </Col>
-                                                        <Col className="mb-2 d-flex flex-row justify-content-start align-items-center" md="8">
-                                                            {rulerType.options && rulerType.options.length > 0 ? (
-                                                                rulerType.options.map((option, index) => (
-                                                                    <Card key={index} className="bg-orange m-2" style={{ width: 96, height: 96 }}>
-                                                                        <CardBody className="d-flex flex-column justify-content-start align-items-center">
-                                                                            <div>
-                                                                                <h3 className="mb-0 text-lighter text-center">{option.label}</h3>
-                                                                            </div>
-                                                                            <div className="mb-2 d-flex">
-                                                                                <h4 className="text-lighter mr-2">Peso</h4>
-                                                                                <h4 className="mb-0 text-lighter">{option.weight}</h4>
-                                                                            </div>
-                                                                        </CardBody>
-                                                                    </Card>
-                                                                ))
-                                                            ) : (
-                                                                <Col md="12">
-                                                                    <small>Nenhuma opção encontrada.</small>
-                                                                </Col>
-                                                            )}
-                                                        </Col>
-                                                    </Row>
-                                                </CardBody>
-                                            </>
+                                            <CardBody className="py-1 mx-2" key={rulerType.id}>
+                                                <Row>
+                                                    <Col className="my-2" md="3">
+                                                        <Row className="flex-column">
+                                                            <h6 className="text-uppercase ls-1 mb-1" style={{ color: "#ff623f" }}>
+                                                                Régua do tipo{' '}
+
+                                                            </h6>
+                                                            <h5 className="font-weith-bold text-lg text-dark mb-0">{rulerType.ruleType}</h5>
+                                                        </Row>
+                                                        <Row className="flex-column">
+                                                            <h6 className="text-uppercase ls-1 mb-1" style={{ color: "#ff623f" }}>
+                                                                Alternativas{' '}
+                                                            </h6>
+                                                            <h5 className="font-weith-bold text-lg text-dark mb-0">{rulerType.optionsCount}</h5>
+                                                        </Row>
+                                                    </Col>
+                                                    <Col className="my-2" md="1">
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-sm btn-outline-danger"
+                                                            onClick={() => removeOptionRulerData(rulerType.id)}
+                                                        >
+                                                            X
+                                                        </button>
+                                                    </Col>
+                                                    <Col className="mb-2 d-flex flex-row justify-content-start align-items-center" md="8">
+                                                        {rulerType.options && rulerType.options.length > 0 ? (
+                                                            rulerType.options.map((option, index) => (
+                                                                <Card key={index} className="bg-orange m-2" style={{ width: 96, height: 96 }}>
+                                                                    <CardBody className="d-flex flex-column justify-content-start align-items-center">
+                                                                        <div>
+                                                                            <h3 className="mb-0 text-lighter text-center">{option.label}</h3>
+                                                                        </div>
+                                                                        <div className="mb-2 d-flex">
+                                                                            <h5 className="text-lighter mr-2">Peso</h5>
+                                                                            <h5 className="mb-0 text-lighter">{option.weight}</h5>
+                                                                        </div>
+                                                                    </CardBody>
+                                                                </Card>
+                                                            ))
+                                                        ) : (
+                                                            <Col md="12">
+                                                                <small>Nenhuma opção encontrada.</small>
+                                                            </Col>
+                                                        )}
+                                                    </Col>
+                                                </Row>
+
+
+                                            </CardBody>
                                         ))
-                                    ) : (<></>)}
+                                    ) : (
+                                        <></>
+                                    )}
                                 </Row>
                             </Col>
                         </div>

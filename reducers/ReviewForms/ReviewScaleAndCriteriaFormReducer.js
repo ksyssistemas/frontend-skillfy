@@ -45,6 +45,14 @@ export const formReducer = (state, action) => {
                     reviewRulerType: action.payload,
                 },
             };
+        case 'RESET_REVIEW_RULER_TYPE':
+            return {
+                ...state,
+                reviewScaleAndCriteriaData: {
+                    ...state.reviewScaleAndCriteriaData,
+                    reviewRulerType: initialState.reviewScaleAndCriteriaData.reviewRulerType
+                }
+            };
         case 'SET_REVIEW_RULER_TYPE_STATE':
             return {
                 ...state,
@@ -110,6 +118,17 @@ export const formReducer = (state, action) => {
                     rulerOptionData: Array.isArray(action.payload) ? action.payload : [],
                 },
             };
+        case 'REMOVE_RULER_OPTION_DATA': {
+            const { id } = action.payload;
+            return {
+                ...state,
+                reviewScaleAndCriteriaData: {
+                    ...state.reviewScaleAndCriteriaData,
+                    rulerOptionData: state.reviewScaleAndCriteriaData.rulerOptionData
+                        .filter(item => item.id !== id), // Agora removerá corretamente
+                },
+            };
+        }
         case 'SET_RULER_OPTION_SELECTED_LIST':
             return {
                 ...state,
@@ -144,7 +163,7 @@ export const formReducer = (state, action) => {
                     },
                 };
             }
-            return state; 
+            return state;
         }
         case 'SET_REVIEW_EVIDENCE': {
             const { competenceId, evidenceId } = action.payload;
