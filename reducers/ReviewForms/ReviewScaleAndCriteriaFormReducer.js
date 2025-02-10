@@ -212,6 +212,14 @@ export const formReducer = (state, action) => {
                 },
             };
         }
+        case 'RESET_SELECTED_COMPETENCIE_OPTIONS':
+            return {
+                ...state,
+                reviewScaleAndCriteriaData: {
+                    ...state.reviewScaleAndCriteriaData,
+                    reviewCompetenceEvidenceData: initialState.reviewScaleAndCriteriaData.reviewCompetenceEvidenceData
+                }
+            };
         case 'CLEAR_FORM':
             return initialState;
 

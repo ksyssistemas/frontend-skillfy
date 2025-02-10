@@ -12,6 +12,7 @@ import {
     ListGroupItem,
     Table,
 } from "reactstrap";
+import $ from 'jquery';
 // import { useSelector } from 'react-redux';
 import { ModelSelectionReviewContext } from "../../../../../../contexts/PerformanceContext/ModelSelectionReviewContext";
 import { initialState, formReducer } from '../../../../../../reducers/ReviewForms/ReviewScaleAndCriteriaFormReducer';
@@ -30,6 +31,7 @@ import { useFindSkillClassification } from '../../../../../../hooks/DefinitionOp
 import { useFindOccupationalGroup } from '../../../../../../hooks/DefinitionOptionsReview/OccupationalGroups/useFindOccupationalGroup';
 import { employmentContractDataSearchAndProcess } from '../../../../../../util/employmentContractDataSearchAndProcess';
 import { useFindCaptionOptionByCaptionType } from "../../../../../../hooks/DefinitionOptionsReview/AppraisalCaptions/useFindCaptionOptionByCaptionType";
+import { resetFormAndLocalStorage } from "../../../../../../util/resetReviewFormData";
 
 export function ReviewScaleAndCriteriaForm() {
 
@@ -439,9 +441,31 @@ export function ReviewScaleAndCriteriaForm() {
 
         const removedCompetencies = competencies.filter(id => !selectedCompetencies.includes(id));
         removedCompetencies.forEach(competenceId => removeCompetence(competenceId));
+        
     };
 
-
+    $(document).ready(function () {
+        function toggleRemoveButton() {
+            let selectedItems = $('.select2-selection__choice');
+            let removeAllButton = $('#removeLastCompetencieInSelect');
+    
+            if (selectedItems.length === 1) {
+                selectedItems.find('.select2-selection__choice__remove').hide();
+                removeAllButton.show(); 
+            } else {
+                selectedItems.find('.select2-selection__choice__remove').show();
+                removeAllButton.hide();
+            }
+        }
+    
+        $('#selectCompetencie').on('select2:select select2:unselect', function () {
+            setTimeout(toggleRemoveButton, 10); 
+        });
+    
+        toggleRemoveButton();
+    });
+    
+    
     useEffect(() => {
         if (competenciesDetails.length > 0) {
             const occupationalPromises = Promise.all(
@@ -556,6 +580,33 @@ export function ReviewScaleAndCriteriaForm() {
         dispatch({ type: 'RESET_SELECTED_RULER_TYPE' });
     };
 
+    const {
+        currentStep,
+        clearStepIndex,
+        handleClearStepIndex
+    } = useContext(ModelSelectionReviewContext);
+
+    useEffect(() => {
+        if (clearStepIndex === 3) {
+            resetFormAndLocalStorage(
+                true,
+                3,
+                clearStepIndex,
+                'reviewScaleAndCriteriaData',
+                'RESET_REVIEW_DATA',
+                handleClearStepIndex,
+                dispatch);
+            setCompetencies([]);
+        }
+    }, [clearStepIndex, dispatch]);
+
+    const removeAllOptionsCompetencies = () => {
+        setCompetencies([]);
+        dispatch({ type: 'RESET_SELECTED_COMPETENCIE_OPTIONS' });
+    }
+
+   
+      
     if (isLoadingReviewScaleAndCriteriaData) {
         return (
             <PageChange />
@@ -577,7 +628,7 @@ export function ReviewScaleAndCriteriaForm() {
                                     Selecione a(s) Competência(s)
                                 </label>
                                 <Select2
-                                    id="validationCompetencia"
+                                    id="selectCompetencie"
                                     className="form-control"
                                     data-minimum-results-for-search="Infinity"
                                     options={{ placeholder: "Selecione uma ou mais competências" }}
@@ -586,6 +637,17 @@ export function ReviewScaleAndCriteriaForm() {
                                     onChange={handleCompetenciesChange}
                                     data={competenciesDataList || []}
                                 />
+                            </Col>
+                            <Col className="mt-4 pt-3" md="1">
+                                <button
+                                    id="removeLastCompetencieInSelect"
+                                    type="button"
+                                    title="Revomer a última competência?"
+                                    className="btn btn-sm btn-outline-danger"
+                                    onClick={() => removeAllOptionsCompetencies()}
+                                >
+                                    X
+                                </button>
                             </Col>
                         </div>
                         <div>
