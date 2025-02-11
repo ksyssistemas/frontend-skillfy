@@ -35,6 +35,9 @@ export const initialState = {
 
         listPairEmployeeDataToReview: {},
         listPairEmployeeDataToReviewState: '',
+        randomPairTagsInput: {},
+        removedRandomPairItems: {},
+        
         pairTagsInput: {},
         removedPairItems: {},
 
@@ -255,6 +258,28 @@ export const formReducer = (state, action) => {
                 reviewParticipantsSelectionData: {
                     ...state.reviewParticipantsSelectionData,
                     listPairEmployeeDataToReviewState: action.payload,
+                },
+            };
+        case 'SET_RANDOM_PAIR_TAGS_INPUT':
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData,
+                    randomPairTagsInput: {
+                        ...state.reviewParticipantsSelectionData.pairTagsInput,
+                        ...action.payload,
+                    },
+                },
+            };
+        case 'SET_REMOVED_RANDOM_PAIR_ITEMS':
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData,
+                    removedRandomPairItems: {
+                        ...state.reviewParticipantsSelectionData.removedPairItems,
+                        ...action.payload,
+                    },
                 },
             };
         case 'SET_PAIR_TAGS_INPUT':
