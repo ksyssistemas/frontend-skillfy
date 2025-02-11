@@ -1,46 +1,58 @@
 import React from "react";
 import TagsInput from "../../../../TagsInput/TagsInput";
 
-const EmployeePairsInput = ({ listPairEmployeeDataToReview, setListPairEmployeeDataToReview }) => {
+const EmployeePairsInput = ({ handleTagRandomPairRemoval, state, dispatch }) => {
+  const {
+    randomPairTagsInput,
+    listPairEmployeeDataToReview,
+    pairsNumberToDrawn
+  } = state.reviewParticipantsSelectionData;
+
   return (
     <div className="d-flex flex-column gap-2">
-      {listPairEmployeeDataToReview.map((employeeData, index) => (
-        <div key={index} className="mb-2">
-          {/* Renderizar o employeeName como rótulo */}
-          <p
-            id={`tagsinput-${index}`}
-            className="text-muted text-sm mb-0"
-            //className="form-control-label font-weight-bold mb-2"
-          >
-            {employeeData.employeeName}
-          </p>
+      {Object.values(listPairEmployeeDataToReview || {}).map((employeeData) => {
+         // Define se deve exibir mensagem de erro/aviso
+         const isInsufficient = pairsNumberToDrawn < 0 || employeeData.insufficientPairNumbers;
+         // Valor atual das tags para este item:
+         const currentTags = isInsufficient
+           ? [employeeData.insufficientPairNumbers || "Número inválido de pares"]
+           : employeeData.pairs.map(pair => pair.pairNameOnReview);
 
-          {/* Componente TagsInput para os pares */}
-          <TagsInput
-            onlyUnique
-            className="bootstrap-tagsinput"
-            value={employeeData.pairs.map((pair) => pair.pairNameOnReview)} // Apenas os nomes dos pares
-            renderInput={() => null} // Não renderizar o campo de entrada
-            tagProps={{ className: "tag badge badge-info mr-1 mb-0 mt-0" }}
-            inputProps={{
-              id: `tagsinput-${index}`,
-              //className: "form-control",
-              //placeholder: "Adicionar pares...",
-            }}
-            // onChange={(updatedValues) => {
-            //   // Atualizar os pares no estado original
-            //   const updatedPairs = updatedValues.map((pairName, pairIndex) => ({
-            //     ...employeeData.pairs[pairIndex],
-            //     pairNameOnReview: pairName,
-            //   }));
+        return (
+          <div key={employeeData.employeeId} className="mb-2">
+            <p id={`tagsinput-${employeeData.employeeId}`} className="text-muted text-sm mb-0">
+              {employeeData.employeeName}
+            </p>
+            <TagsInput
+              onlyUnique
+              className="bootstrap-tagsinput"
+              onChange={async (updatedTags) => {
+                const removedTag = currentTags.find((tag) => !updatedTags.includes(tag));
 
-            //   const updatedData = [...listPairEmployeeDataToReview];
-            //   updatedData[index] = { ...employeeData, pairs: updatedPairs };
-            //   setListPairEmployeeDataToReview(updatedData);
-            // }}
-          />
-        </div>
-      ))}
+                if (removedTag) {
+                  await handleTagRandomPairRemoval(
+                    employeeData.employeeId,
+                    removedTag,
+                    state,
+                    dispatch
+                  );
+                } else {
+                  dispatch({
+                    type: "SET_RANDOM_PAIR_TAGS_INPUT",
+                    payload: { [employeeData.employeeId]: updatedTags },
+                  });
+                }
+              }}
+              value={currentTags}
+              tagProps={{ className: "tag badge badge-info mr-1 mb-0 mt-0" }}
+              inputProps={{
+                className: "",
+                placeholder: "",
+              }}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 };

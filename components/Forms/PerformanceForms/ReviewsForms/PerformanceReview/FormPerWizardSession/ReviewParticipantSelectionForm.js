@@ -152,12 +152,13 @@ export function ReviewParticipantSelectionForm() {
     }
 
     function handleRandomSelectionSelfReviews() {
-        if (state.reviewParticipantsSelectionData.selfReviewsNumberToDrawn > 0 &&
-            state.reviewParticipantsSelectionData.selfReviewsNumberToDrawn <=
-            state.reviewParticipantsSelectionData.listEmployeeDataToReview.length) {
-            // Realiza o sorteio de colaboradores
-            const shuffled = [...listEmployeeDataToReview].sort(() => 0.5 - Math.random()); // Embaralha os colaboradores
-            const selectedEmployees = shuffled.slice(0, selfReviewsNumberToDrawn); // Seleciona o número solicitado
+        const { selfReviewsNumberToDrawn, listEmployeeDataToReview, employeesSelectedAmount } =
+            state.reviewParticipantsSelectionData;
+
+        if (selfReviewsNumberToDrawn > 0 && selfReviewsNumberToDrawn <= listEmployeeDataToReview.length) {
+
+            const shuffled = [...listEmployeeDataToReview].sort(() => 0.5 - Math.random());
+            const selectedEmployees = shuffled.slice(0, selfReviewsNumberToDrawn);
 
             dispatch({ type: 'SET_LIST_EMPLOYEE_DATA_TO_SELF_REVIEW', payload: selectedEmployees });
 
@@ -167,7 +168,7 @@ export function ReviewParticipantSelectionForm() {
             });
             dispatch({
                 type: 'SET_EMPLOYEES_SELECTED_AMOUNT',
-                payload: state.reviewParticipantsSelectionData.employeesSelectedAmount + selectedEmployees.length,
+                payload: employeesSelectedAmount + selectedEmployees.length,
             });
             dispatch({ type: 'SET_SHOULD_PRESENT_NAMES_SELECTED_SELF_REVIEW', payload: true });
         } else {
@@ -175,45 +176,172 @@ export function ReviewParticipantSelectionForm() {
         }
     }
 
-    function handleRandomSelectionPairsEmployees() {
-        if (state.reviewParticipantsSelectionData.pairsNumberToDrawn > 0 &&
-            state.reviewParticipantsSelectionData.listEmployeeDataToSelfReview.length > 0) {
-            let newPairs = [];
+    async function handleRandomSelectionPairsEmployees(state, dispatch) {
+        try {
+            const {
+                listEmployeeDataToReview,
+                listEmployeeDataToSelfReview,
+                pairsNumberToDrawn,
+                randomPairTagsInput,
+                employeesSelectedAmount,
+                removedRandomPairItems
+            } = state.reviewParticipantsSelectionData;
+
+            if (pairsNumberToDrawn <= 0 && listEmployeeDataToSelfReview.length === 0) {
+                console.warn("Número de pares inválido ou lista de autoavaliação vazia.");
+                return;
+            }
+
+            let newPairs = {};
+            let newRandomPairTagsInput = {};
+            let newRemovedRandomPairItems = { ...removedRandomPairItems };
             let totalSelected = 0;
 
-            handleSelectionAllRegisteredUserslistEmployeeDataToSelfReview.forEach((selfReviewEmployee) => {
-                // Filtra os colaboradores do mesmo departamento
-                const sameDepartmentEmployees = listEmployeeDataToReview.filter(
-                    (employee) => employee.departmentId === selfReviewEmployee.departmentId
+            for (const selfReviewEmployee of listEmployeeDataToSelfReview) {
+                // Filtra colaboradores do mesmo departamento e remove o próprio colaborador
+                const availableEmployees = listEmployeeDataToReview.filter(
+                    (employee) =>
+                        employee.departmentId === selfReviewEmployee.departmentId &&
+                        employee.id !== selfReviewEmployee.id
                 );
 
                 // Embaralha os colaboradores do mesmo departamento
-                const shuffled = [...sameDepartmentEmployees].sort(() => 0.5 - Math.random());
+                const shuffled = [...availableEmployees].sort(() => 0.5 - Math.random());
 
-                // Seleciona a quantidade de pares solicitada
-                const selectedPairs = shuffled.slice(0, pairsNumberToDrawn);
-
-                newPairs.push({
+                // Inicializa objeto para o funcionário atual
+                newPairs[selfReviewEmployee.id] = {
                     employeeId: selfReviewEmployee.id,
                     employeeName: `${selfReviewEmployee.name} ${selfReviewEmployee.lastName}`,
-                    pairs: selectedPairs.map((pair) => ({
+                    pairs: [],
+                };
+
+                if (shuffled.length < pairsNumberToDrawn) {
+                    // Se não houver pares suficientes, salvar employeeId e employeeName no `randomPairTagsInput`
+                    newPairs[selfReviewEmployee.id].insufficientPairNumbers = "Não há colaboradores suficientes para sortear.";
+
+                    newRandomPairTagsInput[selfReviewEmployee.id] = [`${selfReviewEmployee.name} ${selfReviewEmployee.lastName}`];
+
+                    newRemovedRandomPairItems[selfReviewEmployee.id] = [{
+                        id: selfReviewEmployee.id,
+                        text: `${selfReviewEmployee.name} ${selfReviewEmployee.lastName}`,
+                    }];
+                } else {
+                    // Seleciona a quantidade de pares solicitada
+                    const selectedPairs = shuffled.slice(0, pairsNumberToDrawn);
+
+                    newPairs[selfReviewEmployee.id].pairs = selectedPairs.map((pair) => ({
                         pairIdOnReview: pair.id,
                         pairNameOnReview: `${pair.name} ${pair.lastName}`,
-                    })),
-                });
+                    }));
 
-                // Incrementa o total selecionado
-                totalSelected += selectedPairs.length;
-            });
+                    newRandomPairTagsInput[selfReviewEmployee.id] = selectedPairs.map(
+                        (pair) => `${pair.name} ${pair.lastName}`
+                    );
 
-            dispatch({ type: 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW', payload: newPairs });
-            dispatch({
-                type: 'SET_EMPLOYEES_SELECTED_AMOUNT',
-                payload: state.reviewParticipantsSelectionData.employeesSelectedAmount + totalSelected,
-            });
-            dispatch({ type: 'SET_SHOULD_PRESENT_NAMES_SELECTED_PAIRS', payload: true });
-        } else {
-            console.warn("Número de pares inválido ou lista de autoavaliação vazia.");
+                    newRemovedRandomPairItems[selfReviewEmployee.id] = selectedPairs.map((pair) => ({
+                        id: pair.id,
+                        text: `${pair.name} ${pair.lastName}`,
+                    }));
+
+                    totalSelected += selectedPairs.length;
+                }
+            }
+
+            console.log("newPairs: ", newPairs);
+            console.log("newRandomPairTagsInput: ", newRandomPairTagsInput);
+            console.log("newRemovedRandomPairItems: ", newRemovedRandomPairItems);
+
+            // Atualiza os estados via reducer
+            await dispatch({ type: 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW', payload: newPairs });
+            await dispatch({ type: 'SET_EMPLOYEES_SELECTED_AMOUNT', payload: employeesSelectedAmount + totalSelected });
+            await dispatch({ type: 'SET_RANDOM_PAIR_TAGS_INPUT', payload: newRandomPairTagsInput });
+            await dispatch({ type: 'SET_REMOVED_RANDOM_PAIR_ITEMS', payload: newRemovedRandomPairItems });
+            await dispatch({ type: 'SET_SHOULD_PRESENT_NAMES_SELECTED_PAIRS', payload: true });
+
+        } catch (error) {
+            console.error("Erro ao processar a seleção aleatória de pares:", error);
+        }
+    }
+
+    async function handleTagRandomPairRemoval(
+        employeeId,
+        tagToRemove,
+        state,
+        dispatch
+    ) {
+        try {
+            const {
+                listPairEmployeeDataToReview,
+                randomPairTagsInput,
+                removedRandomPairItems,
+            } = state.reviewParticipantsSelectionData;
+
+            if (!employeeId || !tagToRemove) {
+                console.warn("Parâmetros inválidos ao remover par aleatório.");
+                return;
+            }
+
+            const currentTags = randomPairTagsInput[employeeId] || [];
+            if (!Array.isArray(currentTags)) {
+                console.error("Erro: randomPairTagsInput[lideradoId] não é um array.", currentTags);
+                return;
+            }
+
+            // Remove a tag da lista
+            const updatedTags = currentTags.filter(tag => tag !== tagToRemove);
+
+            // Obtém os pares atuais do liderado
+            const employeeData = listPairEmployeeDataToReview[employeeId] || {};
+            const currentPairs = employeeData.pairs || [];
+            const insufficientPairNumbers = employeeData.insufficientPairNumbers;
+
+            // Obtém os pares removidos atuais do colaborador
+            const currentRemovedPairs = removedRandomPairItems[employeeId] || [];
+            console.log("currentRemovedPairs: ", currentRemovedPairs);
+            console.log("tagToRemove: ", tagToRemove);
+            let removedItem = null;
+
+            if (currentPairs.length === 0 && insufficientPairNumbers) {
+                // Se não há pares e há um aviso de insuficiência, encontrar pelo nome do colaborador
+                removedItem = { employeeName: tagToRemove };
+            } else {
+                // Busca normal pelo nome do par na lista de pares
+                removedItem = currentPairs.find(pair => pair.pairNameOnReview === tagToRemove);
+            }
+    
+            if (!removedItem) {
+                console.warn("Par removido não encontrado na lista original.");
+                return;
+            }
+    
+            // Remove o item da lista de pares do liderado (caso existam pares)
+            const updatedPairs = currentPairs.filter(pair => pair.pairNameOnReview !== tagToRemove);
+    
+            // Atualiza a lista de pares do liderado
+            const updatedListPairEmployeeDataToReview = {
+                ...listPairEmployeeDataToReview,
+                [employeeId]: {
+                    ...employeeData,
+                    pairs: updatedPairs,
+                },
+            };
+    
+            // Remove o item correto da lista de removidos, sempre considerando `text`
+            const updatedRemovedRandomPairItems = {
+                ...removedRandomPairItems,
+                [employeeId]: (removedRandomPairItems[employeeId] || []).filter(item => item.text !== tagToRemove),
+            };    
+
+            console.log("Updated Removed Items:", updatedRemovedRandomPairItems);
+
+            // Atualiza os estados no reducer
+            await dispatch({ type: 'SET_RANDOM_PAIR_TAGS_INPUT', payload: { [employeeId]: updatedTags } });
+            await dispatch({ type: 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW', payload: updatedListPairEmployeeDataToReview });
+            await dispatch({ type: 'SET_REMOVED_RANDOM_PAIR_ITEMS', payload: updatedRemovedRandomPairItems });
+            await dispatch({ type: 'SET_EMPLOYEES_SELECTED_AMOUNT', payload: Math.max(0, state.reviewParticipantsSelectionData.employeesSelectedAmount - 1) });
+
+        } catch (error) {
+            console.error("Erro ao remover par aleatório:", error);
         }
     }
 
@@ -383,6 +511,7 @@ export function ReviewParticipantSelectionForm() {
         }
     }
 
+
     async function handleTagLedRemoval(
         tagToRemove,
         selfReviewTagsInput,
@@ -486,10 +615,11 @@ export function ReviewParticipantSelectionForm() {
         try {
             if (!tagToRemove || !Array.isArray(removedPairItems)) return;
 
+            // Atualiza a lista de pares removidos
             const updatedTags = pairTagsInput.filter((tag) => tag !== tagToRemove);
 
+            // Encontra o item removido
             const removedItem = removedPairItems.find((item) => item.text === tagToRemove);
-
             if (!removedItem) {
                 console.warn("Tag removida não encontrada na lista original.");
                 return;
@@ -497,14 +627,18 @@ export function ReviewParticipantSelectionForm() {
 
             const updatedRemovedItems = removedPairItems.filter((item) => item.text !== tagToRemove);
 
+            // Atualiza a lista de pares disponíveis
             const updatedDataList = dataList.map((pairList) => {
-                if (
-                    pairList.length > 0 &&
-                    pairList[0].departmentId === removedItem.departmentId
-                ) {
+                if (pairList.length > 0 && pairList[0].departmentId === removedItem.departmentId) {
                     return [...pairList, removedItem];
                 }
                 return pairList;
+            });
+
+            // Atualiza o número total de pares selecionados
+            await dispatch({
+                type: 'SET_EMPLOYEES_SELECTED_AMOUNT',
+                payload: Math.max(0, state.reviewParticipantsSelectionData.employeesSelectedAmount - 1),
             });
 
             await dispatch({ type: 'SET_PAIR_TAGS_INPUT', payload: updatedTags });
@@ -529,9 +663,6 @@ export function ReviewParticipantSelectionForm() {
     ]);
 
     useEffect(() => {
-        console.log("listPairEmployeeDataToReview: ", state.reviewParticipantsSelectionData.listPairEmployeeDataToReview);
-        console.log("pairTagsInput: ", state.reviewParticipantsSelectionData.pairTagsInput);
-        console.log("removedPairItems: ", state.reviewParticipantsSelectionData.removedPairItems);
     }, [
         state.reviewParticipantsSelectionData.listPairEmployeeDataToReview,
         state.reviewParticipantsSelectionData.pairTagsInput,
@@ -787,8 +918,8 @@ export function ReviewParticipantSelectionForm() {
                                                     id="leadersInput"
                                                     type="number"
                                                     defaultValue="0"
-                                                    min="1"
-                                                    max={state.reviewParticipantsSelectionData.listEmployeeDataToReview.length - 1}
+                                                    min="0"
+                                                    max={state.reviewParticipantsSelectionData.listEmployeeDataToReview.length}
                                                     className="form-control"
                                                     value={state.reviewParticipantsSelectionData.leadersNumberToDrawn}
                                                     onChange={(e) => dispatch({ type: 'SET_LEADERS_NUMBER_TO_DRAWN', payload: Number(e.target.value) })}
@@ -819,15 +950,18 @@ export function ReviewParticipantSelectionForm() {
                                                             placeholder: "",
                                                         }}
                                                         onChange={(updatedTags) => {
+                                                            const { leaderTagsInput, listLeaderEmployeeDataSelectedToReview, employeesSelectedAmount } = state.reviewParticipantsSelectionData;
+
+                                                            const removedLeaders = leaderTagsInput.filter(tag => !updatedTags.includes(tag));
+
+                                                            const updatedLeadersList = listLeaderEmployeeDataSelectedToReview.filter(leader => updatedTags.includes(leader.name));
+
                                                             dispatch({ type: 'SET_LEADER_TAGS_INPUT', payload: updatedTags });
 
-                                                            // Atualizar a lista original com base nos nomes selecionados
-                                                            const updatedLeaders = state.reviewParticipantsSelectionData.listLeaderEmployeeDataSelectedToReview
-                                                                .filter((leader) => updatedTags.includes(leader.name));
+                                                            dispatch({ type: 'SET_LIST_LEADER_EMPLOYEE_DATA_SELECTED_TO_REVIEW', payload: updatedLeadersList });
 
-                                                            dispatch({ type: 'SET_LIST_LEADER_EMPLOYEE_DATA_SELECTED_TO_REVIEW', payload: updatedLeaders });
+                                                            dispatch({ type: 'SET_EMPLOYEES_SELECTED_AMOUNT', payload: employeesSelectedAmount - removedLeaders.length });
 
-                                                            // Verificação do tamanho de leaderTagsInput
                                                             if (updatedTags.length < 1) {
                                                                 dispatch({ type: 'SET_SHOULD_PRESENT_NAMES_SELECTED_LEADERS', payload: false });
                                                             }
@@ -857,7 +991,7 @@ export function ReviewParticipantSelectionForm() {
                                                     id="selfReviewsInput"
                                                     type="number"
                                                     defaultValue="0"
-                                                    min="1"
+                                                    min="0"
                                                     max={state.reviewParticipantsSelectionData.listEmployeeDataToReview.length}
                                                     className="form-control"
                                                     value={state.reviewParticipantsSelectionData.selfReviewsNumberToDrawn}
@@ -886,21 +1020,24 @@ export function ReviewParticipantSelectionForm() {
                                                         onlyUnique
                                                         className="bootstrap-tagsinput"
                                                         onChange={(updatedTags) => {
-                                                            dispatch({
-                                                                type: 'SET_SELF_REVIEW_TAGS_INPUT',
-                                                                payload: updatedTags,
-                                                            });
+                                                            const {
+                                                                selfReviewTagsInput,
+                                                                listEmployeeDataToSelfReview,
+                                                                employeesSelectedAmount
+                                                            } = state.reviewParticipantsSelectionData;
 
-                                                            // Atualiza a lista original com base nos nomes selecionados
-                                                            const updatedSelfReviewList = state.reviewParticipantsSelectionData.listEmployeeDataToSelfReview.filter((employee) =>
+                                                            const removedEmployees = selfReviewTagsInput.filter(tag => !updatedTags.includes(tag));
+
+                                                            const updatedSelfReviewList = listEmployeeDataToSelfReview.filter(employee =>
                                                                 updatedTags.includes(employee.name)
                                                             );
-                                                            dispatch({
-                                                                type: 'SET_LIST_EMPLOYEE_DATA_TO_SELF_REVIEW',
-                                                                payload: updatedSelfReviewList,
-                                                            });
 
-                                                            // Verifica se não há mais tags
+                                                            dispatch({ type: 'SET_SELF_REVIEW_TAGS_INPUT', payload: updatedTags, });
+
+                                                            dispatch({ type: 'SET_LIST_EMPLOYEE_DATA_TO_SELF_REVIEW', payload: updatedSelfReviewList, });
+
+                                                            dispatch({ type: 'SET_EMPLOYEES_SELECTED_AMOUNT', payload: employeesSelectedAmount - removedEmployees.length });
+
                                                             if (updatedTags.length < 1) {
                                                                 dispatch({
                                                                     type: 'SET_SHOULD_PRESENT_NAMES_SELECTED_SELF_REVIEW',
@@ -929,7 +1066,7 @@ export function ReviewParticipantSelectionForm() {
                                                     className="btn-darker"
                                                     color="darker"
                                                     disabled={!isPairsButtonEnabled}
-                                                    onClick={handleRandomSelectionPairsEmployees}
+                                                    onClick={async (e) => handleRandomSelectionPairsEmployees(state, dispatch)}
                                                     size="sm"
                                                     style={{ width: 150, textAlign: "center" }}
                                                 >
@@ -939,14 +1076,11 @@ export function ReviewParticipantSelectionForm() {
                                                     id="pairsInput"
                                                     type="number"
                                                     defaultValue="0"
-                                                    min="1"
+                                                    min="0"
                                                     max={state.reviewParticipantsSelectionData.listEmployeeDataToReview.length}
                                                     className="form-control"
                                                     value={state.reviewParticipantsSelectionData.pairsNumberToDrawn}
-                                                    onChange={(e) => dispatch({
-                                                        type: 'SET_PAIRS_NUMBER_TO_DRAWN',
-                                                        payload: Number(e.target.value),
-                                                    })}
+                                                    onChange={(e) => dispatch({ type: 'SET_PAIRS_NUMBER_TO_DRAWN', payload: Number(e.target.value) })}
                                                     size="sm"
                                                     style={{ width: 72 }}
                                                 />
@@ -965,12 +1099,9 @@ export function ReviewParticipantSelectionForm() {
                                                         Pares
                                                     </label>
                                                     <EmployeePairsInput
-                                                        listPairEmployeeDataToReview={state.reviewParticipantsSelectionData.listPairEmployeeDataToReview}
-                                                        setListPairEmployeeDataToReview={(payload) =>
-                                                            dispatch({
-                                                                type: 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW',
-                                                                payload,
-                                                            })}
+                                                        handleTagRandomPairRemoval={handleTagRandomPairRemoval}
+                                                        state={state}
+                                                        dispatch={dispatch}
                                                     />
                                                 </>
                                             )
