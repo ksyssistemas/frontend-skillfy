@@ -444,6 +444,7 @@ export function ReviewScaleAndCriteriaForm() {
 
     };
 
+    // TODO refatorar Esta função faz com que seja corrigida o problema da exclusão da ultima competência dentro do select
     $(document).ready(function () {
         $('#selectCompetencie').on('select2:unselecting', function (e) {
             var selectedValues = $(this).val();
