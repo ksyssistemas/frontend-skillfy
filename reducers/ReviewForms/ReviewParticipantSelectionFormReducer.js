@@ -33,11 +33,13 @@ export const initialState = {
         selfReviewTagsInput: [],
         removedLedItems: [],
 
-        listPairEmployeeDataToReview: {},
-        listPairEmployeeDataToReviewState: '',
+        listRandomPairEmployeeDataToReview: {},
+        listRandomPairEmployeeDataToReviewState: '',
         randomPairTagsInput: {},
         removedRandomPairItems: {},
-        
+
+        listPairEmployeeDataToReview: {},
+        listPairEmployeeDataToReviewState: '',
         pairTagsInput: {},
         removedPairItems: {},
 
@@ -241,23 +243,20 @@ export const formReducer = (state, action) => {
                     removedLedItems: Array.isArray(action.payload) ? action.payload : [],
                 },
             };
-        case 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW':
+        case 'SET_LIST_RANDOM_PAIR_EMPLOYEE_DATA_TO_REVIEW':
             return {
                 ...state,
                 reviewParticipantsSelectionData: {
                     ...state.reviewParticipantsSelectionData,
-                    listPairEmployeeDataToReview: {
-                        ...state.reviewParticipantsSelectionData.listPairEmployeeDataToReview,
-                        ...action.payload,
-                    },
+                    listRandomPairEmployeeDataToReview: action.payload,
                 },
             };
-        case 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW_STATE':
+        case 'SET_LIST_RANDOM_PAIR_EMPLOYEE_DATA_TO_REVIEW_STATE':
             return {
                 ...state,
                 reviewParticipantsSelectionData: {
                     ...state.reviewParticipantsSelectionData,
-                    listPairEmployeeDataToReviewState: action.payload,
+                    listRandomPairEmployeeDataToReviewState: action.payload,
                 },
             };
         case 'SET_RANDOM_PAIR_TAGS_INPUT':
@@ -280,6 +279,25 @@ export const formReducer = (state, action) => {
                         ...state.reviewParticipantsSelectionData.removedPairItems,
                         ...action.payload,
                     },
+                },
+            };
+        case 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW':
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData,
+                    listPairEmployeeDataToReview: {
+                        ...state.reviewParticipantsSelectionData.listPairEmployeeDataToReview,
+                        ...action.payload,
+                    },
+                },
+            };
+        case 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW_STATE':
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData,
+                    listPairEmployeeDataToReviewState: action.payload,
                 },
             };
         case 'SET_PAIR_TAGS_INPUT':

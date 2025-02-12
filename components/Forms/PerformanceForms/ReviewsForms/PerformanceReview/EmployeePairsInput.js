@@ -4,13 +4,13 @@ import TagsInput from "../../../../TagsInput/TagsInput";
 const EmployeePairsInput = ({ handleTagRandomPairRemoval, state, dispatch }) => {
   const {
     randomPairTagsInput,
-    listPairEmployeeDataToReview,
+    listRandomPairEmployeeDataToReview,
     pairsNumberToDrawn
   } = state.reviewParticipantsSelectionData;
 
   return (
     <div className="d-flex flex-column gap-2">
-      {Object.values(listPairEmployeeDataToReview || {}).map((employeeData) => {
+      {Object.values(listRandomPairEmployeeDataToReview || {}).map((employeeData) => {
          // Define se deve exibir mensagem de erro/aviso
          const isInsufficient = pairsNumberToDrawn < 0 || employeeData.insufficientPairNumbers;
          // Valor atual das tags para este item:
@@ -36,12 +36,7 @@ const EmployeePairsInput = ({ handleTagRandomPairRemoval, state, dispatch }) => 
                     state,
                     dispatch
                   );
-                } else {
-                  dispatch({
-                    type: "SET_RANDOM_PAIR_TAGS_INPUT",
-                    payload: { [employeeData.employeeId]: updatedTags },
-                  });
-                }
+                } 
               }}
               value={currentTags}
               tagProps={{ className: "tag badge badge-info mr-1 mb-0 mt-0" }}
