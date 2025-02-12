@@ -1,6 +1,7 @@
 export const initialState = {
     reviewParticipantsSelectionData: {
         isAllEmployeesSelectedToParticipate: false,
+        listAllEmployeesSelectedToReview: [],
 
         listEmployeeDataToReview: [],
 
@@ -73,7 +74,14 @@ export const formReducer = (state, action) => {
                     isAllEmployeesSelectedToParticipate: action.payload,
                 },
             };
-
+        case 'SET_LIST_ALL_EMPLOYEE_SELECTED_TO_REVIEW':
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData,
+                    listAllEmployeesSelectedToReview: action.payload,
+                },
+            };
         case 'SET_LIST_EMPLOYEE_DATA_TO_REVIEW':
             return {
                 ...state,

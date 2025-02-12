@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useReducer, useRef, useState } from "react";
-import { Button, Card, CardBody, CardHeader, Col, Form, Input, Row, Table } from "reactstrap";
+import { Badge, Button, Card, CardBody, CardHeader, Col, Form, Input, Row, Table, UncontrolledTooltip } from "reactstrap";
 import dynamic from "next/dynamic";
 import { handleSelectionEmploymentContractData } from "../../../../../../util/handleSelectionEmploymentContractData";
 // react plugin used to create DropdownMenu for selecting items
@@ -11,6 +11,10 @@ import EmployeePairsInput from "../EmployeePairsInput";
 import { initialState, formReducer } from '../../../../../../reducers/ReviewForms/ReviewParticipantSelectionFormReducer';
 import { ModelSelectionReviewContext } from "../../../../../../contexts/PerformanceContext/ModelSelectionReviewContext";
 import PageChange from "../../../../../PageChange/PageChange";
+import { useFindDepartment } from "../../../../../../hooks/RecordsHooks/department/useFindDepartment";
+import { useFindClientCompany } from "../../../../../../hooks/RecordsHooks/customer/useFindClientCompany";
+import { useFindEmployeeContractDetails } from "../../../../../../hooks/RecordsHooks/featuresEmploymentContract/useFindEmployeeContractDetails";
+import { useFindRole } from "../../../../../../hooks/RecordsHooks/role/useFindRole";
 
 export function ReviewParticipantSelectionForm() {
 
@@ -54,13 +58,26 @@ export function ReviewParticipantSelectionForm() {
 
     // Função para selecionar todos os usuários registrados
     async function handleSelectionAllRegisteredUsers() {
+        const isSelectingAll = !state.reviewParticipantsSelectionData.isAllEmployeesSelectedToParticipate;
+
         dispatch({
             type: 'SET_ALL_EMPLOYEE_SELECTED',
-            payload: !state.reviewParticipantsSelectionData.isAllEmployeesSelectedToParticipate,
+            payload: isSelectingAll,
         });
+
+        const updatedEmployees = state.reviewParticipantsSelectionData.listAllEmployeesSelectedToReview.map(employee => ({
+            ...employee,
+            isCheckedToEmployeeList: isSelectingAll,
+        }));
+
+        dispatch({
+            type: 'SET_LIST_ALL_EMPLOYEE_SELECTED_TO_REVIEW',
+            payload: updatedEmployees,
+        });
+
         dispatch({
             type: 'SET_EMPLOYEES_SELECTED_AMOUNT',
-            payload: state.reviewParticipantsSelectionData.listEmployeeDataToReview.length,
+            payload: isSelectingAll ? updatedEmployees.length : 0,
         });
     }
 
@@ -69,6 +86,10 @@ export function ReviewParticipantSelectionForm() {
         dispatch({
             type: 'SET_ALL_EMPLOYEE_SELECTED',
             payload: !state.reviewParticipantsSelectionData.isAllEmployeesSelectedToParticipate,
+        });
+        dispatch({
+            type: 'SET_LIST_ALL_EMPLOYEE_SELECTED_TO_REVIEW',
+            payload: [],
         });
         dispatch({
             type: 'SET_EMPLOYEES_SELECTED_AMOUNT',
@@ -309,10 +330,11 @@ export function ReviewParticipantSelectionForm() {
             const shouldRemoveEmployee = isInsufficientMessage || currentPairs.length === 0;
 
             let updatedListRandomPairEmployeeDataToReview = { ...listRandomPairEmployeeDataToReview };
-            const updatedRandomPairTagsInput = { ...randomPairTagsInput };
-            const updatedRemovedRandomPairItems = { ...removedRandomPairItems };
+            let updatedRandomPairTagsInput = { ...randomPairTagsInput };
+            let updatedRemovedRandomPairItems = { ...removedRandomPairItems };
 
-            if (shouldRemoveEmployee) {
+            if (isInsufficientMessage || (currentPairs.length === 1 && removedItem)) {
+                // Remover completamente o colaborador e seus pares se não houver mais pares ou for mensagem de insuficiência
                 delete updatedRandomPairTagsInput[employeeId]; // Remove do objeto
                 delete updatedRemovedRandomPairItems[employeeId]; // Remove do objeto
                 // Criar um novo objeto sem a chave do `employeeId` para garantir que o React detecte a mudança
@@ -322,13 +344,20 @@ export function ReviewParticipantSelectionForm() {
                         obj[key] = updatedListRandomPairEmployeeDataToReview[key];
                         return obj;
                     }, {});
-            } else {
-                // Apenas remove o par específico e atualiza a lista de pares
-                const updatedPairs = currentPairs.filter(pair => pair.pairNameOnReview !== tagToRemove);
+            } else if (removedItem) {
+                // Caso contrário, apenas remover o par específico
+
+                // Atualizar a lista de pares
                 updatedListRandomPairEmployeeDataToReview[employeeId] = {
                     ...employeeData,
-                    pairs: updatedPairs,
+                    pairs: currentPairs.filter(pair => pair.pairNameOnReview !== tagToRemove),
                 };
+
+                // Atualizar o array de `randomPairTagsInput`
+                updatedRandomPairTagsInput[employeeId] = currentTags.filter(tag => tag !== tagToRemove);
+
+                // Atualizar `removedRandomPairItems`
+                updatedRemovedRandomPairItems[employeeId] = currentRemovedPairs.filter(item => item.text !== tagToRemove);
             }
 
             // Atualiza os estados no reducer
@@ -342,23 +371,23 @@ export function ReviewParticipantSelectionForm() {
         }
     }
 
-    function handleCleanupRandomSelectionRegisteredUsers() {
-        // setEmployeesSelectedAmount(0);
-        // setIsSholdPresentNamesSelectedLeaders(false);
-        // setIsSholdPresentNamesSelectedSelfReview(false);
-        // setIsSholdPresentNamesSelectedPairs(false);
-        // setleadersNumberToDrawn(0);
-        // setSelfReviewsNumberToDrawn(0);
-        // setPairsNumberToDrawn(0);
-        // setListLeaderEmployeeDataSelectedToReview([]);
-        // setLeaderTagsInput([]);
-        // setListEmployeeDataToSelfReview([]);
-        // setSelfReviewTagsInput([]);
-        // setListPairEmployeeDataToReview([]);
-        dispatch({ type: 'SET_LEADERS_NUMBER_TO_DRAWN', payload: 0 });
-        dispatch({ type: 'SET_SELF_REVIEW_NUMBER_TO_DRAWN', payload: 0 });
-        dispatch({ type: 'SET_PAIRS_NUMBER_TO_DRAWN', payload: 0 });
-        dispatch({ type: 'RESET_REVIEW_DATA' });
+    async function handleCleanupRandomSelectionRegisteredUsers(dispatch) {
+        await dispatch({ type: 'SET_EMPLOYEES_SELECTED_AMOUNT', payload: 0 });
+        await dispatch({ type: 'SET_SHOULD_PRESENT_NAMES_SELECTED_LEADERS', payload: false });
+        await dispatch({ type: 'SET_SHOULD_PRESENT_NAMES_SELECTED_SELF_REVIEW', payload: false });
+        await dispatch({ type: 'SET_SHOULD_PRESENT_NAMES_SELECTED_PAIRS', payload: true });
+        await dispatch({ type: 'SET_LEADERS_NUMBER_TO_DRAWN', payload: 0 });
+        await dispatch({ type: 'SET_SELF_REVIEW_NUMBER_TO_DRAWN', payload: 0 });
+        await dispatch({ type: 'SET_PAIRS_NUMBER_TO_DRAWN', payload: 0 });
+        await dispatch({ type: 'SET_LIST_LEADER_EMPLOYEE_DATA_SELECTED_TO_REVIEW', payload: [] });
+        await dispatch({ type: 'SET_LEADER_TAGS_INPUT', payload: [] });
+        await dispatch({ type: 'SET_REMOVED_LEADER_ITEMS', payload: [] });
+        await dispatch({ type: 'SET_LIST_EMPLOYEE_DATA_TO_SELF_REVIEW', payload: [] });
+        await dispatch({ type: 'SET_SELF_REVIEW_TAGS_INPUT', payload: [] });
+        await dispatch({ type: 'SET_REMOVED_LED_ITEMS', payload: [] });
+        await dispatch({ type: 'SET_LIST_RANDOM_PAIR_EMPLOYEE_DATA_TO_REVIEW', payload: {} });
+        await dispatch({ type: 'SET_RANDOM_PAIR_TAGS_INPUT', payload: {} });
+        await dispatch({ type: 'SET_REMOVED_RANDOM_PAIR_ITEMS', payload: {} });
     }
 
     async function handleHandPickedSelectionParticipantsToReview() {
@@ -366,7 +395,6 @@ export function ReviewParticipantSelectionForm() {
             type: 'SET_HAND_PICKED_SELECTION_PARTICIPANTS_TO_REVIEW',
             payload: !state.reviewParticipantsSelectionData.isHandPickedSelectionParticipantsToReview,
         });
-        //setIsShouldPresentParticipantSelectionButtons(!isShouldPresentParticipantSelectionButtons);
     }
 
     async function handleHandPickedUnselectionParticipantsToReview() {
@@ -374,7 +402,6 @@ export function ReviewParticipantSelectionForm() {
             type: 'SET_HAND_PICKED_SELECTION_PARTICIPANTS_TO_REVIEW',
             payload: !state.reviewParticipantsSelectionData.isHandPickedSelectionParticipantsToReview,
         });
-        //setIsShouldPresentParticipantSelectionButtons(!isShouldPresentParticipantSelectionButtons);
     }
 
     async function handleLeaderSelection(
@@ -507,7 +534,6 @@ export function ReviewParticipantSelectionForm() {
             console.error("Erro ao processar a seleção de liderados:", error);
         }
     }
-
 
     async function handleTagLedRemoval(
         tagToRemove,
@@ -647,6 +673,16 @@ export function ReviewParticipantSelectionForm() {
         }
     }
 
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+
+        return `${day}/${month}/${year}`;
+    }
+
     useEffect(() => { }, [
         state.reviewParticipantsSelectionData.listLeaderEmployeeDataToReview,
         state.reviewParticipantsSelectionData.leaderTagsInput,
@@ -667,14 +703,44 @@ export function ReviewParticipantSelectionForm() {
     ]);
 
     useEffect(() => {
+        const fetchCompanyNamesAndRoles = async (employees) => {
+            const updatedEmployees = await Promise.all(
+                employees.map(async (employee, i) => {
+                    try {
+                        const companyData = await useFindClientCompany(employee.customerId);
+                        const foundEmployeeContract = await useFindEmployeeContractDetails(employee.id);
+                        const foundRoleName = await useFindRole(foundEmployeeContract.rolesId);
+                        const foundDepartmentName = await useFindDepartment(foundEmployeeContract.departmentId);
+                        return {
+                            ...employee,
+                            companyName: companyData.companyName,
+                            departmentName: foundDepartmentName.departmentName,
+                            roleName: foundRoleName.roleName,
+                            adimissionDate: foundEmployeeContract.adimissionDate
+                        };
+                    } catch (error) {
+                        console.error(`Error fetching employee data for customerId ${employee.customerId}:`, error);
+                        return {
+                            ...employee,
+                            companyName: 'N/A',
+                            departmentName: 'N/A',
+                            roleName: 'N/A',
+                            adimissionDate: 'N/A'
+                        };
+                    }
+                })
+            );
+            dispatch({
+                type: 'SET_LIST_EMPLOYEE_DATA_TO_REVIEW',
+                payload: updatedEmployees,
+            });
+        };
+
         const fetchEmployees = async () => {
             try {
                 const foundEmployees = await useFindAllEmployee();
-                dispatch({
-                    type: 'SET_LIST_EMPLOYEE_DATA_TO_REVIEW',
-                    payload: foundEmployees,
-                });
 
+                await fetchCompanyNamesAndRoles(foundEmployees);
 
                 const leaderData = foundEmployees
                     .filter((employee) => employee.isLead)
@@ -706,6 +772,61 @@ export function ReviewParticipantSelectionForm() {
         }
         fetchEmployees();
     }, []);
+
+    useEffect(() => {
+        const handleSetStatusFromCheckedToEmployeeList = async (employees) => {
+            const updatedEmployees = employees.map(employee => ({
+                ...employee,
+                isCheckedToEmployeeList: true,
+            }));
+
+            dispatch({
+                type: 'SET_LIST_ALL_EMPLOYEE_SELECTED_TO_REVIEW',
+                payload: updatedEmployees,
+            });
+
+            dispatch({
+                type: 'SET_EMPLOYEES_SELECTED_AMOUNT',
+                payload: updatedEmployees.length,
+            });
+        };
+
+        if (state.reviewParticipantsSelectionData.isAllEmployeesSelectedToParticipate) {
+            handleSetStatusFromCheckedToEmployeeList(state.reviewParticipantsSelectionData.listEmployeeDataToReview);
+        }
+    }, [
+        state.reviewParticipantsSelectionData.isAllEmployeesSelectedToParticipate,
+        state.reviewParticipantsSelectionData.listEmployeeDataToReview,
+    ]);
+
+    const isAllChecked = state.reviewParticipantsSelectionData.listAllEmployeesSelectedToReview.every(
+        (employee) => employee.isCheckedToEmployeeList
+    );
+
+    // Atualiza a quantidade de colaboradores selecionados
+    const updateEmployeesSelectedAmount = (updatedList) => {
+        const selectedCount = updatedList.filter(employee => employee.isCheckedToEmployeeList).length;
+        dispatch({
+            type: "SET_EMPLOYEES_SELECTED_AMOUNT",
+            payload: selectedCount,
+        });
+    };
+
+    // Função para alternar o estado do checkbox de um funcionário específico
+    const handleToggleEmployeeCheck = (index) => {
+        const updatedList = state.reviewParticipantsSelectionData.listAllEmployeesSelectedToReview.map((employee, i) =>
+            i === index
+                ? { ...employee, isCheckedToEmployeeList: !employee.isCheckedToEmployeeList }
+                : employee
+        );
+
+        dispatch({
+            type: "SET_LIST_ALL_EMPLOYEE_SELECTED_TO_REVIEW",
+            payload: updatedList,
+        });
+
+        updateEmployeesSelectedAmount(updatedList);
+    };
 
     // Execute o carregamento dos dados ao montar o componente
     useEffect(() => {
@@ -836,6 +957,125 @@ export function ReviewParticipantSelectionForm() {
                                     </Col>
                                 </Row>
                             </CardBody>
+                            {
+                                state.reviewParticipantsSelectionData.isAllEmployeesSelectedToParticipate &&
+                                state.reviewParticipantsSelectionData.listAllEmployeesSelectedToReview &&
+                                state.reviewParticipantsSelectionData.listAllEmployeesSelectedToReview.length > 0 && (
+                                    <Card>
+                                        <CardHeader className="border-0">
+                                            <Row>
+                                                <Col xs="6">
+                                                    <h3 className="mb-0">Participantes</h3>
+                                                </Col>
+                                            </Row>
+                                        </CardHeader>
+
+                                        <Table className="align-items-center table-flush" hover responsive>
+                                            <thead className="thead-light">
+                                                <tr>
+                                                    <th>
+                                                        <div className="custom-control custom-checkbox">
+                                                            <input
+                                                                className="custom-control-input"
+                                                                id="table-check-all"
+                                                                type="checkbox"
+                                                                checked={isAllChecked}
+                                                                onChange={() => {
+                                                                    const newCheckedState = !isAllChecked;
+
+                                                                    // Atualiza todos os funcionários com base no novo estado do checkbox principal
+                                                                    const updatedList = state.reviewParticipantsSelectionData.listAllEmployeesSelectedToReview.map((employee) => ({
+                                                                        ...employee,
+                                                                        isCheckedToEmployeeList: newCheckedState,
+                                                                    }));
+
+                                                                    dispatch({
+                                                                        type: "SET_LIST_ALL_EMPLOYEE_SELECTED_TO_REVIEW",
+                                                                        payload: updatedList,
+                                                                    });
+
+                                                                    // Atualiza a quantidade correta de funcionários selecionados
+                                                                    dispatch({
+                                                                        type: "SET_EMPLOYEES_SELECTED_AMOUNT",
+                                                                        payload: newCheckedState ? updatedList.length : 0,
+                                                                    });
+                                                                }}
+                                                            />
+                                                            <label
+                                                                className="custom-control-label"
+                                                                htmlFor="table-check-all"
+                                                            />
+                                                        </div>
+                                                    </th>
+                                                    <th>Nome</th>
+                                                    <th>Admissão</th>
+                                                    <th>Empresa</th>
+                                                    <th>Departamento</th>
+                                                    <th>Cargo</th>
+                                                    <th>Líder</th>
+                                                    <th>Nome do Líder</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {
+                                                    state.reviewParticipantsSelectionData.listAllEmployeesSelectedToReview.map((employee, index) => (
+                                                        <tr key={index}>
+                                                            <th>
+                                                                <div className="custom-control custom-checkbox">
+                                                                    <input
+                                                                        checked={employee.isCheckedToEmployeeList}
+                                                                        className="custom-control-input"
+                                                                        id={`table-check-${index}`}
+                                                                        type="checkbox"
+                                                                        onChange={() => handleToggleEmployeeCheck(index)}
+                                                                    />
+                                                                    <label
+                                                                        className="custom-control-label"
+                                                                        htmlFor={`table-check-${index}`}
+                                                                    />
+                                                                </div>
+                                                            </th>
+                                                            <td className="table-user">
+                                                                <b>{`${employee.name} ${employee.lastName}`}</b>
+                                                            </td>
+                                                            <td>
+                                                                <span className="text-muted">
+                                                                    {formatDate(employee.adimissionDate)}
+                                                                </span>
+                                                            </td>
+                                                            <td className="table-user">
+                                                                <b>{employee.companyName}</b>
+                                                            </td>
+                                                            <td className="text-muted">
+                                                                <span>{employee.departmentName}</span>
+                                                            </td>
+                                                            <td className="text-muted">
+                                                                <span>{employee.roleName}</span>
+                                                            </td>
+                                                            <td>
+                                                                {
+                                                                    employee.isLead ? (
+                                                                        <Badge color="success" pill>
+                                                                            Sim
+                                                                        </Badge>
+                                                                    ) : (
+                                                                        <Badge color="danger" pill>
+                                                                            Não
+                                                                        </Badge>
+                                                                    )
+                                                                }
+                                                            </td>
+                                                            <td className="table-user text-center">
+                                                                <b>{employee.LeaderName ? employee.LeaderName : "-"}</b>
+                                                            </td>
+                                                        </tr>
+                                                    ))
+                                                }
+                                            </tbody>
+                                        </Table>
+                                    </Card>
+                                )
+                            }
                         </Card>
                         <Card>
                             <CardBody>
@@ -877,7 +1117,7 @@ export function ReviewParticipantSelectionForm() {
                                                         color="light"
                                                         size="sm"
                                                         type="button"
-                                                        onClick={handleCleanupRandomSelectionRegisteredUsers}
+                                                        onClick={() => handleCleanupRandomSelectionRegisteredUsers(dispatch)}
                                                     >
                                                         Limpar
                                                     </Button>
