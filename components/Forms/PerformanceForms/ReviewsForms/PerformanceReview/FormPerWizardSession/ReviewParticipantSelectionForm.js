@@ -247,12 +247,8 @@ export function ReviewParticipantSelectionForm() {
                 }
             }
 
-            console.log("newPairs: ", newPairs);
-            console.log("newRandomPairTagsInput: ", newRandomPairTagsInput);
-            console.log("newRemovedRandomPairItems: ", newRemovedRandomPairItems);
-
             // Atualiza os estados via reducer
-            await dispatch({ type: 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW', payload: newPairs });
+            await dispatch({ type: 'SET_LIST_RANDOM_PAIR_EMPLOYEE_DATA_TO_REVIEW', payload: newPairs });
             await dispatch({ type: 'SET_EMPLOYEES_SELECTED_AMOUNT', payload: employeesSelectedAmount + totalSelected });
             await dispatch({ type: 'SET_RANDOM_PAIR_TAGS_INPUT', payload: newRandomPairTagsInput });
             await dispatch({ type: 'SET_REMOVED_RANDOM_PAIR_ITEMS', payload: newRemovedRandomPairItems });
@@ -271,72 +267,73 @@ export function ReviewParticipantSelectionForm() {
     ) {
         try {
             const {
-                listPairEmployeeDataToReview,
+                listRandomPairEmployeeDataToReview,
                 randomPairTagsInput,
                 removedRandomPairItems,
             } = state.reviewParticipantsSelectionData;
 
-            if (!employeeId || !tagToRemove) {
-                console.warn("Parâmetros inválidos ao remover par aleatório.");
+            if (!employeeId) {
+                console.warn("ID do colaborador inválido para remoção.");
+                return;
+            }
+
+            // Obtém os dados do liderado
+            const employeeData = listRandomPairEmployeeDataToReview[employeeId] || {};
+            const employeeName = employeeData.employeeName;
+
+            if (!employeeName) {
+                console.warn("Nome do colaborador não encontrado.");
                 return;
             }
 
             const currentTags = randomPairTagsInput[employeeId] || [];
             if (!Array.isArray(currentTags)) {
-                console.error("Erro: randomPairTagsInput[lideradoId] não é um array.", currentTags);
+                console.error("Erro: randomPairTagsInput[employeeId] não é um array.", currentTags);
                 return;
             }
 
-            // Remove a tag da lista
-            const updatedTags = currentTags.filter(tag => tag !== tagToRemove);
+            // Caso a tag a ser removida seja a mensagem de insuficiência, remove diretamente o liderado
+            const isInsufficientMessage = tagToRemove === employeeData.insufficientPairNumbers;
 
-            // Obtém os pares atuais do liderado
-            const employeeData = listPairEmployeeDataToReview[employeeId] || {};
+            // Obtém os pares atuais (se existirem)
             const currentPairs = employeeData.pairs || [];
-            const insufficientPairNumbers = employeeData.insufficientPairNumbers;
 
-            // Obtém os pares removidos atuais do colaborador
+            // Obtém os pares removidos atuais
             const currentRemovedPairs = removedRandomPairItems[employeeId] || [];
-            console.log("currentRemovedPairs: ", currentRemovedPairs);
-            console.log("tagToRemove: ", tagToRemove);
-            let removedItem = null;
 
-            if (currentPairs.length === 0 && insufficientPairNumbers) {
-                // Se não há pares e há um aviso de insuficiência, encontrar pelo nome do colaborador
-                removedItem = { employeeName: tagToRemove };
+            // Verifica se a tag a ser removida corresponde a um par real
+            let removedItem = currentPairs.find(pair => pair.pairNameOnReview === tagToRemove)
+                || currentRemovedPairs.find(item => item.text === tagToRemove);
+
+            // Se a tag removida for a mensagem de insuficiência OU não houver mais pares, remover o liderado por completo
+            const shouldRemoveEmployee = isInsufficientMessage || currentPairs.length === 0;
+
+            let updatedListRandomPairEmployeeDataToReview = { ...listRandomPairEmployeeDataToReview };
+            const updatedRandomPairTagsInput = { ...randomPairTagsInput };
+            const updatedRemovedRandomPairItems = { ...removedRandomPairItems };
+
+            if (shouldRemoveEmployee) {
+                delete updatedRandomPairTagsInput[employeeId]; // Remove do objeto
+                delete updatedRemovedRandomPairItems[employeeId]; // Remove do objeto
+                // Criar um novo objeto sem a chave do `employeeId` para garantir que o React detecte a mudança
+                updatedListRandomPairEmployeeDataToReview = Object.keys(updatedListRandomPairEmployeeDataToReview)
+                    .filter(key => key !== String(employeeId))
+                    .reduce((obj, key) => {
+                        obj[key] = updatedListRandomPairEmployeeDataToReview[key];
+                        return obj;
+                    }, {});
             } else {
-                // Busca normal pelo nome do par na lista de pares
-                removedItem = currentPairs.find(pair => pair.pairNameOnReview === tagToRemove);
-            }
-    
-            if (!removedItem) {
-                console.warn("Par removido não encontrado na lista original.");
-                return;
-            }
-    
-            // Remove o item da lista de pares do liderado (caso existam pares)
-            const updatedPairs = currentPairs.filter(pair => pair.pairNameOnReview !== tagToRemove);
-    
-            // Atualiza a lista de pares do liderado
-            const updatedListPairEmployeeDataToReview = {
-                ...listPairEmployeeDataToReview,
-                [employeeId]: {
+                // Apenas remove o par específico e atualiza a lista de pares
+                const updatedPairs = currentPairs.filter(pair => pair.pairNameOnReview !== tagToRemove);
+                updatedListRandomPairEmployeeDataToReview[employeeId] = {
                     ...employeeData,
                     pairs: updatedPairs,
-                },
-            };
-    
-            // Remove o item correto da lista de removidos, sempre considerando `text`
-            const updatedRemovedRandomPairItems = {
-                ...removedRandomPairItems,
-                [employeeId]: (removedRandomPairItems[employeeId] || []).filter(item => item.text !== tagToRemove),
-            };    
-
-            console.log("Updated Removed Items:", updatedRemovedRandomPairItems);
+                };
+            }
 
             // Atualiza os estados no reducer
-            await dispatch({ type: 'SET_RANDOM_PAIR_TAGS_INPUT', payload: { [employeeId]: updatedTags } });
-            await dispatch({ type: 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW', payload: updatedListPairEmployeeDataToReview });
+            await dispatch({ type: 'SET_LIST_RANDOM_PAIR_EMPLOYEE_DATA_TO_REVIEW', payload: updatedListRandomPairEmployeeDataToReview });
+            await dispatch({ type: 'SET_RANDOM_PAIR_TAGS_INPUT', payload: updatedRandomPairTagsInput });
             await dispatch({ type: 'SET_REMOVED_RANDOM_PAIR_ITEMS', payload: updatedRemovedRandomPairItems });
             await dispatch({ type: 'SET_EMPLOYEES_SELECTED_AMOUNT', payload: Math.max(0, state.reviewParticipantsSelectionData.employeesSelectedAmount - 1) });
 
@@ -1090,6 +1087,7 @@ export function ReviewParticipantSelectionForm() {
                                     <Col className="mb-3 d-flex flex-column" md="8">
                                         {
                                             state.reviewParticipantsSelectionData.isSholdPresentNamesSelectedPairs &&
+                                            Object.keys(state.reviewParticipantsSelectionData.listRandomPairEmployeeDataToReview || {}).length > 0 &&
                                             state.reviewParticipantsSelectionData.isRandomSelectionParticipantsToReview && (
                                                 <>
                                                     <label
