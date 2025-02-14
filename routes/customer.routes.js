@@ -54,21 +54,21 @@ const routes = () => {
   return [
     {
       collapse: true,
-      name: "Dashboard",
+      name: companyName,
       icon: "ni ni-tv-2",
       state: "dashboardCollapse",
       views: [
         {
           path: "/customer",
-          name: companyName,
-          miniName: "A",
+          name: "Painel",
+          miniName: "P",
           layout: "/dashboard",
         }
       ],
     },
     {
       collapse: true,
-      name: "Registros e Cadastros",
+      name: "Registros",
       icon: "ni ni-archive-2",
       state: "records&RegisterCollapse",
       views: [
@@ -94,26 +94,26 @@ const routes = () => {
     },
     {
       collapse: true,
-      name: "Desempenho",
+      name: "Avaliações",
       icon: "ni ni-paper-diploma",
       state: "appraisalsCollapse",
       views: [
         {
           path: "/appraisals",
-          name: "Criar avaliação",
+          name: "Criar",
           miniName: "C",
           layout: "/performance",
         },
         {
           path: "/appraisal-settings",
-          name: "Configurações",
+          name: "Configurar",
           miniName: "C",
           layout: "/performance",
         },
         {
           path: "/add-appraisals-skills-list",
-          name: "Avaliações",
-          miniName: "A",
+          name: "Realizar",
+          miniName: "R",
           layout: "/performance",
         },
       ],
@@ -126,20 +126,20 @@ const routes = () => {
       views: [
         {
           path: "/dashboard-pdi",
-          name: "Dashboard",
-          miniName: "D",
-          layout: "/pdi",
-        },
-        {
-          path: "/competencies-pdi",
-          name: "Competências",
-          miniName: "C",
+          name: "Painel",
+          miniName: "P",
           layout: "/pdi",
         },
         {
           path: "/add-pdi",
-          name: "Cadastro PDI",
+          name: "Criar",
           miniName: "C",
+          layout: "/pdi",
+        },
+        {
+          path: "/competencies-pdi",
+          name: "Ações",
+          miniName: "A",
           layout: "/pdi",
         },
       ]

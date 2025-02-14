@@ -1,6 +1,7 @@
 export const initialState = {
     reviewParticipantsSelectionData: {
         isAllEmployeesSelectedToParticipate: false,
+        listAllEmployeesSelectedToReview: [],
 
         listEmployeeDataToReview: [],
 
@@ -32,6 +33,11 @@ export const initialState = {
         listEmployeeDataToSelfReviewState: '',
         selfReviewTagsInput: [],
         removedLedItems: [],
+
+        listRandomPairEmployeeDataToReview: {},
+        listRandomPairEmployeeDataToReviewState: '',
+        randomPairTagsInput: {},
+        removedRandomPairItems: {},
 
         listPairEmployeeDataToReview: {},
         listPairEmployeeDataToReviewState: '',
@@ -70,7 +76,14 @@ export const formReducer = (state, action) => {
                     isAllEmployeesSelectedToParticipate: action.payload,
                 },
             };
-
+        case 'SET_LIST_ALL_EMPLOYEE_SELECTED_TO_REVIEW':
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData,
+                    listAllEmployeesSelectedToReview: action.payload,
+                },
+            };
         case 'SET_LIST_EMPLOYEE_DATA_TO_REVIEW':
             return {
                 ...state,
@@ -238,6 +251,44 @@ export const formReducer = (state, action) => {
                 reviewParticipantsSelectionData: {
                     ...state.reviewParticipantsSelectionData,
                     removedLedItems: Array.isArray(action.payload) ? action.payload : [],
+                },
+            };
+        case 'SET_LIST_RANDOM_PAIR_EMPLOYEE_DATA_TO_REVIEW':
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData,
+                    listRandomPairEmployeeDataToReview: action.payload,
+                },
+            };
+        case 'SET_LIST_RANDOM_PAIR_EMPLOYEE_DATA_TO_REVIEW_STATE':
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData,
+                    listRandomPairEmployeeDataToReviewState: action.payload,
+                },
+            };
+        case 'SET_RANDOM_PAIR_TAGS_INPUT':
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData,
+                    randomPairTagsInput: {
+                        ...state.reviewParticipantsSelectionData.pairTagsInput,
+                        ...action.payload,
+                    },
+                },
+            };
+        case 'SET_REMOVED_RANDOM_PAIR_ITEMS':
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData,
+                    removedRandomPairItems: {
+                        ...state.reviewParticipantsSelectionData.removedPairItems,
+                        ...action.payload,
+                    },
                 },
             };
         case 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW':
