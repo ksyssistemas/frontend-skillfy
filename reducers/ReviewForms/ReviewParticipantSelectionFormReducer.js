@@ -44,6 +44,8 @@ export const initialState = {
         pairTagsInput: {},
         removedPairItems: {},
 
+        listPairEmployeeDataToReviewDataSelect: {},
+
         isHandPickedSelectionParticipantsToReview: false,
 
     },
@@ -296,7 +298,7 @@ export const formReducer = (state, action) => {
                     ...state.reviewParticipantsSelectionData,
                     listPairEmployeeDataToReview: {
                         ...state.reviewParticipantsSelectionData.listPairEmployeeDataToReview,
-                        ...action.payload,
+                        [action.payload.lideradoId]: action.payload.pairs,
                     },
                 },
             };
@@ -338,6 +340,29 @@ export const formReducer = (state, action) => {
                     isHandPickedSelectionParticipantsToReview: action.payload,
                 },
             };
+        case 'SET_LIST_EMPLOYEE_DATA_TO_SELECT':
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData,
+                    listPairEmployeeDataToReviewDataSelect: {
+                        ...state.reviewParticipantsSelectionData.listPairEmployeeDataToReviewDataSelect,
+                        ...action.payload,
+                    },
+                },
+            };
+        case 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_SELECT':
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData,
+                    listPairEmployeeDataToReviewDataSelect: {
+                        ...state.reviewParticipantsSelectionData.listPairEmployeeDataToReviewDataSelect,
+                        [action.payload.lideradoId]: action.payload.pairs,
+                    },
+                },
+            };
+
         default:
             return state;
     }

@@ -482,7 +482,7 @@ export function ReviewParticipantSelectionForm() {
         selfReviewTagsInput,
         removedLedItems,
         listEmployeeDataToReview,
-        listPairEmployeeDataToReview,
+        listPairEmployeeDataToReviewDataSelect,
         dispatch
     ) {
         try {
@@ -515,9 +515,11 @@ export function ReviewParticipantSelectionForm() {
                 }));
 
             const updatedListPair = {
-                ...listPairEmployeeDataToReview,
+                ...listPairEmployeeDataToReviewDataSelect,
                 [selectedId]: sameDepartmentEmployees,
             };
+
+            console.log("updatedListPair :", updatedListPair);
 
             const updatedTags = [...selfReviewTagsInput, selectedItem.text];
             const updatedDataList = dataList.filter((item) => item.id !== selectedId);
@@ -527,7 +529,7 @@ export function ReviewParticipantSelectionForm() {
             await dispatch({ type: 'SET_LIST_LED_EMPLOYEE_DATA_TO_REVIEW', payload: updatedDataList });
             await dispatch({ type: 'SET_REMOVED_LED_ITEMS', payload: updatedRemovedItems });
 
-            await dispatch({ type: 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW', payload: updatedListPair });
+            await dispatch({ type: 'SET_LIST_EMPLOYEE_DATA_TO_SELECT', payload: updatedListPair });
             await dispatch({ type: 'SET_PAIR_TAGS_INPUT', payload: { lideradoId: selectedId, tags: [] } });
             await dispatch({ type: 'SET_REMOVED_PAIR_ITEMS', payload: { lideradoId: selectedId, items: [] } });
         } catch (error) {
@@ -570,106 +572,157 @@ export function ReviewParticipantSelectionForm() {
 
     async function handlePairSelection(
         lideradoId,
-        tagToRemove,
+        selectedPairId, // identificador do par selecionado
         pairTagsInput,
         removedPairItems,
-        dataList,
+        listPairEmployeeDataToReviewDataSelect,
+        listPairEmployeeDataToReview, // objeto com os pares já selecionados, exemplo: { lideradoId1: [par1, par2], lideradoId2: [par3] }
         dispatch
     ) {
         try {
+            // Validações iniciais
             if (!pairTagsInput || typeof pairTagsInput !== "object") {
                 console.error("Erro: pairTagsInput inválido ou ausente.", pairTagsInput);
                 return;
             }
-
             if (!removedPairItems || typeof removedPairItems !== "object") {
                 console.error("Erro: removedPairItems inválido ou ausente.", removedPairItems);
                 return;
             }
-
-            const currentTags = pairTagsInput[lideradoId] || [];
-            if (!Array.isArray(currentTags)) {
-                console.error("Erro: pairTagsInput[lideradoId] não é um array.", currentTags);
+            if (!listPairEmployeeDataToReviewDataSelect || typeof listPairEmployeeDataToReviewDataSelect !== "object") {
+                console.error("Erro: listPairEmployeeDataToReviewDataSelect inválido ou ausente.", listPairEmployeeDataToReviewDataSelect);
                 return;
             }
 
-            const updatedTags = currentTags.filter((tag) => tag !== tagToRemove);
+            // Obtém os pares disponíveis para o liderado
+            const availablePairs = listPairEmployeeDataToReviewDataSelect[lideradoId] || [];
 
-            const removedItemsForLiderado = removedPairItems[lideradoId] || [];
-            const removedItem = removedItemsForLiderado.find((item) => item.text === tagToRemove);
-
-            if (!removedItem) {
-                console.warn("Tag removida não encontrada na lista original.", { tagToRemove, removedItemsForLiderado });
+            // Encontra o par selecionado na lista de disponíveis
+            const selectedPair = availablePairs.find(item => item.id === selectedPairId);
+            if (!selectedPair) {
+                console.error("Erro: Par selecionado não encontrado para o liderado:", lideradoId);
                 return;
             }
 
-            const updatedRemovedItems = removedItemsForLiderado.filter((item) => item.text !== tagToRemove);
-
-            const updatedDataList = { ...dataList };
-            const pairList = updatedDataList[lideradoId] || [];
-            pairList.splice(removedItem.originalIndex, 0, removedItem);
-
-            const updatedPairTagsInput = {
-                ...pairTagsInput,
-                [lideradoId]: updatedTags,
+            // Remove o par selecionado da lista de disponíveis
+            const updatedAvailablePairs = availablePairs.filter(item => item.id !== selectedPairId);
+            const updatedListPairDataSelect = {
+                ...listPairEmployeeDataToReviewDataSelect,
+                [lideradoId]: updatedAvailablePairs
             };
 
-            const updatedRemovedPairItems = {
-                ...removedPairItems,
-                [lideradoId]: updatedRemovedItems,
-            };
+            // Recupera os pares já selecionados para esse liderado (caso haja)
+            const currentSelectedPairs = listPairEmployeeDataToReview[lideradoId] || [];
+            // Adiciona o novo par sem sobrescrever os anteriores
+            const updatedSelectedPairs = [...currentSelectedPairs, selectedPair];
+            console.log("updatedSelectedPairs :", updatedSelectedPairs);
+            // Atualiza os pairTagsInput adicionando o nome completo do par (campo "text")
+            const currentPairTags = pairTagsInput[lideradoId] || [];
+            const updatedPairTags = [...currentPairTags, selectedPair.text];
 
-            await dispatch({ type: 'SET_PAIR_TAGS_INPUT', payload: updatedPairTagsInput });
-            await dispatch({ type: 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW', payload: updatedDataList });
-            await dispatch({ type: 'SET_REMOVED_PAIR_ITEMS', payload: updatedRemovedPairItems });
+            // Atualiza os removedPairItems adicionando o par removido da lista de seleção
+            const currentRemovedPairItems = removedPairItems[lideradoId] || [];
+            const updatedRemovedPairItems = [...currentRemovedPairItems, selectedPair];
+
+            // Dispara os dispatches para atualizar os estados
+
+            // Atualiza a lista de pares disponíveis para seleção (remove o par selecionado)
+            await dispatch({
+                type: 'SET_LIST_EMPLOYEE_DATA_TO_SELECT',
+                payload: updatedListPairDataSelect
+            });
+
+            // Atualiza o objeto com os pares selecionados, garantindo que a chave lideradoId receba o array atualizado
+            await dispatch({
+                type: 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW',
+                payload: { lideradoId, pairs: updatedSelectedPairs }
+            });
+
+            // Atualiza os pairTagsInput para o liderado
+            await dispatch({
+                type: 'SET_PAIR_TAGS_INPUT',
+                payload: { lideradoId, tags: updatedPairTags }
+            });
+
+            // Atualiza os removedPairItems para o liderado
+            await dispatch({
+                type: 'SET_REMOVED_PAIR_ITEMS',
+                payload: { lideradoId, items: updatedRemovedPairItems }
+            });
 
         } catch (error) {
             console.error("Erro ao processar a seleção de pares:", error);
         }
     }
 
-    async function handleTagPairRemoval(
+    async function handleTagPairRemoval({
+        lideradoId,
         tagToRemove,
         pairTagsInput,
         removedPairItems,
-        dataList,
-        dispatch
-    ) {
+        listPairEmployeeDataToReviewDataSelect,
+        listPairEmployeeDataToReview,
+        dispatch,
+    }) {
         try {
-            if (!tagToRemove || !Array.isArray(removedPairItems)) return;
 
-            // Atualiza a lista de pares removidos
-            const updatedTags = pairTagsInput.filter((tag) => tag !== tagToRemove);
-
-            // Encontra o item removido
-            const removedItem = removedPairItems.find((item) => item.text === tagToRemove);
-            if (!removedItem) {
-                console.warn("Tag removida não encontrada na lista original.");
+            console.log("Iniciando remoção para liderado:", lideradoId, "tag:", tagToRemove);
+            if (!tagToRemove) {
+                console.warn("Nenhuma tag informada para remoção");
                 return;
             }
 
-            const updatedRemovedItems = removedPairItems.filter((item) => item.text !== tagToRemove);
+            // Atualiza os pairTagsInput para o liderado removendo a tag do par
+            const currentPairTags = pairTagsInput[lideradoId] || [];
+            const updatedPairTags = currentPairTags.filter((tag) => tag !== tagToRemove);
+            console.log("Tags atualizadas:", updatedPairTags);
 
-            // Atualiza a lista de pares disponíveis
-            const updatedDataList = dataList.map((pairList) => {
-                if (pairList.length > 0 && pairList[0].departmentId === removedItem.departmentId) {
-                    return [...pairList, removedItem];
-                }
-                return pairList;
-            });
+            // Recupera o par removido dos removedPairItems para o liderado
+            const currentRemovedItems = removedPairItems[lideradoId] || [];
+            const removedItem = currentRemovedItems.find((item) => item.text === tagToRemove);
 
-            // Atualiza o número total de pares selecionados
+            if (!removedItem) {
+                console.warn("Par removido não encontrado para o liderado", lideradoId);
+                return;
+            }
+
+            const updatedRemovedItems = currentRemovedItems.filter((item) => item.text !== tagToRemove);
+            console.log("RemovedPairItems atualizados:", updatedRemovedItems);
+
+            // Atualiza os pares selecionados removendo o par removido
+            const currentSelectedPairs = listPairEmployeeDataToReview[lideradoId] || [];
+            const updatedSelectedPairs = currentSelectedPairs.filter((item) => item.text !== tagToRemove);
+            console.log("Selected pairs atualizados:", updatedSelectedPairs);
+
+            // Atualiza a lista de pares disponíveis (select) para o liderado:
+            // Adiciona o par removido de volta à lista de seleção e reordena pela propriedade originalIndex
+            const currentAvailablePairs = listPairEmployeeDataToReviewDataSelect[lideradoId] || [];
+            const updatedAvailablePairs = [...currentAvailablePairs, removedItem]
+                .sort((a, b) => a.originalIndex - b.originalIndex);
+            console.log("Available pairs atualizados (ordenados):", updatedAvailablePairs);
+
+            // Dispara os dispatches para atualizar os estados
             await dispatch({
-                type: 'SET_EMPLOYEES_SELECTED_AMOUNT',
-                payload: Math.max(0, state.reviewParticipantsSelectionData.employeesSelectedAmount - 1),
+                type: 'SET_PAIR_TAGS_INPUT',
+                payload: { lideradoId, tags: updatedPairTags }
+            });
+            await dispatch({
+                type: 'SET_REMOVED_PAIR_ITEMS',
+                payload: { lideradoId, items: updatedRemovedItems }
+            });
+            await dispatch({
+                type: 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW',
+                payload: { lideradoId, pairs: updatedSelectedPairs }
+            });
+            await dispatch({
+                type: 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_SELECT',
+                payload: { lideradoId, pairs: updatedAvailablePairs }
             });
 
-            await dispatch({ type: 'SET_PAIR_TAGS_INPUT', payload: updatedTags });
-            await dispatch({ type: 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW', payload: updatedDataList });
-            await dispatch({ type: 'SET_REMOVED_PAIR_ITEMS', payload: updatedRemovedItems });
+            console.log("Remoção concluída para a tag:", tagToRemove);
 
         } catch (error) {
-            console.error("Erro ao remover tag de liderados:", error);
+            console.error("Erro ao remover tag de pares:", error);
         }
     }
 
@@ -695,11 +748,11 @@ export function ReviewParticipantSelectionForm() {
         state.reviewParticipantsSelectionData.removedLedItems
     ]);
 
-    useEffect(() => {
-    }, [
+    useEffect(() => { }, [
         state.reviewParticipantsSelectionData.listPairEmployeeDataToReview,
         state.reviewParticipantsSelectionData.pairTagsInput,
-        state.reviewParticipantsSelectionData.removedPairItems
+        state.reviewParticipantsSelectionData.removedPairItems,
+        state.reviewParticipantsSelectionData.listPairEmployeeDataToReviewDataSelect
     ]);
 
     useEffect(() => {
@@ -1510,7 +1563,7 @@ export function ReviewParticipantSelectionForm() {
                                                                 state.reviewParticipantsSelectionData.selfReviewTagsInput,
                                                                 state.reviewParticipantsSelectionData.removedLedItems,
                                                                 state.reviewParticipantsSelectionData.listEmployeeDataToReview,
-                                                                state.reviewParticipantsSelectionData.listPairEmployeeDataToReview,
+                                                                state.reviewParticipantsSelectionData.listPairEmployeeDataToReviewDataSelect,
                                                                 dispatch
                                                             );
                                                         }
@@ -1533,8 +1586,8 @@ export function ReviewParticipantSelectionForm() {
                                             </label>
                                             {state.reviewParticipantsSelectionData.selfReviewTagsInput.map((tag, index) => {
                                                 const lideradoId = state.reviewParticipantsSelectionData.removedLedItems[index]?.id;
-                                                console.log("lideradoId: ", lideradoId);
-                                                console.log("listPairEmployeeDataToReview[lideradoId]: ", state.reviewParticipantsSelectionData.listPairEmployeeDataToReview[lideradoId]);
+                                                // console.log("lideradoId: ", lideradoId);
+                                                // console.log("listPairEmployeeDataToReview[lideradoId]: ", state.reviewParticipantsSelectionData.listPairEmployeeDataToReview[lideradoId]);
 
                                                 return (
                                                     <Row key={index} className="align-items-center mb-3">
@@ -1580,8 +1633,8 @@ export function ReviewParticipantSelectionForm() {
                                                                 data-minimum-results-for-search="Infinity"
                                                                 options={{ placeholder: "Selecionar usuários:" }}
                                                                 data={
-                                                                    lideradoId && state.reviewParticipantsSelectionData.listPairEmployeeDataToReview[lideradoId]
-                                                                        ? state.reviewParticipantsSelectionData.listPairEmployeeDataToReview[lideradoId]?.map(
+                                                                    lideradoId && state.reviewParticipantsSelectionData.listPairEmployeeDataToReviewDataSelect[lideradoId]
+                                                                        ? state.reviewParticipantsSelectionData.listPairEmployeeDataToReviewDataSelect[lideradoId]?.map(
                                                                             ({ id, text }) => ({ id, text })
                                                                         )
                                                                         : []
@@ -1592,66 +1645,55 @@ export function ReviewParticipantSelectionForm() {
                                                                         await handlePairSelection(
                                                                             lideradoId,
                                                                             selectedValue,
-                                                                            state.reviewParticipantsSelectionData.listPairEmployeeDataToReview,
                                                                             state.reviewParticipantsSelectionData.pairTagsInput,
                                                                             state.reviewParticipantsSelectionData.removedPairItems,
+                                                                            state.reviewParticipantsSelectionData.listPairEmployeeDataToReviewDataSelect,
+                                                                            state.reviewParticipantsSelectionData.listPairEmployeeDataToReview, // Lista dos pares já selecionados
                                                                             dispatch
                                                                         );
                                                                     }
                                                                 }}
                                                             />
-                                                        </Col>
 
+                                                        </Col>
                                                         {
                                                             state.reviewParticipantsSelectionData.removedLedItems.length > 0 &&
                                                             state.reviewParticipantsSelectionData.isHandPickedSelectionParticipantsToReview &&
-                                                            state.reviewParticipantsSelectionData.removedLedItems.map((liderado, index) => {
-                                                                const lideradoId = liderado.id;
-                                                                const currentPairTagsInput = state.reviewParticipantsSelectionData.pairTagsInput[lideradoId] || [];
-                                                                <Col className="d-flex flex-column align-items-start justify-content-start mb-3" md="6" key={lideradoId}>
-                                                                    <label
-                                                                        className="form-control-label"
-                                                                        htmlFor={`pairTags-${lideradoId}`}
-                                                                    >
-                                                                        Pares
-                                                                    </label>
-                                                                    <TagsInput
-                                                                        onlyUnique
-                                                                        className="bootstrap-tagsinput"
-                                                                        onChange={async (updatedTags) => {
-                                                                            const removedTag = currentPairTagsInput.find((tag) => !updatedTags.includes(tag));
+                                                            Object.keys(state.reviewParticipantsSelectionData.removedPairItems).map((lideradoId) => {
+                                                                const liderado = state.reviewParticipantsSelectionData.removedLedItems.find(item => item.id === lideradoId);
+                                                                if (!liderado) return null;  // Ignora se não encontrar o liderado correspondente
 
-                                                                            if (removedTag) {
-                                                                                await handleTagPairRemoval(
-                                                                                    lideradoId,
-                                                                                    removedTag,
-                                                                                    currentPairTagsInput,
-                                                                                    state.reviewParticipantsSelectionData.removedPairItems,
-                                                                                    state.reviewParticipantsSelectionData.listPairEmployeeDataToReview,
-                                                                                    dispatch
-                                                                                );
-                                                                            } else {
-                                                                                const updatedTagsInput = {
-                                                                                    ...state.reviewParticipantsSelectionData.pairTagsInput,
-                                                                                    [lideradoId]: updatedTags,
-                                                                                };
-                                                                                dispatch({
-                                                                                    type: 'SET_PAIR_TAGS_INPUT',
-                                                                                    payload: updatedTagsInput,
-                                                                                });
-                                                                            }
-                                                                        }}
-                                                                        value={currentPairTagsInput}
-                                                                        tagProps={{ className: "tag badge mr-1 bg-default" }}
-                                                                        inputProps={{
-                                                                            readOnly: true,
-                                                                            placeholder: "",
-                                                                            style: { display: "none" },
-                                                                        }}
-                                                                    />
-                                                                </Col>
-                                                            }
-                                                            )
+                                                                const currentPairs = state.reviewParticipantsSelectionData.removedPairItems[lideradoId] || [];
+
+                                                                return (
+                                                                    <Col className="d-flex flex-column align-items-start justify-content-start mb-3" md="6" key={lideradoId}>
+                                                                        <label className="form-control-label" htmlFor={`pairTags-${lideradoId}`}>
+                                                                            Pares para {liderado.text}
+                                                                        </label>
+                                                                        <TagsInput
+                                                                            onlyUnique
+                                                                            className="bootstrap-tagsinput"
+                                                                            value={currentPairs.map(pair => pair.text)}
+                                                                            onChange={async (updatedTags) => {
+                                                                                const removedTag = currentPairs.find(pair => !updatedTags.includes(pair.text));
+                                                                                if (removedTag) {
+                                                                                    await handleTagPairRemoval({
+                                                                                        lideradoId,
+                                                                                        tagToRemove: removedTag.text,
+                                                                                        pairTagsInput: state.reviewParticipantsSelectionData.pairTagsInput,
+                                                                                        removedPairItems: state.reviewParticipantsSelectionData.removedPairItems,
+                                                                                        listPairEmployeeDataToReviewDataSelect: state.reviewParticipantsSelectionData.listPairEmployeeDataToReviewDataSelect,
+                                                                                        listPairEmployeeDataToReview: state.reviewParticipantsSelectionData.listPairEmployeeDataToReview,
+                                                                                        dispatch,
+                                                                                    });
+                                                                                }
+                                                                            }}
+                                                                            tagProps={{ className: "tag badge mr-1 bg-default" }}
+                                                                            inputProps={{ readOnly: true, placeholder: "", style: { display: "none" } }}
+                                                                        />
+                                                                    </Col>
+                                                                );
+                                                            })
                                                         }
                                                     </Row>
                                                 )
