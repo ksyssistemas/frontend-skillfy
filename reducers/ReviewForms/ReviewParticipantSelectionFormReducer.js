@@ -362,7 +362,32 @@ export const formReducer = (state, action) => {
                     },
                 },
             };
+        case 'SET_ALL_PAIR_TAGS_INPUT':
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData,
+                    pairTagsInput: action.payload,
+                },
+            };
 
+        case 'SET_ALL_REMOVED_PAIR_ITEMS':
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData,
+                    removedPairItems: action.payload,
+                },
+            };
+
+        case 'SET_ALL_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW':
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData,
+                    listPairEmployeeDataToReview: action.payload,
+                },
+            };
         default:
             return state;
     }
