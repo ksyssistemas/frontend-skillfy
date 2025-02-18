@@ -8,17 +8,18 @@ const Select2 = dynamic(() => import("react-select2-wrapper"));
 import TagsInput from "components/TagsInput/TagsInput.js";
 import { useFindAllEmployee } from "../../../../../../hooks/RecordsHooks/employee/useFindAllEmployee";
 import EmployeePairsInput from "../EmployeePairsInput";
-import { initialState, formReducer } from '../../../../../../reducers/ReviewForms/ReviewParticipantSelectionFormReducer';
+import { initialStateReviewParticipantsSelectionForm, reviewParticipantsSelectionFormReducer } from '../../../../../../reducers/ReviewForms/ReviewParticipantSelectionFormReducer';
 import { ModelSelectionReviewContext } from "../../../../../../contexts/PerformanceContext/ModelSelectionReviewContext";
 import PageChange from "../../../../../PageChange/PageChange";
 import { useFindDepartment } from "../../../../../../hooks/RecordsHooks/department/useFindDepartment";
 import { useFindClientCompany } from "../../../../../../hooks/RecordsHooks/customer/useFindClientCompany";
 import { useFindEmployeeContractDetails } from "../../../../../../hooks/RecordsHooks/featuresEmploymentContract/useFindEmployeeContractDetails";
 import { useFindRole } from "../../../../../../hooks/RecordsHooks/role/useFindRole";
+import useCreatePerformanceReview from "../../../../../../hooks/PerformanceReview/useCreatePerformanceReview";
 
 export function ReviewParticipantSelectionForm() {
 
-    const [state, dispatch] = useReducer(formReducer, initialState);
+    const [state, dispatch] = useReducer(reviewParticipantsSelectionFormReducer, initialStateReviewParticipantsSelectionForm);
 
     const latestReviewParticipantsSelectionData = useRef(state.reviewParticipantsSelectionData);
 

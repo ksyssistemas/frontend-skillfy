@@ -13,7 +13,7 @@ import {
     Progress
 } from "reactstrap";
 import { ModelSelectionReviewContext } from "../../../../../../contexts/PerformanceContext/ModelSelectionReviewContext";
-import { initialState, formReducer } from '../../../../../../reducers/ReviewForms/ReviewModelAndDeadlineFormReducer';
+import { initialStateReviewModelAndDeadlineForm, reviewModelAndDeadlineFormReducer } from '../../../../../../reducers/ReviewForms/ReviewModelAndDeadlineFormReducer';
 import PageChange from "../../../../../PageChange/PageChange";
 import moment from 'moment'; // Certifique-se de adicionar isso no início do arquivo
 import 'moment/locale/pt-br'; // Caso precise de suporte ao idioma
@@ -22,7 +22,7 @@ moment.locale('pt-br'); // Configura o idioma para português (opcional)
 
 export function ReviewModelAndDeadlineForm() {
 
-    const [state, dispatch] = useReducer(formReducer, initialState);
+    const [state, dispatch] = useReducer(reviewModelAndDeadlineFormReducer, initialStateReviewModelAndDeadlineForm);
 
     const latestReviewModelData = useRef(state.reviewModelData);
 

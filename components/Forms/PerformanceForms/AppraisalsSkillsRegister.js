@@ -36,6 +36,7 @@ export function AppraisalsSkillsRegister() {
     const quillRef = useRef(null);
 
     const { evidencesIdToUpdate, handleEvidenceIdStatusCleanupToUpdate } = useContext(EvidencesContext);
+    
     const handleBackToList = () => {
         handleEvidenceIdStatusCleanupToUpdate();
     };

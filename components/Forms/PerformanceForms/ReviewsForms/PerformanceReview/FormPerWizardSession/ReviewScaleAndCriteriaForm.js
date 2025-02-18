@@ -15,9 +15,8 @@ import {
 import $ from 'jquery';
 // import { useSelector } from 'react-redux';
 import { ModelSelectionReviewContext } from "../../../../../../contexts/PerformanceContext/ModelSelectionReviewContext";
-import { initialState, formReducer } from '../../../../../../reducers/ReviewForms/ReviewScaleAndCriteriaFormReducer';
+import { initialStateReviewScaleAndCriteriaForm, reviewScaleAndCriteriaFormReducer } from '../../../../../../reducers/ReviewForms/ReviewScaleAndCriteriaFormReducer';
 import PageChange from "../../../../../PageChange/PageChange";
-import useCreatePerformanceReview from "../../../../../../hooks/PerformanceReview/useCreatePerformanceReview";
 import { handleSelectionEmploymentContractData } from "../../../../../../util/handleSelectionEmploymentContractData";
 import { ModalRulerType } from "../../../../../Modals/AppraisalModal/ModalRulerType";
 import { useFindCaptionOptionByCaptionId } from "../../../../../../hooks/DefinitionOptionsReview/AppraisalCaptions/useFindCaptionOptionByCaptionId";
@@ -35,22 +34,11 @@ import { resetFormAndLocalStorage } from "../../../../../../util/resetReviewForm
 
 export function ReviewScaleAndCriteriaForm() {
 
-    const {
-        rulerTypeDataList,
-        handleRulerTypeDataList,
-        performanceReviewRulerOptionSelected,
-        setPerformanceReviewRulerOptionSelected,
-        performanceReviewRulerOptionSelectedState,
-        setPerformanceReviewRulerOptionSelectedState,
-    } = useCreatePerformanceReview();
-
-    const { selectedReview } = useContext(ModelSelectionReviewContext);
-
     const { SearchBar } = Search;
 
     const [evidenceDataTable, setEvidenceDataTable] = React.useState();
 
-    const [state, dispatch] = useReducer(formReducer, initialState);
+    const [state, dispatch] = useReducer(reviewScaleAndCriteriaFormReducer, initialStateReviewScaleAndCriteriaForm);
 
     const latestreviewScaleAndCriteriaData = useRef(state.reviewScaleAndCriteriaData);
 
@@ -186,7 +174,13 @@ export function ReviewScaleAndCriteriaForm() {
         // Despache o estado 'valid' antes de iniciar o processo de seleção
         if (setStateAction) dispatch({ type: setStateAction, payload: 'valid' });
         if (setHasDepartmentSelectedAction) dispatch({ type: setHasDepartmentSelectedAction, payload: true });
-        console.log("Passou aqui!")
+        console.log(
+            selectedId, "\n",
+            dataList, "\n",
+            setSelectedAction, "\n",
+            setFieldAction, "\n",
+            setStateAction, "\n",
+        )
         // Chama a função de processamento de seleção de dados
         handleSelectionEmploymentContractData(
             selectedId,
@@ -288,7 +282,7 @@ export function ReviewScaleAndCriteriaForm() {
         if (!state.reviewScaleAndCriteriaData.rulerOptionData.length) {
             try {
                 // Encontre o objeto no array que corresponde a selectedRulerType
-                const foundRuler = rulerTypeDataList.find(ruler =>
+                const foundRuler = state.reviewScaleAndCriteriaData.rulerTypeDataList.find(ruler =>
                     ruler.id === state.reviewScaleAndCriteriaData.selectedRulerType);
                 if (foundRuler) {
                     // Pegue o valor do campo 'text' correspondente

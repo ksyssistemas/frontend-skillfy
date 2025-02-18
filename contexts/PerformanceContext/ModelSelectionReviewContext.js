@@ -1,9 +1,19 @@
 // Contexto para armazenar informações de autenticação
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useReducer, useState } from 'react';
+import useCreatePerformanceReview from '../../hooks/PerformanceReview/useCreatePerformanceReview';
 
 export const ModelSelectionReviewContext = createContext({});
 
 function ModelSelectionReviewProvider({ children }) {
+
+  const {
+    handleCreationPerformanceReviewSubmit,
+    handleSetEvidenceAndRulerToPerformanceReview,
+    updatePerformanceReviewData,
+    handleAddParticipantsToPerformanceReview,
+    handleReviewGenerationSettings
+  } = useCreatePerformanceReview();
+
   const [selectedReview, setSelectedReview] = useState(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [clearStepIndex, setClearStepIndex] = useState(null);
@@ -11,8 +21,6 @@ function ModelSelectionReviewProvider({ children }) {
   const handleSelectedReview = (review) => setSelectedReview(review);
 
   const handleClearStepIndex = () => setClearStepIndex(null);
-
-  const handleIsResetTriggered = () => setIsResetTriggered(!isResetTriggered);
 
   const handleNext = () => {
     setCurrentStep(currentStep + 1);
@@ -26,9 +34,20 @@ function ModelSelectionReviewProvider({ children }) {
     setClearStepIndex(currentStep);
   };
 
-  // Função para enviar todos os dados
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log('Submitting all data');
+    const reviewId = await handleCreationPerformanceReviewSubmit(selectedReview);
+    console.log('handleCreationPerformanceReviewSubmit');
+    if (reviewId) {
+      const { amountEvidencesIncluded, amountSkillsIncluded } = await handleSetEvidenceAndRulerToPerformanceReview(reviewId);
+      console.log('handleSetEvidenceAndRulerToPerformanceReview');
+      const { amountParticipantsIncluded } = await handleAddParticipantsToPerformanceReview(reviewId);
+      console.log('handleAddParticipantsToPerformanceReview');
+      await handleReviewGenerationSettings(reviewId);
+      console.log('handleReviewGenerationSettings');
+      await updatePerformanceReviewData(amountEvidencesIncluded, amountSkillsIncluded, amountParticipantsIncluded);
+      console.log('Data submited with sucess!');
+    }
   };
 
   return (

@@ -14,7 +14,7 @@ import {
 import 'quill/dist/quill.snow.css'; // Importando o CSS do Quill
 import { ModelSelectionReviewContext } from "../../../../../../contexts/PerformanceContext/ModelSelectionReviewContext";
 import { handleSelectionEmploymentContractData } from "../../../../../../util/handleSelectionEmploymentContractData";
-import { initialState, formReducer } from '../../../../../../reducers/ReviewForms/ReviewIdentityFormReducer';
+import { initialStateReviewIdentityForm, reviewIdentityFormReducer } from '../../../../../../reducers/ReviewForms/ReviewIdentityFormReducer';
 import PageChange from "../../../../../PageChange/PageChange";
 import moment from 'moment'; // Certifique-se de adicionar isso no início do arquivo
 import 'moment/locale/pt-br'; // Caso precise de suporte ao idioma
@@ -23,7 +23,7 @@ moment.locale('pt-br'); // Configura o idioma para português (opcional)
 
 export function ReviewIdentityForm() {
 
-    const [state, dispatch] = useReducer(formReducer, initialState);
+    const [state, dispatch] = useReducer(reviewIdentityFormReducer, initialStateReviewIdentityForm);
 
     const latestreviewIdentityData = useRef(state.reviewIdentityData);
 
@@ -69,7 +69,6 @@ export function ReviewIdentityForm() {
         // Despache o estado 'valid' antes de iniciar o processo de seleção
         if (setStateAction) dispatch({ type: setStateAction, payload: 'valid' });
         if (setHasDepartmentSelectedAction) dispatch({ type: setHasDepartmentSelectedAction, payload: true });
-
         // Chama a função de processamento de seleção de dados
         handleSelectionEmploymentContractData(
             selectedId,
@@ -195,7 +194,7 @@ export function ReviewIdentityForm() {
             ...data,
             startDate: moment(data.startDate).format("YYYY-MM-DD"), // Salvar no formato ISO
             endDate: moment(data.endDate).format("YYYY-MM-DD"),
-            reviewDate: moment(data.reviewDate).format("YYYY-MM-DD"),
+            //reviewDate: moment(data.reviewDate).format("YYYY-MM-DD"),
             realizationDate: moment(data.realizationDate).format("YYYY-MM-DD"),
         };
         localStorage.setItem('reviewIdentityData', JSON.stringify(dataToSave));
@@ -218,7 +217,7 @@ export function ReviewIdentityForm() {
                                     ...parsedData,
                                     startDate: moment(parsedData.startDate, "YYYY-MM-DD").toDate(),
                                     endDate: moment(parsedData.endDate, "YYYY-MM-DD").toDate(),
-                                    reviewDate: moment(parsedData.reviewDate, "YYYY-MM-DD").toDate(),
+                                    //reviewDate: moment(parsedData.reviewDate, "YYYY-MM-DD").toDate(),
                                     realizationDate: moment(parsedData.realizationDate, "YYYY-MM-DD").toDate(),
                                 },
                             });

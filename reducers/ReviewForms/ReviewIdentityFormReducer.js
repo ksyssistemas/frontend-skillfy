@@ -1,4 +1,4 @@
-export const initialState = {
+export const initialStateReviewIdentityForm = {
     reviewIdentityData: {
         reviewName: '',
         reviewNameState: null,
@@ -47,7 +47,7 @@ export const initialState = {
     },
 };
 
-export const formReducer = (state, action) => {
+export const reviewIdentityFormReducer = (state, action) => {
     switch (action.type) {
         case 'SAVE_REVIEW_DATA':
             return {
@@ -63,7 +63,7 @@ export const formReducer = (state, action) => {
                 },
             };
         case 'RESET_REVIEW_DATA':
-            return initialState;
+            return initialStateReviewIdentityForm;
         case 'SET_REVIEW_NAME':
             return {
                 ...state,
@@ -233,6 +233,7 @@ export const formReducer = (state, action) => {
                 },
             };
         case 'SET_REVIEW_DATE':
+            console.log("action.payload: ", action.payload);
             return {
                 ...state,
                 reviewIdentityData: {
@@ -285,7 +286,7 @@ export const formReducer = (state, action) => {
                 ...state,
                 reviewIdentityData: {
                     ...state.reviewIdentityData,
-                    startDate: initialState.reviewIdentityData.startDate
+                    startDate: initialStateReviewIdentityForm.reviewIdentityData.startDate
                 }
             };
         case 'RESET_END_DATE':
@@ -293,7 +294,7 @@ export const formReducer = (state, action) => {
                 ...state,
                 reviewIdentityData: {
                     ...state.reviewIdentityData,
-                    endDate: initialState.reviewIdentityData.endDate
+                    endDate: initialStateReviewIdentityForm.reviewIdentityData.endDate
                 }
             };
         case 'RESET_REVIEW_PERIOD':
@@ -301,7 +302,7 @@ export const formReducer = (state, action) => {
                 ...state,
                 reviewIdentityData: {
                     ...state.reviewIdentityData,
-                    selectedPeriod: initialState.reviewIdentityData.selectedPeriod
+                    selectedPeriod: initialStateReviewIdentityForm.reviewIdentityData.selectedPeriod
                 }
             };
         case 'RESET_DATE_ON_REVIEW_WAS_CARRIED_OUT':
@@ -309,7 +310,7 @@ export const formReducer = (state, action) => {
                 ...state,
                 reviewIdentityData: {
                     ...state.reviewIdentityData,
-                    selectedDateOnReviewWasCarriedOut: initialState.reviewIdentityData.selectedDateOnReviewWasCarriedOut
+                    selectedDateOnReviewWasCarriedOut: initialStateReviewIdentityForm.reviewIdentityData.selectedDateOnReviewWasCarriedOut
                 }
             };
         case 'RESET_REVIEW_DATE':
@@ -317,7 +318,7 @@ export const formReducer = (state, action) => {
                 ...state,
                 reviewIdentityData: {
                     ...state.reviewIdentityData,
-                    reviewDate: initialState.reviewIdentityData.reviewDate
+                    reviewDate: initialStateReviewIdentityForm.reviewIdentityData.reviewDate
                 }
             };
         case 'RESET_REALIZATION_DATE':
@@ -325,7 +326,7 @@ export const formReducer = (state, action) => {
                 ...state,
                 reviewIdentityData: {
                     ...state.reviewIdentityData,
-                    realizationDate: initialState.reviewIdentityData.realizationDate
+                    realizationDate: initialStateReviewIdentityForm.reviewIdentityData.realizationDate
                 }
             };
         default:
