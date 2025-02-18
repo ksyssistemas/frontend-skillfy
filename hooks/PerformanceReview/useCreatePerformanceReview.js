@@ -196,15 +196,15 @@ const useCreatePerformanceReview = () => {
                 const payload = {};
 
                 if (amountEvidencesIncluded) {
-                    payload.amount_evidences_included: amountEvidencesIncluded
+                    payload.amount_evidences_included = amountEvidencesIncluded,
                 }
 
                 if (amountSkillsIncluded) {
-                    payload.amount_skills_included: amountSkillsIncluded
+                    payload.amount_skills_included = amountSkillsIncluded,
                 }
 
                 if (amountParticipantsIncluded) {
-                    payload.amount_participants_included: amountParticipantsIncluded
+                    payload.amount_participants_included = amountParticipantsIncluded,
                 }
                 const response = await fetch(`${process.env.NEXT_PUBLIC_EVIDENCES_PERFORMANCE}`, {
                     method: 'PATCH',
