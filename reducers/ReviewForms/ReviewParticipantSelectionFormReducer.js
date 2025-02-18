@@ -1,4 +1,4 @@
-export const initialState = {
+export const initialStateReviewParticipantsSelectionForm = {
     reviewParticipantsSelectionData: {
         isAllEmployeesSelectedToParticipate: false,
         listAllEmployeesSelectedToReview: [],
@@ -49,7 +49,7 @@ export const initialState = {
     },
 };
 
-export const formReducer = (state, action) => {
+export const reviewParticipantsSelectionFormReducer = (state, action) => {
     switch (action.type) {
         case 'SAVE_REVIEW_DATA':
             return {
@@ -65,7 +65,7 @@ export const formReducer = (state, action) => {
                 },
             };
         case 'RESET_REVIEW_DATA':
-            return initialState;
+            return initialStateReviewParticipantsSelectionForm;
         case 'SET_ALL_EMPLOYEE_SELECTED':
             return {
                 ...state,

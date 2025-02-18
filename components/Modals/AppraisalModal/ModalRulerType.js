@@ -1,5 +1,5 @@
 // ModalComponent.js
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useReducer, useState } from "react";
 // nodejs library to set properties for components
 import PropTypes from "prop-types";
 import {
@@ -20,9 +20,9 @@ import {
     ListGroup,
     ListGroupItem
 } from "reactstrap";
+import { initialStateReviewScaleAndCriteriaForm, reviewScaleAndCriteriaFormReducer } from '../../../reducers/ReviewForms/ReviewScaleAndCriteriaFormReducer'
 import { useFindCaptionOptionByCaptionType } from "../../../hooks/DefinitionOptionsReview/AppraisalCaptions/useFindCaptionOptionByCaptionType";
 import { useFindCaptionOptionByCaptionId } from "../../../hooks/DefinitionOptionsReview/AppraisalCaptions/useFindCaptionOptionByCaptionId";
-import useCreatePerformanceReview from "../../../hooks/PerformanceReview/useCreatePerformanceReview";
 
 export function ModalRulerType({
     handleOpenRulerTypeModal,
@@ -34,12 +34,9 @@ export function ModalRulerType({
     handleRulerOptionSelected,
 }) {
 
-    const {
-        rulerTypeDataList,
-    } = useCreatePerformanceReview();
+    const [state, dispatch] = useReducer(reviewScaleAndCriteriaFormReducer, initialStateReviewScaleAndCriteriaForm);
 
     function handleSelectedRulerOptionId(rulerOptionId, isChecked) {
-        console.log('rulerOptionId: ', rulerOptionId)
         if (isChecked && rulerOptionId) {
             handleRulerOptionSelected(rulerOptionId);
         } else {
@@ -82,7 +79,6 @@ export function ModalRulerType({
                 }
             })
         );
-        console.log("Rulers: ", updatedRulers);
         setDetailedRulerTypeData(updatedRulers);
     };
 
@@ -90,7 +86,7 @@ export function ModalRulerType({
         if (!detailedRulerTypeData.length) {
             try {
                 // Encontre o objeto no array que corresponde a selectedRulerType
-                const foundRuler = rulerTypeDataList.find(ruler => ruler.id === selectedRulerType);
+                const foundRuler = state.reviewScaleAndCriteriaData.rulerTypeDataList.find(ruler => ruler.id === selectedRulerType);
                 if (foundRuler) {
                     // Pegue o valor do campo 'text' correspondente
                     const captionType = foundRuler.text;

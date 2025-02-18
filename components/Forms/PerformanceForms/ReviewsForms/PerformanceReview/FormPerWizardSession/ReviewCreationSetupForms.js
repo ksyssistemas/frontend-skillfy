@@ -10,12 +10,12 @@ import {
 import PageChange from "../../../../../PageChange/PageChange";
 import { useContext, useEffect, useReducer, useRef, useState } from "react";
 import { ModelSelectionReviewContext } from "../../../../../../contexts/PerformanceContext/ModelSelectionReviewContext";
-import { initialState, formReducer } from '../../../../../../reducers/ReviewForms/ReviewCreationSetupFormReducer';
+import { initialStateReviewGenerationSetupForm, reviewGenerationSetupFormReducer } from '../../../../../../reducers/ReviewForms/ReviewCreationSetupFormReducer';
 import { resetFormAndLocalStorage } from "../../../../../../util/resetReviewFormData";
 
 export function ReviewCreationSetupForm() {
 
-    const [state, dispatch] = useReducer(formReducer, initialState);
+    const [state, dispatch] = useReducer(reviewGenerationSetupFormReducer, initialStateReviewGenerationSetupForm);
 
     const latestReviewGenerationSetupData = useRef(state.reviewGenerationSetupData);
 
