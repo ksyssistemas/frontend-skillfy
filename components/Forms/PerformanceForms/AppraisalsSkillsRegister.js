@@ -30,8 +30,12 @@ import { useRouter } from 'next/router';
 import { useFindAllEvidences } from '../../../hooks/PerformanceReview/EvidencesReview/useFindAllEvidences';
 import { useFindAllEvaluationRoler } from '../../../hooks/PerformanceReview/EvaluationRoler/useFindAllEvaluationRoler';
 import { useFindAllRuleOption } from '../../../hooks/PerformanceReview/RuleOption/useFindAllRuleOption';
+import { useFindEvidences } from '../../../hooks/PerformanceReview/EvidencesReview/useFindEvidences';
+import { useFindEvaluationRoler } from '../../../hooks/PerformanceReview/EvaluationRoler/useFindEvaluationRoler';
+import { useFindRuleOption } from '../../../hooks/PerformanceReview/RuleOption/useFindRuleOption';
 import { useFindPerformanceReview } from '../../../hooks/PerformanceReview/useFindPerformanceReview';
 import { EvidencesContext } from '../../../contexts/PerformanceContext/AppraisalEvidencesContext';
+
 export function AppraisalsSkillsRegister() {
     const quillRef = useRef(null);
 
@@ -41,6 +45,7 @@ export function AppraisalsSkillsRegister() {
     };
 
     const [performanceAppraisalData, setPerformanceAppraisalData] = useState([]);
+    console.log(performanceAppraisalData);
     useEffect(() => {
         const fetchPerformanceAppraisal = async () => {
             if (!performanceAppraisalData.length) {

@@ -9,9 +9,14 @@ import AppraisalsListTableCompetencies from "../../components/Tables/AppraisalTa
 // import AddAppraisalCycleModal from "../../components/Modals/AppraisalModal/add-appraisal-cycle";
 import AppraisalsSkillsRegister from "../../components/Forms/PerformanceForms/AppraisalsSkillsRegister";
 import { EvidencesContext } from '../../contexts/PerformanceContext/AppraisalEvidencesContext';
+import { TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT } from '../../contexts/AuthContext';
+import Admin from "layouts/Admin.js";
+import Employee from "../../layouts/Employee";
+
 
 function Appraisalsskillslist() {
   const { evidencesIdToUpdate } = useContext(EvidencesContext);
+  
   return (
 
     <>
@@ -30,7 +35,12 @@ function Appraisalsskillslist() {
     </>
   );
 }
-
-Appraisalsskillslist.layout = Performance;
+TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'administrator'
+  ? Appraisalsskillslist.layout = Admin
+  : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'customer'
+    ? Appraisalsskillslist.layout = Performance
+    : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'employee'
+      ? Appraisalsskillslist.layout = Employee
+      : Appraisalsskillslist.layout = Admin));
 
 export default Appraisalsskillslist;

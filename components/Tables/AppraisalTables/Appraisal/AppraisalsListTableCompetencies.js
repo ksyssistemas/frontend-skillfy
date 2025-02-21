@@ -22,8 +22,19 @@ import {
 import { useContext } from 'react';
 import { withRouter } from "next/router";
 import { useFindAllPerformanceReview } from '../../../../hooks/PerformanceReview/useFindAllPerformanceReview';
-import { EvidencesContext } from '../../../../contexts/PerformanceContext/AppraisalEvidencesContext'
+import { useFindPerformanceReview } from '../../../../hooks/PerformanceReview/useFindPerformanceReview';
+import { EvidencesContext } from '../../../../contexts/PerformanceContext/AppraisalEvidencesContext';
+import { AuthContext } from '../../../../contexts/AuthContext';
+import { useFindAllReviewParticipants } from '../../../../hooks/PerformanceReview/ReviewParticipants/useFindAllReviewParticipants';
+
 function AppraisalsListTableCompetencies() {
+
+  const { authenticationDataLoggedInUser } = useContext(AuthContext);
+  console.log("AuthContex", authenticationDataLoggedInUser);
+
+  // const userLoggedId = authenticationDataLoggedInUser?.data?.id;
+  const userLoggedId = 14;
+  console.log("userLoggedId", userLoggedId);
 
   const badgeConfig = {
     "Concluída": { color: "success", text: "Concluída" },
@@ -95,6 +106,39 @@ function AppraisalsListTableCompetencies() {
 
   const [performanceAppraisalData, setPerformanceAppraisalData] = useState([]);
 
+  const [performanceReviewParticipantsData, setPerformanceReviewParticipantsData] = useState([]);
+
+  const [performanceAppraisalIgualsUserLoggedIdData, setPerformanceAppraisalIgualsUserLoggedIdData] = useState([]);
+
+  useEffect(() => {
+    async function fetchPerformanceReviewParticipants() {
+      try {
+        const foundReviewParticipants = await useFindAllReviewParticipants();
+        setPerformanceReviewParticipantsData(foundReviewParticipants);
+      } catch (error) {
+        console.error('Error fetching performance:', error);
+      }
+    }
+
+    fetchPerformanceReviewParticipants();
+  }, []);
+
+  const performanceReviewParticipantsIgualsUserLoggedIdData = performanceReviewParticipantsData.filter
+  (participants => Number(participants.reviewParticipantId) === Number(userLoggedId));
+
+  useEffect(() => {
+    if (performanceReviewParticipantsIgualsUserLoggedIdData.length > 0) {
+      Promise.all(performanceReviewParticipantsIgualsUserLoggedIdData.map(participants => useFindPerformanceReview(participants.performanceReviewId)))
+        .then(details => setPerformanceAppraisalIgualsUserLoggedIdData(details))
+        .catch(error => console.error("Erro ao buscar avaliações com o mesmo id do usuário :", error));
+    } else {
+      setPerformanceAppraisalIgualsUserLoggedIdData([]);
+    }
+  }, [performanceReviewParticipantsData]);
+
+  console.log(performanceAppraisalIgualsUserLoggedIdData);
+  console.log(performanceReviewParticipantsData);
+  
   useEffect(() => {
     async function fetchPerformanceAppraisal() {
       try {
@@ -128,15 +172,13 @@ function AppraisalsListTableCompetencies() {
                 <th className="sort text-left" data-sort="name" scope="col">Nome</th>
                 <th className="sort text-left" data-sort="startDate" scope="col">Data de Início</th>
                 <th className="sort text-left" data-sort="endDate" scope="col">Data de Fim</th>
-                {/* <th className="sort text-left" data-sort="validation" scope="col">Validação</th> */}
-                {/* <th className="sort text-left" data-sort="progress" scope="col">Progresso</th> */}
                 <th className="sort text-left" data-sort="status" scope="col">Estado</th>
                 <th className="sort text-left" data-sort="actions" scope="col">Ações</th>
               </tr>
             </thead>
             <tbody className="list">
-              {performanceAppraisalData.length > 0 ? (
-                performanceAppraisalData.map((appraisal) => (
+              {performanceAppraisalIgualsUserLoggedIdData.length > 0 ? (
+                performanceAppraisalIgualsUserLoggedIdData.map((appraisal) => (
                   <tr key={appraisal.id}>
                     <td scope="row">
                       <Button
@@ -150,12 +192,6 @@ function AppraisalsListTableCompetencies() {
                     </td>
                     <td className="budget">{formatDate(appraisal.startDate)}</td>
                     <td className="budget">{formatDate(appraisal.endDate)}</td>
-                    {/* <td>
-                      {renderBadge(appraisal.validation)}
-                    </td>
-                    <td>
-                      {renderProgress(appraisal.progress)}
-                    </td> */}
                     <td>
                       {renderStatusBadge(appraisal.status)}
                     </td>

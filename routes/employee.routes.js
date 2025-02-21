@@ -92,24 +92,26 @@ const routes = [
     icon: "ni ni-paper-diploma",
     state: "appraisalsCollapse",
     views: [
-      {
-        collapse: true,
-        name: "Avaliações",
-        miniName: "A",
-        state: "appraisalCollapse",
-        views: [
+      // {
+        // collapse: true,
+        // name: "Avaliações",
+        // miniName: "A",
+        // state: "appraisalCollapse",
+        // views: [
           {
-            path: "/appraisal-cycle-list",
+            path: "/add-appraisals-skills-list",
             name: "Realizar",
-            layout: "/",
+            miniName: "R",
+            layout: "/performance",
           },
           {
             path: "/appraisal-result",
             name: "Resultados",
-            layout: "/",
+            miniName: "R",
+            layout: "/performance",
           },
-        ],
-      },
+        // ],
+      // },
     ],
   },
   {
