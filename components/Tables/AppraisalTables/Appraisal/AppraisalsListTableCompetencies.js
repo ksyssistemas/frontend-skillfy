@@ -30,11 +30,11 @@ import { useFindAllReviewParticipants } from '../../../../hooks/PerformanceRevie
 function AppraisalsListTableCompetencies() {
 
   const { authenticationDataLoggedInUser } = useContext(AuthContext);
-  console.log("AuthContex", authenticationDataLoggedInUser);
+  // console.log("AuthContex", authenticationDataLoggedInUser);
 
   // const userLoggedId = authenticationDataLoggedInUser?.data?.id;
   const userLoggedId = 14;
-  console.log("userLoggedId", userLoggedId);
+  // console.log("userLoggedId", userLoggedId);
 
   const badgeConfig = {
     "Concluída": { color: "success", text: "Concluída" },
@@ -124,7 +124,7 @@ function AppraisalsListTableCompetencies() {
   }, []);
 
   const performanceReviewParticipantsIgualsUserLoggedIdData = performanceReviewParticipantsData.filter
-  (participants => Number(participants.reviewParticipantId) === Number(userLoggedId));
+    (participants => Number(participants.reviewParticipantId) === Number(userLoggedId));
 
   useEffect(() => {
     if (performanceReviewParticipantsIgualsUserLoggedIdData.length > 0) {
@@ -136,9 +136,9 @@ function AppraisalsListTableCompetencies() {
     }
   }, [performanceReviewParticipantsData]);
 
-  console.log(performanceAppraisalIgualsUserLoggedIdData);
-  console.log(performanceReviewParticipantsData);
-  
+  // console.log(performanceAppraisalIgualsUserLoggedIdData);
+  // console.log(performanceReviewParticipantsData);
+
   useEffect(() => {
     async function fetchPerformanceAppraisal() {
       try {

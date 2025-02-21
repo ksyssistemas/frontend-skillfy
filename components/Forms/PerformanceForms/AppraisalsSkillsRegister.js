@@ -35,8 +35,11 @@ import { useFindEvaluationRoler } from '../../../hooks/PerformanceReview/Evaluat
 import { useFindRuleOption } from '../../../hooks/PerformanceReview/RuleOption/useFindRuleOption';
 import { useFindPerformanceReview } from '../../../hooks/PerformanceReview/useFindPerformanceReview';
 import { EvidencesContext } from '../../../contexts/PerformanceContext/AppraisalEvidencesContext';
+import { useFindAllReviewEvidenceRuler } from '../../../hooks/PerformanceReview/ReviewEvidenceRuler/useFindAllReviewEvidenceRuler';
+import { useFindRuleOptionEvaluationRuler } from '../../../hooks/PerformanceReview/RuleOption/useFindRuleOptionEvaluationRuler';
 
 export function AppraisalsSkillsRegister() {
+    const [reviewObjective, setReviewObjective] = useState('');
     const quillRef = useRef(null);
 
     const { evidencesIdToUpdate, handleEvidenceIdStatusCleanupToUpdate } = useContext(EvidencesContext);
@@ -45,7 +48,7 @@ export function AppraisalsSkillsRegister() {
     };
 
     const [performanceAppraisalData, setPerformanceAppraisalData] = useState([]);
-    console.log(performanceAppraisalData);
+    // console.log(performanceAppraisalData);
     useEffect(() => {
         const fetchPerformanceAppraisal = async () => {
             if (!performanceAppraisalData.length) {
@@ -60,46 +63,60 @@ export function AppraisalsSkillsRegister() {
     }, [evidencesIdToUpdate]);
 
     const [performanceEvidenceData, setPerformanceEvidenceData] = useState([]);
-    useEffect(() => {
-        const fetchPerformanceEvidence = async () => {
-            if (!performanceAppraisalData.length) {
-                const foundEvidences = await useFindAllEvidences();
-                setPerformanceEvidenceData(foundEvidences);
-            }
-        };
-
-        if (evidencesIdToUpdate) {
-            fetchPerformanceEvidence();
-        }
-    }, [evidencesIdToUpdate]);
+    // console.log("performanceEvidenceData :", performanceEvidenceData); 
 
     const [performanceEvaluationRolerData, setPerformanceEvaluationRolerData] = useState([]);
-    useEffect(() => {
-        const fetchPerformanceEvaluationRoler = async () => {
-            if (!performanceAppraisalData.length) {
-                const foundEvaluationRoler = await useFindAllEvaluationRoler();
-                setPerformanceEvaluationRolerData(foundEvaluationRoler);
-            }
-        };
-
-        if (evidencesIdToUpdate) {
-            fetchPerformanceEvaluationRoler();
-        }
-    }, [evidencesIdToUpdate]);
+    // console.log("Evidências da Evaluation Roler :", performanceEvaluationRolerData);
 
     const [performanceRuleOptionData, setPerformanceRuleOptionData] = useState([]);
+    // console.log("Opções da RuleOptions :", performanceRuleOptionData);
+
+    const [performanceReviewEvidenceRulerData, setPerformanceReviewEvidenceRulerData] = useState([]);
     useEffect(() => {
-        const fetchPerformanceRuleOption = async () => {
-            if (!performanceAppraisalData.length) {
-                const foundRuleOption = await useFindAllRuleOption();
-                setPerformanceRuleOptionData(foundRuleOption);
-            }
+        const fetchReviewEvidenceRuler = async () => {
+            const foundReviewEvidenceRuler = await useFindAllReviewEvidenceRuler();
+            setPerformanceReviewEvidenceRulerData(foundReviewEvidenceRuler);
         };
 
         if (evidencesIdToUpdate) {
-            fetchPerformanceRuleOption();
+            fetchReviewEvidenceRuler();
         }
     }, [evidencesIdToUpdate]);
+    // console.log("performanceReviewEvidenceRulerData :", performanceReviewEvidenceRulerData);
+
+    const ReviewEvidenceRulerIgualsEvaluationIdData = performanceReviewEvidenceRulerData.filter
+        (EvidenceRuler => Number(EvidenceRuler.performanceReviewId) === Number(evidencesIdToUpdate));
+    // console.log("ReviewEvidenceRulerIgualsEvaluationIdData :", ReviewEvidenceRulerIgualsEvaluationIdData);
+
+    useEffect(() => {
+        if (ReviewEvidenceRulerIgualsEvaluationIdData.length > 0) {
+            Promise.all(ReviewEvidenceRulerIgualsEvaluationIdData.map(EvidenceRuler => useFindRuleOptionEvaluationRuler(EvidenceRuler.reviewRulerId)))
+                .then(details => setPerformanceRuleOptionData(details))
+                .catch(error => console.error("Erro ao buscar opções :", error));
+        } else {
+            setPerformanceRuleOptionData([]);
+        }
+    }, [ReviewEvidenceRulerIgualsEvaluationIdData]);
+
+    useEffect(() => {
+        if (ReviewEvidenceRulerIgualsEvaluationIdData.length > 0) {
+            Promise.all(ReviewEvidenceRulerIgualsEvaluationIdData.map(EvidenceRuler => useFindEvaluationRoler(EvidenceRuler.reviewRulerId)))
+                .then(details => setPerformanceEvaluationRolerData(details))
+                .catch(error => console.error("Erro ao buscar as evidências comportamentais :", error));
+        } else {
+            setPerformanceEvaluationRolerData([]);
+        }
+    }, [ReviewEvidenceRulerIgualsEvaluationIdData]);
+
+    useEffect(() => {
+        if (ReviewEvidenceRulerIgualsEvaluationIdData.length > 0) {
+            Promise.all(ReviewEvidenceRulerIgualsEvaluationIdData.map(EvidenceRuler => useFindEvidences(EvidenceRuler.reviewCompetenceId)))
+                .then(details => setPerformanceEvidenceData(details))
+                .catch(error => console.error("Erro ao buscar competências :", error));
+        } else {
+            setPerformanceEvidenceData([]);
+        }
+    }, [ReviewEvidenceRulerIgualsEvaluationIdData]);
 
     useEffect(() => {
         let quillInstance;
@@ -144,20 +161,22 @@ export function AppraisalsSkillsRegister() {
             }
         };
     }, []);
-    const [selectedStatus, setSelectedStatus] = useState({});
 
-    const handleRadioChange = (e, evidenceId, rowIndex, colIndex) => {
-        setSelectedStatus((prevState) => ({
-            ...prevState,
+    const [selectedStatus, setSelectedStatus] = useState({});
+    const handleRadioChange = (e, evidenceId, weight, evaluationRulerId) => {
+        const { value } = e.target;
+        setSelectedStatus((prev) => ({
+            ...prev,
             [evidenceId]: {
-                ...prevState[evidenceId],
-                [rowIndex]: {
-                    ...prevState[evidenceId]?.[rowIndex],
-                    [colIndex]: e.target.value,
-                },
+                selectedOption: value,
+                weight: weight,
+                evidenceId: evidenceId,
+                evaluationRulerId: evaluationRulerId,
             },
         }));
     };
+
+    console.log("selectedStatus :", selectedStatus);
 
     const evidencias = [];
 
@@ -170,10 +189,44 @@ export function AppraisalsSkillsRegister() {
     const options = [];
 
     for (let i = 0; i < performanceRuleOptionData.length; i++) {
-        if (performanceRuleOptionData[i].label) {
-            options.push(performanceRuleOptionData[i].label);
+        const innerArray = performanceRuleOptionData[i];
+        for (let j = 0; j < innerArray.length; j++) {
+            const item = innerArray[j];
+            if (item.label) {
+                options.push(item.label);
+            }
         }
     }
+
+    const combinedData = performanceEvidenceData.map((evidence, index) => {
+        const evaluationRoler = performanceEvaluationRolerData[index];
+        const ruleOptions = performanceRuleOptionData[index];
+        return {
+            ...evidence,
+            evaluationRoler,
+            ruleOptions,
+        };
+    });
+    // console.log("combinedData :", combinedData);
+
+    const handleSalvar = () => {
+
+        const payload = {
+            objective: reviewObjective,
+            responses: Object.values(selectedStatus),
+        };
+
+        console.log("Payload a ser enviado:", payload);
+    };
+
+    const handleLimpar = () => {
+        setReviewObjective('');
+        setSelectedStatus({});
+        if (quillRef.current) {
+            quillRef.current.setText('');
+        }
+    };
+
     return (
         <Card className="mb-4">
             <CardHeader>
@@ -183,21 +236,15 @@ export function AppraisalsSkillsRegister() {
                 <Form className="needs-validation" noValidate>
                     <div className="form-row">
                         <Col className="mb-7" md="12">
-                            <label
-                                className="form-control-label"
-                                htmlFor="validationDescriptionReviewObjective"
-                            >
+                            <label htmlFor="validationDescriptionReviewObjective">
                                 Objetivo
                             </label>
-                            <p> {performanceAppraisalData.reviewObjective} </p>
+                            <p>{performanceAppraisalData.reviewObjective}</p>
                         </Col>
                     </div>
                     <div className="form-row">
                         <Col className="mb-3" md="12">
-                            <label
-                                className="form-control-label"
-                                htmlFor="validationPDIStatus"
-                            >
+                            <label htmlFor="validationPDIStatus">
                                 Legenda
                             </label>
                             <p>{performanceAppraisalData.reviewModel}</p>
@@ -206,79 +253,73 @@ export function AppraisalsSkillsRegister() {
                     <Col className="py-3 d-flex justify-content-center" md="12">
                         <p className="lead text-black">Classificação da Competência</p>
                     </Col>
-                    {performanceEvidenceData.length > 0 ? (
-                        performanceEvidenceData.map((evidence) => (
-                            <Card>
-                                <CardHeader>{evidence.evidenceName}</CardHeader>
-                                <CardBody>
-                                    <div className="form-row">
-                                        <Col className="mb-3" md="12">
-                                            <label
-                                                className="form-control-label"
-                                                htmlFor="validationPDIStatus"
-                                            >
-                                                Descrição da Competência a ser avaliada
-                                            </label>
-                                            <p>{evidence.description}</p>
-                                        </Col>
-                                    </div>
-                                    <div className="form-row">
-                                        <Col className="mb-3" md="12">
-                                            <table className="table table-bordered">
-                                                <thead>
-                                                    <tr>
-                                                        <th className="text-center font-weight-bold">Evidência Comportamental</th>
-                                                        {options.map((option, index) => (
-                                                            <th key={index} className="text-center font-weight-bold">{option}</th>
-                                                        ))}
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {evidencias.map((evidencia, rowIndex) => (
-                                                        <tr key={rowIndex}>
-                                                            <td>{evidencia}</td>
-                                                            {options.map((option, colIndex) => (
-                                                                <td key={colIndex} align="center">
-                                                                    <input
-                                                                        type="radio"
-                                                                        name={`status-${evidence.id}-${rowIndex}-${colIndex}`}
-                                                                        value={option}
-                                                                        checked={
-                                                                            selectedStatus[evidence.id]?.[rowIndex]?.[colIndex] === option
-                                                                        }
-                                                                        onChange={(e) => handleRadioChange(e, evidence.id, rowIndex, colIndex)}
-                                                                    />
-                                                                </td>
-                                                            ))}
-                                                        </tr>
+
+                    {performanceEvidenceData.length > 0 &&
+                        performanceEvaluationRolerData.length > 0 &&
+                        performanceRuleOptionData.length > 0 ? (
+                        combinedData.length > 0 ? (
+                            combinedData.map((item) => (
+                                <Card key={item.id}>
+                                    <CardHeader>{item.evidenceName}</CardHeader>
+                                    <CardBody>
+                                        <p>{item.description}</p>
+                                        <table className="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Evidência Comportamental</th>
+                                                    {item.ruleOptions.map((option, i) => (
+                                                        <th key={i}>{option.label}</th>
                                                     ))}
-                                                </tbody>
-                                            </table>
-                                        </Col>
-                                    </div>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>{item.evaluationRoler.ruleType}</td>
+                                                    {item.ruleOptions.map((option, j) => (
+                                                        <td key={j} align="center">
+                                                            <input
+                                                                type="radio"
+                                                                name={`status-${item.id}`}
+                                                                value={option.label}
+                                                                checked={
+                                                                    selectedStatus[item.id]?.selectedOption === option.label
+                                                                }
+                                                                onChange={(e) =>
+                                                                    handleRadioChange(e, item.id, option.weight, item.evaluationRoler.id)
+                                                                }
+                                                            />
+                                                        </td>
+                                                    ))}
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </CardBody>
+                                </Card>
+                            ))
+                        ) : (
+                            <Card>
+                                <CardBody>
+                                    <p>Nenhuma competência encontrada</p>
                                 </CardBody>
                             </Card>
-                        ))
+                        )
                     ) : (
                         <Card>
-                            <CardBody><p>Nenhuma competência encontrada</p></CardBody>
+                            <CardBody>
+                                <p>Nenhuma competência encontrada</p>
+                            </CardBody>
                         </Card>
                     )}
+
                     <div className="form-row">
                         <Col className="mb-7" md="12">
-                            <label
-                                className="form-control-label"
-                                htmlFor="validationDescriptionReviewObjective"
-                            >
+                            <label htmlFor="validationDescriptionReviewObjective">
                                 Objetivo
                             </label>
                             <div
                                 data-quill-placeholder="Escreva aqui o objetivo da avaliação..."
                                 data-toggle="quill"
                                 id="validationDescriptionReviewObjective"
-                            // valid={reviewObjectiveState === "valid"}
-                            // invalid={reviewObjectiveState === "invalid"}
-                            // onChange={handleReviewObjectiveChange}
                             />
                             <div className="valid-feedback">Parece bom!</div>
                             <div className="invalid-feedback">
@@ -288,19 +329,34 @@ export function AppraisalsSkillsRegister() {
                     </div>
                     <Row>
                         <Col md="8" />
-                        <Col className="d-flex justify-content-end align-items-center" md="4" >
-                            <Button className="px-5" color="primary" size="lg" onClick={handleBackToList}>Voltar</Button>
-                            <Button className="px-5" color="secundary" size="lg" type="button">
+                        <Col className="d-flex justify-content-end align-items-center" md="4">
+                            <Button className="px-5" color="primary" size="lg" onClick={handleBackToList}>
+                                Voltar
+                            </Button>
+                            <Button
+                                className="px-5"
+                                color="secundary"
+                                size="lg"
+                                type="button"
+                                onClick={handleLimpar}
+                            >
                                 <span className="btn-inner--text">Limpar</span>
                             </Button>
-                            <Button className="px-5" color="primary" size="lg" type="button">
+                            <Button
+                                className="px-5"
+                                color="primary"
+                                size="lg"
+                                type="button"
+                                onClick={handleSalvar}
+                            >
                                 <span className="btn-inner--text">Salvar</span>
                             </Button>
                         </Col>
                     </Row>
+
                 </Form>
             </CardBody>
-        </Card >
+        </Card>
     )
 }
 
