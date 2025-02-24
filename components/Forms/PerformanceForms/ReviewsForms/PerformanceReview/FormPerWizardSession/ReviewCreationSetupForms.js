@@ -24,7 +24,9 @@ export function ReviewCreationSetupForm() {
     const {
         selectedReview,
         clearStepIndex,
-        handleClearStepIndex
+        handleClearStepIndex,
+        stateGlobalReviewReducer,
+        dispatchGlobalReviewReducer
     } = useContext(ModelSelectionReviewContext);
 
     // Ref para armazenar o estado anterior em formato de string
@@ -123,8 +125,7 @@ export function ReviewCreationSetupForm() {
 
     // Função utilitária para salvar os dados formatados no localStorage
     const saveDataToLocalStorage = (data) => {
-        const dataToSave = { ...data };
-        localStorage.setItem('reviewGenerationSetupData', JSON.stringify(dataToSave));
+        localStorage.setItem('reviewGenerationSetupData', JSON.stringify(data));
     };
 
     // Execute o carregamento dos dados ao montar o componente
@@ -155,23 +156,26 @@ export function ReviewCreationSetupForm() {
         loadReviewGenerationSetupData();
     }, []);
 
+    // Salvar no Contexto Global antes de sair
+    useEffect(() => {
+        return () => {
+            dispatchGlobalReviewReducer({
+                type: "UPDATE_REVIEW_SETUP",
+                payload: state.reviewGenerationSetupData,
+            });
+        };
+    }, [state.reviewGenerationSetupData, dispatchGlobalReviewReducer]);
+
     // Atualize a lógica de persistência para incluir verificações e evitar sobrescrever valores críticos
     useEffect(() => {
         const currentStateString = JSON.stringify(state.reviewGenerationSetupData);
 
         if (previousStateRef.current !== currentStateString) {
-            // Salva o estado atualizado, preservando o ciclo selecionado
-            const dataToSave = { ...state.reviewGenerationSetupData };
-
-            saveDataToLocalStorage(dataToSave);
-            latestReviewGenerationSetupData.current = dataToSave;
-
             previousStateRef.current = currentStateString;
-        }
+            latestReviewGenerationSetupData.current = { ...state.reviewGenerationSetupData };
+            saveDataToLocalStorage(state.reviewGenerationSetupData);
 
-        return () => {
-            saveDataToLocalStorage(latestReviewGenerationSetupData.current);
-        };
+        }
     }, [state.reviewGenerationSetupData]);
 
     useEffect(() => {

@@ -28,7 +28,9 @@ export function ReviewParticipantSelectionForm() {
     const {
         selectedReview,
         clearStepIndex,
-        handleClearStepIndex
+        handleClearStepIndex,
+        stateGlobalReviewReducer,
+        dispatchGlobalReviewReducer
     } = useContext(ModelSelectionReviewContext);
 
     // Ref para armazenar o estado anterior em formato de string
@@ -51,10 +53,11 @@ export function ReviewParticipantSelectionForm() {
         state.reviewParticipantsSelectionData.pairsNumberToDrawn <=
         state.reviewParticipantsSelectionData.listEmployeeDataToReview.length;
 
+    let contador = 0;
+
     // Função utilitária para salvar os dados formatados no localStorage
     const saveDataToLocalStorage = (data) => {
-        const dataToSave = { ...data };
-        localStorage.setItem('reviewParticipantsSelectionData', JSON.stringify(dataToSave));
+        localStorage.setItem('reviewParticipantsSelectionData', JSON.stringify(data));
     };
 
     // Função para selecionar todos os usuários registrados
@@ -909,27 +912,31 @@ export function ReviewParticipantSelectionForm() {
         loadReviewParticipantsSelectionData();
     }, []);
 
+    // Salvar no Contexto Global antes de sair
+    useEffect(() => {
+        const stateParticipants = state.reviewParticipantsSelectionData;
+        console.log(stateParticipants.isAllEmployeesSelectedToParticipate, stateParticipants.isRandomSelectionParticipantsToReview, stateParticipants.isHandPickedSelectionParticipantsToReview)
+        if (stateParticipants.isAllEmployeesSelectedToParticipate || stateParticipants.isRandomSelectionParticipantsToReview || stateParticipants.isHandPickedSelectionParticipantsToReview) {
+            console.log("Entrou!!")
+            dispatchGlobalReviewReducer({
+                type: "UPDATE_REVIEW_PARTICIPANTS",
+                payload: state.reviewParticipantsSelectionData,
+            });
+        };
+    }, [state.reviewParticipantsSelectionData, dispatchGlobalReviewReducer]);
+
     // Atualize a lógica de persistência para incluir verificações e evitar sobrescrever valores críticos
     useEffect(() => {
         const currentStateString = JSON.stringify(state.reviewParticipantsSelectionData);
 
         if (previousStateRef.current !== currentStateString) {
-            // Salva o estado atualizado, preservando o ciclo selecionado
-            const currentSelectedCycle = state.reviewParticipantsSelectionData.selectedCycle;
-            const dataToSave = {
-                ...state.reviewParticipantsSelectionData,
-                selectedCycle: currentSelectedCycle || state.reviewParticipantsSelectionData.selectedCycle,
-            };
-
-            saveDataToLocalStorage(dataToSave);
-            latestReviewParticipantsSelectionData.current = dataToSave;
-
             previousStateRef.current = currentStateString;
+            latestReviewParticipantsSelectionData.current = { ...state.reviewParticipantsSelectionData };
+            // Aguarde a atualização do estado antes de salvar
+            setTimeout(() => {
+                saveDataToLocalStorage(state.reviewParticipantsSelectionData);
+            }, 0);
         }
-
-        return () => {
-            saveDataToLocalStorage(latestReviewParticipantsSelectionData.current);
-        };
     }, [state.reviewParticipantsSelectionData]);
 
     useEffect(() => {

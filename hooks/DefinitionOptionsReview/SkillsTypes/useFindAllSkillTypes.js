@@ -13,7 +13,6 @@ export async function useFindAllSkillTypes() {
         }
 
         const data = await response.json();
-        console.log("Data: ", data);
         return data;
 
     } catch (error) {
