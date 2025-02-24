@@ -233,7 +233,6 @@ export const reviewIdentityFormReducer = (state, action) => {
                 },
             };
         case 'SET_REVIEW_DATE':
-            console.log("action.payload: ", action.payload);
             return {
                 ...state,
                 reviewIdentityData: {

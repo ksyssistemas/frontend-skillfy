@@ -1,10 +1,13 @@
 // Contexto para armazenar informações de autenticação
 import React, { createContext, useEffect, useReducer, useState } from 'react';
 import useCreatePerformanceReview from '../../hooks/PerformanceReview/useCreatePerformanceReview';
+import { globalReviewReducer, initialState } from '../../reducers/ReviewForms/GlobalReviewReducer';
 
 export const ModelSelectionReviewContext = createContext({});
 
 function ModelSelectionReviewProvider({ children }) {
+
+  const [stateGlobalReviewReducer, dispatchGlobalReviewReducer] = useReducer(globalReviewReducer, initialState);
 
   const {
     handleCreationPerformanceReviewSubmit,
@@ -35,18 +38,17 @@ function ModelSelectionReviewProvider({ children }) {
   };
 
   const handleSubmit = async () => {
-    console.log('Submitting all data');
-    const reviewId = await handleCreationPerformanceReviewSubmit(selectedReview);
-    console.log('handleCreationPerformanceReviewSubmit');
+    const reviewId = await handleCreationPerformanceReviewSubmit(
+      selectedReview,
+      stateGlobalReviewReducer.reviewIdentityData,
+      stateGlobalReviewReducer.reviewModelData,
+      stateGlobalReviewReducer.reviewParticipantsSelectionData
+    );
     if (reviewId) {
-      const { amountEvidencesIncluded, amountSkillsIncluded } = await handleSetEvidenceAndRulerToPerformanceReview(reviewId);
-      console.log('handleSetEvidenceAndRulerToPerformanceReview');
-      const { amountParticipantsIncluded } = await handleAddParticipantsToPerformanceReview(reviewId);
-      console.log('handleAddParticipantsToPerformanceReview');
-      await handleReviewGenerationSettings(reviewId);
-      console.log('handleReviewGenerationSettings');
-      await updatePerformanceReviewData(amountEvidencesIncluded, amountSkillsIncluded, amountParticipantsIncluded);
-      console.log('Data submited with sucess!');
+      const { amountEvidenceIncluded, amountSkillsIncluded } = await handleSetEvidenceAndRulerToPerformanceReview(reviewId, stateGlobalReviewReducer.reviewScaleAndCriteriaData);
+      const { amountParticipantsIncluded } = await handleAddParticipantsToPerformanceReview(reviewId, stateGlobalReviewReducer.reviewParticipantsSelectionData);
+      await handleReviewGenerationSettings(reviewId, stateGlobalReviewReducer.reviewGenerationSetupData);
+      await updatePerformanceReviewData(reviewId, amountEvidenceIncluded, amountSkillsIncluded, amountParticipantsIncluded);
     }
   };
 
@@ -62,6 +64,8 @@ function ModelSelectionReviewProvider({ children }) {
         handleClearCurrentForm,
         handleClearStepIndex,
         handleSubmit,
+        stateGlobalReviewReducer,
+        dispatchGlobalReviewReducer
       }}>
       {children}
     </ModelSelectionReviewContext.Provider>

@@ -1,115 +1,45 @@
-import React, { useContext, useState, useReducer } from 'react';
-import { initialStateReviewIdentityForm, reviewIdentityFormReducer } from '../../reducers/ReviewForms/ReviewIdentityFormReducer';
-import { initialStateReviewModelAndDeadlineForm, reviewModelAndDeadlineFormReducer } from '../../reducers/ReviewForms/ReviewModelAndDeadlineFormReducer';
-import { initialStateReviewScaleAndCriteriaForm, reviewScaleAndCriteriaFormReducer } from '../../reducers/ReviewForms/ReviewScaleAndCriteriaFormReducer';
-import { initialStateReviewGenerationSetupForm, reviewGenerationSetupFormReducer } from '../../reducers/ReviewForms/ReviewCreationSetupFormReducer';
-import { initialStateReviewParticipantsSelectionForm, reviewParticipantsSelectionFormReducer } from '../../reducers/ReviewForms/ReviewParticipantSelectionFormReducer';
-
 const useCreatePerformanceReview = () => {
-    const [reviewIdentityState, reviewIdentityDispatch] = useReducer(reviewIdentityFormReducer, initialStateReviewIdentityForm);
-    const [reviewModelAndDeadlineState, reviewModelAndDeadlineDispatch] = useReducer(reviewModelAndDeadlineFormReducer, initialStateReviewModelAndDeadlineForm);
-    const [reviewScaleAndCriteriaState, reviewScaleAndCriteriaDispatch] = useReducer(reviewScaleAndCriteriaFormReducer, initialStateReviewScaleAndCriteriaForm);
-    const [reviewGenerationSetupState, reviewGenerationSetupDispatch] = useReducer(reviewGenerationSetupFormReducer, initialStateReviewGenerationSetupForm);
-    const [reviewParticipantsSelectionState, reviewParticipantsSelectionDispatch] = useReducer(reviewParticipantsSelectionFormReducer, initialStateReviewParticipantsSelectionForm);
 
-    const {
-        reviewName,
-        reviewObjective,
-        isIntercurrentReviewCycle,
-        isUserDefinedDateToReview,
-        startDate,
-        endDate,
-        reviewCycle,
-        reviewPeriod,
-        reviewDate,
-        realizationDate,
-    } = reviewIdentityState.reviewIdentityData;
-
-    const {
-        hasPerformanceReviewOfLeaders,
-        deadlineToLeadersToRespondToPerformanceReview,
-        hasSelfReviewOfPerformance,
-        deadlineToRespondToPerformanceSelfReview,
-        hasPerformanceReviewOfEvaluators,
-        deadlineToEvaluatorsToRespondToPerformanceReview,
-        weightOfPerformanceReviewOfLeaders,
-        weightOfSelfReviewOfPerformance,
-        weightOfEvaluatorsPerformanceReview,
-    } = reviewModelAndDeadlineState.reviewModelData;
-
-    const {
-        reviewRulerType,
-        reviewRulerOptionSelected,
-        rulerOptionData,
-        reviewCompetenceEvidenceData,
-    } = reviewScaleAndCriteriaState.reviewScaleAndCriteriaData;
-
-    const {
-        isAllEmployeesSelectedToParticipate,
-        isRandomSelectionParticipantsToReview,
-        isHandPickedSelectionParticipantsToReview,
-        leadersNumberToDrawn,
-        selfReviewsNumberToDrawn,
-        pairsNumberToDrawn,
-        listAllEmployeesSelectedToReview,
-        listLeaderEmployeeDataSelectedToReview,
-        listEmployeeDataToSelfReview,
-        listRandomPairEmployeeDataToReview
-    } = reviewParticipantsSelectionState.reviewParticipantsSelectionData;
-
-    const {
-        autoSendEmailNotifications,
-        evaluatorCommentsOnMandatoryCriteria,
-        appraiseeCommentsOnMandatoryCriteria,
-        editAnswersOnReviewsCarriedOut,
-        reportFeedbackStatus,
-        reportFeedbackStatusToManager,
-        reportFeedbackStatusToParticipants,
-        autoSendReviewResultsToManagers,
-        applyLeadershipCriteriaToUser,
-        applyLeadershipCriteriaToUserManagers,
-        applyLeadershipCriteriaToUserParticipants,
-        participantsResultsToManagersPreview,
-        conceptualResults
-    } = reviewGenerationSetupState.reviewGenerationSetupData;
-
-    const handleCreationPerformanceReviewSubmit = async (selectedReview) => {
+    const handleCreationPerformanceReviewSubmit = async (
+        selectedReview,
+        reviewIdentityData,
+        reviewModelData,
+        reviewParticipantsSelectionData
+    ) => {
         try {
             const payload = {
-                reviewName,
-                reviewObjective,
+                reviewName: reviewIdentityData.reviewName,
+                reviewObjective: reviewIdentityData.reviewObjective,
                 reviewModel: selectedReview,
-                reviewCycle,
-                hasPerformanceReviewOfLeaders,
-                deadlineToLeadersToRespondToPerformanceReview,
-                hasSelfReviewOfPerformance,
-                deadlineToRespondToPerformanceSelfReview,
-                hasPerformanceReviewOfEvaluators,
-                deadlineToEvaluatorsToRespondToPerformanceReview,
-                weightOfPerformanceReviewOfLeaders,
-                weightOfSelfReviewOfPerformance,
-                weightOfEvaluatorsPerformanceReview,
-                // amount_evidences_included: 10,
-                // amount_skills_included: 10,
-                // amount_participants_included: 10,
-                all_registered_participants: isAllEmployeesSelectedToParticipate,
-                participants_selected_random: isRandomSelectionParticipantsToReview,
-                hand_picked_participants: isHandPickedSelectionParticipantsToReview
+                reviewPeriod: reviewIdentityData.reviewPeriod,
+                reviewCycle: reviewIdentityData.reviewCycle,
+                hasPerformanceReviewOfLeaders: reviewModelData.hasPerformanceReviewOfLeaders,
+                deadlineToLeadersToRespondToPerformanceReview: reviewModelData.deadlineToLeadersToRespondToPerformanceReview,
+                hasSelfReviewOfPerformance: reviewModelData.hasSelfReviewOfPerformance,
+                deadlineToRespondToPerformanceSelfReview: reviewModelData.deadlineToRespondToPerformanceSelfReview,
+                hasPerformanceReviewOfEvaluators: reviewModelData.hasPerformanceReviewOfEvaluators,
+                deadlineToEvaluatorsToRespondToPerformanceReview: reviewModelData.deadlineToEvaluatorsToRespondToPerformanceReview,
+                weightOfPerformanceReviewOfLeaders: reviewModelData.weightOfPerformanceReviewOfLeaders,
+                weightOfSelfReviewOfPerformance: reviewModelData.weightOfSelfReviewOfPerformance,
+                weightOfEvaluatorsPerformanceReview: reviewModelData.weightOfEvaluatorsPerformanceReview,
+                reviewRulerId: 0,
+                amountEvidenceIncluded: 0,
+                allRegisteredParticipants: reviewParticipantsSelectionData.isAllEmployeesSelectedToParticipate,
+                participantsSelectedRandom: reviewParticipantsSelectionData.isRandomSelectionParticipantsToReview,
+                handPickedParticipants: reviewParticipantsSelectionData.isHandPickedSelectionParticipantsToReview
             };
 
-            if (isIntercurrentReviewCycle) {
-                payload.reviewPeriod = reviewPeriod;
-                payload.reviewDate = reviewDate;
+            if (reviewIdentityData.isIntercurrentReviewCycle) {
+                payload.reviewDate = reviewIdentityData.reviewDate;
 
-                if (isUserDefinedDateToReview) {
-                    payload.realizationDate = realizationDate;
+                if (reviewIdentityData.isUserDefinedDateToReview) {
+                    payload.realizationDate = reviewIdentityData.realizationDate;
                 }
             }
 
-            if (isReviewCyclePerPeriod) {
-                payload.reviewPeriod = reviewPeriod;
-                payload.startDate = startDate;
-                payload.endDate = endDate;
+            if (reviewIdentityData.isReviewCyclePerPeriod) {
+                payload.startDate = reviewIdentityData.startDate;
+                payload.endDate = reviewIdentityData.endDate;
             }
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_PERFORMANCE_REVIEW}`, {
@@ -122,10 +52,8 @@ const useCreatePerformanceReview = () => {
 
             if (response.ok) {
                 console.log('Performance review data sent successfully!');
-                if (response.data) {
-                    const reviewData = response.data;
-                    return reviewData.id;
-                }
+                const reviewData = await response.json();
+                return reviewData.id;
             } else {
                 console.error('Error in response:', response.status);
             }
@@ -134,7 +62,7 @@ const useCreatePerformanceReview = () => {
         }
     }
 
-    const handleSetEvidenceAndRulerToPerformanceReview = async (reviewId) => {
+    const handleSetEvidenceAndRulerToPerformanceReview = async (reviewId, reviewScaleAndCriteriaData) => {
         if (reviewId) {
             try {
                 const requests = [];
@@ -142,12 +70,12 @@ const useCreatePerformanceReview = () => {
                 let successfulEvidenceCount = 0; // Contador de evidências salvas com sucesso
 
                 // Itera sobre cada competência dentro do array principal
-                reviewCompetenceEvidenceData.forEach(({ competenceId, evidence }) => {
+                reviewScaleAndCriteriaData.reviewCompetenceEvidenceData.forEach(({ competenceId, evidence }) => {
                     // Itera sobre cada evidência dentro do objeto evidence
                     evidence.forEach(({ id: reviewEvidenceId }) => {
                         const payload = {
                             performanceReviewId: reviewId,
-                            reviewRulerId: reviewRulerOptionSelected,
+                            reviewRulerId: reviewScaleAndCriteriaData.reviewRulerOptionSelected,
                             reviewCompetenceId: competenceId,
                             reviewEvidenceId
                         };
@@ -176,9 +104,9 @@ const useCreatePerformanceReview = () => {
                 // Aguarda todas as requisições serem concluídas
                 await Promise.all(requests);
 
-                console.log('Todos os dados foram enviados com sucesso!');
+                console.log('Evidence and ruler data sent successfully!!');
                 return {
-                    amountEvidencesIncluded: successfulCompetenceIds.size, // Total de competências únicas salvas
+                    amountEvidenceIncluded: successfulCompetenceIds.size, // Total de competências únicas salvas
                     amountSkillsIncluded: successfulEvidenceCount // Total de evidências salvas
                 };
             } catch (error) {
@@ -190,266 +118,258 @@ const useCreatePerformanceReview = () => {
         }
     };
 
-    const updatePerformanceReviewData = async (amountEvidencesIncluded, amountSkillsIncluded, amountParticipantsIncluded) => {
-        if (amountEvidencesIncluded || amountSkillsIncluded || amountParticipantsIncluded) {
+    const handleAddParticipantsToPerformanceReview = async (reviewId, reviewParticipantsSelectionData) => {
+        if (!reviewId) return;
+        if (reviewParticipantsSelectionData.isAllEmployeesSelectedToParticipate) {
             try {
-                const payload = {};
+                const requests = [];
+                let successfulParticipantsCount = 0; // Contador de participantes salvos com sucesso
+                reviewParticipantsSelectionData.listAllEmployeesSelectedToReview.forEach(participant => {
+                    const { id: reviewParticipantId, isLead, LeaderName, departmentId } = participant;
 
-                if (amountEvidencesIncluded) {
-                    payload.amount_evidences_included = amountEvidencesIncluded;
-                }
+                    // Verifica se participa como líder
+                    // Garante que `participateAsLeader` seja booleano
+                    const participateAsLeader = Boolean(isLead && LeaderName && LeaderName.trim());
+                    // Verifica se participa como par
+                    const hasPairInSameDepartment = reviewParticipantsSelectionData.listAllEmployeesSelectedToReview.some(otherParticipant =>
+                        otherParticipant.departmentId === departmentId && otherParticipant.id !== reviewParticipantId
+                    );
 
-                if (amountSkillsIncluded) {
-                    payload.amount_skills_included = amountSkillsIncluded;
-                }
+                    const participateAsPair = hasPairInSameDepartment && !isLead;
 
-                if (amountParticipantsIncluded) {
-                    payload.amount_participants_included = amountParticipantsIncluded;
-                }
-                const response = await fetch(`${process.env.NEXT_PUBLIC_EVIDENCES_PERFORMANCE}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload),
-                });
-
-                if (response.ok) {
-                    console.log('Performance review data sent successfully!');
-                    if (response.data) {
-                        const reviewData = response.data;
-                        return reviewData.id;
-                    }
-                } else {
-                    console.error('Error in response:', response.status);
-                }
-            } catch (error) {
-                console.error('Error in request:', error);
-            }
-        }
-    }
-
-    const handleAddParticipantsToPerformanceReview = async (reviewId) => {
-        if (reviewId) {
-            if (isAllEmployeesSelectedToParticipate) {
-                try {
-
-                    const requests = [];
-                    let successfulParticipantsCount = 0; // Contador de participantes salvos com sucesso
-
-                    listAllEmployeesSelectedToReview.forEach(participant => {
-                        const { id: review_participant_id, isLead, LeaderName, departmentId } = participant;
-
-                        // Verifica se participa como líder
-                        const participate_as_leader = isLead && LeaderName && LeaderName.trim() !== "";
-
-                        // Verifica se participa como par
-                        const hasPairInSameDepartment = listAllEmployeesSelectedToReview.some(otherParticipant =>
-                            otherParticipant.departmentId === departmentId && otherParticipant.id !== review_participant_id
-                        );
-
-                        const participate_as_pair = hasPairInSameDepartment && !isLead;
-
-                        const payload = {
-                            review_participant_id,
-                            performance_review_id: reviewId,
-                            participate_as_leader,
-                            participate_as_pair,
-                            participates_as_self_evaluator: true
-                        };
-
-                        const request = fetch(`${process.env.NEXT_PUBLIC_REVIEW_PARTICIPANTS}`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(payload),
-                        })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error(`Erro ao enviar participante: ${response.status}`);
-                                }
-                                return response.json();
-                            }).then(() => {
-                                successfulParticipantsCount++; // Incrementa o contador ao salvar um participante
-                            }).catch(error => {
-                                console.error("Erro em uma requisição de participante:", error);
-                            });
-
-                        requests.push(request);
-                    });
-
-                    // Aguarda todas as requisições serem concluídas
-                    const results = await Promise.all(requests);
-
-                    console.log('Todos os participantes foram adicionados com sucesso!', results);
-                    return { amountParticipantsIncluded: successfulParticipantsCount };
-                } catch (error) {
-                    console.error('Erro ao adicionar participantes:', error);
-                    throw error;
-                }
-            }
-
-            if (isRandomSelectionParticipantsToReview) {
-                try {
-                    const savedParticipants = new Set(); // Para evitar participantes duplicados
-                    const requests = [];
-
-                    // Função auxiliar para verificar se um participante está na lista de pares
-                    const getPairedEmployees = (participantId) => {
-                        return Object.values(listRandomPairEmployeeDataToReview)
-                            .flatMap(obj => obj.pairs)
-                            .filter(pair => pair.pairIdOnReview === participantId)
-                            .map(pair => ({ employeeToWhomIsPairedId: obj.employeeId }));
+                    const payload = {
+                        reviewParticipantId: String(reviewParticipantId),
+                        performanceReviewId: reviewId,
+                        participateAsLeader,
+                        participateAsPair,
+                        participatesAsSelfEvaluator: true
                     };
 
-                    // 1. Iterar sobre listLeaderEmployeeDataSelectedToReview
-                    for (const participant of listLeaderEmployeeDataSelectedToReview) {
-                        const { id, isLead, LeaderName, departmentId } = participant;
-                        if (savedParticipants.has(id)) continue;
-                        savedParticipants.add(id);
+                    const request = fetch(`${process.env.NEXT_PUBLIC_REVIEW_PARTICIPANTS}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(payload),
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`Erro ao enviar participante: ${response.status}`);
+                            }
+                            requests.push(response.json());
+                        }).then(() => {
+                            successfulParticipantsCount++; // Incrementa o contador ao salvar um participante
+                        }).catch(error => {
+                            console.error("Erro em uma requisição de participante:", error);
+                        });
+                });
 
-                        const participates_as_self_evaluator = listEmployeeDataToSelfReview.some(emp => emp.id === id);
-                        const participate_as_leader = isLead && LeaderName.trim() !== "";
-                        const participate_as_pair = Object.values(listRandomPairEmployeeDataToReview).some(obj => obj.pairs.some(pair => pair.pairIdOnReview === id));
-                        const participateAsEmployeePeerTo = getPairedEmployees(id);
+                // Aguarda todas as requisições serem concluídas
+                const results = await Promise.all(requests);
 
-                        const payload = {
-                            reviewParticipantId: id,
-                            performanceReviewId: reviewId,
-                            participateAsLeader: participate_as_leader,
-                            participateAsPair: participate_as_pair,
-                            participateAsEmployeePeerTo,
-                            participates_as_self_evaluator
-                        };
+                console.log('All participants have been successfully added!', results);
+                return { amountParticipantsIncluded: successfulParticipantsCount };
+            } catch (error) {
+                console.error('Erro ao adicionar participantes:', error);
+                throw error;
+            }
+        }
 
-                        requests.push(fetch(`${process.env.NEXT_PUBLIC_REVIEW_PARTICIPANTS}`, {
+        if (reviewParticipantsSelectionData.isRandomSelectionParticipantsToReview) {
+            const listRandomPairs = Object.values(reviewParticipantsSelectionData.listRandomPairEmployeeDataToReview);
+
+            // Verifica se todos os pares são inválidos (sem pares e com a mensagem de erro)
+            const allPairsInvalid = listRandomPairs.every(
+                obj => obj.pairs.length === 0 && obj.insufficientPairNumbers
+            );
+
+            if (allPairsInvalid) {
+                console.warn("Nenhum participante válido para adicionar. Operação cancelada.");
+                return { amountParticipantsIncluded: 0 };
+            }
+
+            try {
+                const savedParticipants = new Set(); // Para evitar participantes duplicados
+                const successCount = new Map(); // Armazena o número de inserções bem-sucedidas por ID
+
+                // Criar conjuntos para verificar participantes de forma eficiente
+                const leadersSet = new Set(reviewParticipantsSelectionData.listLeaderEmployeeDataSelectedToReview.map(emp => emp.id));
+                const selfReviewSet = new Set(reviewParticipantsSelectionData.listEmployeeDataToSelfReview.map(emp => emp.id));
+                const pairSet = new Set(listRandomPairs.map(obj => obj.employeeId));
+
+                // Função auxiliar para obter os pares no formato esperado
+                const getPairedEmployees = (participantId) => {
+                    return listRandomPairs
+                        .flatMap(obj =>
+                            obj.pairs
+                                .filter(pair => pair.pairIdOnReview === participantId)
+                                .map(pair => ({ employeeToWhomIsPairedId: obj.employeeId })) // Retorna objetos no formato esperado
+                        );
+                };
+
+                const addParticipant = async (participant) => {
+                    const { id } = participant;
+                    if (savedParticipants.has(id)) return;
+                    savedParticipants.add(id);
+
+                    // Definir valores com base nas listas
+                    const participateAsLeader = leadersSet.has(id);
+                    const participatesAsSelfEvaluator = selfReviewSet.has(id);
+                    const participateAsPair = pairSet.has(id);
+                    const participateAsEmployeePeerTo = getPairedEmployees(id);
+
+                    const payload = {
+                        reviewParticipantId: String(id),
+                        performanceReviewId: reviewId,
+                        participateAsLeader,
+                        participateAsPair,
+                        participateAsEmployeePeerTo,
+                        participatesAsSelfEvaluator
+                    };
+
+                    try {
+                        const response = await fetch(`${process.env.NEXT_PUBLIC_REVIEW_PARTICIPANTS}`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(payload)
-                        }));
+                        });
+
+                        if (response.ok) {
+                            successCount.set(id, (successCount.get(id) || 0) + 1);
+                        }
+                    } catch (error) {
+                        console.error(`Erro ao adicionar participante ${id}:`, error);
                     }
+                };
 
-                    // 2. Iterar sobre listEmployeeDataToSelfReview
-                    for (const participant of listEmployeeDataToSelfReview) {
-                        const { id } = participant;
-                        if (savedParticipants.has(id)) continue;
-                        savedParticipants.add(id);
+                // Iterar sobre cada lista e adicionar os participantes
+                await Promise.all([
+                    ...reviewParticipantsSelectionData.listLeaderEmployeeDataSelectedToReview.map(addParticipant),
+                    ...reviewParticipantsSelectionData.listEmployeeDataToSelfReview.map(addParticipant),
+                    ...listRandomPairs.flatMap(obj => obj.pairs.map(pair => addParticipant({ id: pair.pairIdOnReview })))
+                ]);
 
-                        const participate_as_pair = Object.values(listRandomPairEmployeeDataToReview).some(obj => obj.pairs.some(pair => pair.pairIdOnReview === id));
-                        const participateAsEmployeePeerTo = getPairedEmployees(id);
+                const amountParticipantsIncluded = successCount.size;
+                console.log(`Total de participantes adicionados com sucesso: ${amountParticipantsIncluded}`);
+                return { amountParticipantsIncluded };
+            } catch (error) {
+                console.error('Erro ao adicionar participantes:', error);
+                return { amountParticipantsIncluded: 0 };
+            }
+        }
 
-                        const payload = {
+        if (reviewParticipantsSelectionData.isHandPickedSelectionParticipantsToReview) {
+            try {
+                const uniqueParticipants = new Map(); // Para evitar participantes duplicados
+
+                // Função auxiliar para verificar se um ID está presente em um array de objetos
+                const isIdInArray = (id, array) => array.some(item => item.id === id);
+
+                // Função auxiliar para verificar pares e coletar os IDs dos pares
+                const getPairsForParticipant = (participantId) => {
+                    let pairedIds = [];
+                    for (const [peerId, peerArray] of Object.entries(reviewParticipantsSelectionData.listPairEmployeeDataToReview)) {
+                        if (peerArray.some(peer => peer.id == participantId)) {
+                            pairedIds.push({ employeeToWhomIsPairedId: parseInt(peerId) });
+                        }
+                    }
+                    return pairedIds.length > 0 ? pairedIds : null;
+                };
+
+                // Itera sobre os líderes selecionados
+                reviewParticipantsSelectionData.listLeaderEmployeeDataSelectedToReview.forEach(participant => {
+                    const { id, isLead, LeaderName } = participant;
+
+                    if (!uniqueParticipants.has(id)) {
+                        uniqueParticipants.set(id, {
+                            reviewParticipantId: id,
+                            performanceReviewId: reviewId,
+                            participateAsLeader: isLead && LeaderName.trim() !== "",
+                            participateAsPair: getPairsForParticipant(id) !== null,
+                            participateAsEmployeePeerTo: getPairsForParticipant(id) || [],
+                            participatesAsSelfEvaluator: isIdInArray(id, reviewParticipantsSelectionData.listEmployeeDataToSelfReview)
+                        });
+                    }
+                });
+
+                // Itera sobre os participantes da autoavaliação
+                reviewParticipantsSelectionData.listEmployeeDataToSelfReview.forEach(participant => {
+                    const { id } = participant;
+
+                    if (!uniqueParticipants.has(id)) {
+                        uniqueParticipants.set(id, {
                             reviewParticipantId: id,
                             performanceReviewId: reviewId,
                             participateAsLeader: false,
-                            participateAsPair: participate_as_pair,
-                            participateAsEmployeePeerTo,
-                            participates_as_self_evaluator: true
-                        };
-
-                        requests.push(fetch(`${process.env.NEXT_PUBLIC_REVIEW_PARTICIPANTS}`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
-                        }));
+                            participateAsPair: getPairsForParticipant(id) !== null,
+                            participateAsEmployeePeerTo: getPairsForParticipant(id) || [],
+                            participatesAsSelfEvaluator: true
+                        });
                     }
+                });
 
-                    // 3. Iterar sobre listRandomPairEmployeeDataToReview
-                    for (const obj of Object.values(listRandomPairEmployeeDataToReview)) {
-                        for (const pair of obj.pairs) {
-                            const { pairIdOnReview } = pair;
-                            if (savedParticipants.has(pairIdOnReview)) continue;
-                            savedParticipants.add(pairIdOnReview);
+                // Itera sobre os pares
+                Object.values(reviewParticipantsSelectionData.listPairEmployeeDataToReview).forEach(pairList => {
+                    pairList.forEach(participant => {
+                        const { id } = participant;
 
-                            const participate_as_pair = true;
-                            const participateAsEmployeePeerTo = getPairedEmployees(pairIdOnReview);
-
-                            const payload = {
-                                reviewParticipantId: pairIdOnReview,
+                        if (!uniqueParticipants.has(id)) {
+                            uniqueParticipants.set(id, {
+                                reviewParticipantId: id,
                                 performanceReviewId: reviewId,
                                 participateAsLeader: false,
-                                participateAsPair: participate_as_pair,
-                                participateAsEmployeePeerTo,
-                                participates_as_self_evaluator: false
-                            };
-
-                            requests.push(fetch(`${process.env.NEXT_PUBLIC_REVIEW_PARTICIPANTS}`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(payload)
-                            }));
+                                participateAsPair: getPairsForParticipant(id) !== null,
+                                participateAsEmployeePeerTo: getPairsForParticipant(id) || [],
+                                participatesAsSelfEvaluator: false
+                            });
                         }
-                    }
+                    });
+                });
 
-                    // Executar todas as requisições em paralelo
-                    await Promise.all(requests);
-                    console.log('Todos os participantes foram adicionados com sucesso!');
-                } catch (error) {
-                    console.error('Erro ao adicionar participantes:', error);
-                }
-            }
+                // Enviar os dados para a API
+                const requests = Array.from(uniqueParticipants.values()).map(payload =>
+                    fetch(`${process.env.NEXT_PUBLIC_REVIEW_PARTICIPANTS}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload),
+                    })
+                        .then(response => {
+                            if (!response.ok) throw new Error(`Erro ao enviar participante: ${response.status}`);
+                            return response.json();
+                        })
+                );
 
-            if (isHandPickedSelectionParticipantsToReview) {
+                const results = await Promise.all(requests);
 
+                console.log('Todos os participantes foram adicionados com sucesso!', results);
+                return { amountParticipantsIncluded: results.length };
+
+            } catch (error) {
+                console.error('Erro ao adicionar participantes:', error);
+                throw error;
             }
         }
     }
 
-    const handleReviewGenerationSettings = async (reviewId) => {
+    const handleReviewGenerationSettings = async (reviewId, reviewGenerationSetupData) => {
         if (reviewId) {
             try {
                 const payload = {
-                    review_evidence_ruler_id: reviewId
+                    review_evidence_ruler_id: String(reviewId),
+                    auto_send_e_mail_notifications: Boolean(reviewGenerationSetupData.autoSendEmailNotifications),
+                    evaluator_comments_on_mandatory_criteria: Boolean(reviewGenerationSetupData.evaluatorCommentsOnMandatoryCriteria),
+                    appraisee_comments_on_mandatory_criteria: Boolean(reviewGenerationSetupData.appraiseeCommentsOnMandatoryCriteria),
+                    edit_answers_on_reviews_carried_out: Boolean(reviewGenerationSetupData.editAnswersOnReviewsCarriedOut),
+                    report_feedback_status_to_manager: Boolean(reviewGenerationSetupData.reportFeedbackStatusToManager),
+                    report_feedback_status_to_participants: Boolean(reviewGenerationSetupData.reportFeedbackStatusToParticipants),
+                    auto_send_review_results_to_managers: Boolean(reviewGenerationSetupData.autoSendReviewResultsToManagers),
+                    apply_leadership_criteria_to_user_managers: Boolean(reviewGenerationSetupData.applyLeadershipCriteriaToUserManagers),
+                    apply_leadership_criteria_to_user_participants: Boolean(reviewGenerationSetupData.applyLeadershipCriteriaToUserParticipants),
+                    participants_results_to_managers_preview: Boolean(reviewGenerationSetupData.participantsResultsToManagersPreview),
+                    conceptual_results: Boolean(reviewGenerationSetupData.conceptualResults)
                 };
 
-                if (autoSendEmailNotifications) {
-                    payload.auto_send_e_mail_notifications = autoSendEmailNotifications;
-                }
-
-                if (evaluatorCommentsOnMandatoryCriteria) {
-                    payload.evaluator_comments_on_mandatory_criteria = evaluatorCommentsOnMandatoryCriteria;
-                }
-
-                if (appraiseeCommentsOnMandatoryCriteria) {
-                    payload.appraisee_comments_on_mandatory_criteria = appraiseeCommentsOnMandatoryCriteria;
-                }
-
-                if (editAnswersOnReviewsCarriedOut) {
-                    payload.edit_answers_on_reviews_carried_out = editAnswersOnReviewsCarriedOut;
-                }
-
-                if (reportFeedbackStatus) {
-                    if (reportFeedbackStatusToManager) {
-                        payload.report_feedback_status_to_manager = reportFeedbackStatusToManager;
-                    }
-                    if (reportFeedbackStatusToParticipants) {
-                        payload.report_feedback_status_to_participants = reportFeedbackStatusToParticipants;
-                    }
-                }
-
-                if (autoSendReviewResultsToManagers) {
-                    payload.auto_send_review_results_to_managers = autoSendReviewResultsToManagers;
-                }
-
-                if (applyLeadershipCriteriaToUser) {
-                    if (applyLeadershipCriteriaToUserManagers) {
-                        payload.apply_leadership_criteria_to_user_managers = applyLeadershipCriteriaToUserManagers;
-                    }
-                    if (applyLeadershipCriteriaToUserParticipants) {
-                        payload.apply_leadership_criteria_to_user_participants = applyLeadershipCriteriaToUserParticipants;
-                    }
-                }
-
-                if (participantsResultsToManagersPreview) {
-                    payload.participants_results_to_managers_preview = participantsResultsToManagersPreview;
-                }
-
-                if (conceptualResults) {
-                    payload.conceptual_results = conceptualResults;
-                }
-
-                const response = fetch(`${process.env.NEXT_PUBLIC_REVIEW_GENERATION_SETTINGS}`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_REVIEW_GENERATION_SETTINGS}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -458,13 +378,55 @@ const useCreatePerformanceReview = () => {
                 });
 
                 if (response.ok) {
-                    console.log('Performance review data sent successfully!');
+                    console.log('The review configuration data has been sent successfully!');
                 } else {
                     console.error('Error in response:', response.status);
                 }
             } catch (error) {
                 console.error('Error in request:', error);
             }
+        }
+    }
+
+    const updatePerformanceReviewData = async (
+        reviewId,
+        amountEvidenceIncluded,
+        amountSkillsIncluded,
+        amountParticipantsIncluded
+    ) => {
+        try {
+            const payload = {};
+
+            if (amountEvidenceIncluded) {
+                payload.amountEvidenceIncluded = amountEvidenceIncluded;
+            }
+
+            if (amountSkillsIncluded) {
+                payload.amountSkillsIncluded = amountSkillsIncluded;
+            }
+
+            if (amountParticipantsIncluded) {
+                payload.amountParticipantsIncluded = amountParticipantsIncluded;
+            }
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_PERFORMANCE_REVIEW}/${reviewId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+            console.log('response update: ', response);
+
+            if (response.ok) {
+                console.log('Performance review data changed successfully!');
+                const reviewData = await response.json();
+                return reviewData.id;
+            } else {
+                console.error('Error in response:', response.status);
+            }
+        } catch (error) {
+            console.error('Error in request:', error);
         }
     }
 
