@@ -35,6 +35,7 @@ function Appraisalsskillslist() {
     </>
   );
 }
+
 TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'administrator'
   ? Appraisalsskillslist.layout = Admin
   : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'customer'

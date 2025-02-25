@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useMemo, useState, useEffect, useContext, useRef } from "react";
 import PropTypes from "prop-types";
 import dynamic from "next/dynamic";
 // react plugin used to create datetimepicker
@@ -31,6 +31,9 @@ import { useFindAllEvidences } from '../../../hooks/PerformanceReview/EvidencesR
 import { useFindAllEvaluationRoler } from '../../../hooks/PerformanceReview/EvaluationRoler/useFindAllEvaluationRoler';
 import { useFindAllRuleOption } from '../../../hooks/PerformanceReview/RuleOption/useFindAllRuleOption';
 import { useFindEvidences } from '../../../hooks/PerformanceReview/EvidencesReview/useFindEvidences';
+import { useFindSkillType } from "../../../hooks/DefinitionOptionsReview/SkillsTypes/useFindSkillType";
+import { useFindAllOccupationalGroups } from "../../../hooks/DefinitionOptionsReview/OccupationalGroups/useFindAllSkillClassifications";
+import { useFindAllSkillClassifications } from "../../../hooks/DefinitionOptionsReview/SkillsClassifications/useFindAllSkillClassifications";
 import { useFindEvaluationRoler } from '../../../hooks/PerformanceReview/EvaluationRoler/useFindEvaluationRoler';
 import { useFindRuleOption } from '../../../hooks/PerformanceReview/RuleOption/useFindRuleOption';
 import { useFindPerformanceReview } from '../../../hooks/PerformanceReview/useFindPerformanceReview';
@@ -39,10 +42,12 @@ import { useFindAllReviewEvidenceRuler } from '../../../hooks/PerformanceReview/
 import { useFindRuleOptionEvaluationRuler } from '../../../hooks/PerformanceReview/RuleOption/useFindRuleOptionEvaluationRuler';
 
 export function AppraisalsSkillsRegister() {
+
     const [reviewObjective, setReviewObjective] = useState('');
     const quillRef = useRef(null);
 
     const { evidencesIdToUpdate, handleEvidenceIdStatusCleanupToUpdate } = useContext(EvidencesContext);
+
     const handleBackToList = () => {
         handleEvidenceIdStatusCleanupToUpdate();
     };
@@ -65,6 +70,9 @@ export function AppraisalsSkillsRegister() {
     const [performanceEvidenceData, setPerformanceEvidenceData] = useState([]);
     // console.log("performanceEvidenceData :", performanceEvidenceData); 
 
+    const [performanceSkillTypeData, setPerformanceSkillTypeData] = useState([]);
+    // console.log("performanceSkillTypeData :", performanceSkillTypeData);
+
     const [performanceEvaluationRolerData, setPerformanceEvaluationRolerData] = useState([]);
     // console.log("Evidências da Evaluation Roler :", performanceEvaluationRolerData);
 
@@ -77,46 +85,106 @@ export function AppraisalsSkillsRegister() {
             const foundReviewEvidenceRuler = await useFindAllReviewEvidenceRuler();
             setPerformanceReviewEvidenceRulerData(foundReviewEvidenceRuler);
         };
-
         if (evidencesIdToUpdate) {
             fetchReviewEvidenceRuler();
         }
     }, [evidencesIdToUpdate]);
     // console.log("performanceReviewEvidenceRulerData :", performanceReviewEvidenceRulerData);
 
-    const ReviewEvidenceRulerIgualsEvaluationIdData = performanceReviewEvidenceRulerData.filter
-        (EvidenceRuler => Number(EvidenceRuler.performanceReviewId) === Number(evidencesIdToUpdate));
-    // console.log("ReviewEvidenceRulerIgualsEvaluationIdData :", ReviewEvidenceRulerIgualsEvaluationIdData);
+    const [occupationalGroupsData, setOccupationalGroupsData] = useState([]);
+    useEffect(() => {
+        const fetchOccupationalGroups = async () => {
+            const foundOccupationalGroups = await useFindAllOccupationalGroups();
+            setOccupationalGroupsData(foundOccupationalGroups);
+        };
+        if (evidencesIdToUpdate) {
+            fetchOccupationalGroups();
+        }
+    }, [evidencesIdToUpdate]);
+    // console.log("occupationalGroupsData :", occupationalGroupsData);
+
+    const [skillClassificationsData, setSkillClassificationsData] = useState([]);
+    useEffect(() => {
+        const fetchSkillClassifications = async () => {
+            const foundSkillClassifications = await useFindAllSkillClassifications();
+            setSkillClassificationsData(foundSkillClassifications);
+        };
+        if (evidencesIdToUpdate) {
+            fetchSkillClassifications();
+        }
+    }, [evidencesIdToUpdate]);
+    // console.log("skillClassificationsData :", skillClassificationsData);
+
+    const memoizedReviewEvidenceRulerIgualsEvaluationIdData = useMemo(() => {
+        return performanceReviewEvidenceRulerData.filter(
+            (evidenceRuler) =>
+                Number(evidenceRuler.performanceReviewId) === Number(evidencesIdToUpdate)
+        );
+    }, [performanceReviewEvidenceRulerData, evidencesIdToUpdate]);
 
     useEffect(() => {
-        if (ReviewEvidenceRulerIgualsEvaluationIdData.length > 0) {
-            Promise.all(ReviewEvidenceRulerIgualsEvaluationIdData.map(EvidenceRuler => useFindRuleOptionEvaluationRuler(EvidenceRuler.reviewRulerId)))
-                .then(details => setPerformanceRuleOptionData(details))
-                .catch(error => console.error("Erro ao buscar opções :", error));
+        if (memoizedReviewEvidenceRulerIgualsEvaluationIdData.length > 0) {
+            Promise.all(
+                memoizedReviewEvidenceRulerIgualsEvaluationIdData.map((evidenceRuler) =>
+                    useFindRuleOptionEvaluationRuler(evidenceRuler.reviewRulerId)
+                )
+            )
+                .then((details) => setPerformanceRuleOptionData(details))
+                .catch((error) =>
+                    console.error("Erro ao buscar opções :", error)
+                );
         } else {
             setPerformanceRuleOptionData([]);
         }
-    }, [ReviewEvidenceRulerIgualsEvaluationIdData]);
+    }, [memoizedReviewEvidenceRulerIgualsEvaluationIdData.length]);
 
     useEffect(() => {
-        if (ReviewEvidenceRulerIgualsEvaluationIdData.length > 0) {
-            Promise.all(ReviewEvidenceRulerIgualsEvaluationIdData.map(EvidenceRuler => useFindEvaluationRoler(EvidenceRuler.reviewRulerId)))
-                .then(details => setPerformanceEvaluationRolerData(details))
-                .catch(error => console.error("Erro ao buscar as evidências comportamentais :", error));
+        if (memoizedReviewEvidenceRulerIgualsEvaluationIdData.length > 0) {
+            Promise.all(
+                memoizedReviewEvidenceRulerIgualsEvaluationIdData.map((evidenceRuler) =>
+                    useFindEvaluationRoler(evidenceRuler.reviewRulerId)
+                )
+            )
+                .then((details) => setPerformanceEvaluationRolerData(details))
+                .catch((error) =>
+                    console.error("Erro ao buscar as evidências comportamentais :", error)
+                );
         } else {
             setPerformanceEvaluationRolerData([]);
         }
-    }, [ReviewEvidenceRulerIgualsEvaluationIdData]);
+    }, [memoizedReviewEvidenceRulerIgualsEvaluationIdData.length]);
 
     useEffect(() => {
-        if (ReviewEvidenceRulerIgualsEvaluationIdData.length > 0) {
-            Promise.all(ReviewEvidenceRulerIgualsEvaluationIdData.map(EvidenceRuler => useFindEvidences(EvidenceRuler.reviewCompetenceId)))
-                .then(details => setPerformanceEvidenceData(details))
-                .catch(error => console.error("Erro ao buscar competências :", error));
+        if (memoizedReviewEvidenceRulerIgualsEvaluationIdData.length > 0) {
+            Promise.all(
+                memoizedReviewEvidenceRulerIgualsEvaluationIdData.map((evidenceRuler) =>
+                    useFindEvidences(evidenceRuler.reviewEvidenceId)
+                )
+            )
+                .then((details) => setPerformanceEvidenceData(details))
+                .catch((error) =>
+                    console.error("Erro ao buscar evidências :", error)
+                );
         } else {
             setPerformanceEvidenceData([]);
         }
-    }, [ReviewEvidenceRulerIgualsEvaluationIdData]);
+    }, [memoizedReviewEvidenceRulerIgualsEvaluationIdData.length]);
+
+    useEffect(() => {
+        if (memoizedReviewEvidenceRulerIgualsEvaluationIdData.length > 0) {
+            Promise.all(
+                memoizedReviewEvidenceRulerIgualsEvaluationIdData.map((evidenceRuler) =>
+                    useFindSkillType(evidenceRuler.reviewCompetenceId)
+                )
+            )
+                .then((details) => setPerformanceSkillTypeData(details))
+                .catch((error) =>
+                    console.error("Erro ao buscar competências :", error)
+                );
+        } else {
+            setPerformanceSkillTypeData([]);
+        }
+    }, [memoizedReviewEvidenceRulerIgualsEvaluationIdData.length]);
 
     useEffect(() => {
         let quillInstance;
@@ -176,57 +244,171 @@ export function AppraisalsSkillsRegister() {
         }));
     };
 
-    console.log("selectedStatus :", selectedStatus);
+    // console.log("selectedStatus :", selectedStatus);
 
-    const evidencias = [];
+    const [evidencias, setEvidencias] = useState([]);
 
-    for (let i = 0; i < performanceEvaluationRolerData.length; i++) {
-        if (performanceEvaluationRolerData[i].ruleType) {
-            evidencias.push(performanceEvaluationRolerData[i].ruleType);
+    useEffect(() => {
+        if (!Array.isArray(performanceEvaluationRolerData)) {
+            setEvidencias([]);
+            return;
         }
-    }
 
-    const options = [];
-
-    for (let i = 0; i < performanceRuleOptionData.length; i++) {
-        const innerArray = performanceRuleOptionData[i];
-        for (let j = 0; j < innerArray.length; j++) {
-            const item = innerArray[j];
-            if (item.label) {
-                options.push(item.label);
+        const novasEvidencias = performanceEvaluationRolerData.reduce((acc, item) => {
+            if (item?.ruleType) {
+                acc.push(item.ruleType);
             }
-        }
-    }
+            return acc;
+        }, []);
 
-    const combinedData = performanceEvidenceData.map((evidence, index) => {
-        const evaluationRoler = performanceEvaluationRolerData[index];
-        const ruleOptions = performanceRuleOptionData[index];
-        return {
-            ...evidence,
-            evaluationRoler,
-            ruleOptions,
-        };
-    });
+        setEvidencias(novasEvidencias);
+    }, []);
+
+    const [options, setOptions] = useState([]);
+
+    useEffect(() => {
+        if (!Array.isArray(performanceRuleOptionData)) {
+            setOptions([]);
+            return;
+        }
+
+        const newOptions = [];
+
+        performanceRuleOptionData.forEach(innerArray => {
+            if (Array.isArray(innerArray)) {
+                innerArray.forEach(item => {
+                    if (item?.label) {
+                        newOptions.push(item.label);
+                    }
+                });
+            }
+        });
+
+        setOptions(newOptions);
+    }, [performanceRuleOptionData]);
+
+    const [newGroupedData, setNewGroupedData] = useState([]);
+    const [combinedData, setCombinedData] = useState([]);
+
+    useEffect(() => {
+        if (
+            !Array.isArray(occupationalGroupsData) ||
+            !Array.isArray(skillClassificationsData) ||
+            !Array.isArray(performanceSkillTypeData) ||
+            !Array.isArray(performanceEvidenceData)
+        ) {
+            setNewGroupedData([]);
+            return;
+        }
+
+        const grouped = occupationalGroupsData.map((group) => {
+            const { id: groupId, competencieName: groupName } = group;
+
+            const groupSkills = (performanceSkillTypeData || []).filter(
+                (skill) => Number(skill?.occupationalGroupId) === Number(groupId)
+            );
+
+            const classificationData = skillClassificationsData.map((classification) => {
+                const { id: classificationId, competenceClassificationName } = classification;
+
+                const classificationSkills = groupSkills.filter(
+                    (skill) => Number(skill.skillClassificationId) === Number(classificationId)
+                );
+
+                const skillsWithEvidences = classificationSkills.map((skill) => {
+                    const evidences = performanceEvidenceData.filter(
+                        (evidence) => Number(evidence.evidenceName) === Number(skill.id)
+                    );
+                    return { ...skill, evidences };
+                });
+
+                return {
+                    classificationId,
+                    classificationName: competenceClassificationName,
+                    skills: skillsWithEvidences,
+                };
+            });
+
+
+            return {
+                groupId,
+                groupName,
+                classificationData
+            };
+        });
+
+        setNewGroupedData(grouped);
+    }, [occupationalGroupsData, skillClassificationsData, performanceSkillTypeData]);
+
+    useEffect(() => {
+        if (
+            !Array.isArray(performanceEvidenceData) ||
+            !Array.isArray(performanceEvaluationRolerData) ||
+            !Array.isArray(performanceRuleOptionData)
+        ) {
+            setCombinedData([]);
+            return;
+        }
+
+        const newCombined = performanceEvidenceData.map((evidence, index) => {
+            const evaluationRoler = performanceEvaluationRolerData[index];
+            const ruleOptions = performanceRuleOptionData[index];
+
+            return {
+                evidence,
+                evaluationRoler,
+                ruleOptions,
+                skillTypes: newGroupedData
+            };
+        });
+
+        setCombinedData(newCombined);
+    }, [
+        performanceEvidenceData,
+        performanceEvaluationRolerData,
+        performanceRuleOptionData,
+        newGroupedData
+    ]);
+
+    // console.log("newGroupedData :", newGroupedData);
     // console.log("combinedData :", combinedData);
 
     const handleSalvar = () => {
-
-        const payload = {
-            objective: reviewObjective,
-            responses: Object.values(selectedStatus),
+        const finalData = {
+          skillClassification: []
         };
-
-        console.log("Payload a ser enviado:", payload);
-    };
-
-    const handleLimpar = () => {
-        setReviewObjective('');
-        setSelectedStatus({});
-        if (quillRef.current) {
-            quillRef.current.setText('');
-        }
-    };
-
+      
+        newGroupedData.forEach((group) => {
+          group.classificationData.forEach((classification) => {
+            classification.skills.forEach((skill) => {
+              const evidences = skill.evidences
+                .map((evidence) => {
+                  const status = selectedStatus[evidence.id];
+                  if (status) {
+                    return {
+                      evidenceId: evidence.id,
+                      selectedOption: status.selectedOption,
+                      weight: status.weight
+                    };
+                  }
+                  return null;
+                })
+                .filter((item) => item !== null); 
+      
+              if (evidences.length > 0) {
+                finalData.skillClassification.push({
+                  competenceId: skill.id,
+                  description: skill.competencieTypeName || "",
+                  evidences: evidences
+                });
+              }
+            });
+          });
+        });
+      
+        console.log("Dados para salvar:", finalData);
+      };
+      
     return (
         <Card className="mb-4">
             <CardHeader>
@@ -250,67 +432,99 @@ export function AppraisalsSkillsRegister() {
                             <p>{performanceAppraisalData.reviewModel}</p>
                         </Col>
                     </div>
-                    <Col className="py-3 d-flex justify-content-center" md="12">
-                        <p className="lead text-black">Classificação da Competência</p>
-                    </Col>
+                    <div>
+                        {newGroupedData.map((group) => {
+                            const hasSkills = group.classificationData.some(
+                                (c) => c.skills && c.skills.length > 0
+                            );
+                            if (!hasSkills) return null;
 
-                    {performanceEvidenceData.length > 0 &&
-                        performanceEvaluationRolerData.length > 0 &&
-                        performanceRuleOptionData.length > 0 ? (
-                        combinedData.length > 0 ? (
-                            combinedData.map((item) => (
-                                <Card key={item.id}>
-                                    <CardHeader>{item.evidenceName}</CardHeader>
+                            return (
+                                <Card key={group.groupId} className="mb-4">
+                                    <CardHeader>
+                                        Grupo Ocupacional: {group.groupName || "Sem grupo"}
+                                    </CardHeader>
                                     <CardBody>
-                                        <p>{item.description}</p>
-                                        <table className="table table-bordered">
-                                            <thead>
-                                                <tr>
-                                                    <th>Evidência Comportamental</th>
-                                                    {item.ruleOptions.map((option, i) => (
-                                                        <th key={i}>{option.label}</th>
-                                                    ))}
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>{item.evaluationRoler.ruleType}</td>
-                                                    {item.ruleOptions.map((option, j) => (
-                                                        <td key={j} align="center">
-                                                            <input
-                                                                type="radio"
-                                                                name={`status-${item.id}`}
-                                                                value={option.label}
-                                                                checked={
-                                                                    selectedStatus[item.id]?.selectedOption === option.label
-                                                                }
-                                                                onChange={(e) =>
-                                                                    handleRadioChange(e, item.id, option.weight, item.evaluationRoler.id)
-                                                                }
-                                                            />
-                                                        </td>
-                                                    ))}
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                        {group.classificationData
+                                            .filter((classification) => classification.skills.length > 0)
+                                            .map((classification) => (
+                                                <div key={classification.classificationId} style={{ marginBottom: "2rem" }}>
+                                                    <Col className="py-3 d-flex justify-content-center" md="12">
+                                                        <p className="lead text-black">
+                                                            Competência(s): {classification.classificationName}
+                                                        </p>
+                                                    </Col>
+
+                                                    {classification.skills.map((skill) => {
+                                                        const relevantItems = combinedData.filter(
+                                                            (cd) =>
+                                                                Number(cd.evidence?.evidenceName) === Number(skill.id)
+                                                        );
+                                                        if (!relevantItems.length) {
+                                                            return (
+                                                                <Card key={skill.id} className="mb-3">
+                                                                    <CardHeader>
+                                                                        {skill.competencieTypeName || "Não Encontrado"}
+                                                                    </CardHeader>
+                                                                    <CardBody>
+                                                                        <p>Nenhuma evidência encontrada para esta competência</p>
+                                                                    </CardBody>
+                                                                </Card>
+                                                            );
+                                                        }
+                                                        return relevantItems.map((ri, idx) => (
+                                                            <Card key={`${skill.id}-${idx}`} className="mb-3">
+                                                                <CardHeader>
+                                                                    {skill.competencieTypeName || "Não Encontrado"}
+                                                                </CardHeader>
+                                                                <CardBody>
+                                                                    <table className="table table-bordered">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Evidência Comportamental</th>
+                                                                                {(ri.ruleOptions || []).map((option, i) => (
+                                                                                    <th key={i}>{option.label}</th>
+                                                                                ))}
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td>{ri.evidence?.description || "Não Encontrado"}</td>
+                                                                                {(ri.ruleOptions || []).map((option, j) => (
+                                                                                    <td key={j} align="center">
+                                                                                        <input
+                                                                                            type="radio"
+                                                                                            name={`status-${ri.evidence?.id}`}
+                                                                                            value={option.label}
+                                                                                            checked={
+                                                                                                selectedStatus[ri.evidence?.id]
+                                                                                                    ?.selectedOption === option.label
+                                                                                            }
+                                                                                            onChange={(e) =>
+                                                                                                handleRadioChange(
+                                                                                                    e,
+                                                                                                    ri.evidence?.id,
+                                                                                                    option.weight,
+                                                                                                    ri.evaluationRoler.id
+                                                                                                )
+                                                                                            }
+                                                                                        />
+                                                                                    </td>
+                                                                                ))}
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </CardBody>
+                                                            </Card>
+                                                        ));
+                                                    })}
+                                                </div>
+                                            ))}
                                     </CardBody>
                                 </Card>
-                            ))
-                        ) : (
-                            <Card>
-                                <CardBody>
-                                    <p>Nenhuma competência encontrada</p>
-                                </CardBody>
-                            </Card>
-                        )
-                    ) : (
-                        <Card>
-                            <CardBody>
-                                <p>Nenhuma competência encontrada</p>
-                            </CardBody>
-                        </Card>
-                    )}
-
+                            );
+                        })}
+                    </div>
                     <div className="form-row">
                         <Col className="mb-7" md="12">
                             <label htmlFor="validationDescriptionReviewObjective">
@@ -338,7 +552,7 @@ export function AppraisalsSkillsRegister() {
                                 color="secundary"
                                 size="lg"
                                 type="button"
-                                onClick={handleLimpar}
+                            // onClick={handleLimpar}
                             >
                                 <span className="btn-inner--text">Limpar</span>
                             </Button>
@@ -347,7 +561,7 @@ export function AppraisalsSkillsRegister() {
                                 color="primary"
                                 size="lg"
                                 type="button"
-                                onClick={handleSalvar}
+                            onClick={handleSalvar}
                             >
                                 <span className="btn-inner--text">Salvar</span>
                             </Button>
