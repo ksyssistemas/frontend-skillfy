@@ -42,6 +42,8 @@ const useCreatePerformanceReview = () => {
                 payload.endDate = reviewIdentityData.endDate;
             }
 
+            console.log(`Rota chamada para criar avaliação: ${process.env.NEXT_PUBLIC_PERFORMANCE_REVIEW}`);
+
             const response = await fetch(`${process.env.NEXT_PUBLIC_PERFORMANCE_REVIEW}`, {
                 method: 'POST',
                 headers: {
