@@ -595,38 +595,42 @@ export function ReviewScaleAndCriteriaForm() {
                                                         {skillClassifications[index]?.competenceClassificationName ?? "Carregando..."}
                                                     </p>
                                                     <h4>Evidências Relacionadas:</h4>
-                                                    <ToolkitProvider
-                                                        data={evidenceDataList.filter(evidence => evidence.evidenceName == competency.id)}
-                                                        keyField="id"
-                                                        columns={evidenceColumns}
-                                                        search
-                                                    >
-                                                        {(props) => (
-                                                            <div className="table-responsive">
-                                                                <div id="datatable-basic_filter" className="dataTables_filter pb-1 w-50">
-                                                                    <SearchBar
-                                                                        className="form-control-sm"
-                                                                        style={{
-                                                                            height: "40px",
-                                                                            width: 564,
-                                                                            fontSize: "16px",
-                                                                            padding: "10px",
-                                                                            borderRadius: "8px",
-                                                                        }}
-                                                                        placeholder="Pesquise por alguma evidência específica aqui ..."
-                                                                        {...props.searchProps}
+                                                    {Array.isArray(evidenceDataList) && evidenceDataList.length > 0 ? (
+                                                        <ToolkitProvider
+                                                            data={evidenceDataList.filter(evidence => evidence.evidenceName == competency.id)}
+                                                            keyField="id"
+                                                            columns={evidenceColumns}
+                                                            search
+                                                        >
+                                                            {(props) => (
+                                                                <div className="table-responsive">
+                                                                    <div id="datatable-basic_filter" className="dataTables_filter pb-1 w-50">
+                                                                        <SearchBar
+                                                                            className="form-control-sm"
+                                                                            style={{
+                                                                                height: "40px",
+                                                                                width: 564,
+                                                                                fontSize: "16px",
+                                                                                padding: "10px",
+                                                                                borderRadius: "8px",
+                                                                            }}
+                                                                            placeholder="Pesquise por alguma evidência específica aqui ..."
+                                                                            {...props.searchProps}
+                                                                        />
+                                                                    </div>
+                                                                    <BootstrapTable
+                                                                        {...props.baseProps}
+                                                                        bootstrap4
+                                                                        pagination={pagination}
+                                                                        bordered={false}
+                                                                        selectRow={selectRow(competency.id)}
                                                                     />
                                                                 </div>
-                                                                <BootstrapTable
-                                                                    {...props.baseProps}
-                                                                    bootstrap4
-                                                                    pagination={pagination}
-                                                                    bordered={false}
-                                                                    selectRow={selectRow(competency.id)}
-                                                                />
-                                                            </div>
-                                                        )}
-                                                    </ToolkitProvider>
+                                                            )}
+                                                        </ToolkitProvider>
+                                                    ) : (
+                                                        <p>Carregando evidências...</p>
+                                                    )}
                                                     <hr />
                                                 </div>
                                             ) : null
