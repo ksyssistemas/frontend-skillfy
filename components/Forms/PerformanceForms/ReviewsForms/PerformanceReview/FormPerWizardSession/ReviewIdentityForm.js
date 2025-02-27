@@ -14,7 +14,7 @@ import {
 import 'quill/dist/quill.snow.css'; // Importando o CSS do Quill
 import { ModelSelectionReviewContext } from "../../../../../../contexts/PerformanceContext/ModelSelectionReviewContext";
 import { handleSelectionEmploymentContractData } from "../../../../../../util/handleSelectionEmploymentContractData";
-import { initialState, formReducer } from '../../../../../../reducers/ReviewForms/ReviewIdentityFormReducer';
+import { initialStateReviewIdentityForm, reviewIdentityFormReducer } from '../../../../../../reducers/ReviewForms/ReviewIdentityFormReducer';
 import PageChange from "../../../../../PageChange/PageChange";
 import moment from 'moment'; // Certifique-se de adicionar isso no início do arquivo
 import 'moment/locale/pt-br'; // Caso precise de suporte ao idioma
@@ -23,16 +23,18 @@ moment.locale('pt-br'); // Configura o idioma para português (opcional)
 
 export function ReviewIdentityForm() {
 
-    const [state, dispatch] = useReducer(formReducer, initialState);
+    const [state, dispatch] = useReducer(reviewIdentityFormReducer, initialStateReviewIdentityForm);
 
-    const latestreviewIdentityData = useRef(state.reviewIdentityData);
+    const latestReviewIdentityData = useRef(state.reviewIdentityData);
 
     const [isLoadingReviewIdentityData, setIsLoadingReviewIdentityData] = useState(true);
 
     const {
         selectedReview,
         clearStepIndex,
-        handleClearStepIndex
+        handleClearStepIndex,
+        stateGlobalReviewReducer,
+        dispatchGlobalReviewReducer
     } = useContext(ModelSelectionReviewContext);
 
     const quillRef = useRef(null);
@@ -69,7 +71,6 @@ export function ReviewIdentityForm() {
         // Despache o estado 'valid' antes de iniciar o processo de seleção
         if (setStateAction) dispatch({ type: setStateAction, payload: 'valid' });
         if (setHasDepartmentSelectedAction) dispatch({ type: setHasDepartmentSelectedAction, payload: true });
-
         // Chama a função de processamento de seleção de dados
         handleSelectionEmploymentContractData(
             selectedId,
@@ -125,6 +126,17 @@ export function ReviewIdentityForm() {
             }
         }
         return "";
+    };
+
+    // Função utilitária para salvar os dados formatados no localStorage
+    const saveDataToLocalStorage = (data) => {
+        const dataToSave = {
+            ...data,
+            startDate: moment(data.startDate).format("YYYY-MM-DD"), // Salvar no formato ISO
+            endDate: moment(data.endDate).format("YYYY-MM-DD"),
+            realizationDate: moment(data.realizationDate).format("YYYY-MM-DD"),
+        };
+        localStorage.setItem('reviewIdentityData', JSON.stringify(dataToSave));
     };
 
     useEffect(() => {
@@ -189,18 +201,6 @@ export function ReviewIdentityForm() {
         }
     }, [state.reviewIdentityData.reviewObjective]);
 
-    // Função utilitária para salvar os dados formatados no localStorage
-    const saveDataToLocalStorage = (data) => {
-        const dataToSave = {
-            ...data,
-            startDate: moment(data.startDate).format("YYYY-MM-DD"), // Salvar no formato ISO
-            endDate: moment(data.endDate).format("YYYY-MM-DD"),
-            reviewDate: moment(data.reviewDate).format("YYYY-MM-DD"),
-            realizationDate: moment(data.realizationDate).format("YYYY-MM-DD"),
-        };
-        localStorage.setItem('reviewIdentityData', JSON.stringify(dataToSave));
-    };
-
     // Execute o carregamento dos dados ao montar o componente
     useEffect(() => {
         // Função para carregar os dados do localStorage
@@ -216,13 +216,12 @@ export function ReviewIdentityForm() {
                                 type: 'LOAD_SAVED_REVIEW_DATA',
                                 payload: {
                                     ...parsedData,
-                                    startDate: moment(parsedData.startDate, "YYYY-MM-DD").toDate(),
-                                    endDate: moment(parsedData.endDate, "YYYY-MM-DD").toDate(),
-                                    reviewDate: moment(parsedData.reviewDate, "YYYY-MM-DD").toDate(),
-                                    realizationDate: moment(parsedData.realizationDate, "YYYY-MM-DD").toDate(),
+                                    startDate: parsedData.startDate ? moment(parsedData.startDate, "YYYY-MM-DD").toDate() : null,
+                                    endDate: parsedData.endDate ? moment(parsedData.endDate, "YYYY-MM-DD").toDate() : null,
+                                    realizationDate: parsedData.realizationDate ? moment(parsedData.realizationDate, "YYYY-MM-DD").toDate() : null,
                                 },
                             });
-                            latestreviewIdentityData.current = parsedData; // Atualiza a ref para os dados carregados
+                            latestReviewIdentityData.current = parsedData; // Atualiza a ref para os dados carregados
                         }
                     }
                 } else {
@@ -238,53 +237,46 @@ export function ReviewIdentityForm() {
         loadreviewIdentityData();
     }, []);
 
+    // Salvar no Contexto Global antes de sair
+    useEffect(() => {
+        return () => {
+            dispatchGlobalReviewReducer({
+                type: "UPDATE_REVIEW_IDENTITY",
+                payload: state.reviewIdentityData,
+            });
+        };
+    }, [state.reviewIdentityData, dispatchGlobalReviewReducer]);
+
     // Atualize a lógica de persistência para incluir verificações e evitar sobrescrever valores críticos
     useEffect(() => {
         const currentStateString = JSON.stringify(state.reviewIdentityData);
 
         if (previousStateRef.current !== currentStateString) {
-            // Salva o estado atualizado, preservando o ciclo selecionado
-            const currentSelectedCycle = state.reviewIdentityData.selectedCycle;
-            const dataToSave = {
-                ...state.reviewIdentityData,
-                selectedCycle: currentSelectedCycle || state.reviewIdentityData.selectedCycle,
-            };
-
-            saveDataToLocalStorage(dataToSave);
-            latestreviewIdentityData.current = dataToSave;
-
             previousStateRef.current = currentStateString;
+            latestReviewIdentityData.current = { ...state.reviewIdentityData };
+            saveDataToLocalStorage(state.reviewIdentityData);
         }
-
-        return () => {
-            saveDataToLocalStorage(latestreviewIdentityData.current);
-        };
     }, [state.reviewIdentityData]);
 
     useEffect(() => {
         const selectedItem = state.reviewIdentityData.dateOnReviewWasCarriedOutDataList.find(
             (item) => item.id === state.reviewIdentityData.selectedDateOnReviewWasCarriedOut
         );
-        if (selectedItem?.id === "3") {
-            dispatch({ type: 'SET_IS_USER_DEFINED_DATE_TO_REVIEW', payload: true });
-        } else {
-            dispatch({ type: 'SET_IS_USER_DEFINED_DATE_TO_REVIEW', payload: false });
-        }
-
+        dispatch({ type: 'SET_IS_USER_DEFINED_DATE_TO_REVIEW', payload: selectedItem?.id === "3" });
     }, [state.reviewIdentityData.selectedDateOnReviewWasCarriedOut]);
 
     useEffect(() => {
         const selectedCycle = state.reviewIdentityData.selectedCycle;
         const selectedItem = state.reviewIdentityData.reviewCycleDataList.find(item => item.id === selectedCycle);
 
-        if (selectedItem && selectedItem.text === "Intercorrente") {
+        if (selectedItem?.text === "Intercorrente") {
             dispatch({ type: 'SET_IS_INTERCURRENT_REVIEW_CYCLE', payload: true });
             dispatch({ type: 'SET_IS_REVIEW_CYCLE_PER_PERIOD', payload: false });
 
             // Reseta campos desnecessários
             dispatch({ type: 'RESET_START_DATE' });
             dispatch({ type: 'RESET_END_DATE' });
-        } else if (selectedItem && selectedItem.text !== "Intercorrente") {
+        } else {
             dispatch({ type: 'SET_IS_INTERCURRENT_REVIEW_CYCLE', payload: false });
             dispatch({ type: 'SET_IS_REVIEW_CYCLE_PER_PERIOD', payload: true });
 

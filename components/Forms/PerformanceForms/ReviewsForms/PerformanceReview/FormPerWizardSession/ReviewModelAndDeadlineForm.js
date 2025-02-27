@@ -13,7 +13,8 @@ import {
     Progress
 } from "reactstrap";
 import { ModelSelectionReviewContext } from "../../../../../../contexts/PerformanceContext/ModelSelectionReviewContext";
-import { initialState, formReducer } from '../../../../../../reducers/ReviewForms/ReviewModelAndDeadlineFormReducer';
+import { initialStateReviewModelAndDeadlineForm, reviewModelAndDeadlineFormReducer } from '../../../../../../reducers/ReviewForms/ReviewModelAndDeadlineFormReducer';
+import { initialStateReviewIdentityForm, reviewIdentityFormReducer } from '../../../../../../reducers/ReviewForms/ReviewIdentityFormReducer';
 import PageChange from "../../../../../PageChange/PageChange";
 import moment from 'moment'; // Certifique-se de adicionar isso no início do arquivo
 import 'moment/locale/pt-br'; // Caso precise de suporte ao idioma
@@ -22,17 +23,20 @@ moment.locale('pt-br'); // Configura o idioma para português (opcional)
 
 export function ReviewModelAndDeadlineForm() {
 
-    const [state, dispatch] = useReducer(formReducer, initialState);
-
-    const latestReviewModelData = useRef(state.reviewModelData);
-
-    const [isLoadingReviewModelAndDeadlineData, setIsLoadingReviewModelAndDeadlineData] = useState(true);
-
     const {
         selectedReview,
         clearStepIndex,
-        handleClearStepIndex
+        handleClearStepIndex,
+        stateGlobalReviewReducer,
+        dispatchGlobalReviewReducer
     } = useContext(ModelSelectionReviewContext);
+    
+    const [state, dispatch] = useReducer(reviewModelAndDeadlineFormReducer, initialStateReviewModelAndDeadlineForm);
+
+    const latestReviewModelData = useRef(state.reviewModelData ? state.reviewModelData : stateGlobalReviewReducer.reviewModelData);
+
+    const [isLoadingReviewModelAndDeadlineData, setIsLoadingReviewModelAndDeadlineData] = useState(true);
+
 
     // Ref para armazenar o estado anterior em formato de string
     const previousStateRef = useRef(null);
@@ -152,7 +156,7 @@ export function ReviewModelAndDeadlineForm() {
         setTimeout(() => {
             console.log("Updating slider values: ", values);
             setSliderValues(values);
-        }, 500); 
+        }, 500);
     };
 
 
@@ -292,9 +296,9 @@ export function ReviewModelAndDeadlineForm() {
                             type: 'LOAD_SAVED_REVIEW_DATA',
                             payload: {
                                 ...parsedData,
-                                deadlineToLeadersToRespondToPerformanceReview: moment(parsedData.deadlineToLeadersToRespondToPerformanceReview, "YYYY-MM-DD").toDate(),
-                                deadlineToRespondToPerformanceSelfReview: moment(parsedData.deadlineToRespondToPerformanceSelfReview, "YYYY-MM-DD").toDate(),
-                                deadlineToEvaluatorsToRespondToPerformanceReview: moment(parsedData.deadlineToEvaluatorsToRespondToPerformanceReview, "YYYY-MM-DD").toDate(),
+                                deadlineToLeadersToRespondToPerformanceReview: parsedData.deadlineToLeadersToRespondToPerformanceReview ? moment(parsedData.deadlineToLeadersToRespondToPerformanceReview, "YYYY-MM-DD").toDate() : null,
+                                deadlineToRespondToPerformanceSelfReview: parsedData.deadlineToRespondToPerformanceSelfReview ? moment(parsedData.deadlineToRespondToPerformanceSelfReview, "YYYY-MM-DD").toDate() : null,
+                                deadlineToEvaluatorsToRespondToPerformanceReview: parsedData.deadlineToEvaluatorsToRespondToPerformanceReview ? moment(parsedData.deadlineToEvaluatorsToRespondToPerformanceReview, "YYYY-MM-DD").toDate() : null,
                             },
                         });
 
@@ -318,28 +322,31 @@ export function ReviewModelAndDeadlineForm() {
         loadReviewModelData();
     }, []);
 
+    // Salvar no Contexto Global antes de sair
+    useEffect(() => {
+        return () => {
+            dispatchGlobalReviewReducer({
+                type: "UPDATE_REVIEW_MODEL",
+                payload: state.reviewModelData,
+            });
+        };
+    }, [state.reviewModelData, dispatchGlobalReviewReducer]);
+
     // Atualize a lógica de persistência para incluir verificações e evitar sobrescrever valores críticos
     useEffect(() => {
         const currentStateString = JSON.stringify(state.reviewModelData);
 
         if (previousStateRef.current !== currentStateString) {
-            // Salva o estado atualizado, preservando o ciclo selecionado
             const dataToSave = {
                 ...state.reviewModelData,
                 weightOfPerformanceReviewOfLeaders: sliderValues[0],
                 weightOfSelfReviewOfPerformance: sliderValues[1],
                 weightOfEvaluatorsPerformanceReview: sliderValues[2],
             };
-
-            saveDataToLocalStorage(dataToSave);
-            latestReviewModelData.current = dataToSave;
-
             previousStateRef.current = currentStateString;
+            latestReviewModelData.current = dataToSave;
+            saveDataToLocalStorage(dataToSave);
         }
-
-        return () => {
-            saveDataToLocalStorage(latestReviewModelData.current);
-        };
     }, [state.reviewModelData]);
 
     useEffect(() => {

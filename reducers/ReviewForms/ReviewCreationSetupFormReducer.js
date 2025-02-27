@@ -1,4 +1,4 @@
-export const initialState = {
+export const initialStateReviewGenerationSetupForm = {
     reviewGenerationSetupData: {
         autoSendEmailNotifications: false,
         evaluatorCommentsOnMandatoryCriteria: false,
@@ -16,7 +16,7 @@ export const initialState = {
     },
 };
 
-export const formReducer = (state, action) => {
+export const reviewGenerationSetupFormReducer = (state, action) => {
     switch (action.type) {
         case 'SAVE_REVIEW_DATA':
             return {
@@ -136,7 +136,7 @@ export const formReducer = (state, action) => {
                 },
             };
         case 'RESET_REVIEW_DATA':
-            return initialState;
+            return initialStateReviewGenerationSetupForm;
         default:
             return state;
     }

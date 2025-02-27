@@ -8,17 +8,18 @@ const Select2 = dynamic(() => import("react-select2-wrapper"));
 import TagsInput from "components/TagsInput/TagsInput.js";
 import { useFindAllEmployee } from "../../../../../../hooks/RecordsHooks/employee/useFindAllEmployee";
 import EmployeePairsInput from "../EmployeePairsInput";
-import { initialState, formReducer } from '../../../../../../reducers/ReviewForms/ReviewParticipantSelectionFormReducer';
+import { initialStateReviewParticipantsSelectionForm, reviewParticipantsSelectionFormReducer } from '../../../../../../reducers/ReviewForms/ReviewParticipantSelectionFormReducer';
 import { ModelSelectionReviewContext } from "../../../../../../contexts/PerformanceContext/ModelSelectionReviewContext";
 import PageChange from "../../../../../PageChange/PageChange";
 import { useFindDepartment } from "../../../../../../hooks/RecordsHooks/department/useFindDepartment";
 import { useFindClientCompany } from "../../../../../../hooks/RecordsHooks/customer/useFindClientCompany";
 import { useFindEmployeeContractDetails } from "../../../../../../hooks/RecordsHooks/featuresEmploymentContract/useFindEmployeeContractDetails";
 import { useFindRole } from "../../../../../../hooks/RecordsHooks/role/useFindRole";
+import useCreatePerformanceReview from "../../../../../../hooks/PerformanceReview/useCreatePerformanceReview";
 
 export function ReviewParticipantSelectionForm() {
 
-    const [state, dispatch] = useReducer(formReducer, initialState);
+    const [state, dispatch] = useReducer(reviewParticipantsSelectionFormReducer, initialStateReviewParticipantsSelectionForm);
 
     const latestReviewParticipantsSelectionData = useRef(state.reviewParticipantsSelectionData);
 
@@ -27,7 +28,9 @@ export function ReviewParticipantSelectionForm() {
     const {
         selectedReview,
         clearStepIndex,
-        handleClearStepIndex
+        handleClearStepIndex,
+        stateGlobalReviewReducer,
+        dispatchGlobalReviewReducer
     } = useContext(ModelSelectionReviewContext);
 
     // Ref para armazenar o estado anterior em formato de string
@@ -50,10 +53,11 @@ export function ReviewParticipantSelectionForm() {
         state.reviewParticipantsSelectionData.pairsNumberToDrawn <=
         state.reviewParticipantsSelectionData.listEmployeeDataToReview.length;
 
+    let contador = 0;
+
     // Função utilitária para salvar os dados formatados no localStorage
     const saveDataToLocalStorage = (data) => {
-        const dataToSave = { ...data };
-        localStorage.setItem('reviewParticipantsSelectionData', JSON.stringify(dataToSave));
+        localStorage.setItem('reviewParticipantsSelectionData', JSON.stringify(data));
     };
 
     // Função para selecionar todos os usuários registrados
@@ -908,27 +912,31 @@ export function ReviewParticipantSelectionForm() {
         loadReviewParticipantsSelectionData();
     }, []);
 
+    // Salvar no Contexto Global antes de sair
+    useEffect(() => {
+        const stateParticipants = state.reviewParticipantsSelectionData;
+        console.log(stateParticipants.isAllEmployeesSelectedToParticipate, stateParticipants.isRandomSelectionParticipantsToReview, stateParticipants.isHandPickedSelectionParticipantsToReview)
+        if (stateParticipants.isAllEmployeesSelectedToParticipate || stateParticipants.isRandomSelectionParticipantsToReview || stateParticipants.isHandPickedSelectionParticipantsToReview) {
+            console.log("Entrou!!")
+            dispatchGlobalReviewReducer({
+                type: "UPDATE_REVIEW_PARTICIPANTS",
+                payload: state.reviewParticipantsSelectionData,
+            });
+        };
+    }, [state.reviewParticipantsSelectionData, dispatchGlobalReviewReducer]);
+
     // Atualize a lógica de persistência para incluir verificações e evitar sobrescrever valores críticos
     useEffect(() => {
         const currentStateString = JSON.stringify(state.reviewParticipantsSelectionData);
 
         if (previousStateRef.current !== currentStateString) {
-            // Salva o estado atualizado, preservando o ciclo selecionado
-            const currentSelectedCycle = state.reviewParticipantsSelectionData.selectedCycle;
-            const dataToSave = {
-                ...state.reviewParticipantsSelectionData,
-                selectedCycle: currentSelectedCycle || state.reviewParticipantsSelectionData.selectedCycle,
-            };
-
-            saveDataToLocalStorage(dataToSave);
-            latestReviewParticipantsSelectionData.current = dataToSave;
-
             previousStateRef.current = currentStateString;
+            latestReviewParticipantsSelectionData.current = { ...state.reviewParticipantsSelectionData };
+            // Aguarde a atualização do estado antes de salvar
+            setTimeout(() => {
+                saveDataToLocalStorage(state.reviewParticipantsSelectionData);
+            }, 0);
         }
-
-        return () => {
-            saveDataToLocalStorage(latestReviewParticipantsSelectionData.current);
-        };
     }, [state.reviewParticipantsSelectionData]);
 
     useEffect(() => {

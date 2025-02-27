@@ -15,9 +15,8 @@ import {
 import $ from 'jquery';
 // import { useSelector } from 'react-redux';
 import { ModelSelectionReviewContext } from "../../../../../../contexts/PerformanceContext/ModelSelectionReviewContext";
-import { initialState, formReducer } from '../../../../../../reducers/ReviewForms/ReviewScaleAndCriteriaFormReducer';
+import { initialStateReviewScaleAndCriteriaForm, reviewScaleAndCriteriaFormReducer } from '../../../../../../reducers/ReviewForms/ReviewScaleAndCriteriaFormReducer';
 import PageChange from "../../../../../PageChange/PageChange";
-import useCreatePerformanceReview from "../../../../../../hooks/PerformanceReview/useCreatePerformanceReview";
 import { handleSelectionEmploymentContractData } from "../../../../../../util/handleSelectionEmploymentContractData";
 import { ModalRulerType } from "../../../../../Modals/AppraisalModal/ModalRulerType";
 import { useFindCaptionOptionByCaptionId } from "../../../../../../hooks/DefinitionOptionsReview/AppraisalCaptions/useFindCaptionOptionByCaptionId";
@@ -36,21 +35,18 @@ import { resetFormAndLocalStorage } from "../../../../../../util/resetReviewForm
 export function ReviewScaleAndCriteriaForm() {
 
     const {
-        rulerTypeDataList,
-        handleRulerTypeDataList,
-        performanceReviewRulerOptionSelected,
-        setPerformanceReviewRulerOptionSelected,
-        performanceReviewRulerOptionSelectedState,
-        setPerformanceReviewRulerOptionSelectedState,
-    } = useCreatePerformanceReview();
-
-    const { selectedReview } = useContext(ModelSelectionReviewContext);
+        currentStep,
+        clearStepIndex,
+        handleClearStepIndex,
+        stateGlobalReviewReducer,
+        dispatchGlobalReviewReducer
+    } = useContext(ModelSelectionReviewContext);
 
     const { SearchBar } = Search;
 
     const [evidenceDataTable, setEvidenceDataTable] = React.useState();
 
-    const [state, dispatch] = useReducer(formReducer, initialState);
+    const [state, dispatch] = useReducer(reviewScaleAndCriteriaFormReducer, initialStateReviewScaleAndCriteriaForm);
 
     const latestreviewScaleAndCriteriaData = useRef(state.reviewScaleAndCriteriaData);
 
@@ -186,7 +182,13 @@ export function ReviewScaleAndCriteriaForm() {
         // Despache o estado 'valid' antes de iniciar o processo de seleção
         if (setStateAction) dispatch({ type: setStateAction, payload: 'valid' });
         if (setHasDepartmentSelectedAction) dispatch({ type: setHasDepartmentSelectedAction, payload: true });
-        console.log("Passou aqui!")
+        console.log(
+            selectedId, "\n",
+            dataList, "\n",
+            setSelectedAction, "\n",
+            setFieldAction, "\n",
+            setStateAction, "\n",
+        )
         // Chama a função de processamento de seleção de dados
         handleSelectionEmploymentContractData(
             selectedId,
@@ -241,16 +243,7 @@ export function ReviewScaleAndCriteriaForm() {
 
     // Função utilitária para salvar os dados formatados no localStorage
     const saveDataToLocalStorage = (data) => {
-        const dataToSave = {
-            ...data,
-            // weightOfPerformanceReviewOfLeaders: data.weightOfPerformanceReviewOfLeaders || 98,
-            // weightOfSelfReviewOfPerformance: data.weightOfSelfReviewOfPerformance || 1,
-            // weightOfEvaluatorsPerformanceReview: data.weightOfEvaluatorsPerformanceReview || 1,
-            // deadlineToLeadersToRespondToPerformanceReview: moment(data.deadlineToLeadersToRespondToPerformanceReview).format("YYYY-MM-DD"),
-            // deadlineToRespondToPerformanceSelfReview: moment(data.deadlineToRespondToPerformanceSelfReview).format("YYYY-MM-DD"),
-            // deadlineToEvaluatorsToRespondToPerformanceReview: moment(data.deadlineToEvaluatorsToRespondToPerformanceReview).format("YYYY-MM-DD"),
-        };
-        localStorage.setItem('reviewScaleAndCriteriaData', JSON.stringify(dataToSave));
+        localStorage.setItem('reviewScaleAndCriteriaData', JSON.stringify(data));
     };
 
     const fetchCaptionOption = async (rulers) => {
@@ -288,7 +281,7 @@ export function ReviewScaleAndCriteriaForm() {
         if (!state.reviewScaleAndCriteriaData.rulerOptionData.length) {
             try {
                 // Encontre o objeto no array que corresponde a selectedRulerType
-                const foundRuler = rulerTypeDataList.find(ruler =>
+                const foundRuler = state.reviewScaleAndCriteriaData.rulerTypeDataList.find(ruler =>
                     ruler.id === state.reviewScaleAndCriteriaData.selectedRulerType);
                 if (foundRuler) {
                     // Pegue o valor do campo 'text' correspondente
@@ -304,6 +297,11 @@ export function ReviewScaleAndCriteriaForm() {
                 console.error('Error fetching types:', error);
             }
         }
+    };
+
+    const getSelectedEvidenceIds = (competenceId, reviewCompetenceEvidenceData) => {
+        const competenceData = reviewCompetenceEvidenceData.find(item => item.competenceId === competenceId);
+        return competenceData ? competenceData.evidence.map(e => e.id) : [];
     };
 
     // Fetch de dados para opções de legenda
@@ -338,12 +336,7 @@ export function ReviewScaleAndCriteriaForm() {
                         // Verifique se selectedCycle está presente
                         dispatch({
                             type: 'LOAD_SAVED_REVIEW_DATA',
-                            payload: {
-                                ...parsedData,
-                                // deadlineToLeadersToRespondToPerformanceReview: moment(parsedData.deadlineToLeadersToRespondToPerformanceReview, "YYYY-MM-DD").toDate(),
-                                // deadlineToRespondToPerformanceSelfReview: moment(parsedData.deadlineToRespondToPerformanceSelfReview, "YYYY-MM-DD").toDate(),
-                                // deadlineToEvaluatorsToRespondToPerformanceReview: moment(parsedData.deadlineToEvaluatorsToRespondToPerformanceReview, "YYYY-MM-DD").toDate(),
-                            },
+                            payload: { ...parsedData },
                         });
 
                         latestreviewScaleAndCriteriaData.current = parsedData;
@@ -362,34 +355,26 @@ export function ReviewScaleAndCriteriaForm() {
         loadreviewScaleAndCriteriaData();
     }, []);
 
-    const getSelectedEvidenceIds = (competenceId, reviewCompetenceEvidenceData) => {
-        const competenceData = reviewCompetenceEvidenceData.find(item => item.competenceId === competenceId);
-        return competenceData ? competenceData.evidence.map(e => e.id) : [];
-    };
-
+    // Salvar no Contexto Global antes de sair
+    useEffect(() => {
+        return () => {
+            dispatchGlobalReviewReducer({
+                type: "UPDATE_REVIEW_SCALE_CRITERIA",
+                payload: state.reviewScaleAndCriteriaData,
+            });
+        };
+    }, [state.reviewScaleAndCriteriaData, dispatchGlobalReviewReducer]);
 
     // Atualize a lógica de persistência para incluir verificações e evitar sobrescrever valores críticos
     useEffect(() => {
         const currentStateString = JSON.stringify(state.reviewScaleAndCriteriaData);
 
         if (previousStateRef.current !== currentStateString) {
-            // Salva o estado atualizado, preservando o ciclo selecionado
-            const dataToSave = {
-                ...state.reviewScaleAndCriteriaData,
-                // weightOfPerformanceReviewOfLeaders: sliderValues[0],
-                // weightOfSelfReviewOfPerformance: sliderValues[1],
-                // weightOfEvaluatorsPerformanceReview: sliderValues[2],
-            };
-
-            saveDataToLocalStorage(dataToSave);
-            latestreviewScaleAndCriteriaData.current = dataToSave;
-
             previousStateRef.current = currentStateString;
-        }
+            latestreviewScaleAndCriteriaData.current = { ...state.reviewScaleAndCriteriaData };
+            saveDataToLocalStorage(state.reviewScaleAndCriteriaData);
 
-        return () => {
-            saveDataToLocalStorage(latestreviewScaleAndCriteriaData.current);
-        };
+        }
     }, [state.reviewScaleAndCriteriaData]);
 
     const [competencies, setCompetencies] = useState([]);
@@ -494,29 +479,6 @@ export function ReviewScaleAndCriteriaForm() {
         fetchEvidences();
     }, [competenciesDetails]);
 
-    // useEffect(() => {
-    //     const fetchSkillTypesName = async (evidences) => {
-    //         const updatedEvidences = await Promise.all(
-    //             evidences.map(async (evidence) => {
-    //                 try {
-    //                     const skillTypeData = await useFindSkillType(evidence.evidenceName);
-    //                     return {
-    //                         ...evidence,
-    //                         skillTypeName: skillTypeData.competencieTypeName,
-    //                     };
-    //                 } catch (error) {
-    //                     console.log('Error => ', error);
-    //                     //console.error(`Error fetching skill type data. `, error);
-    //                     return {
-    //                         ...evidence,
-    //                         skillTypeName: 'Unknown',
-    //                     };
-    //                 }
-    //             })
-    //         );
-    //         console.log('UP Evidence: ', updatedEvidences);
-    //         setEvidenceDataTable(updatedEvidences);
-    //     };
     useEffect(() => {
         const fetchSkillTypesName = async (evidences) => {
             const updatedEvidences = await Promise.all(
@@ -552,28 +514,11 @@ export function ReviewScaleAndCriteriaForm() {
         fetchEvidences();
     }, [])
 
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        const adjustedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-
-        const day = String(adjustedDate.getDate()).padStart(2, '0');
-        const month = String(adjustedDate.getMonth() + 1).padStart(2, '0');
-        const year = adjustedDate.getFullYear();
-
-        return `${day}/${month}/${year}`;
-    }
-
     const removeOptionRulerData = (id) => {
         dispatch({ type: 'REMOVE_RULER_OPTION_DATA', payload: { id } });
         dispatch({ type: 'RESET_REVIEW_RULER_TYPE' });
         dispatch({ type: 'RESET_SELECTED_RULER_TYPE' });
     };
-
-    const {
-        currentStep,
-        clearStepIndex,
-        handleClearStepIndex
-    } = useContext(ModelSelectionReviewContext);
 
     useEffect(() => {
         if (clearStepIndex === 3) {
@@ -594,13 +539,12 @@ export function ReviewScaleAndCriteriaForm() {
         dispatch({ type: 'RESET_SELECTED_COMPETENCIE_OPTIONS' });
     }
 
-
-
     if (isLoadingReviewScaleAndCriteriaData) {
         return (
             <PageChange />
         );
     }
+
     const competenceValue = competencies ? competencies : latestreviewScaleAndCriteriaData;
 
     return (
@@ -632,58 +576,64 @@ export function ReviewScaleAndCriteriaForm() {
                             {competencies.length > 0 && (
                                 <>
                                     <h3>Detalhes das Competências:</h3>
-                                    {competenciesDetails.map((competency, index) => (
-                                        <div key={competency.id}>
-                                            <p>
-                                                <strong>Nome:</strong> {competency.competencieTypeName ?? "Carregando..."}
-                                            </p>
-                                            <p>
-                                                <strong>Descrição:</strong> {competency.description ?? "Carregando..."}
-                                            </p>
-                                            <p>
-                                                <strong>Grupo Ocupacional:</strong>{" "}
-                                                {occupationalGroups[index]?.competencieName ?? "Carregando..."}
-                                            </p>
-                                            <p>
-                                                <strong>Classificação da Habilidade:</strong>{" "}
-                                                {skillClassifications[index]?.competenceClassificationName ?? "Carregando..."}
-                                            </p>
-                                            <h4>Evidências Relacionadas:</h4>
-                                            <ToolkitProvider
-                                                data={evidenceDataList.filter(evidence => evidence.evidenceName == competency.id)}
-                                                keyField="id"
-                                                columns={evidenceColumns}
-                                                search
-                                            >
-                                                {(props) => (
-                                                    <div className="table-responsive">
-                                                        <div id="datatable-basic_filter" className="dataTables_filter pb-1 w-50">
-                                                            <SearchBar
-                                                                className="form-control-sm"
-                                                                style={{
-                                                                    height: "40px",
-                                                                    width: 564,
-                                                                    fontSize: "16px",
-                                                                    padding: "10px",
-                                                                    borderRadius: "8px",
-                                                                }}
-                                                                placeholder="Pesquise por alguma evidência específica aqui ..."
-                                                                {...props.searchProps}
-                                                            />
-                                                        </div>
-                                                        <BootstrapTable
-                                                            {...props.baseProps}
-                                                            bootstrap4
-                                                            pagination={pagination}
-                                                            bordered={false}
-                                                            selectRow={selectRow(competency.id)}
-                                                        />
-                                                    </div>
-                                                )}
-                                            </ToolkitProvider>
-                                            <hr />
-                                        </div>
-                                    ))}
+                                    {Array.isArray(competenciesDetails) && competenciesDetails.length > 0 ? (
+                                        competenciesDetails.map((competency, index) => (
+                                            competency ? ( // Garante que competency não seja undefined
+                                                <div key={competency.id}>
+                                                    <p>
+                                                        <strong>Nome:</strong> {competency.competencieTypeName ?? "Carregando..."}
+                                                    </p>
+                                                    <p>
+                                                        <strong>Descrição:</strong> {competency.description ?? "Carregando..."}
+                                                    </p>
+                                                    <p>
+                                                        <strong>Grupo Ocupacional:</strong>{" "}
+                                                        {occupationalGroups[index]?.competencieName ?? "Carregando..."}
+                                                    </p>
+                                                    <p>
+                                                        <strong>Classificação da Habilidade:</strong>{" "}
+                                                        {skillClassifications[index]?.competenceClassificationName ?? "Carregando..."}
+                                                    </p>
+                                                    <h4>Evidências Relacionadas:</h4>
+                                                    <ToolkitProvider
+                                                        data={evidenceDataList.filter(evidence => evidence.evidenceName == competency.id)}
+                                                        keyField="id"
+                                                        columns={evidenceColumns}
+                                                        search
+                                                    >
+                                                        {(props) => (
+                                                            <div className="table-responsive">
+                                                                <div id="datatable-basic_filter" className="dataTables_filter pb-1 w-50">
+                                                                    <SearchBar
+                                                                        className="form-control-sm"
+                                                                        style={{
+                                                                            height: "40px",
+                                                                            width: 564,
+                                                                            fontSize: "16px",
+                                                                            padding: "10px",
+                                                                            borderRadius: "8px",
+                                                                        }}
+                                                                        placeholder="Pesquise por alguma evidência específica aqui ..."
+                                                                        {...props.searchProps}
+                                                                    />
+                                                                </div>
+                                                                <BootstrapTable
+                                                                    {...props.baseProps}
+                                                                    bootstrap4
+                                                                    pagination={pagination}
+                                                                    bordered={false}
+                                                                    selectRow={selectRow(competency.id)}
+                                                                />
+                                                            </div>
+                                                        )}
+                                                    </ToolkitProvider>
+                                                    <hr />
+                                                </div>
+                                            ) : null
+                                        ))
+                                    ) : (
+                                        <p>Carregando competências...</p>
+                                    )}
                                 </>
                             )}
                         </div>

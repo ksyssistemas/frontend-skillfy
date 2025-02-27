@@ -1,4 +1,4 @@
-export const initialState = {
+export const initialStateReviewModelAndDeadlineForm = {
     reviewModelData: {
         hasPerformanceReviewOfLeaders: true,
         deadlineToLeadersToRespondToPerformanceReview: '',
@@ -16,7 +16,7 @@ export const initialState = {
     },
 };
 
-export const formReducer = (state, action) => {
+export const reviewModelAndDeadlineFormReducer = (state, action) => {
     switch (action.type) {
         case 'SAVE_REVIEW_DATA':
             return {
@@ -32,7 +32,7 @@ export const formReducer = (state, action) => {
                 },
             };
         case 'RESET_REVIEW_DATA':
-            return initialState;
+            return initialStateReviewModelAndDeadlineForm;
         case 'SET_HAS_PERFORMANCE_REVIEW_OF_LEADERS':
             return {
                 ...state,
@@ -138,7 +138,7 @@ export const formReducer = (state, action) => {
                 },
             };
         case 'CLEAR_FORM':
-            return initialState;
+            return initialStateReviewModelAndDeadlineForm;
 
         default:
             return state;

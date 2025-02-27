@@ -1,7 +1,7 @@
 export async function useFindAllPerformanceReview() {
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_EVIDENCES_PERFORMANCE}`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_PERFORMANCE_REVIEW}`);
     if (!response.ok) {
       throw new Error('Network response was not ok.');
     }

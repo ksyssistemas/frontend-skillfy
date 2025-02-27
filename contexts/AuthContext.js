@@ -9,6 +9,7 @@ function AuthProvider({ children }) {
 
     const [authenticationDataLoggedInUser, setAuthenticationDataLoggedInUser] = useState("");
 
+
     function handleSaveAuthenticationDataLoggedInUser(userAuthenticationData) {
         setAuthenticationDataLoggedInUser(userAuthenticationData);
     }

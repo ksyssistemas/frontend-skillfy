@@ -1,4 +1,4 @@
-export const initialState = {
+export const initialStateReviewScaleAndCriteriaForm = {
     reviewScaleAndCriteriaData: {
         rulerTypeDataList: [
             { id: "1", text: "Conceitual" },
@@ -20,7 +20,7 @@ export const initialState = {
     },
 };
 
-export const formReducer = (state, action) => {
+export const reviewScaleAndCriteriaFormReducer = (state, action) => {
     switch (action.type) {
         case 'SAVE_REVIEW_DATA':
             return {
@@ -36,7 +36,7 @@ export const formReducer = (state, action) => {
                 },
             };
         case 'RESET_REVIEW_DATA':
-            return initialState;
+            return initialStateReviewScaleAndCriteriaForm;
         case 'SET_REVIEW_RULER_TYPE':
             return {
                 ...state,
@@ -50,7 +50,7 @@ export const formReducer = (state, action) => {
                 ...state,
                 reviewScaleAndCriteriaData: {
                     ...state.reviewScaleAndCriteriaData,
-                    reviewRulerType: initialState.reviewScaleAndCriteriaData.reviewRulerType
+                    reviewRulerType: initialStateReviewScaleAndCriteriaForm.reviewScaleAndCriteriaData.reviewRulerType
                 }
             };
         case 'SET_REVIEW_RULER_TYPE_STATE':
@@ -74,7 +74,7 @@ export const formReducer = (state, action) => {
                 ...state,
                 reviewScaleAndCriteriaData: {
                     ...state.reviewScaleAndCriteriaData,
-                    selectedRulerType: initialState.reviewScaleAndCriteriaData.selectedRulerType
+                    selectedRulerType: initialStateReviewScaleAndCriteriaForm.reviewScaleAndCriteriaData.selectedRulerType
                 }
             };
         case 'SET_SHOW_SELECT_RULER_OPTIONS_BUTTON':
@@ -217,11 +217,11 @@ export const formReducer = (state, action) => {
                 ...state,
                 reviewScaleAndCriteriaData: {
                     ...state.reviewScaleAndCriteriaData,
-                    reviewCompetenceEvidenceData: initialState.reviewScaleAndCriteriaData.reviewCompetenceEvidenceData
+                    reviewCompetenceEvidenceData: initialStateReviewScaleAndCriteriaForm.reviewScaleAndCriteriaData.reviewCompetenceEvidenceData
                 }
             };
         case 'CLEAR_FORM':
-            return initialState;
+            return initialStateReviewScaleAndCriteriaForm;
 
         default:
             return state;
