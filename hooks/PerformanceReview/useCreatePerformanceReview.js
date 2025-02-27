@@ -138,8 +138,8 @@ const useCreatePerformanceReview = () => {
                     const participateAsPair = hasPairInSameDepartment && !isLead;
 
                     const payload = {
-                        reviewParticipantId: String(reviewParticipantId),
-                        performanceReviewId: reviewId,
+                        reviewParticipantId: Number(reviewParticipantId),
+                        performanceReviewId: Number(reviewId),
                         participateAsLeader,
                         participateAsPair,
                         participatesAsSelfEvaluator: true
@@ -219,8 +219,8 @@ const useCreatePerformanceReview = () => {
                     const participateAsEmployeePeerTo = getPairedEmployees(id);
 
                     const payload = {
-                        reviewParticipantId: String(id),
-                        performanceReviewId: reviewId,
+                        reviewParticipantId: Number(id),
+                        performanceReviewId: Number(reviewId),
                         participateAsLeader,
                         participateAsPair,
                         participateAsEmployeePeerTo,
@@ -282,8 +282,8 @@ const useCreatePerformanceReview = () => {
 
                     if (!uniqueParticipants.has(id)) {
                         uniqueParticipants.set(id, {
-                            reviewParticipantId: id,
-                            performanceReviewId: reviewId,
+                            reviewParticipantId: Number(id),
+                            performanceReviewId: Number(reviewId),
                             participateAsLeader: isLead && LeaderName.trim() !== "",
                             participateAsPair: getPairsForParticipant(id) !== null,
                             participateAsEmployeePeerTo: getPairsForParticipant(id) || [],
@@ -298,8 +298,8 @@ const useCreatePerformanceReview = () => {
 
                     if (!uniqueParticipants.has(id)) {
                         uniqueParticipants.set(id, {
-                            reviewParticipantId: id,
-                            performanceReviewId: reviewId,
+                            reviewParticipantId: Number(id),
+                            performanceReviewId: Number(reviewId),
                             participateAsLeader: false,
                             participateAsPair: getPairsForParticipant(id) !== null,
                             participateAsEmployeePeerTo: getPairsForParticipant(id) || [],
@@ -315,8 +315,8 @@ const useCreatePerformanceReview = () => {
 
                         if (!uniqueParticipants.has(id)) {
                             uniqueParticipants.set(id, {
-                                reviewParticipantId: id,
-                                performanceReviewId: reviewId,
+                                reviewParticipantId: Number(id),
+                                performanceReviewId: Number(reviewId),
                                 participateAsLeader: false,
                                 participateAsPair: getPairsForParticipant(id) !== null,
                                 participateAsEmployeePeerTo: getPairsForParticipant(id) || [],
