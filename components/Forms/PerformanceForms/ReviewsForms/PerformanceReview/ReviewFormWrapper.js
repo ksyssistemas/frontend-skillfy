@@ -103,7 +103,7 @@ export function ReviewFormWrapper() {
                                             color="success"
                                             size="lg"
                                             type="button"
-                                            onClick={handleSubmit}
+                                            onClick={async () => await handleSubmit()}
                                         >
                                             Submeter
                                         </Button>

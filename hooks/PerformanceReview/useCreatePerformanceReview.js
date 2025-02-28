@@ -42,8 +42,6 @@ const useCreatePerformanceReview = () => {
                 payload.endDate = reviewIdentityData.endDate;
             }
 
-            console.log(`Rota chamada para criar avaliação: ${process.env.NEXT_PUBLIC_PERFORMANCE_REVIEW}`);
-
             const response = await fetch(`${process.env.NEXT_PUBLIC_PERFORMANCE_REVIEW}`, {
                 method: 'POST',
                 headers: {
@@ -53,14 +51,14 @@ const useCreatePerformanceReview = () => {
             });
 
             if (response.ok) {
-                console.log('Performance review data sent successfully!');
+                console.log('Os dados da avaliação de desempenho foram enviados com sucesso!');
                 const reviewData = await response.json();
                 return reviewData.id;
             } else {
-                console.error('Error in response:', response.status);
+                console.error('Erro na resposta de criação de avaliação:', response.status);
             }
         } catch (error) {
-            console.error('Error in request:', error);
+            console.error('Erro na requisição de criação de avaliação:', error);
         }
     }
 
@@ -91,7 +89,7 @@ const useCreatePerformanceReview = () => {
                             body: JSON.stringify(payload),
                         }).then(response => {
                             if (!response.ok) {
-                                throw new Error(`Erro ao enviar dados: ${response.status}`);
+                                throw new Error(`Erro na resposta do envio dos dados de competências, evidências e régua da avaliação: ${response.status}`);
                             }
                             return response.json();
                         }).then(() => {
@@ -106,17 +104,17 @@ const useCreatePerformanceReview = () => {
                 // Aguarda todas as requisições serem concluídas
                 await Promise.all(requests);
 
-                console.log('Evidence and ruler data sent successfully!!');
+                console.log('Dados de competências, evidências e régua da avaliação enviados com sucesso!');
                 return {
                     amountEvidenceIncluded: successfulCompetenceIds.size, // Total de competências únicas salvas
                     amountSkillsIncluded: successfulEvidenceCount // Total de evidências salvas
                 };
             } catch (error) {
-                console.error('Erro ao enviar os dados:', error);
+                console.error('Erro ao enviar os dados de competências, evidências e régua da avaliação:', error);
                 throw error;
             }
         } else {
-            console.error('Erro ao enviar os dados. Não contém o identificador da avaliação.');
+            console.error('Erro ao enviar os dados . Não contém o identificador da avaliação.');
         }
     };
 
@@ -126,14 +124,20 @@ const useCreatePerformanceReview = () => {
             try {
                 const requests = [];
                 let successfulParticipantsCount = 0; // Contador de participantes salvos com sucesso
-                reviewParticipantsSelectionData.listAllEmployeesSelectedToReview.forEach(participant => {
+
+                // Filtra apenas os participantes marcados para serem incluídos
+                const selectedParticipants = reviewParticipantsSelectionData.listAllEmployeesSelectedToReview.filter(
+                    participant => participant.isCheckedToEmployeeList
+                );
+
+                selectedParticipants.forEach(participant => {
                     const { id: reviewParticipantId, isLead, LeaderName, departmentId } = participant;
 
                     // Verifica se participa como líder
                     // Garante que `participateAsLeader` seja booleano
                     const participateAsLeader = Boolean(isLead && LeaderName && LeaderName.trim());
                     // Verifica se participa como par
-                    const hasPairInSameDepartment = reviewParticipantsSelectionData.listAllEmployeesSelectedToReview.some(otherParticipant =>
+                    const hasPairInSameDepartment = selectedParticipants.some(otherParticipant =>
                         otherParticipant.departmentId === departmentId && otherParticipant.id !== reviewParticipantId
                     );
 
@@ -147,7 +151,7 @@ const useCreatePerformanceReview = () => {
                         participatesAsSelfEvaluator: true
                     };
 
-                    const request = fetch(`${process.env.NEXT_PUBLIC_REVIEW_PARTICIPANTS}`, {
+                    const requestResponse = fetch(`${process.env.NEXT_PUBLIC_REVIEW_PARTICIPANTS}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -156,21 +160,20 @@ const useCreatePerformanceReview = () => {
                     })
                         .then(response => {
                             if (!response.ok) {
-                                throw new Error(`Erro ao enviar participante: ${response.status}`);
+                                throw new Error(`Erro na resposta ao enviar um participante: ${response.status}`);
                             }
-                            console.log("RESPONDE DE All: ", response);
                             requests.push(response.json());
                         }).then(() => {
                             successfulParticipantsCount++; // Incrementa o contador ao salvar um participante
                         }).catch(error => {
-                            console.error("Erro em uma requisição de participante:", error);
+                            console.error("Erro na requisição de um participante:", error);
                         });
                 });
 
                 // Aguarda todas as requisições serem concluídas
                 const results = await Promise.all(requests);
 
-                console.log('All participants have been successfully added!', results);
+                console.log('Todos os participantes foram adicionados com sucesso!');
                 return { amountParticipantsIncluded: successfulParticipantsCount };
             } catch (error) {
                 console.error('Erro ao adicionar participantes:', error);
@@ -187,7 +190,7 @@ const useCreatePerformanceReview = () => {
             );
 
             if (allPairsInvalid) {
-                console.warn("Nenhum participante válido para adicionar. Operação cancelada.");
+                console.warn("Nenhum participante sorteado válido para adicionar. Operação cancelada.");
                 return { amountParticipantsIncluded: 0 };
             }
 
@@ -238,11 +241,10 @@ const useCreatePerformanceReview = () => {
                         });
 
                         if (response.ok) {
-                            console.log("RESPONDE DE RANDOM: ", response);
                             successCount.set(id, (successCount.get(id) || 0) + 1);
                         }
                     } catch (error) {
-                        console.error(`Erro ao adicionar participante ${id}:`, error);
+                        console.error(`Erro ao adicionar o participante sorteado ${id}:`, error);
                     }
                 };
 
@@ -254,10 +256,10 @@ const useCreatePerformanceReview = () => {
                 ]);
 
                 const amountParticipantsIncluded = successCount.size;
-                console.log(`Total de participantes adicionados com sucesso: ${amountParticipantsIncluded}`);
+                console.log(`Total de participantes sorteados adicionados com sucesso: ${amountParticipantsIncluded}`);
                 return { amountParticipantsIncluded };
             } catch (error) {
-                console.error('Erro ao adicionar participantes:', error);
+                console.error('Erro ao adicionar participantes sorteados:', error);
                 return { amountParticipantsIncluded: 0 };
             }
         }
@@ -338,19 +340,18 @@ const useCreatePerformanceReview = () => {
                         body: JSON.stringify(payload),
                     })
                         .then(response => {
-                            if (!response.ok) throw new Error(`Erro ao enviar participante: ${response.status}`);
-                            console.log("RESPONDE DE Manual: ", response);
+                            if (!response.ok) throw new Error(`Erro ao enviar um participante selecionado manualmente: ${response.status}`);
                             return response.json();
                         })
                 );
 
                 const results = await Promise.all(requests);
 
-                console.log('Todos os participantes foram adicionados com sucesso!', results);
+                console.log('Todos os participantes selecionados manualmente foram adicionados com sucesso!', results);
                 return { amountParticipantsIncluded: results.length };
 
             } catch (error) {
-                console.error('Erro ao adicionar participantes:', error);
+                console.error('Erro ao adicionar participantes selecionados manualmente:', error);
                 throw error;
             }
         }
@@ -383,12 +384,12 @@ const useCreatePerformanceReview = () => {
                 });
 
                 if (response.ok) {
-                    console.log('The review configuration data has been sent successfully!');
+                    console.log('Os dados de configuração da avaliação foram enviados com sucesso!');
                 } else {
-                    console.error('Error in response:', response.status);
+                    console.error('Erro na resposta de configurações da avaliação:', response.status);
                 }
             } catch (error) {
-                console.error('Error in request:', error);
+                console.error('Erro na requisição para salvar configurações da avaliação:', error);
             }
         }
     }
@@ -423,15 +424,14 @@ const useCreatePerformanceReview = () => {
             });
 
             if (response.ok) {
-                console.log('Performance review data changed successfully!');
-                console.log('response update: ', response);
+                console.log('Os dados da avaliação de desempenho foram alterados com êxito!');
                 const reviewData = await response.json();
                 return reviewData.id;
             } else {
-                console.error('Error in response:', response.status);
+                console.error('Erro na resposta ao alterar avaliação de desempenho:', response.status);
             }
         } catch (error) {
-            console.error('Error in request:', error);
+            console.error('Erro na requesição para alterar dados de avaliação de desempenho:', error);
         }
     }
 
