@@ -24,8 +24,11 @@ import { withRouter } from "next/router";
 import { useFindAllPerformanceReview } from '../../../../hooks/PerformanceReview/useFindAllPerformanceReview';
 import { useFindPerformanceReview } from '../../../../hooks/PerformanceReview/useFindPerformanceReview';
 import { EvidencesContext } from '../../../../contexts/PerformanceContext/AppraisalEvidencesContext';
+import { ReviewContext } from '../../../../contexts/PerformanceContext/PerformanceReviewContext';
 import { AuthContext } from '../../../../contexts/AuthContext';
 import { useFindAllReviewParticipants } from '../../../../hooks/PerformanceReview/ReviewParticipants/useFindAllReviewParticipants';
+import { useFindEmployee } from '../../../../hooks/RecordsHooks/employee/useFindEmployee';
+
 
 function AppraisalsListTableCompetencies() {
 
@@ -33,7 +36,7 @@ function AppraisalsListTableCompetencies() {
   // console.log("AuthContex", authenticationDataLoggedInUser);
 
   // const userLoggedId = authenticationDataLoggedInUser?.data?.id;
-  const userLoggedId = 14;
+  const userLoggedId = 13;
   // console.log("userLoggedId", userLoggedId);
 
   const badgeConfig = {
@@ -110,6 +113,10 @@ function AppraisalsListTableCompetencies() {
 
   const [performanceAppraisalIgualsUserLoggedIdData, setPerformanceAppraisalIgualsUserLoggedIdData] = useState([]);
 
+  const [performanceReviewParticipantsAppraiserData, setPerformanceReviewParticipantsAppraiserData] = useState([]);
+
+  const [performanceReviewParticipantsSelfEvaluationData, setPerformanceReviewParticipantsSelfEvaluationData] = useState([]);
+
   useEffect(() => {
     async function fetchPerformanceReviewParticipants() {
       try {
@@ -126,18 +133,78 @@ function AppraisalsListTableCompetencies() {
   const performanceReviewParticipantsIgualsUserLoggedIdData = performanceReviewParticipantsData.filter
     (participants => Number(participants.reviewParticipantId) === Number(userLoggedId));
 
+  const performanceReviewParticipantsIgualsUserLoggedIdAvaliadorData = performanceReviewParticipantsData.filter(
+    participant => Array.isArray(participant.participateAsEmployeePeerTo) &&
+      participant.participateAsEmployeePeerTo.some(
+        peer => peer.employeeToWhomIsPairedId === Number(userLoggedId)
+      )
+  );
+  // console.log("performanceReviewParticipantsIgualsUserLoggedIdAvaliadorData" ,performanceReviewParticipantsIgualsUserLoggedIdAvaliadorData);
+
+  const performanceReviewParticipantsIgualsUserLoggedIdAutoAvaliacaoData = performanceReviewParticipantsData.filter(
+    participant => (
+      (!Array.isArray(participant.participateAsEmployeePeerTo) || participant.participateAsEmployeePeerTo.length === 0) &&
+      participant.participatesAsSelfEvaluator === true && participant.reviewParticipantId === Number(userLoggedId)
+    )
+  );
+  // console.log("performanceReviewParticipantsIgualsUserLoggedIdAutoAvaliacaoData", performanceReviewParticipantsIgualsUserLoggedIdAutoAvaliacaoData);
+
   useEffect(() => {
-    if (performanceReviewParticipantsIgualsUserLoggedIdData.length > 0) {
-      Promise.all(performanceReviewParticipantsIgualsUserLoggedIdData.map(participants => useFindPerformanceReview(participants.performanceReviewId)))
-        .then(details => setPerformanceAppraisalIgualsUserLoggedIdData(details))
-        .catch(error => console.error("Erro ao buscar avaliações com o mesmo id do usuário :", error));
+    if (performanceReviewParticipantsIgualsUserLoggedIdAvaliadorData.length > 0) {
+      Promise.all(performanceReviewParticipantsIgualsUserLoggedIdAvaliadorData.map(async (appraiser) => {
+        const performanceReview = await useFindPerformanceReview(appraiser.performanceReviewId);
+        const employee = await useFindEmployee(appraiser.reviewParticipantId);
+
+        return {
+          originalData: appraiser, // caso queira manter os dados originais do participant
+          performanceReview,
+          employee
+        };
+      }))
+        .then(combinedData => setPerformanceReviewParticipantsAppraiserData(combinedData))
+        .catch(error => console.error("Erro ao buscar avaliações e informações do avaliado:", error));
     } else {
-      setPerformanceAppraisalIgualsUserLoggedIdData([]);
+      setPerformanceReviewParticipantsAppraiserData([]);
     }
   }, [performanceReviewParticipantsData]);
-  console.log(performanceReviewParticipantsIgualsUserLoggedIdData);
-  console.log("performanceAppraisalIgualsUserLoggedIdData :", performanceAppraisalIgualsUserLoggedIdData);
-  // console.log(performanceReviewParticipantsData);
+  // console.log(performanceReviewParticipantsAppraiserData);
+
+  useEffect(() => {
+    if (performanceReviewParticipantsIgualsUserLoggedIdAutoAvaliacaoData.length > 0) {
+      Promise.all(performanceReviewParticipantsIgualsUserLoggedIdAutoAvaliacaoData.map(selfevaluation => useFindPerformanceReview(selfevaluation.performanceReviewId)))
+        .then(details => setPerformanceReviewParticipantsSelfEvaluationData(details))
+        .catch(error => console.error("Erro ao buscar as auto avaliações :", error));
+    } else {
+      setPerformanceReviewParticipantsSelfEvaluationData([]);
+    }
+  }, [performanceReviewParticipantsData]);
+  // console.log(performanceReviewParticipantsSelfEvaluationData);
+
+  useEffect(() => {
+    const combined = [
+      ...performanceReviewParticipantsAppraiserData.map(item => ({
+        id: item.performanceReview.id,
+        reviewName: `Avaliação do ${item.employee.name}`,
+        startDate: item.performanceReview.startDate,
+        endDate: item.performanceReview.endDate,
+        status: item.performanceReview.status,
+        type: 'avaliacao',
+        reviewModel: item.performanceReview.reviewModel,
+        reviewParticipantId : item.employee.id,
+      })),
+      ...performanceReviewParticipantsSelfEvaluationData.map(item => ({
+        id: item.id,
+        reviewName: 'Autoavaliação',
+        startDate: item.startDate,
+        endDate: item.endDate,
+        status: item.status,
+        type: 'autoavaliacao',
+        reviewModel: item.reviewModel,
+      }))
+    ];
+    setPerformanceAppraisalIgualsUserLoggedIdData(combined);
+  }, [performanceReviewParticipantsAppraiserData, performanceReviewParticipantsSelfEvaluationData]);
+
 
   useEffect(() => {
     async function fetchPerformanceAppraisal() {
@@ -152,10 +219,10 @@ function AppraisalsListTableCompetencies() {
     fetchPerformanceAppraisal();
   }, []);
 
-  const { handleEvidencesIdToUpdate } = useContext(EvidencesContext);
-
+  const { handlePerformanceIdIdToUEvaluation, handlePerformanceRulerIdToEvaluation, handlePerformanceIdParticipantToEvaluation, handlePerformanceModelToEvaluation, } = useContext(ReviewContext);
+console.log(performanceAppraisalIgualsUserLoggedIdData);
   const handleSetId = (id) => {
-    handleEvidencesIdToUpdate(id);
+    handlePerformanceIdIdToUEvaluation(id);
   };
 
   return (
@@ -207,7 +274,6 @@ function AppraisalsListTableCompetencies() {
                         </DropdownToggle>
                         <DropdownMenu className="dropdown-menu-arrow" right>
                           <DropdownItem
-                            // href="add-appraisals-skills"
                             onClick={() => handleSetId(appraisal.id)}
                           >
                             Fazer a avaliação
@@ -219,10 +285,11 @@ function AppraisalsListTableCompetencies() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" className="text-center">Nenhum avaliação encontrado</td>
+                  <td colSpan="6" className="text-center">Nenhuma avaliação encontrada</td>
                 </tr>
               )}
             </tbody>
+
           </Table>
 
           <CardFooter className="py-4">

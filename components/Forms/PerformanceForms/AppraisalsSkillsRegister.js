@@ -37,7 +37,7 @@ import { useFindAllSkillClassifications } from "../../../hooks/DefinitionOptions
 import { useFindEvaluationRoler } from '../../../hooks/PerformanceReview/EvaluationRoler/useFindEvaluationRoler';
 import { useFindRuleOption } from '../../../hooks/PerformanceReview/RuleOption/useFindRuleOption';
 import { useFindPerformanceReview } from '../../../hooks/PerformanceReview/useFindPerformanceReview';
-import { EvidencesContext } from '../../../contexts/PerformanceContext/AppraisalEvidencesContext';
+import { ReviewContext } from '../../../contexts/PerformanceContext/PerformanceReviewContext';
 import { useFindAllReviewEvidenceRuler } from '../../../hooks/PerformanceReview/ReviewEvidenceRuler/useFindAllReviewEvidenceRuler';
 import { useFindRuleOptionEvaluationRuler } from '../../../hooks/PerformanceReview/RuleOption/useFindRuleOptionEvaluationRuler';
 
@@ -46,10 +46,10 @@ export function AppraisalsSkillsRegister() {
     const [reviewObjective, setReviewObjective] = useState('');
     const quillRef = useRef(null);
 
-    const { evidencesIdToUpdate, handleEvidenceIdStatusCleanupToUpdate } = useContext(EvidencesContext);
+    const { performanceIdToEvaluation, handlePerformanceIdStatusCleanupToUpdate } = useContext(ReviewContext);
   
     const handleBackToList = () => {
-        handleEvidenceIdStatusCleanupToUpdate();
+        handlePerformanceIdStatusCleanupToUpdate();
     };
 
     const [performanceAppraisalData, setPerformanceAppraisalData] = useState([]);
@@ -57,15 +57,15 @@ export function AppraisalsSkillsRegister() {
     useEffect(() => {
         const fetchPerformanceAppraisal = async () => {
             if (!performanceAppraisalData.length) {
-                const foundAppraisal = await useFindPerformanceReview(evidencesIdToUpdate);
+                const foundAppraisal = await useFindPerformanceReview(performanceIdToEvaluation);
                 setPerformanceAppraisalData(foundAppraisal);
             }
         };
 
-        if (evidencesIdToUpdate) {
+        if (performanceIdToEvaluation) {
             fetchPerformanceAppraisal();
         }
-    }, [evidencesIdToUpdate]);
+    }, [performanceIdToEvaluation]);
 
     const [performanceEvidenceData, setPerformanceEvidenceData] = useState([]);
     // console.log("performanceEvidenceData :", performanceEvidenceData); 
@@ -85,10 +85,10 @@ export function AppraisalsSkillsRegister() {
             const foundReviewEvidenceRuler = await useFindAllReviewEvidenceRuler();
             setPerformanceReviewEvidenceRulerData(foundReviewEvidenceRuler);
         };
-        if (evidencesIdToUpdate) {
+        if (performanceIdToEvaluation) {
             fetchReviewEvidenceRuler();
         }
-    }, [evidencesIdToUpdate]);
+    }, [performanceIdToEvaluation]);
     // console.log("performanceReviewEvidenceRulerData :", performanceReviewEvidenceRulerData);
 
     const [occupationalGroupsData, setOccupationalGroupsData] = useState([]);
@@ -97,10 +97,10 @@ export function AppraisalsSkillsRegister() {
             const foundOccupationalGroups = await useFindAllOccupationalGroups();
             setOccupationalGroupsData(foundOccupationalGroups);
         };
-        if (evidencesIdToUpdate) {
+        if (performanceIdToEvaluation) {
             fetchOccupationalGroups();
         }
-    }, [evidencesIdToUpdate]);
+    }, [performanceIdToEvaluation]);
     // console.log("occupationalGroupsData :", occupationalGroupsData);
 
     const [skillClassificationsData, setSkillClassificationsData] = useState([]);
@@ -109,18 +109,18 @@ export function AppraisalsSkillsRegister() {
             const foundSkillClassifications = await useFindAllSkillClassifications();
             setSkillClassificationsData(foundSkillClassifications);
         };
-        if (evidencesIdToUpdate) {
+        if (performanceIdToEvaluation) {
             fetchSkillClassifications();
         }
-    }, [evidencesIdToUpdate]);
+    }, [performanceIdToEvaluation]);
     // console.log("skillClassificationsData :", skillClassificationsData);
 
     const memoizedReviewEvidenceRulerIgualsEvaluationIdData = useMemo(() => {
         return performanceReviewEvidenceRulerData.filter(
             (evidenceRuler) =>
-                Number(evidenceRuler.performanceReviewId) === Number(evidencesIdToUpdate)
+                Number(evidenceRuler.performanceReviewId) === Number(performanceIdToEvaluation)
         );
-    }, [performanceReviewEvidenceRulerData, evidencesIdToUpdate]);
+    }, [performanceReviewEvidenceRulerData, performanceIdToEvaluation]);
 
     useEffect(() => {
         if (memoizedReviewEvidenceRulerIgualsEvaluationIdData.length > 0) {
