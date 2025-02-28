@@ -38,7 +38,6 @@ function ModelSelectionReviewProvider({ children }) {
   };
 
   const handleSubmit = async () => {
-    console.log("Entrou na função de Submeter: ");
     const reviewId = await handleCreationPerformanceReviewSubmit(
       selectedReview,
       stateGlobalReviewReducer.reviewIdentityData,
@@ -46,13 +45,11 @@ function ModelSelectionReviewProvider({ children }) {
       stateGlobalReviewReducer.reviewParticipantsSelectionData
     );
     if (reviewId) {
-      console.log("Salvou uma avaliação e agora vai salvar os dados relacionados à avaliação: ");
       const { amountEvidenceIncluded, amountSkillsIncluded } = await handleSetEvidenceAndRulerToPerformanceReview(reviewId, stateGlobalReviewReducer.reviewScaleAndCriteriaData);
       const { amountParticipantsIncluded } = await handleAddParticipantsToPerformanceReview(reviewId, stateGlobalReviewReducer.reviewParticipantsSelectionData);
       await handleReviewGenerationSettings(reviewId, stateGlobalReviewReducer.reviewGenerationSetupData);
       await updatePerformanceReviewData(reviewId, amountEvidenceIncluded, amountSkillsIncluded, amountParticipantsIncluded);
     }
-    console.log("Finalizou o processo de salvar uma avaliação!");
   };
 
   return (
