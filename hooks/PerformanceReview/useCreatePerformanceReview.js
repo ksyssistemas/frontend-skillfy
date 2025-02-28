@@ -158,6 +158,7 @@ const useCreatePerformanceReview = () => {
                             if (!response.ok) {
                                 throw new Error(`Erro ao enviar participante: ${response.status}`);
                             }
+                            console.log("RESPONDE DE All: ", response);
                             requests.push(response.json());
                         }).then(() => {
                             successfulParticipantsCount++; // Incrementa o contador ao salvar um participante
@@ -237,6 +238,7 @@ const useCreatePerformanceReview = () => {
                         });
 
                         if (response.ok) {
+                            console.log("RESPONDE DE RANDOM: ", response);
                             successCount.set(id, (successCount.get(id) || 0) + 1);
                         }
                     } catch (error) {
@@ -337,6 +339,7 @@ const useCreatePerformanceReview = () => {
                     })
                         .then(response => {
                             if (!response.ok) throw new Error(`Erro ao enviar participante: ${response.status}`);
+                            console.log("RESPONDE DE Manual: ", response);
                             return response.json();
                         })
                 );
@@ -418,10 +421,10 @@ const useCreatePerformanceReview = () => {
                 },
                 body: JSON.stringify(payload),
             });
-            console.log('response update: ', response);
 
             if (response.ok) {
                 console.log('Performance review data changed successfully!');
+                console.log('response update: ', response);
                 const reviewData = await response.json();
                 return reviewData.id;
             } else {
