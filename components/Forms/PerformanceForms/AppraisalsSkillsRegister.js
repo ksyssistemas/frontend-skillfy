@@ -456,6 +456,26 @@ export function AppraisalsSkillsRegister() {
         console.log("Dados para salvar:", finalData);
     };
 
+    const handleLimpar = () => {
+        const objectiveField = document.querySelector("#validationDescriptionReviewObjective .ql-editor");
+        if (objectiveField) {
+            objectiveField.innerHTML = "<p><br></p>"; 
+        }
+    
+        const newSelectedStatus = { ...selectedStatus };
+    
+        performanceEvidenceData.forEach((evidence) => {
+            if (newSelectedStatus[evidence.id]) {
+                newSelectedStatus[evidence.id] = {
+                    selectedOption: null,
+                    weight: null
+                };
+            }
+        });
+    
+        setSelectedStatus(newSelectedStatus);
+    };
+    
     return (
         <Card className="mb-4">
             <CardHeader>
@@ -599,7 +619,7 @@ export function AppraisalsSkillsRegister() {
                                 color="secundary"
                                 size="lg"
                                 type="button"
-                            // onClick={handleLimpar}
+                            onClick={handleLimpar}
                             >
                                 <span className="btn-inner--text">Limpar</span>
                             </Button>
