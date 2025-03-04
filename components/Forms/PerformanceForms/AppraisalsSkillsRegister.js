@@ -40,17 +40,36 @@ import { useFindPerformanceReview } from '../../../hooks/PerformanceReview/useFi
 import { ReviewContext } from '../../../contexts/PerformanceContext/PerformanceReviewContext';
 import { useFindAllReviewEvidenceRuler } from '../../../hooks/PerformanceReview/ReviewEvidenceRuler/useFindAllReviewEvidenceRuler';
 import { useFindRuleOptionEvaluationRuler } from '../../../hooks/PerformanceReview/RuleOption/useFindRuleOptionEvaluationRuler';
+import { AuthContext } from '../../../contexts/AuthContext';
 
 export function AppraisalsSkillsRegister() {
 
     const [reviewObjective, setReviewObjective] = useState('');
     const quillRef = useRef(null);
 
-    const { performanceIdToEvaluation, handlePerformanceIdStatusCleanupToUpdate } = useContext(ReviewContext);
-  
+    const { performanceIdToEvaluation,
+        evaluationRulerId,
+        reviewParticipantId,
+        reviewModel,
+        participatesAsSelfEvaluator,
+        participateAsPair,
+        participateAsLeader,
+        handlePerformanceIdStatusCleanupToUpdate } = useContext(ReviewContext);
+
+    // console.log("performanceIdToEvaluation :", performanceIdToEvaluation , "evaluationRulerId :" ,evaluationRulerId ,
+    //     "reviewParticipantId :", reviewParticipantId , "reviewModel :", reviewModel , "participatesAsSelfEvaluator :", participatesAsSelfEvaluator ,
+    //     "participateAsPair :", participateAsPair , "participateAsLeader :", participateAsLeader 
+    // );
+
     const handleBackToList = () => {
         handlePerformanceIdStatusCleanupToUpdate();
     };
+
+    const { authenticationDataLoggedInUser } = useContext(AuthContext);
+    // console.log("AuthContex", authenticationDataLoggedInUser);
+
+    // const userLoggedId = authenticationDataLoggedInUser?.data?.id;
+    const userLoggedId = 5;
 
     const [performanceAppraisalData, setPerformanceAppraisalData] = useState([]);
     // console.log(performanceAppraisalData);
@@ -336,7 +355,7 @@ export function AppraisalsSkillsRegister() {
                 classificationData
             };
         });
-
+        console.log(grouped);
         setNewGroupedData(grouped);
     }, [occupationalGroupsData, skillClassificationsData, performanceSkillTypeData]);
 
@@ -374,41 +393,69 @@ export function AppraisalsSkillsRegister() {
     // console.log("combinedData :", combinedData);
 
     const handleSalvar = () => {
+        const reviewObjective = document.getElementById("validationDescriptionReviewObjective")?.innerText.trim() || "";
         const finalData = {
-          skillClassification: []
+            performanceReview: performanceIdToEvaluation,
+            evaluationRulerId: evaluationRulerId,
+            reviewParticipantId: reviewParticipantId || userLoggedId,
+            reviewModel: reviewModel,
+            answeredAsLeaderOf: participateAsLeader,
+            answeredAsSelfEvaluationOf: participatesAsSelfEvaluator,
+            answeredAsPairOf: participateAsPair,
+            reviewObjective: reviewObjective,
+            reviewAnswers: []
         };
-      
+
         newGroupedData.forEach((group) => {
-          group.classificationData.forEach((classification) => {
-            classification.skills.forEach((skill) => {
-              const evidences = skill.evidences
-                .map((evidence) => {
-                  const status = selectedStatus[evidence.id];
-                  if (status) {
-                    return {
-                      evidenceId: evidence.id,
-                      selectedOption: status.selectedOption,
-                      weight: status.weight
-                    };
-                  }
-                  return null;
-                })
-                .filter((item) => item !== null); 
-      
-              if (evidences.length > 0) {
-                finalData.skillClassification.push({
-                  competenceId: skill.id,
-                  description: skill.competencieTypeName || "",
-                  evidences: evidences
+            const occupationalGroup = {
+                occupationalGroup: group.groupName,
+                skillClassification: []
+            };
+
+            group.classificationData.forEach((classification) => {
+                const classificationEntry = {
+                    classificationId: classification.classificationId,
+                    classificationName: classification.classificationName,
+                    skills: []
+                };
+
+                classification.skills.forEach((skill) => {
+                    const evidences = skill.evidences
+                        .map((evidence) => {
+                            const status = selectedStatus[evidence.id];
+                            if (status) {
+                                return {
+                                    evidenceId: evidence.id,
+                                    selectedOption: status.selectedOption,
+                                    weight: status.weight
+                                };
+                            }
+                            return null;
+                        })
+                        .filter((item) => item !== null);
+
+                    if (evidences.length > 0) {
+                        classificationEntry.skills.push({
+                            competenceId: skill.id,
+                            description: skill.competencieTypeName || "",
+                            evidences: evidences
+                        });
+                    }
                 });
-              }
+
+                if (classificationEntry.skills.length > 0) {
+                    occupationalGroup.skillClassification.push(classificationEntry);
+                }
             });
-          });
+
+            if (occupationalGroup.skillClassification.length > 0) {
+                finalData.reviewAnswers.push(occupationalGroup);
+            }
         });
-      
+
         console.log("Dados para salvar:", finalData);
-      };
-      
+    };
+
     return (
         <Card className="mb-4">
             <CardHeader>
@@ -561,7 +608,7 @@ export function AppraisalsSkillsRegister() {
                                 color="primary"
                                 size="lg"
                                 type="button"
-                            onClick={handleSalvar}
+                                onClick={handleSalvar}
                             >
                                 <span className="btn-inner--text">Salvar</span>
                             </Button>

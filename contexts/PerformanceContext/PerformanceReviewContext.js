@@ -9,6 +9,9 @@ function PerformanceReviewContext({ children }) {
     const [evaluationRulerId, setEvaluationRulerId] = useState('');
     const [reviewParticipantId, setReviewParticipantId] = useState('');
     const [reviewModel, setReviewModel] = useState('');
+    const [participatesAsSelfEvaluator, setParticipatesAsSelfEvaluator] = useState('');
+    const [participateAsPair, setParticipateAsPair] = useState('');
+    const [participateAsLeader, setParticipateAsLeader] = useState('');
 
     function handlePerformanceIdStatusCleanupToUpdate() {
         setPerformanceIdToEvaluation('');
@@ -33,6 +36,18 @@ function PerformanceReviewContext({ children }) {
         setReviewModel(modelId);
     }
 
+    function handlePerformanceParticipatesAsSelfEvaluatorToEvaluation(selfEvaluator) {
+        setParticipatesAsSelfEvaluator(selfEvaluator);
+    }
+
+    function handlePerformanceParticipateAsPairToEvaluation(asPair) {
+        setParticipateAsPair(asPair);
+    }
+    
+    function handlePerformanceParticipateAsLeaderToEvaluation(asLeader) {
+        setParticipateAsLeader(asLeader);
+    }
+
     return (
         <ReviewContext.Provider
             value={{
@@ -40,11 +55,17 @@ function PerformanceReviewContext({ children }) {
                 evaluationRulerId,
                 reviewParticipantId,
                 reviewModel,
+                participatesAsSelfEvaluator,
+                participateAsPair,
+                participateAsLeader,
                 handlePerformanceRulerIdToEvaluation,
                 handlePerformanceIdIdToUEvaluation,
                 handlePerformanceIdParticipantToEvaluation,
                 handlePerformanceModelToEvaluation,
                 handlePerformanceIdStatusCleanupToUpdate,
+                handlePerformanceParticipatesAsSelfEvaluatorToEvaluation,
+                handlePerformanceParticipateAsPairToEvaluation,
+                handlePerformanceParticipateAsLeaderToEvaluation
             }}>
             {children}
         </ReviewContext.Provider>

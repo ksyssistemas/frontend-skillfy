@@ -36,7 +36,7 @@ function AppraisalsListTableCompetencies() {
   // console.log("AuthContex", authenticationDataLoggedInUser);
 
   // const userLoggedId = authenticationDataLoggedInUser?.data?.id;
-  const userLoggedId = 13;
+  const userLoggedId = 5;
   // console.log("userLoggedId", userLoggedId);
 
   const badgeConfig = {
@@ -139,7 +139,7 @@ function AppraisalsListTableCompetencies() {
         peer => peer.employeeToWhomIsPairedId === Number(userLoggedId)
       )
   );
-  // console.log("performanceReviewParticipantsIgualsUserLoggedIdAvaliadorData" ,performanceReviewParticipantsIgualsUserLoggedIdAvaliadorData);
+  // console.log("performanceReviewParticipantsIgualsUserLoggedIdAvaliadorData", performanceReviewParticipantsIgualsUserLoggedIdAvaliadorData);
 
   const performanceReviewParticipantsIgualsUserLoggedIdAutoAvaliacaoData = performanceReviewParticipantsData.filter(
     participant => (
@@ -156,7 +156,7 @@ function AppraisalsListTableCompetencies() {
         const employee = await useFindEmployee(appraiser.reviewParticipantId);
 
         return {
-          originalData: appraiser, // caso queira manter os dados originais do participant
+          originalData: appraiser,
           performanceReview,
           employee
         };
@@ -167,18 +167,25 @@ function AppraisalsListTableCompetencies() {
       setPerformanceReviewParticipantsAppraiserData([]);
     }
   }, [performanceReviewParticipantsData]);
-  // console.log(performanceReviewParticipantsAppraiserData);
+  // console.log("performanceReviewParticipantsAppraiserData", performanceReviewParticipantsAppraiserData);
 
   useEffect(() => {
     if (performanceReviewParticipantsIgualsUserLoggedIdAutoAvaliacaoData.length > 0) {
-      Promise.all(performanceReviewParticipantsIgualsUserLoggedIdAutoAvaliacaoData.map(selfevaluation => useFindPerformanceReview(selfevaluation.performanceReviewId)))
-        .then(details => setPerformanceReviewParticipantsSelfEvaluationData(details))
+      Promise.all(performanceReviewParticipantsIgualsUserLoggedIdAutoAvaliacaoData.map(async (selfevaluation) => {
+        const performanceReview = await useFindPerformanceReview(selfevaluation.performanceReviewId);
+
+        return {
+          originalData: selfevaluation,
+          performanceReview
+        };
+      }))
+        .then(combinedData => setPerformanceReviewParticipantsSelfEvaluationData(combinedData))
         .catch(error => console.error("Erro ao buscar as auto avaliações :", error));
     } else {
       setPerformanceReviewParticipantsSelfEvaluationData([]);
     }
   }, [performanceReviewParticipantsData]);
-  // console.log(performanceReviewParticipantsSelfEvaluationData);
+  // console.log("performanceReviewParticipantsSelfEvaluationData", performanceReviewParticipantsSelfEvaluationData);
 
   useEffect(() => {
     const combined = [
@@ -190,21 +197,29 @@ function AppraisalsListTableCompetencies() {
         status: item.performanceReview.status,
         type: 'avaliacao',
         reviewModel: item.performanceReview.reviewModel,
-        reviewParticipantId : item.employee.id,
+        reviewParticipantId: item.employee.id,
+        participatesAsSelfEvaluator: item.originalData.participatesAsSelfEvaluator,
+        participateAsPair: item.originalData.participateAsPair,
+        participateAsLeader: item.originalData.participateAsLeader,
+        reviewRulerId: item.performanceReview.reviewRulerId,
       })),
       ...performanceReviewParticipantsSelfEvaluationData.map(item => ({
-        id: item.id,
+        id: item.performanceReview.id,
         reviewName: 'Autoavaliação',
-        startDate: item.startDate,
-        endDate: item.endDate,
-        status: item.status,
+        startDate: item.performanceReview.startDate,
+        endDate: item.performanceReview.endDate,
+        status: item.performanceReview.status,
         type: 'autoavaliacao',
-        reviewModel: item.reviewModel,
+        reviewModel: item.performanceReview.reviewModel,
+        participatesAsSelfEvaluator: item.originalData.participatesAsSelfEvaluator,
+        participateAsPair: item.originalData.participateAsPair,
+        participateAsLeader: item.originalData.participateAsLeader,
+        reviewRulerId: item.performanceReview.reviewRulerId,
       }))
     ];
     setPerformanceAppraisalIgualsUserLoggedIdData(combined);
   }, [performanceReviewParticipantsAppraiserData, performanceReviewParticipantsSelfEvaluationData]);
-
+  console.log(performanceAppraisalIgualsUserLoggedIdData);
 
   useEffect(() => {
     async function fetchPerformanceAppraisal() {
@@ -219,10 +234,22 @@ function AppraisalsListTableCompetencies() {
     fetchPerformanceAppraisal();
   }, []);
 
-  const { handlePerformanceIdIdToUEvaluation, handlePerformanceRulerIdToEvaluation, handlePerformanceIdParticipantToEvaluation, handlePerformanceModelToEvaluation, } = useContext(ReviewContext);
-console.log(performanceAppraisalIgualsUserLoggedIdData);
-  const handleSetId = (id) => {
-    handlePerformanceIdIdToUEvaluation(id);
+  const { handlePerformanceIdIdToUEvaluation,
+    handlePerformanceRulerIdToEvaluation,
+    handlePerformanceIdParticipantToEvaluation,
+    handlePerformanceModelToEvaluation,
+    handlePerformanceParticipatesAsSelfEvaluatorToEvaluation,
+    handlePerformanceParticipateAsPairToEvaluation,
+    handlePerformanceParticipateAsLeaderToEvaluation } = useContext(ReviewContext);
+
+  const handleSetId = (performanceId, rulerId, participantId, modelId, selfEvaluator, asPair, asLeader) => {
+    handlePerformanceIdIdToUEvaluation(performanceId);
+    handlePerformanceRulerIdToEvaluation(rulerId);
+    handlePerformanceIdParticipantToEvaluation(participantId);
+    handlePerformanceModelToEvaluation(modelId);
+    handlePerformanceParticipatesAsSelfEvaluatorToEvaluation(selfEvaluator);
+    handlePerformanceParticipateAsPairToEvaluation(asPair);
+    handlePerformanceParticipateAsLeaderToEvaluation(asLeader);
   };
 
   return (
@@ -239,7 +266,7 @@ console.log(performanceAppraisalIgualsUserLoggedIdData);
                 <th className="sort text-left" data-sort="name" scope="col">Nome</th>
                 <th className="sort text-left" data-sort="startDate" scope="col">Data de Início</th>
                 <th className="sort text-left" data-sort="endDate" scope="col">Data de Fim</th>
-                <th className="sort text-left" data-sort="status" scope="col">Estado</th>
+                <th className="sort text-center" data-sort="status" scope="col">Modelo de Avaliação</th>
                 <th className="sort text-left" data-sort="actions" scope="col">Ações</th>
               </tr>
             </thead>
@@ -259,8 +286,8 @@ console.log(performanceAppraisalIgualsUserLoggedIdData);
                     </td>
                     <td className="budget">{formatDate(appraisal.startDate)}</td>
                     <td className="budget">{formatDate(appraisal.endDate)}</td>
-                    <td>
-                      {renderStatusBadge(appraisal.status)}
+                    <td className="text-center">
+                      <p className="name mb-0 text-sm">{appraisal.reviewModel}</p>
                     </td>
                     <td className="text-left">
                       <UncontrolledDropdown>
@@ -274,7 +301,13 @@ console.log(performanceAppraisalIgualsUserLoggedIdData);
                         </DropdownToggle>
                         <DropdownMenu className="dropdown-menu-arrow" right>
                           <DropdownItem
-                            onClick={() => handleSetId(appraisal.id)}
+                            onClick={() => handleSetId(appraisal.id, 
+                              appraisal.reviewRulerId, 
+                              appraisal.reviewParticipantId, 
+                              appraisal.reviewModel, 
+                              appraisal.participatesAsSelfEvaluator, 
+                              appraisal.participateAsPair, 
+                              appraisal.participateAsLeader)}
                           >
                             Fazer a avaliação
                           </DropdownItem>
