@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useContext, useRef } from "react";
+import React, { useMemo, useState, useEffect, useContext, useRef, useReducer } from "react";
 import PropTypes from "prop-types";
 import dynamic from "next/dynamic";
 // react plugin used to create datetimepicker
@@ -41,6 +41,10 @@ import { ReviewContext } from '../../../contexts/PerformanceContext/PerformanceR
 import { useFindAllReviewEvidenceRuler } from '../../../hooks/PerformanceReview/ReviewEvidenceRuler/useFindAllReviewEvidenceRuler';
 import { useFindRuleOptionEvaluationRuler } from '../../../hooks/PerformanceReview/RuleOption/useFindRuleOptionEvaluationRuler';
 import { AuthContext } from '../../../contexts/AuthContext';
+import { useFindReviewEvidenceRulerPerformanceReview } from '../../../hooks/PerformanceReview/ReviewEvidenceRuler/useFindReviewEvidenceRulerPerformanceReview';
+import { useFindCaptionOptionByCaptionType } from "../../../hooks/DefinitionOptionsReview/AppraisalCaptions/useFindCaptionOptionByCaptionType";
+import { useFindCaptionOptionByCaptionId } from "../../../hooks/DefinitionOptionsReview/AppraisalCaptions/useFindCaptionOptionByCaptionId";
+import { initialStateReviewScaleAndCriteriaForm, reviewScaleAndCriteriaFormReducer } from '../../../reducers/ReviewForms/ReviewScaleAndCriteriaFormReducer'
 
 export function AppraisalsSkillsRegister() {
 
@@ -81,6 +85,26 @@ export function AppraisalsSkillsRegister() {
             }
         };
 
+        if (performanceIdToEvaluation) {
+            fetchPerformanceAppraisal();
+        }
+    }, [performanceIdToEvaluation]);
+
+    const [reviewRulerofPerformance, setReviewRulerofPerformance] = useState([]);
+    const [reviewRulerId, setReviewRulerId] = useState(null);
+    
+    useEffect(() => {
+        const fetchPerformanceAppraisal = async () => {
+            if (!performanceAppraisalData.length) {
+                const foundAppraisal = await useFindReviewEvidenceRulerPerformanceReview(performanceIdToEvaluation);
+                setReviewRulerofPerformance(foundAppraisal);
+    
+                if (foundAppraisal.length > 0) {
+                    setReviewRulerId(foundAppraisal[0].reviewRulerId);
+                }
+            }
+        };
+    
         if (performanceIdToEvaluation) {
             fetchPerformanceAppraisal();
         }
@@ -355,7 +379,7 @@ export function AppraisalsSkillsRegister() {
                 classificationData
             };
         });
-        console.log(grouped);
+        // console.log(grouped);
         setNewGroupedData(grouped);
     }, [occupationalGroupsData, skillClassificationsData, performanceSkillTypeData]);
 
@@ -475,7 +499,67 @@ export function AppraisalsSkillsRegister() {
     
         setSelectedStatus(newSelectedStatus);
     };
+
+    const [detailedRulerTypeData, setDetailedRulerTypeData] = useState([]);
+    const [state, dispatch] = useReducer(reviewScaleAndCriteriaFormReducer, initialStateReviewScaleAndCriteriaForm);
     
+    const fetchCaptionOption = async (rulers) => {
+        let updatedRulers = [];
+
+        if (!Array.isArray(rulers)) {
+            rulers = [rulers];
+        }
+
+        updatedRulers = await Promise.all(
+            rulers.map(async (ruler) => {
+                try {
+                    const rulerOptionData = await useFindCaptionOptionByCaptionId(ruler.id);
+                    console.log("rulerOptionData", rulerOptionData);
+                    return {
+                        ...ruler,
+                        options: rulerOptionData
+                    };
+                } catch (error) {
+                    console.error(`Error fetching ruler options data for id ${ruler.id}:`, error);
+                    return {
+                        ...ruler,
+                        options: 'Unknown',
+                    };
+                }
+            })
+        );
+        setDetailedRulerTypeData(updatedRulers);
+    };
+   
+    const fetchCapitons = async () => {
+        if (!detailedRulerTypeData.length) {
+            try {
+                // Encontre o objeto no array que corresponde a selectedRulerType
+                const foundRuler = state.reviewScaleAndCriteriaData.rulerTypeDataList.find(ruler => ruler.id === String(reviewRulerId));
+                if (foundRuler) {
+                    
+                    // Pegue o valor do campo 'text' correspondente
+                    const captionType = foundRuler.text;
+                    // Use o valor de 'captionType' como parâmetro para o hook
+                    const foundCaption = await useFindCaptionOptionByCaptionType(captionType);
+                    // Chame fetchCaptionOption com o resultado do hook
+                    await fetchCaptionOption(foundCaption);
+                } else {
+                    console.error('Ruler type not found');
+                }
+            } catch (error) { 
+                  console.error('Error fetching types:', error);
+            }
+        }
+    };
+
+   useEffect(() => {
+        if (reviewRulerId != null) {
+            console.log("CHAMOU AQUI");
+            fetchCapitons();
+        }
+    }, [reviewRulerId]);
+
     return (
         <Card className="mb-4">
             <CardHeader>
@@ -496,7 +580,57 @@ export function AppraisalsSkillsRegister() {
                             <label htmlFor="validationPDIStatus">
                                 Legenda
                             </label>
-                            <p>{performanceAppraisalData.reviewModel}</p>
+                             {detailedRulerTypeData && detailedRulerTypeData.length > 0 ? (
+                                                    detailedRulerTypeData.map((rulerType) => (
+                                                        <>
+                                                            <CardBody className="py-1" key={rulerType.id}>
+                                                                <Row>
+                                                                    <Col className="my-2" md="4">
+                                                                        <Row className="flex-column">
+                                                                            <h6 className="text-uppercase ls-1 mb-1" style={{ color: "#ff623f" }} >
+                                                                                Régua do tipo{' '}
+                                                                            </h6>
+                                                                            <h5 className="font-weith-bold text-lg text-dark mb-0">{rulerType.ruleType}</h5>
+                                                                        </Row>
+                                                                        <Row className="flex-column">
+                                                                            <h6 className="text-uppercase ls-1 mb-1" style={{ color: "#ff623f" }} >
+                                                                                Alternativas{' '}
+                                                                            </h6>
+                                                                            <h5 className="font-weith-bold text-lg text-dark mb-0">{rulerType.optionsCount}</h5>
+                                                                        </Row>
+                                                                    </Col>
+                                                                    <Col className="mb-2 d-flex flex-row justify-content-start align-items-center" md="8">
+                                                                        {rulerType.options && rulerType.options.length > 0 ? (
+                                                                            rulerType.options.map((option, index) => (
+                                                                                <Card key={index} className="bg-orange m-2" style={{ width: 96, height: 96 }}>
+                                                                                    <CardBody className="d-flex flex-column justify-content-start align-items-center">
+                                                                                        <div>
+                                                                                            <h3 className="mb-0 text-lighter text-center">{option.label}</h3>
+                                                                                        </div>
+                                                                                        <div className="mb-2 d-flex">
+                                                                                            <h4 className="text-lighter mr-2">Nota</h4>
+                                                                                            <h4 className="mb-0 text-lighter">{option.weight}</h4>
+                                                                                        </div>
+                                                                                    </CardBody>
+                                                                                </Card>
+                                                                            ))
+                                                                        ) : (
+                                                                            <Col md="12">
+                                                                                <small>Nenhuma opção encontrada.</small>
+                                                                            </Col>
+                                                                        )}
+                                                                    </Col>
+                                                                </Row>
+                                                            </CardBody>
+                                                        </>
+                                                    ))
+                                                ) : (
+                                                    <ListGroupItem className="px-0">
+                                                        <div className="col">
+                                                            <small>Nenhum dado de régua de avaliação encontrado.</small>
+                                                        </div>
+                                                    </ListGroupItem>
+                                                )}
                         </Col>
                     </div>
                     <div>

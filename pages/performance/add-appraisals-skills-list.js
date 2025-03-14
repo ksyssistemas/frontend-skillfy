@@ -43,6 +43,6 @@ TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'administrator'
     ? Appraisalsskillslist.layout = Performance
     : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'employee'
       ? Appraisalsskillslist.layout = Employee
-      : Appraisalsskillslist.layout = Admin));
+      : Appraisalsskillslist.layout = Performance));
 
 export default Appraisalsskillslist;

@@ -219,7 +219,7 @@ function AppraisalsListTableCompetencies() {
     ];
     setPerformanceAppraisalIgualsUserLoggedIdData(combined);
   }, [performanceReviewParticipantsAppraiserData, performanceReviewParticipantsSelfEvaluationData]);
-  console.log(performanceAppraisalIgualsUserLoggedIdData);
+  // console.log(performanceAppraisalIgualsUserLoggedIdData);
 
   useEffect(() => {
     async function fetchPerformanceAppraisal() {
