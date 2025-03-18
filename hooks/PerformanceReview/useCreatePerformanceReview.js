@@ -118,6 +118,24 @@ const useCreatePerformanceReview = () => {
         }
     };
 
+    async function saveParticipantToReview(participant) {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_REVIEW_PARTICIPANTS}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(participant),
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error(`Erro ao enviar um participante selecionado manualmente: ${response.status}`);
+                    return response.json();
+                })
+        } catch (error) {
+            console.error('Erro ao adicionar participantes:', error);
+            throw error;
+        }
+    }
+
+
     const handleAddParticipantsToPerformanceReview = async (reviewId, reviewParticipantsSelectionData) => {
         if (!reviewId) return;
         if (reviewParticipantsSelectionData.isAllEmployeesSelectedToParticipate) {
@@ -265,97 +283,145 @@ const useCreatePerformanceReview = () => {
         }
 
         if (reviewParticipantsSelectionData.isHandPickedSelectionParticipantsToReview) {
-            try {
-                const uniqueParticipants = new Map(); // Para evitar participantes duplicados
+            const savedParticipants = new Set();
+            let amountParticipantsIncluded = 0;
 
-                // Função auxiliar para verificar se um ID está presente em um array de objetos
-                const isIdInArray = (id, array) => array.some(item => item.id === id);
-
-                // Função auxiliar para verificar pares e coletar os IDs dos pares
-                const getPairsForParticipant = (participantId) => {
-                    let pairedIds = [];
-                    for (const [peerId, peerArray] of Object.entries(reviewParticipantsSelectionData.listPairEmployeeDataToReview)) {
-                        if (peerArray.some(peer => peer.id == participantId)) {
-                            pairedIds.push({ employeeToWhomIsPairedId: parseInt(peerId) });
-                        }
-                    }
-                    return pairedIds.length > 0 ? pairedIds : null;
-                };
-
-                // Itera sobre os líderes selecionados
-                reviewParticipantsSelectionData.listLeaderEmployeeDataSelectedToReview.forEach(participant => {
-                    const { id, isLead, LeaderName } = participant;
-
-                    if (!uniqueParticipants.has(id)) {
-                        uniqueParticipants.set(id, {
-                            reviewParticipantId: Number(id),
-                            performanceReviewId: Number(reviewId),
-                            participateAsLeader: isLead && LeaderName.trim() !== "",
-                            participateAsPair: getPairsForParticipant(id) !== null,
-                            participateAsEmployeePeerTo: getPairsForParticipant(id) || [],
-                            participatesAsSelfEvaluator: isIdInArray(id, reviewParticipantsSelectionData.listEmployeeDataToSelfReview)
-                        });
-                    }
-                });
-
-                // Itera sobre os participantes da autoavaliação
-                reviewParticipantsSelectionData.listEmployeeDataToSelfReview.forEach(participant => {
-                    const { id } = participant;
-
-                    if (!uniqueParticipants.has(id)) {
-                        uniqueParticipants.set(id, {
-                            reviewParticipantId: Number(id),
-                            performanceReviewId: Number(reviewId),
-                            participateAsLeader: false,
-                            participateAsPair: getPairsForParticipant(id) !== null,
-                            participateAsEmployeePeerTo: getPairsForParticipant(id) || [],
-                            participatesAsSelfEvaluator: true
-                        });
-                    }
-                });
-
-                // Itera sobre os pares
-                Object.values(reviewParticipantsSelectionData.listPairEmployeeDataToReview).forEach(pairList => {
-                    pairList.forEach(participant => {
-                        const { id } = participant;
-
-                        if (!uniqueParticipants.has(id)) {
-                            uniqueParticipants.set(id, {
-                                reviewParticipantId: Number(id),
-                                performanceReviewId: Number(reviewId),
-                                participateAsLeader: false,
-                                participateAsPair: getPairsForParticipant(id) !== null,
-                                participateAsEmployeePeerTo: getPairsForParticipant(id) || [],
-                                participatesAsSelfEvaluator: false
-                            });
-                        }
-                    });
-                });
-
-                // Enviar os dados para a API
-                const requests = Array.from(uniqueParticipants.values()).map(payload =>
-                    fetch(`${process.env.NEXT_PUBLIC_REVIEW_PARTICIPANTS}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload),
-                    })
-                        .then(response => {
-                            if (!response.ok) throw new Error(`Erro ao enviar um participante selecionado manualmente: ${response.status}`);
-                            return response.json();
+            const saveParticipantToReview = async (participantData) => {
+                if (!savedParticipants.has(participantData.reviewParticipantId)) {
+                    try {
+                        const response = await fetch(`${process.env.NEXT_PUBLIC_REVIEW_PARTICIPANTS}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(participantData),
                         })
-                );
+                            .then(response => {
+                                if (!response.ok) throw new Error(`Erro ao enviar um participante selecionado manualmente: ${response.status}`);
+                                savedParticipants.add(participantData.reviewParticipantId);
+                                amountParticipantsIncluded++;
+                            })
 
-                const results = await Promise.all(requests);
-
-                console.log('Todos os participantes selecionados manualmente foram adicionados com sucesso!', results);
-                return { amountParticipantsIncluded: results.length };
-
-            } catch (error) {
-                console.error('Erro ao adicionar participantes selecionados manualmente:', error);
-                throw error;
+                    } catch (error) {
+                        console.error('Erro ao adicionar participantes:', error);
+                        throw error;
+                    }
+                }
             }
+
+            // Função para mapear pares corretamente
+            const getPairedEmployees = (participantId) => {
+                return Object.entries(reviewParticipantsSelectionData.listPairEmployeeDataToReview).reduce((acc, [key, value]) => {
+                    const foundPairs = value.filter(pair => Number(pair.employeePairId) === participantId);
+
+                    if (foundPairs.length > 0) {
+                        const foundEmployee = reviewParticipantsSelectionData.listEmployeeDataToSelfReview
+                            .find(emp => Number(emp.id) === Number(key));
+
+                        if (foundEmployee) {
+                            acc.push({ employeeToWhomIsPairedId: foundEmployee.employeeId });
+                        }
+                    }
+
+                    return acc;
+                }, []);
+            };
+
+            for (const leader of reviewParticipantsSelectionData.listLeaderEmployeeDataSelectedToReview) {
+                const reviewParticipantId = Number(leader.employeeLeaderId);
+                if (savedParticipants.has(reviewParticipantId)) continue;
+
+                // Verificar se o líder participa como autoavaliador
+                const participates_as_self_evaluator = reviewParticipantsSelectionData.listEmployeeDataToSelfReview
+                    .some(emp => Number(emp.employeeId) === reviewParticipantId);
+
+                // Buscar os dados do líder dentro da lista geral de participantes
+                const employeeData = reviewParticipantsSelectionData.listEmployeeDataToReview
+                    .find(emp => Number(emp.id) === reviewParticipantId);
+
+                // Determinar se o líder participa como líder
+                const participate_as_leader = employeeData?.isLead || false;
+
+                // Determinar se o líder participa como par
+                const participate_as_pair = Object.values(reviewParticipantsSelectionData.listPairEmployeeDataToReview)
+                    .flat()
+                    .some(pair => Number(pair.employeePairId) === reviewParticipantId);
+
+                // Determinar os IDs dos colaboradores aos quais ele é par
+                const employeeToWhomIsPairedId = getPairedEmployees(reviewParticipantId);
+
+                // Salvar os dados do participante na avaliação de desempenho
+                await saveParticipantToReview({
+                    reviewParticipantId,
+                    performanceReviewId: reviewId,
+                    participateAsLeader: participate_as_leader,
+                    participateAsPair: participate_as_pair,
+                    participateAsEmployeePeerTo: employeeToWhomIsPairedId,
+                    participatesAsSelfEvaluator: participates_as_self_evaluator,
+                });
+            }
+
+            // Laço para salvar os participantes liderados
+            for (const selfReview of reviewParticipantsSelectionData.listEmployeeDataToSelfReview) {
+                const reviewParticipantId = Number(selfReview.employeeId);
+                if (savedParticipants.has(reviewParticipantId)) continue;
+
+                // Verifica se esse participante já está salvo como líder
+                const isAlreadyLeader = reviewParticipantsSelectionData.listLeaderEmployeeDataSelectedToReview
+                    .some(leader => Number(leader.employeeLeaderId) === reviewParticipantId);
+
+                if (isAlreadyLeader) continue; // Se for líder, pula para o próximo
+
+                // Determina se esse participante é um par (está em algum `employeePairId`)
+                const participate_as_pair = Object.values(reviewParticipantsSelectionData.listPairEmployeeDataToReview)
+                    .flat()
+                    .some(pair => Number(pair.employeePairId) === reviewParticipantId);
+
+                // Captura os IDs de quem esse participante está emparelhado
+                const employeeToWhomIsPairedId = getPairedEmployees(reviewParticipantId);
+
+                // Salvar os dados do participante na avaliação de desempenho
+                await saveParticipantToReview({
+                    reviewParticipantId,
+                    performanceReviewId: reviewId,
+                    participateAsLeader: false, // Não é líder
+                    participateAsPair: participate_as_pair,
+                    participateAsEmployeePeerTo: employeeToWhomIsPairedId,
+                    participatesAsSelfEvaluator: true, // Sempre true para esse laço
+                });
+            }
+
+            // Laço para salvar os participantes pares
+            for (const [key, pairs] of Object.entries(reviewParticipantsSelectionData.listPairEmployeeDataToReview)) {
+                for (const pair of pairs) {
+                    const reviewParticipantId = Number(pair.employeePairId);
+                    if (savedParticipants.has(reviewParticipantId)) continue;
+
+                    const isAlreadyProcessed = reviewParticipantsSelectionData.listLeaderEmployeeDataSelectedToReview
+                        .some(leader => Number(leader.employeeLeaderId) === reviewParticipantId) ||
+                        reviewParticipantsSelectionData.listEmployeeDataToSelfReview
+                            .some(emp => Number(emp.employeeId) === reviewParticipantId);
+
+                    if (isAlreadyProcessed) continue;
+
+                    const participate_as_pair = Object.values(reviewParticipantsSelectionData.listPairEmployeeDataToReview)
+                        .flat()
+                        .some(p => Number(p.employeePairId) === reviewParticipantId);
+
+                    const employeeToWhomIsPairedId = getPairedEmployees(reviewParticipantId);
+
+                    await saveParticipantToReview({
+                        reviewParticipantId,
+                        performanceReviewId: reviewId,
+                        participateAsLeader: false,
+                        participateAsPair: participate_as_pair,
+                        participateAsEmployeePeerTo: employeeToWhomIsPairedId,
+                        participatesAsSelfEvaluator: false,
+                    });
+                }
+            }
+
+            return { amountParticipantsIncluded };
         }
-    }
+    };
 
     const handleReviewGenerationSettings = async (reviewId, reviewGenerationSetupData) => {
         if (reviewId) {

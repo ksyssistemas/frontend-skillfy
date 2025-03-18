@@ -413,6 +413,8 @@ export function ReviewParticipantSelectionForm() {
         dataList,
         leaderTagsInput,
         removedLeaderItems,
+        listLeaderEmployeeDataSelectedToReview,
+        employeesSelectedAmount,
         dispatch
     ) {
         try {
@@ -425,21 +427,26 @@ export function ReviewParticipantSelectionForm() {
                 console.error("Erro: ID selecionado inválido.", selectedId);
                 return;
             }
-
             const selectedItem = dataList.find((item) => item.id === selectedId);
+
             if (!selectedItem) {
                 console.error("Erro: Item selecionado não encontrado na lista.");
                 return;
             }
 
             const updatedTags = [...leaderTagsInput, selectedItem.text];
-
             const updatedDataList = dataList.filter((item) => item.id !== selectedId);
             const updatedRemovedItems = [...removedLeaderItems, selectedItem];
+            const updatedLeaderList = [...listLeaderEmployeeDataSelectedToReview, selectedItem];
+
+            // Atualiza a contagem de participantes selecionados
+            const updatedEmployeesSelectedAmount = employeesSelectedAmount + 1;
 
             await dispatch({ type: 'SET_LEADER_TAGS_INPUT', payload: updatedTags });
             await dispatch({ type: 'SET_LIST_LEADER_EMPLOYEE_DATA_TO_REVIEW', payload: updatedDataList });
             await dispatch({ type: 'SET_REMOVED_LEADER_ITEMS', payload: updatedRemovedItems });
+            await dispatch({ type: 'SET_LIST_LEADER_EMPLOYEE_DATA_SELECTED_TO_REVIEW', payload: updatedLeaderList });
+            await dispatch({ type: 'SET_EMPLOYEES_SELECTED_AMOUNT', payload: updatedEmployeesSelectedAmount });
 
         } catch (error) {
             console.error("Erro ao processar a seleção de líderes:", error);
@@ -451,14 +458,17 @@ export function ReviewParticipantSelectionForm() {
         leaderTagsInput,
         removedLeaderItems,
         dataList,
+        listLeaderEmployeeDataSelectedToReview,
+        employeesSelectedAmount,
         dispatch
     ) {
         try {
-
             if (!tagToRemove || !Array.isArray(removedLeaderItems)) return;
 
+            // Atualiza as tags removendo a tag específica
             const updatedTags = leaderTagsInput.filter((tag) => tag !== tagToRemove);
 
+            // Busca o item removido anteriormente na lista de removidos
             const removedItem = removedLeaderItems.find((item) => item.text === tagToRemove);
 
             if (!removedItem) {
@@ -466,14 +476,27 @@ export function ReviewParticipantSelectionForm() {
                 return;
             }
 
+            // Remove o item da lista de removidos
             const updatedRemovedItems = removedLeaderItems.filter((item) => item.text !== tagToRemove);
 
+            // Adiciona o item de volta na lista original na posição correta
             const updatedDataList = [...dataList];
             updatedDataList.splice(removedItem.originalIndex, 0, removedItem);
 
+            // Remove o item da lista de líderes selecionados
+            const updatedLeaderList = listLeaderEmployeeDataSelectedToReview.filter(
+                (item) => item.id !== removedItem.id
+            );
+
+            // Atualiza a contagem de participantes selecionados (subtrai 1)
+            const updatedEmployeesSelectedAmount = Math.max(employeesSelectedAmount - 1, 0);
+
+            // Disparando as atualizações no estado global
             await dispatch({ type: 'SET_LEADER_TAGS_INPUT', payload: updatedTags });
             await dispatch({ type: 'SET_LIST_LEADER_EMPLOYEE_DATA_TO_REVIEW', payload: updatedDataList });
             await dispatch({ type: 'SET_REMOVED_LEADER_ITEMS', payload: updatedRemovedItems });
+            await dispatch({ type: 'SET_LIST_LEADER_EMPLOYEE_DATA_SELECTED_TO_REVIEW', payload: updatedLeaderList });
+            await dispatch({ type: 'SET_EMPLOYEES_SELECTED_AMOUNT', payload: updatedEmployeesSelectedAmount });
 
         } catch (error) {
             console.error("Erro ao remover tag de líderes:", error);
@@ -487,6 +510,8 @@ export function ReviewParticipantSelectionForm() {
         removedLedItems,
         listEmployeeDataToReview,
         listPairEmployeeDataToReviewDataSelect,
+        listEmployeeDataToSelfReview,
+        employeesSelectedAmount,
         dispatch
     ) {
         try {
@@ -499,8 +524,8 @@ export function ReviewParticipantSelectionForm() {
                 console.error("Erro: ID selecionado inválido.", selectedId);
                 return;
             }
-
             const selectedItem = dataList.find((item) => item.id === selectedId);
+
             if (!selectedItem) {
                 console.error("Erro: Item selecionado não encontrado na lista.");
                 return;
@@ -512,11 +537,14 @@ export function ReviewParticipantSelectionForm() {
                         employee.departmentId === selectedItem.departmentId &&
                         employee.id !== selectedItem.employeeId
                 )
-                .map((employee, index) => ({
-                    id: (index + 1).toString(),
-                    text: `${employee.name} ${employee.lastName}`,
-                    originalIndex: index,
-                }));
+                .map((employee, index) => {
+                    return {
+                        id: (index + 1).toString(),
+                        text: `${employee.name} ${employee.lastName}`,
+                        employeePairId: employee.id,
+                        originalIndex: index,
+                    }
+                });
 
             const updatedListPair = {
                 ...listPairEmployeeDataToReviewDataSelect,
@@ -526,10 +554,17 @@ export function ReviewParticipantSelectionForm() {
             const updatedTags = [...selfReviewTagsInput, selectedItem.text];
             const updatedDataList = dataList.filter((item) => item.id !== selectedId);
             const updatedRemovedItems = [...removedLedItems, selectedItem];
+            const updatedSelfReviewList = [...listEmployeeDataToSelfReview, selectedItem];
+
+            // Atualiza a contagem de funcionários selecionados
+            const updatedEmployeesSelectedAmount = employeesSelectedAmount + 1;
 
             await dispatch({ type: 'SET_SELF_REVIEW_TAGS_INPUT', payload: updatedTags });
             await dispatch({ type: 'SET_LIST_LED_EMPLOYEE_DATA_TO_REVIEW', payload: updatedDataList });
             await dispatch({ type: 'SET_REMOVED_LED_ITEMS', payload: updatedRemovedItems });
+
+            await dispatch({ type: 'SET_LIST_EMPLOYEE_DATA_TO_SELF_REVIEW', payload: updatedSelfReviewList });
+            await dispatch({ type: 'SET_EMPLOYEES_SELECTED_AMOUNT', payload: updatedEmployeesSelectedAmount });
 
             await dispatch({ type: 'SET_LIST_EMPLOYEE_DATA_TO_SELECT', payload: updatedListPair });
             await dispatch({ type: 'SET_PAIR_TAGS_INPUT', payload: { lideradoId: selectedId, tags: [] } });
@@ -548,51 +583,60 @@ export function ReviewParticipantSelectionForm() {
         dataList,
         pairTagsInput,
         removedPairItems,
-        listPairEmployeeDataToReview,
+        listPairEmployeeDataToReviewDataSelect,
+        employeesSelectedAmount,
         dispatch
     ) {
         try {
             if (!tagToRemove || !Array.isArray(removedLedItems)) return;
 
+            // Remove a tag da lista de self-review
             const updatedTags = [
                 ...selfReviewTagsInput.slice(0, indexToRemove),
                 ...selfReviewTagsInput.slice(indexToRemove + 1)
             ];
 
+            // Recupera o item removido
             const removedItem = removedLedItems[indexToRemove];
+
+            // Remove o item da lista de removidos
             const updatedRemovedItems = [
                 ...removedLedItems.slice(0, indexToRemove),
                 ...removedLedItems.slice(indexToRemove + 1)
             ];
 
+            // Reinsere o item removido na lista original
             const updatedDataList = [...dataList];
-            updatedDataList.splice(removedItem.originalIndex, 0, removedItem);
 
+            // 🔥 Verifica se o item já está presente antes de adicionar
+            const itemAlreadyExists = updatedDataList.some(item => item.id === removedItem.id);
+
+            if (!itemAlreadyExists) {
+                updatedDataList.splice(removedItem.originalIndex, 0, removedItem);
+            }
+
+            // Atualiza a contagem de funcionários selecionados (-1)
+            const updatedEmployeesSelectedAmount = Math.max(0, employeesSelectedAmount - 1);
+
+            // Remover pares associados ao lideradoId
+            const updatedPairTagsInput = { ...pairTagsInput };
+            delete updatedPairTagsInput[lideradoId];
+
+            const updatedRemovedPairItems = { ...removedPairItems };
+            delete updatedRemovedPairItems[lideradoId];
+
+            // Remover o objeto correspondente em listPairEmployeeDataToReviewDataSelect
+            const updatedListPairEmployeeDataToReviewDataSelect = { ...listPairEmployeeDataToReviewDataSelect };
+            delete updatedListPairEmployeeDataToReviewDataSelect[lideradoId];
+
+            // Disparando os dispatchs
             await dispatch({ type: 'SET_SELF_REVIEW_TAGS_INPUT', payload: updatedTags });
             await dispatch({ type: 'SET_LIST_LED_EMPLOYEE_DATA_TO_REVIEW', payload: updatedDataList });
             await dispatch({ type: 'SET_REMOVED_LED_ITEMS', payload: updatedRemovedItems });
-
-            const updatedPairTagsInput = { ...pairTagsInput };
-            const key = String(lideradoId);
-            if (updatedPairTagsInput.hasOwnProperty(key)) {
-                delete updatedPairTagsInput[key];
-            }
             await dispatch({ type: 'SET_ALL_PAIR_TAGS_INPUT', payload: updatedPairTagsInput });
-
-            const updatedRemovedPairItems = { ...removedPairItems };
-            if (updatedRemovedPairItems.hasOwnProperty(key)) {
-                delete updatedRemovedPairItems[key];
-            }
             await dispatch({ type: 'SET_ALL_REMOVED_PAIR_ITEMS', payload: updatedRemovedPairItems });
-
-            const updatedListPairEmployeeDataToReview = { ...listPairEmployeeDataToReview };
-            if (updatedListPairEmployeeDataToReview.hasOwnProperty(key)) {
-                delete updatedListPairEmployeeDataToReview[key];
-            }
-            await dispatch({
-                type: 'SET_ALL_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW',
-                payload: updatedListPairEmployeeDataToReview,
-            });
+            await dispatch({ type: 'SET_LIST_EMPLOYEE_DATA_TO_SELECT', payload: updatedListPairEmployeeDataToReviewDataSelect });
+            await dispatch({ type: 'SET_EMPLOYEES_SELECTED_AMOUNT', payload: updatedEmployeesSelectedAmount });
 
         } catch (error) {
             console.error("Erro ao remover tag de liderados:", error);
@@ -606,6 +650,7 @@ export function ReviewParticipantSelectionForm() {
         removedPairItems,
         listPairEmployeeDataToReviewDataSelect,
         listPairEmployeeDataToReview,
+        employeesSelectedAmount,
         dispatch
     ) {
         try {
@@ -623,27 +668,34 @@ export function ReviewParticipantSelectionForm() {
             }
 
             const availablePairs = listPairEmployeeDataToReviewDataSelect[lideradoId] || [];
+            const selectedPair = availablePairs.find(item => String(item.id) === String(selectedPairId));
 
-            const selectedPair = availablePairs.find(item => item.id === selectedPairId);
             if (!selectedPair) {
                 console.error("Erro: Par selecionado não encontrado para o liderado:", lideradoId);
                 return;
             }
 
+            // Atualizando a lista de pares disponíveis
             const updatedAvailablePairs = availablePairs.filter(item => item.id !== selectedPairId);
             const updatedListPairDataSelect = {
                 ...listPairEmployeeDataToReviewDataSelect,
                 [lideradoId]: updatedAvailablePairs
             };
 
+            // Atualizando os pares já selecionados
             const currentSelectedPairs = listPairEmployeeDataToReview[lideradoId] || [];
             const updatedSelectedPairs = [...currentSelectedPairs, selectedPair];
 
+            // Atualizando as tags de pares
             const currentPairTags = pairTagsInput[lideradoId] || [];
             const updatedPairTags = [...currentPairTags, selectedPair.text];
 
+            // Atualizando os pares removidos
             const currentRemovedPairItems = removedPairItems[lideradoId] || [];
             const updatedRemovedPairItems = [...currentRemovedPairItems, selectedPair];
+
+            // Atualizando a contagem de funcionários selecionados
+            const updatedEmployeesSelectedAmount = employeesSelectedAmount + 1;
 
 
             await dispatch({
@@ -666,6 +718,11 @@ export function ReviewParticipantSelectionForm() {
                 payload: { lideradoId, items: updatedRemovedPairItems }
             });
 
+            await dispatch({
+                type: 'SET_EMPLOYEES_SELECTED_AMOUNT',
+                payload: updatedEmployeesSelectedAmount
+            });
+
         } catch (error) {
             console.error("Erro ao processar a seleção de pares:", error);
         }
@@ -678,6 +735,7 @@ export function ReviewParticipantSelectionForm() {
         removedPairItems,
         listPairEmployeeDataToReviewDataSelect,
         listPairEmployeeDataToReview,
+        employeesSelectedAmount,
         dispatch,
     }) {
         try {
@@ -706,6 +764,9 @@ export function ReviewParticipantSelectionForm() {
             const updatedAvailablePairs = [...currentAvailablePairs, removedItem]
                 .sort((a, b) => a.originalIndex - b.originalIndex);
 
+            //  Atualizar a contagem de funcionários selecionados (-1)
+            const updatedEmployeesSelectedAmount = Math.max(0, employeesSelectedAmount - 1);
+
             await dispatch({
                 type: 'SET_PAIR_TAGS_INPUT',
                 payload: { lideradoId, tags: updatedPairTags }
@@ -722,6 +783,12 @@ export function ReviewParticipantSelectionForm() {
                 type: 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_SELECT',
                 payload: { lideradoId, pairs: updatedAvailablePairs }
             });
+
+            await dispatch({
+                type: 'SET_EMPLOYEES_SELECTED_AMOUNT',
+                payload: updatedEmployeesSelectedAmount
+            });
+
 
         } catch (error) {
             console.error("Erro ao remover tag de pares:", error);
@@ -802,6 +869,8 @@ export function ReviewParticipantSelectionForm() {
                     .map((employee, index) => ({
                         id: (index + 1).toString(),
                         text: `${employee.name} ${employee.lastName}`,
+                        employeeLeaderId: employee.id,
+                        originalIndex: index,
                     }));
                 dispatch({
                     type: 'SET_LIST_LEADER_EMPLOYEE_DATA_TO_REVIEW',
@@ -915,9 +984,7 @@ export function ReviewParticipantSelectionForm() {
     // Salvar no Contexto Global antes de sair
     useEffect(() => {
         const stateParticipants = state.reviewParticipantsSelectionData;
-        console.log(stateParticipants.isAllEmployeesSelectedToParticipate, stateParticipants.isRandomSelectionParticipantsToReview, stateParticipants.isHandPickedSelectionParticipantsToReview)
         if (stateParticipants.isAllEmployeesSelectedToParticipate || stateParticipants.isRandomSelectionParticipantsToReview || stateParticipants.isHandPickedSelectionParticipantsToReview) {
-            console.log("Entrou!!")
             dispatchGlobalReviewReducer({
                 type: "UPDATE_REVIEW_PARTICIPANTS",
                 payload: state.reviewParticipantsSelectionData,
@@ -1447,7 +1514,7 @@ export function ReviewParticipantSelectionForm() {
                                                         color="light"
                                                         size="sm"
                                                         type="button"
-                                                        onClick={handleCleanupRandomSelectionRegisteredUsers}
+                                                        onClick={() => handleCleanupRandomSelectionRegisteredUsers(dispatch)}
                                                     >
                                                         Limpar
                                                     </Button>
@@ -1493,6 +1560,8 @@ export function ReviewParticipantSelectionForm() {
                                                                 state.reviewParticipantsSelectionData.listLeaderEmployeeDataToReview,
                                                                 state.reviewParticipantsSelectionData.leaderTagsInput,
                                                                 state.reviewParticipantsSelectionData.removedLeaderItems,
+                                                                state.reviewParticipantsSelectionData.listLeaderEmployeeDataSelectedToReview,
+                                                                state.reviewParticipantsSelectionData.employeesSelectedAmount,
                                                                 dispatch
                                                             );
                                                         }
@@ -1526,6 +1595,8 @@ export function ReviewParticipantSelectionForm() {
                                                                 state.reviewParticipantsSelectionData.leaderTagsInput,
                                                                 state.reviewParticipantsSelectionData.removedLeaderItems,
                                                                 state.reviewParticipantsSelectionData.listLeaderEmployeeDataToReview,
+                                                                state.reviewParticipantsSelectionData.listLeaderEmployeeDataSelectedToReview,
+                                                                state.reviewParticipantsSelectionData.employeesSelectedAmount,
                                                                 dispatch
                                                             );
                                                         }
@@ -1570,6 +1641,8 @@ export function ReviewParticipantSelectionForm() {
                                                                 state.reviewParticipantsSelectionData.removedLedItems,
                                                                 state.reviewParticipantsSelectionData.listEmployeeDataToReview,
                                                                 state.reviewParticipantsSelectionData.listPairEmployeeDataToReviewDataSelect,
+                                                                state.reviewParticipantsSelectionData.listEmployeeDataToSelfReview,
+                                                                state.reviewParticipantsSelectionData.employeesSelectedAmount,
                                                                 dispatch
                                                             );
                                                         }
@@ -1608,7 +1681,8 @@ export function ReviewParticipantSelectionForm() {
                                                                             state.reviewParticipantsSelectionData.listLedEmployeeDataToReview,
                                                                             state.reviewParticipantsSelectionData.pairTagsInput,
                                                                             state.reviewParticipantsSelectionData.removedPairItems,
-                                                                            state.reviewParticipantsSelectionData.listPairEmployeeDataToReview,
+                                                                            state.reviewParticipantsSelectionData.listPairEmployeeDataToReviewDataSelect,
+                                                                            state.reviewParticipantsSelectionData.employeesSelectedAmount,
                                                                             dispatch
                                                                         );
                                                                     }
@@ -1650,6 +1724,7 @@ export function ReviewParticipantSelectionForm() {
                                                                             state.reviewParticipantsSelectionData.removedPairItems,
                                                                             state.reviewParticipantsSelectionData.listPairEmployeeDataToReviewDataSelect,
                                                                             state.reviewParticipantsSelectionData.listPairEmployeeDataToReview,
+                                                                            state.reviewParticipantsSelectionData.employeesSelectedAmount,
                                                                             dispatch
                                                                         );
                                                                     }
@@ -1675,6 +1750,7 @@ export function ReviewParticipantSelectionForm() {
                                                                             removedPairItems: state.reviewParticipantsSelectionData.removedPairItems,
                                                                             listPairEmployeeDataToReviewDataSelect: state.reviewParticipantsSelectionData.listPairEmployeeDataToReviewDataSelect,
                                                                             listPairEmployeeDataToReview: state.reviewParticipantsSelectionData.listPairEmployeeDataToReview,
+                                                                            employeesSelectedAmount: state.reviewParticipantsSelectionData.employeesSelectedAmount,
                                                                             dispatch,
                                                                         });
                                                                     }

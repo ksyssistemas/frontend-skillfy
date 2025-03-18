@@ -43,7 +43,6 @@ export const initialStateReviewParticipantsSelectionForm = {
         listPairEmployeeDataToReviewState: '',
         pairTagsInput: {},
         removedPairItems: {},
-
         listPairEmployeeDataToReviewDataSelect: {},
 
         isHandPickedSelectionParticipantsToReview: false,
@@ -345,12 +344,10 @@ export const reviewParticipantsSelectionFormReducer = (state, action) => {
                 ...state,
                 reviewParticipantsSelectionData: {
                     ...state.reviewParticipantsSelectionData,
-                    listPairEmployeeDataToReviewDataSelect: {
-                        ...state.reviewParticipantsSelectionData.listPairEmployeeDataToReviewDataSelect,
-                        ...action.payload,
-                    },
+                    listPairEmployeeDataToReviewDataSelect: action.payload,
                 },
             };
+
         case 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_SELECT':
             return {
                 ...state,
@@ -377,15 +374,6 @@ export const reviewParticipantsSelectionFormReducer = (state, action) => {
                 reviewParticipantsSelectionData: {
                     ...state.reviewParticipantsSelectionData,
                     removedPairItems: action.payload,
-                },
-            };
-
-        case 'SET_ALL_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    listPairEmployeeDataToReview: action.payload,
                 },
             };
         default:
