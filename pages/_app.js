@@ -32,6 +32,7 @@ import { EmployeeFunctionProvider } from "../contexts/RecordsContext/EmployeeFun
 import { RoleProvider } from "../contexts/RecordsContext/RoleContext";
 import { EmployeeProvider } from "../contexts/RecordsContext/EmployeeContext";
 import { AppraisalEvidencesProvider } from "../contexts/PerformanceContext/AppraisalEvidencesContext";
+import { PerformanceReviewContext } from "../contexts/PerformanceContext/PerformanceReviewContext";
 import { AppraisalCaptionsProvider } from "../contexts/PerformanceContext/AprraisalCaptionsContext";
 import { ModelSelectionReviewProvider } from "../contexts/PerformanceContext/ModelSelectionReviewContext";
 import QueryProvider from "../lib/react-query";
@@ -91,53 +92,55 @@ export default class MyApp extends App {
 
     return (
       <React.Fragment>
-                    <QueryProvider>                    
-        <AuthProvider>
-          <AlertProvider>
-            <AdminProvider>
-              <CustomerProvider>
-                <ContactPersonProvider>
-                  <DepartmentProvider>
-                    <RoleProvider>
-                      <EmployeeFunctionProvider>
-                        <EmployeeProvider>
-                          <ModelSelectionReviewProvider>
-                            <AppraisalCycleProvider>
-                              <SweetAlertProvider>
-                                <AppraisalSkillsProvider>
-                                  <AppraisalEvidencesProvider>
-                                    <AppraisalCaptionsProvider>
-                                      <CompetenciesProvider>
-                                        <PdiProvider>
-                                          <Head>
-                                            <meta
-                                              name="viewport"
-                                              content="width=device-width, initial-scale=1, shrink-to-fit=no"
-                                            />
-                                            <title>SkillFy</title>
-                                            {/* <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script> */}
-                                          </Head>
-                                          <Layout>
-                                            <Component {...pageProps} />
-                                          </Layout>
-                                        </PdiProvider>
-                                      </CompetenciesProvider>
-                                    </AppraisalCaptionsProvider>
-                                  </AppraisalEvidencesProvider>
-                                </AppraisalSkillsProvider>
-                              </SweetAlertProvider>
-                            </AppraisalCycleProvider>
-                          </ModelSelectionReviewProvider>
-                        </EmployeeProvider>
-                      </EmployeeFunctionProvider>
-                    </RoleProvider>
-                  </DepartmentProvider>
-                </ContactPersonProvider>
-              </CustomerProvider>
-            </AdminProvider>
-          </AlertProvider>
-        </AuthProvider>
-</QueryProvider>
+        <QueryProvider>
+          <AuthProvider>
+            <AlertProvider>
+              <AdminProvider>
+                <CustomerProvider>
+                  <ContactPersonProvider>
+                    <DepartmentProvider>
+                      <RoleProvider>
+                        <EmployeeFunctionProvider>
+                          <EmployeeProvider>
+                            <ModelSelectionReviewProvider>
+                              <AppraisalCycleProvider>
+                                <SweetAlertProvider>
+                                  <AppraisalSkillsProvider>
+                                    <AppraisalEvidencesProvider>
+                                      <AppraisalCaptionsProvider>
+                                        <CompetenciesProvider>
+                                          <PdiProvider>
+                                            <PerformanceReviewContext>
+                                              <Head>
+                                                <meta
+                                                  name="viewport"
+                                                  content="width=device-width, initial-scale=1, shrink-to-fit=no"
+                                                />
+                                                <title>SkillFy</title>
+                                                {/* <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script> */}
+                                              </Head>
+                                              <Layout>
+                                                <Component {...pageProps} />
+                                              </Layout>
+                                            </PerformanceReviewContext>
+                                          </PdiProvider>
+                                        </CompetenciesProvider>
+                                      </AppraisalCaptionsProvider>
+                                    </AppraisalEvidencesProvider>
+                                  </AppraisalSkillsProvider>
+                                </SweetAlertProvider>
+                              </AppraisalCycleProvider>
+                            </ModelSelectionReviewProvider>
+                          </EmployeeProvider>
+                        </EmployeeFunctionProvider>
+                      </RoleProvider>
+                    </DepartmentProvider>
+                  </ContactPersonProvider>
+                </CustomerProvider>
+              </AdminProvider>
+            </AlertProvider>
+          </AuthProvider>
+        </QueryProvider>
       </React.Fragment >
     );
   }

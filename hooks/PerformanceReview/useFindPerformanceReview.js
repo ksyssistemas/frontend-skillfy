@@ -1,6 +1,6 @@
 export async function useFindPerformanceReview(evidencesId) {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_EVIDENCES_PERFORMANCE}/${evidencesId}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_PERFORMANCE_REVIEW}/${evidencesId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

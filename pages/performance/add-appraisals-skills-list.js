@@ -8,22 +8,23 @@ import AppraisalListHeader from "../../components/Headers/PerformanceHeader/Appr
 import AppraisalsListTableCompetencies from "../../components/Tables/AppraisalTables/Appraisal/AppraisalsListTableCompetencies";
 // import AddAppraisalCycleModal from "../../components/Modals/AppraisalModal/add-appraisal-cycle";
 import AppraisalsSkillsRegister from "../../components/Forms/PerformanceForms/AppraisalsSkillsRegister";
-import { EvidencesContext } from '../../contexts/PerformanceContext/AppraisalEvidencesContext';
+import { ReviewContext } from '../../contexts/PerformanceContext/PerformanceReviewContext';
 import { TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT } from '../../contexts/AuthContext';
 import Admin from "layouts/Admin.js";
 import Employee from "../../layouts/Employee";
 
 
 function Appraisalsskillslist() {
-  const { evidencesIdToUpdate } = useContext(EvidencesContext);
-  
+
+  const { performanceIdToEvaluation } = useContext(ReviewContext);
+
   return (
 
     <>
       <AppraisalListHeader name="Avaliações" parentName="Desempenho" />
       <Container className="mt--6" fluid>
         {/* Se o ID estiver definido, exibe o registro de habilidades; caso contrário, a lista */}
-        {evidencesIdToUpdate ? (
+        {performanceIdToEvaluation ? (
           <AppraisalsSkillsRegister />
         ) : (
           <>
@@ -42,6 +43,6 @@ TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'administrator'
     ? Appraisalsskillslist.layout = Performance
     : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'employee'
       ? Appraisalsskillslist.layout = Employee
-      : Appraisalsskillslist.layout = Admin));
+      : Appraisalsskillslist.layout = Performance));
 
 export default Appraisalsskillslist;

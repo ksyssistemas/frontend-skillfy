@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useContext, useRef } from "react";
+import React, { useMemo, useState, useEffect, useContext, useRef, useReducer } from "react";
 import PropTypes from "prop-types";
 import dynamic from "next/dynamic";
 // react plugin used to create datetimepicker
@@ -37,35 +37,78 @@ import { useFindAllSkillClassifications } from "../../../hooks/DefinitionOptions
 import { useFindEvaluationRoler } from '../../../hooks/PerformanceReview/EvaluationRoler/useFindEvaluationRoler';
 import { useFindRuleOption } from '../../../hooks/PerformanceReview/RuleOption/useFindRuleOption';
 import { useFindPerformanceReview } from '../../../hooks/PerformanceReview/useFindPerformanceReview';
-import { EvidencesContext } from '../../../contexts/PerformanceContext/AppraisalEvidencesContext';
+import { ReviewContext } from '../../../contexts/PerformanceContext/PerformanceReviewContext';
 import { useFindAllReviewEvidenceRuler } from '../../../hooks/PerformanceReview/ReviewEvidenceRuler/useFindAllReviewEvidenceRuler';
 import { useFindRuleOptionEvaluationRuler } from '../../../hooks/PerformanceReview/RuleOption/useFindRuleOptionEvaluationRuler';
+import { AuthContext } from '../../../contexts/AuthContext';
+import { useFindReviewEvidenceRulerPerformanceReview } from '../../../hooks/PerformanceReview/ReviewEvidenceRuler/useFindReviewEvidenceRulerPerformanceReview';
+import { useFindCaptionOptionByCaptionType } from "../../../hooks/DefinitionOptionsReview/AppraisalCaptions/useFindCaptionOptionByCaptionType";
+import { useFindCaptionOptionByCaptionId } from "../../../hooks/DefinitionOptionsReview/AppraisalCaptions/useFindCaptionOptionByCaptionId";
+import { initialStateReviewScaleAndCriteriaForm, reviewScaleAndCriteriaFormReducer } from '../../../reducers/ReviewForms/ReviewScaleAndCriteriaFormReducer'
 
 export function AppraisalsSkillsRegister() {
 
     const [reviewObjective, setReviewObjective] = useState('');
     const quillRef = useRef(null);
 
-    const { evidencesIdToUpdate, handleEvidenceIdStatusCleanupToUpdate } = useContext(EvidencesContext);
-  
+    const { performanceIdToEvaluation,
+        evaluationRulerId,
+        reviewParticipantId,
+        reviewModel,
+        participatesAsSelfEvaluator,
+        participateAsPair,
+        participateAsLeader,
+        handlePerformanceIdStatusCleanupToUpdate } = useContext(ReviewContext);
+
+    // console.log("performanceIdToEvaluation :", performanceIdToEvaluation , "evaluationRulerId :" ,evaluationRulerId ,
+    //     "reviewParticipantId :", reviewParticipantId , "reviewModel :", reviewModel , "participatesAsSelfEvaluator :", participatesAsSelfEvaluator ,
+    //     "participateAsPair :", participateAsPair , "participateAsLeader :", participateAsLeader 
+    // );
+
     const handleBackToList = () => {
-        handleEvidenceIdStatusCleanupToUpdate();
+        handlePerformanceIdStatusCleanupToUpdate();
     };
+
+    const { authenticationDataLoggedInUser } = useContext(AuthContext);
+    // console.log("AuthContex", authenticationDataLoggedInUser);
+
+    // const userLoggedId = authenticationDataLoggedInUser?.data?.id;
+    const userLoggedId = 5;
 
     const [performanceAppraisalData, setPerformanceAppraisalData] = useState([]);
     // console.log(performanceAppraisalData);
     useEffect(() => {
         const fetchPerformanceAppraisal = async () => {
             if (!performanceAppraisalData.length) {
-                const foundAppraisal = await useFindPerformanceReview(evidencesIdToUpdate);
+                const foundAppraisal = await useFindPerformanceReview(performanceIdToEvaluation);
                 setPerformanceAppraisalData(foundAppraisal);
             }
         };
 
-        if (evidencesIdToUpdate) {
+        if (performanceIdToEvaluation) {
             fetchPerformanceAppraisal();
         }
-    }, [evidencesIdToUpdate]);
+    }, [performanceIdToEvaluation]);
+
+    const [reviewRulerofPerformance, setReviewRulerofPerformance] = useState([]);
+    const [reviewRulerId, setReviewRulerId] = useState(null);
+    
+    useEffect(() => {
+        const fetchPerformanceAppraisal = async () => {
+            if (!performanceAppraisalData.length) {
+                const foundAppraisal = await useFindReviewEvidenceRulerPerformanceReview(performanceIdToEvaluation);
+                setReviewRulerofPerformance(foundAppraisal);
+    
+                if (foundAppraisal.length > 0) {
+                    setReviewRulerId(foundAppraisal[0].reviewRulerId);
+                }
+            }
+        };
+    
+        if (performanceIdToEvaluation) {
+            fetchPerformanceAppraisal();
+        }
+    }, [performanceIdToEvaluation]);
 
     const [performanceEvidenceData, setPerformanceEvidenceData] = useState([]);
     // console.log("performanceEvidenceData :", performanceEvidenceData); 
@@ -85,10 +128,10 @@ export function AppraisalsSkillsRegister() {
             const foundReviewEvidenceRuler = await useFindAllReviewEvidenceRuler();
             setPerformanceReviewEvidenceRulerData(foundReviewEvidenceRuler);
         };
-        if (evidencesIdToUpdate) {
+        if (performanceIdToEvaluation) {
             fetchReviewEvidenceRuler();
         }
-    }, [evidencesIdToUpdate]);
+    }, [performanceIdToEvaluation]);
     // console.log("performanceReviewEvidenceRulerData :", performanceReviewEvidenceRulerData);
 
     const [occupationalGroupsData, setOccupationalGroupsData] = useState([]);
@@ -97,10 +140,10 @@ export function AppraisalsSkillsRegister() {
             const foundOccupationalGroups = await useFindAllOccupationalGroups();
             setOccupationalGroupsData(foundOccupationalGroups);
         };
-        if (evidencesIdToUpdate) {
+        if (performanceIdToEvaluation) {
             fetchOccupationalGroups();
         }
-    }, [evidencesIdToUpdate]);
+    }, [performanceIdToEvaluation]);
     // console.log("occupationalGroupsData :", occupationalGroupsData);
 
     const [skillClassificationsData, setSkillClassificationsData] = useState([]);
@@ -109,18 +152,18 @@ export function AppraisalsSkillsRegister() {
             const foundSkillClassifications = await useFindAllSkillClassifications();
             setSkillClassificationsData(foundSkillClassifications);
         };
-        if (evidencesIdToUpdate) {
+        if (performanceIdToEvaluation) {
             fetchSkillClassifications();
         }
-    }, [evidencesIdToUpdate]);
+    }, [performanceIdToEvaluation]);
     // console.log("skillClassificationsData :", skillClassificationsData);
 
     const memoizedReviewEvidenceRulerIgualsEvaluationIdData = useMemo(() => {
         return performanceReviewEvidenceRulerData.filter(
             (evidenceRuler) =>
-                Number(evidenceRuler.performanceReviewId) === Number(evidencesIdToUpdate)
+                Number(evidenceRuler.performanceReviewId) === Number(performanceIdToEvaluation)
         );
-    }, [performanceReviewEvidenceRulerData, evidencesIdToUpdate]);
+    }, [performanceReviewEvidenceRulerData, performanceIdToEvaluation]);
 
     useEffect(() => {
         if (memoizedReviewEvidenceRulerIgualsEvaluationIdData.length > 0) {
@@ -336,7 +379,7 @@ export function AppraisalsSkillsRegister() {
                 classificationData
             };
         });
-
+        // console.log(grouped);
         setNewGroupedData(grouped);
     }, [occupationalGroupsData, skillClassificationsData, performanceSkillTypeData]);
 
@@ -374,41 +417,149 @@ export function AppraisalsSkillsRegister() {
     // console.log("combinedData :", combinedData);
 
     const handleSalvar = () => {
+        const reviewObjective = document.getElementById("validationDescriptionReviewObjective")?.innerText.trim() || "";
         const finalData = {
-          skillClassification: []
+            performanceReview: performanceIdToEvaluation,
+            evaluationRulerId: evaluationRulerId,
+            reviewParticipantId: reviewParticipantId || userLoggedId,
+            reviewModel: reviewModel,
+            answeredAsLeaderOf: participateAsLeader,
+            answeredAsSelfEvaluationOf: participatesAsSelfEvaluator,
+            answeredAsPairOf: participateAsPair,
+            reviewObjective: reviewObjective,
+            reviewAnswers: []
         };
-      
+
         newGroupedData.forEach((group) => {
-          group.classificationData.forEach((classification) => {
-            classification.skills.forEach((skill) => {
-              const evidences = skill.evidences
-                .map((evidence) => {
-                  const status = selectedStatus[evidence.id];
-                  if (status) {
-                    return {
-                      evidenceId: evidence.id,
-                      selectedOption: status.selectedOption,
-                      weight: status.weight
-                    };
-                  }
-                  return null;
-                })
-                .filter((item) => item !== null); 
-      
-              if (evidences.length > 0) {
-                finalData.skillClassification.push({
-                  competenceId: skill.id,
-                  description: skill.competencieTypeName || "",
-                  evidences: evidences
+            const occupationalGroup = {
+                occupationalGroup: group.groupName,
+                skillClassification: []
+            };
+
+            group.classificationData.forEach((classification) => {
+                const classificationEntry = {
+                    classificationId: classification.classificationId,
+                    classificationName: classification.classificationName,
+                    skills: []
+                };
+
+                classification.skills.forEach((skill) => {
+                    const evidences = skill.evidences
+                        .map((evidence) => {
+                            const status = selectedStatus[evidence.id];
+                            if (status) {
+                                return {
+                                    evidenceId: evidence.id,
+                                    selectedOption: status.selectedOption,
+                                    weight: status.weight
+                                };
+                            }
+                            return null;
+                        })
+                        .filter((item) => item !== null);
+
+                    if (evidences.length > 0) {
+                        classificationEntry.skills.push({
+                            competenceId: skill.id,
+                            description: skill.competencieTypeName || "",
+                            evidences: evidences
+                        });
+                    }
                 });
-              }
+
+                if (classificationEntry.skills.length > 0) {
+                    occupationalGroup.skillClassification.push(classificationEntry);
+                }
             });
-          });
+
+            if (occupationalGroup.skillClassification.length > 0) {
+                finalData.reviewAnswers.push(occupationalGroup);
+            }
         });
-      
+
         console.log("Dados para salvar:", finalData);
-      };
-      
+    };
+
+    const handleLimpar = () => {
+        const objectiveField = document.querySelector("#validationDescriptionReviewObjective .ql-editor");
+        if (objectiveField) {
+            objectiveField.innerHTML = "<p><br></p>"; 
+        }
+    
+        const newSelectedStatus = { ...selectedStatus };
+    
+        performanceEvidenceData.forEach((evidence) => {
+            if (newSelectedStatus[evidence.id]) {
+                newSelectedStatus[evidence.id] = {
+                    selectedOption: null,
+                    weight: null
+                };
+            }
+        });
+    
+        setSelectedStatus(newSelectedStatus);
+    };
+
+    const [detailedRulerTypeData, setDetailedRulerTypeData] = useState([]);
+    const [state, dispatch] = useReducer(reviewScaleAndCriteriaFormReducer, initialStateReviewScaleAndCriteriaForm);
+    
+    const fetchCaptionOption = async (rulers) => {
+        let updatedRulers = [];
+
+        if (!Array.isArray(rulers)) {
+            rulers = [rulers];
+        }
+
+        updatedRulers = await Promise.all(
+            rulers.map(async (ruler) => {
+                try {
+                    const rulerOptionData = await useFindCaptionOptionByCaptionId(ruler.id);
+                    console.log("rulerOptionData", rulerOptionData);
+                    return {
+                        ...ruler,
+                        options: rulerOptionData
+                    };
+                } catch (error) {
+                    console.error(`Error fetching ruler options data for id ${ruler.id}:`, error);
+                    return {
+                        ...ruler,
+                        options: 'Unknown',
+                    };
+                }
+            })
+        );
+        setDetailedRulerTypeData(updatedRulers);
+    };
+   
+    const fetchCapitons = async () => {
+        if (!detailedRulerTypeData.length) {
+            try {
+                // Encontre o objeto no array que corresponde a selectedRulerType
+                const foundRuler = state.reviewScaleAndCriteriaData.rulerTypeDataList.find(ruler => ruler.id === String(reviewRulerId));
+                if (foundRuler) {
+                    
+                    // Pegue o valor do campo 'text' correspondente
+                    const captionType = foundRuler.text;
+                    // Use o valor de 'captionType' como parâmetro para o hook
+                    const foundCaption = await useFindCaptionOptionByCaptionType(captionType);
+                    // Chame fetchCaptionOption com o resultado do hook
+                    await fetchCaptionOption(foundCaption);
+                } else {
+                    console.error('Ruler type not found');
+                }
+            } catch (error) { 
+                  console.error('Error fetching types:', error);
+            }
+        }
+    };
+
+   useEffect(() => {
+        if (reviewRulerId != null) {
+            console.log("CHAMOU AQUI");
+            fetchCapitons();
+        }
+    }, [reviewRulerId]);
+
     return (
         <Card className="mb-4">
             <CardHeader>
@@ -429,7 +580,57 @@ export function AppraisalsSkillsRegister() {
                             <label htmlFor="validationPDIStatus">
                                 Legenda
                             </label>
-                            <p>{performanceAppraisalData.reviewModel}</p>
+                             {detailedRulerTypeData && detailedRulerTypeData.length > 0 ? (
+                                                    detailedRulerTypeData.map((rulerType) => (
+                                                        <>
+                                                            <CardBody className="py-1" key={rulerType.id}>
+                                                                <Row>
+                                                                    <Col className="my-2" md="4">
+                                                                        <Row className="flex-column">
+                                                                            <h6 className="text-uppercase ls-1 mb-1" style={{ color: "#ff623f" }} >
+                                                                                Régua do tipo{' '}
+                                                                            </h6>
+                                                                            <h5 className="font-weith-bold text-lg text-dark mb-0">{rulerType.ruleType}</h5>
+                                                                        </Row>
+                                                                        <Row className="flex-column">
+                                                                            <h6 className="text-uppercase ls-1 mb-1" style={{ color: "#ff623f" }} >
+                                                                                Alternativas{' '}
+                                                                            </h6>
+                                                                            <h5 className="font-weith-bold text-lg text-dark mb-0">{rulerType.optionsCount}</h5>
+                                                                        </Row>
+                                                                    </Col>
+                                                                    <Col className="mb-2 d-flex flex-row justify-content-start align-items-center" md="8">
+                                                                        {rulerType.options && rulerType.options.length > 0 ? (
+                                                                            rulerType.options.map((option, index) => (
+                                                                                <Card key={index} className="bg-orange m-2" style={{ width: 96, height: 96 }}>
+                                                                                    <CardBody className="d-flex flex-column justify-content-start align-items-center">
+                                                                                        <div>
+                                                                                            <h3 className="mb-0 text-lighter text-center">{option.label}</h3>
+                                                                                        </div>
+                                                                                        <div className="mb-2 d-flex">
+                                                                                            <h4 className="text-lighter mr-2">Nota</h4>
+                                                                                            <h4 className="mb-0 text-lighter">{option.weight}</h4>
+                                                                                        </div>
+                                                                                    </CardBody>
+                                                                                </Card>
+                                                                            ))
+                                                                        ) : (
+                                                                            <Col md="12">
+                                                                                <small>Nenhuma opção encontrada.</small>
+                                                                            </Col>
+                                                                        )}
+                                                                    </Col>
+                                                                </Row>
+                                                            </CardBody>
+                                                        </>
+                                                    ))
+                                                ) : (
+                                                    <ListGroupItem className="px-0">
+                                                        <div className="col">
+                                                            <small>Nenhum dado de régua de avaliação encontrado.</small>
+                                                        </div>
+                                                    </ListGroupItem>
+                                                )}
                         </Col>
                     </div>
                     <div>
@@ -552,7 +753,7 @@ export function AppraisalsSkillsRegister() {
                                 color="secundary"
                                 size="lg"
                                 type="button"
-                            // onClick={handleLimpar}
+                            onClick={handleLimpar}
                             >
                                 <span className="btn-inner--text">Limpar</span>
                             </Button>
@@ -561,7 +762,7 @@ export function AppraisalsSkillsRegister() {
                                 color="primary"
                                 size="lg"
                                 type="button"
-                            onClick={handleSalvar}
+                                onClick={handleSalvar}
                             >
                                 <span className="btn-inner--text">Salvar</span>
                             </Button>
