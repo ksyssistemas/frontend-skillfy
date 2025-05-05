@@ -22,7 +22,8 @@ import {
     Badge,
     ListGroup,
     ListGroupItem,
-    Progress
+    Progress,
+    CardFooter
 } from "reactstrap";
 import 'quill/dist/quill.snow.css';
 import 'assets/css/styles/appraisalastable.css';
@@ -45,130 +46,144 @@ import { useFindReviewEvidenceRulerPerformanceReview } from '../../../hooks/Perf
 import { useFindCaptionOptionByCaptionType } from "../../../hooks/DefinitionOptionsReview/AppraisalCaptions/useFindCaptionOptionByCaptionType";
 import { useFindCaptionOptionByCaptionId } from "../../../hooks/DefinitionOptionsReview/AppraisalCaptions/useFindCaptionOptionByCaptionId";
 import { initialStateReviewScaleAndCriteriaForm, reviewScaleAndCriteriaFormReducer } from '../../../reducers/ReviewForms/ReviewScaleAndCriteriaFormReducer'
+import useCreatePerformanceReviewAnswer from "../../../hooks/PerformanceReview/ReviewAnswer/useCreatePerformanceReviewAnswer";
 
 export function AppraisalsSkillsRegister() {
 
     const [reviewObjective, setReviewObjective] = useState('');
+
     const quillRef = useRef(null);
 
-    const { performanceIdToEvaluation,
-        evaluationRulerId,
-        reviewParticipantId,
-        reviewModel,
-        participatesAsSelfEvaluator,
-        participateAsPair,
-        participateAsLeader,
-        handlePerformanceIdStatusCleanupToUpdate } = useContext(ReviewContext);
+    const {
+        performanceReviewData,
+        reviewedIdOnPerformanceReview,
+        reviewerIdOnPerformanceReview,
+        performanceReviewParticipationData,
+        handlePerformanceIdStatusCleanupToUpdate
+    } = useContext(ReviewContext);
 
-    // console.log("performanceIdToEvaluation :", performanceIdToEvaluation , "evaluationRulerId :" ,evaluationRulerId ,
-    //     "reviewParticipantId :", reviewParticipantId , "reviewModel :", reviewModel , "participatesAsSelfEvaluator :", participatesAsSelfEvaluator ,
-    //     "participateAsPair :", participateAsPair , "participateAsLeader :", participateAsLeader 
-    // );
+    const {
+        handleValidateAddReviewAnswerForm
+    } = useCreatePerformanceReviewAnswer();
 
     const handleBackToList = () => {
         handlePerformanceIdStatusCleanupToUpdate();
     };
 
     const { authenticationDataLoggedInUser } = useContext(AuthContext);
-    // console.log("AuthContex", authenticationDataLoggedInUser);
 
-    // const userLoggedId = authenticationDataLoggedInUser?.data?.id;
-    const userLoggedId = 5;
+    const userLoggedId = authenticationDataLoggedInUser?.data?.id;
 
-    const [performanceAppraisalData, setPerformanceAppraisalData] = useState([]);
-    // console.log(performanceAppraisalData);
-    useEffect(() => {
-        const fetchPerformanceAppraisal = async () => {
-            if (!performanceAppraisalData.length) {
-                const foundAppraisal = await useFindPerformanceReview(performanceIdToEvaluation);
-                setPerformanceAppraisalData(foundAppraisal);
-            }
-        };
-
-        if (performanceIdToEvaluation) {
-            fetchPerformanceAppraisal();
-        }
-    }, [performanceIdToEvaluation]);
+    const [performanceAppraisalData, setPerformanceAppraisalData] = useState(null);
 
     const [reviewRulerofPerformance, setReviewRulerofPerformance] = useState([]);
+
     const [reviewRulerId, setReviewRulerId] = useState(null);
-    
+
+    const [performanceEvidenceData, setPerformanceEvidenceData] = useState([]);
+
+    const [performanceSkillTypeData, setPerformanceSkillTypeData] = useState([]);
+
+    const [performanceEvaluationRolerData, setPerformanceEvaluationRolerData] = useState([]);
+
+    const [performanceRuleOptionData, setPerformanceRuleOptionData] = useState([]);
+
+    const [performanceReviewEvidenceRulerData, setPerformanceReviewEvidenceRulerData] = useState([]);
+
+    const [occupationalGroupsData, setOccupationalGroupsData] = useState([]);
+
+    const [skillClassificationsData, setSkillClassificationsData] = useState([]);
+
+    const [evidencias, setEvidencias] = useState([]);
+
+    const [options, setOptions] = useState([]);
+
+    const [newGroupedData, setNewGroupedData] = useState([]);
+
+    const [combinedData, setCombinedData] = useState([]);
+
+    const [detailedRulerTypeData, setDetailedRulerTypeData] = useState([]);
+
+    const [selectedStatus, setSelectedStatus] = useState({});
+
+    const [state, dispatch] = useReducer(reviewScaleAndCriteriaFormReducer, initialStateReviewScaleAndCriteriaForm);
+
+    // Busca pelos dados da Avaliação de Desempenho a ser executada do Contexto
     useEffect(() => {
         const fetchPerformanceAppraisal = async () => {
-            if (!performanceAppraisalData.length) {
-                const foundAppraisal = await useFindReviewEvidenceRulerPerformanceReview(performanceIdToEvaluation);
+            if (!performanceAppraisalData) {
+                setPerformanceAppraisalData(performanceReviewData);
+            }
+        };
+        if (performanceReviewData.id) {
+            fetchPerformanceAppraisal();
+        }
+    }, [performanceReviewData]);
+
+    // Busca pelos dados de todos as (RéguaID, EvidênciaID, CompetêmciaID) de Avaliação de Desempenho cadastrados
+    useEffect(() => {
+        const fetchPerformanceAppraisal = async () => {
+            if (!performanceAppraisalData) {
+                const foundAppraisal = await useFindReviewEvidenceRulerPerformanceReview(performanceReviewData.id);
                 setReviewRulerofPerformance(foundAppraisal);
-    
+
                 if (foundAppraisal.length > 0) {
                     setReviewRulerId(foundAppraisal[0].reviewRulerId);
                 }
             }
         };
-    
-        if (performanceIdToEvaluation) {
+
+        if (performanceReviewData.id) {
             fetchPerformanceAppraisal();
         }
-    }, [performanceIdToEvaluation]);
+    }, [performanceReviewData]);
 
-    const [performanceEvidenceData, setPerformanceEvidenceData] = useState([]);
-    // console.log("performanceEvidenceData :", performanceEvidenceData); 
-
-    const [performanceSkillTypeData, setPerformanceSkillTypeData] = useState([]);
-    // console.log("performanceSkillTypeData :", performanceSkillTypeData);
-
-    const [performanceEvaluationRolerData, setPerformanceEvaluationRolerData] = useState([]);
-    // console.log("Evidências da Evaluation Roler :", performanceEvaluationRolerData);
-
-    const [performanceRuleOptionData, setPerformanceRuleOptionData] = useState([]);
-    // console.log("Opções da RuleOptions :", performanceRuleOptionData);
-
-    const [performanceReviewEvidenceRulerData, setPerformanceReviewEvidenceRulerData] = useState([]);
+    // Busca pelos dados de todos as Réguas de Avaliação de Desempenho cadastrados
     useEffect(() => {
         const fetchReviewEvidenceRuler = async () => {
             const foundReviewEvidenceRuler = await useFindAllReviewEvidenceRuler();
             setPerformanceReviewEvidenceRulerData(foundReviewEvidenceRuler);
         };
-        if (performanceIdToEvaluation) {
+        if (performanceReviewData.id) {
             fetchReviewEvidenceRuler();
         }
-    }, [performanceIdToEvaluation]);
-    // console.log("performanceReviewEvidenceRulerData :", performanceReviewEvidenceRulerData);
+    }, [performanceReviewData]);
 
-    const [occupationalGroupsData, setOccupationalGroupsData] = useState([]);
+    // Busca pelos dados de todos os Grupos Ocupacionais cadastrados
     useEffect(() => {
         const fetchOccupationalGroups = async () => {
             const foundOccupationalGroups = await useFindAllOccupationalGroups();
             setOccupationalGroupsData(foundOccupationalGroups);
         };
-        if (performanceIdToEvaluation) {
+        if (performanceReviewData.id) {
             fetchOccupationalGroups();
         }
-    }, [performanceIdToEvaluation]);
-    // console.log("occupationalGroupsData :", occupationalGroupsData);
+    }, [performanceReviewData]);
 
-    const [skillClassificationsData, setSkillClassificationsData] = useState([]);
+    // Busca pelos dados de todos as Classificações de Competências cadastradas
     useEffect(() => {
         const fetchSkillClassifications = async () => {
             const foundSkillClassifications = await useFindAllSkillClassifications();
             setSkillClassificationsData(foundSkillClassifications);
         };
-        if (performanceIdToEvaluation) {
+        if (performanceReviewData.id) {
             fetchSkillClassifications();
         }
-    }, [performanceIdToEvaluation]);
-    // console.log("skillClassificationsData :", skillClassificationsData);
+    }, [performanceReviewData]);
 
-    const memoizedReviewEvidenceRulerIgualsEvaluationIdData = useMemo(() => {
+    // Memoriza o conteúdo para criação da Avaliação de Desempenho 
+    const performanceReviewCreationContentData = useMemo(() => {
         return performanceReviewEvidenceRulerData.filter(
             (evidenceRuler) =>
-                Number(evidenceRuler.performanceReviewId) === Number(performanceIdToEvaluation)
+                Number(evidenceRuler.performanceReviewId) === Number(performanceReviewData.id)
         );
-    }, [performanceReviewEvidenceRulerData, performanceIdToEvaluation]);
+    }, [performanceReviewEvidenceRulerData, performanceReviewData]);
 
+    // Recupera todas as opções da régua pelo evaluation-ruler ID
     useEffect(() => {
-        if (memoizedReviewEvidenceRulerIgualsEvaluationIdData.length > 0) {
+        if (performanceReviewCreationContentData.length > 0) {
             Promise.all(
-                memoizedReviewEvidenceRulerIgualsEvaluationIdData.map((evidenceRuler) =>
+                performanceReviewCreationContentData.map((evidenceRuler) =>
                     useFindRuleOptionEvaluationRuler(evidenceRuler.reviewRulerId)
                 )
             )
@@ -179,12 +194,13 @@ export function AppraisalsSkillsRegister() {
         } else {
             setPerformanceRuleOptionData([]);
         }
-    }, [memoizedReviewEvidenceRulerIgualsEvaluationIdData.length]);
+    }, [performanceReviewCreationContentData.length]);
 
+    // Recupera a régua de Avaliação de Desempenho pelo ID
     useEffect(() => {
-        if (memoizedReviewEvidenceRulerIgualsEvaluationIdData.length > 0) {
+        if (performanceReviewCreationContentData.length > 0) {
             Promise.all(
-                memoizedReviewEvidenceRulerIgualsEvaluationIdData.map((evidenceRuler) =>
+                performanceReviewCreationContentData.map((evidenceRuler) =>
                     useFindEvaluationRoler(evidenceRuler.reviewRulerId)
                 )
             )
@@ -195,12 +211,13 @@ export function AppraisalsSkillsRegister() {
         } else {
             setPerformanceEvaluationRolerData([]);
         }
-    }, [memoizedReviewEvidenceRulerIgualsEvaluationIdData.length]);
+    }, [performanceReviewCreationContentData.length]);
 
+    // Recupera a evidencia da Avaliação de Desempenho pelo ID
     useEffect(() => {
-        if (memoizedReviewEvidenceRulerIgualsEvaluationIdData.length > 0) {
+        if (performanceReviewCreationContentData.length > 0) {
             Promise.all(
-                memoizedReviewEvidenceRulerIgualsEvaluationIdData.map((evidenceRuler) =>
+                performanceReviewCreationContentData.map((evidenceRuler) =>
                     useFindEvidences(evidenceRuler.reviewEvidenceId)
                 )
             )
@@ -211,12 +228,13 @@ export function AppraisalsSkillsRegister() {
         } else {
             setPerformanceEvidenceData([]);
         }
-    }, [memoizedReviewEvidenceRulerIgualsEvaluationIdData.length]);
+    }, [performanceReviewCreationContentData.length]);
 
+    // Recupera um tipo de competência da Avaliação de Desempenho pelo ID
     useEffect(() => {
-        if (memoizedReviewEvidenceRulerIgualsEvaluationIdData.length > 0) {
+        if (performanceReviewCreationContentData.length > 0) {
             Promise.all(
-                memoizedReviewEvidenceRulerIgualsEvaluationIdData.map((evidenceRuler) =>
+                performanceReviewCreationContentData.map((evidenceRuler) =>
                     useFindSkillType(evidenceRuler.reviewCompetenceId)
                 )
             )
@@ -227,7 +245,7 @@ export function AppraisalsSkillsRegister() {
         } else {
             setPerformanceSkillTypeData([]);
         }
-    }, [memoizedReviewEvidenceRulerIgualsEvaluationIdData.length]);
+    }, [performanceReviewCreationContentData.length]);
 
     useEffect(() => {
         let quillInstance;
@@ -247,7 +265,7 @@ export function AppraisalsSkillsRegister() {
                                         [{ 'list': 'ordered' }, { 'list': 'bullet' }]
                                     ]
                                 },
-                                placeholder: "Escreva aqui o objetivo da avaliação...",
+                                placeholder: "...",
                                 theme: 'snow'
                             });
                             quillRef.current = quillInstance;
@@ -273,24 +291,7 @@ export function AppraisalsSkillsRegister() {
         };
     }, []);
 
-    const [selectedStatus, setSelectedStatus] = useState({});
-    const handleRadioChange = (e, evidenceId, weight, evaluationRulerId) => {
-        const { value } = e.target;
-        setSelectedStatus((prev) => ({
-            ...prev,
-            [evidenceId]: {
-                selectedOption: value,
-                weight: weight,
-                evidenceId: evidenceId,
-                evaluationRulerId: evaluationRulerId,
-            },
-        }));
-    };
-
-    // console.log("selectedStatus :", selectedStatus);
-
-    const [evidencias, setEvidencias] = useState([]);
-
+    // Obtém os Tipos de Régua de Avaliação de Desempenho com os dados da API
     useEffect(() => {
         if (!Array.isArray(performanceEvaluationRolerData)) {
             setEvidencias([]);
@@ -305,9 +306,7 @@ export function AppraisalsSkillsRegister() {
         }, []);
 
         setEvidencias(novasEvidencias);
-    }, []);
-
-    const [options, setOptions] = useState([]);
+    }, [performanceEvaluationRolerData]);
 
     useEffect(() => {
         if (!Array.isArray(performanceRuleOptionData)) {
@@ -330,10 +329,9 @@ export function AppraisalsSkillsRegister() {
         setOptions(newOptions);
     }, [performanceRuleOptionData]);
 
-    const [newGroupedData, setNewGroupedData] = useState([]);
-    const [combinedData, setCombinedData] = useState([]);
-
+    // Processa e reorganiza os dados de competências profissionais em uma estrutura hierárquica agrupada 
     useEffect(() => {
+        // Verifica se todos os arrays necessários estão disponíveis
         if (
             !Array.isArray(occupationalGroupsData) ||
             !Array.isArray(skillClassificationsData) ||
@@ -344,20 +342,25 @@ export function AppraisalsSkillsRegister() {
             return;
         }
 
+        // Inicia o agrupamento pelos grupos ocupacionais
         const grouped = occupationalGroupsData.map((group) => {
             const { id: groupId, competencieName: groupName } = group;
 
+            // Filtra habilidades pertencentes a este grupo ocupacional
             const groupSkills = (performanceSkillTypeData || []).filter(
                 (skill) => Number(skill?.occupationalGroupId) === Number(groupId)
             );
 
+            // Para cada grupo, mapeia as classificações de habilidades
             const classificationData = skillClassificationsData.map((classification) => {
                 const { id: classificationId, competenceClassificationName } = classification;
 
+                // Filtra as habilidades dessa classificação específica
                 const classificationSkills = groupSkills.filter(
                     (skill) => Number(skill.skillClassificationId) === Number(classificationId)
                 );
 
+                // Para cada habilidade, adiciona suas evidências
                 const skillsWithEvidences = classificationSkills.map((skill) => {
                     const evidences = performanceEvidenceData.filter(
                         (evidence) => Number(evidence.evidenceName) === Number(skill.id)
@@ -365,6 +368,7 @@ export function AppraisalsSkillsRegister() {
                     return { ...skill, evidences };
                 });
 
+                // Retorna o objeto de classificação com suas habilidades e evidências
                 return {
                     classificationId,
                     classificationName: competenceClassificationName,
@@ -372,18 +376,20 @@ export function AppraisalsSkillsRegister() {
                 };
             });
 
-
             return {
                 groupId,
                 groupName,
                 classificationData
             };
         });
-        // console.log(grouped);
-        setNewGroupedData(grouped);
-    }, [occupationalGroupsData, skillClassificationsData, performanceSkillTypeData]);
 
+        // Atualiza o estado com os dados agrupados
+        setNewGroupedData(grouped);
+    }, [performanceEvidenceData, occupationalGroupsData, skillClassificationsData, performanceSkillTypeData]);
+
+    // Agrupa as Evidências e Réguas de Avaliação às Competências avaliadas 
     useEffect(() => {
+        // Verifica se todos os arrays necessários existem
         if (
             !Array.isArray(performanceEvidenceData) ||
             !Array.isArray(performanceEvaluationRolerData) ||
@@ -393,6 +399,7 @@ export function AppraisalsSkillsRegister() {
             return;
         }
 
+        // Combina os dados mapeando cada item de evidência
         const newCombined = performanceEvidenceData.map((evidence, index) => {
             const evaluationRoler = performanceEvaluationRolerData[index];
             const ruleOptions = performanceRuleOptionData[index];
@@ -405,6 +412,7 @@ export function AppraisalsSkillsRegister() {
             };
         });
 
+        // Atualiza o estado com os dados combinados
         setCombinedData(newCombined);
     }, [
         performanceEvidenceData,
@@ -413,21 +421,96 @@ export function AppraisalsSkillsRegister() {
         newGroupedData
     ]);
 
-    // console.log("newGroupedData :", newGroupedData);
-    // console.log("combinedData :", combinedData);
+    // Busca Opções de Régua (caption options) associadas a um ruler (Régua) específica
+    const fetchCaptionOption = async (rulers) => {
+        let updatedRulers = [];
+        // Converte rulers para um array se não for um array
+        if (!Array.isArray(rulers)) {
+            rulers = [rulers];
+        }
+        updatedRulers = await Promise.all(
+            rulers.map(async (ruler) => {
+                try {
+                    const rulerOptionData = await useFindCaptionOptionByCaptionId(ruler.id);
+                    //Cria um novo objeto combinando os dados da Régua original com as Opções encontradas
+                    return {
+                        ...ruler,
+                        options: rulerOptionData
+                    };
+                } catch (error) {
+                    console.error(`Error fetching ruler options data for id ${ruler.id}:`, error);
+                    return {
+                        ...ruler,
+                        options: 'Unknown',
+                    };
+                }
+            })
+        );
+        setDetailedRulerTypeData(updatedRulers);
+    };
 
-    const handleSalvar = () => {
-        const reviewObjective = document.getElementById("validationDescriptionReviewObjective")?.innerText.trim() || "";
+    const fetchCapitons = async () => {
+        if (!detailedRulerTypeData.length) {
+            try {
+                // Encontre o objeto no array que corresponde ao Tipo de Régua Selecionada (selectedRulerType)
+                const foundRuler = state.reviewScaleAndCriteriaData.rulerTypeDataList.find(ruler => ruler.id === String(reviewRulerId));
+                if (foundRuler) {
+
+                    // Pega o valor do campo 'text' correspondente
+                    const captionType = foundRuler.text;
+                    //Busca a Régua usando o Tipo de Régua
+                    const foundCaption = await useFindCaptionOptionByCaptionType(captionType);
+                    await fetchCaptionOption(foundCaption);
+                } else {
+                    console.error('Ruler type not found');
+                }
+            } catch (error) {
+                console.error('Error fetching types:', error);
+            }
+        }
+    };
+
+    // Busca as Opções de Régua baseadas em um ID de Régua específico
+    useEffect(() => {
+        if (reviewRulerId != null) {
+            fetchCapitons();
+        }
+    }, [reviewRulerId]);
+
+    // Função para limpar HTML
+    function stripHtmlTags(html) {
+        if (!html) return '';
+        return html.replace(/<[^>]*>/g, '');
+    }
+
+    const reviewObjectiveText = stripHtmlTags(performanceAppraisalData?.reviewObjective);
+
+    const handleRadioChange = (e, evidenceId, weight, evaluationRulerId) => {
+        const { value } = e.target;
+        setSelectedStatus((prev) => ({
+            ...prev,
+            [evidenceId]: {
+                selectedOption: value,
+                weight: weight,
+                evidenceId: evidenceId,
+                evaluationRulerId: evaluationRulerId,
+            },
+        }));
+    };
+
+    const handleSalvar = async () => {
+        const reviewParticipantComment = document.getElementById("validationReviewParticipantComment")?.innerText.trim() || "";
         const finalData = {
-            performanceReview: performanceIdToEvaluation,
-            evaluationRulerId: evaluationRulerId,
-            reviewParticipantId: reviewParticipantId || userLoggedId,
-            reviewModel: reviewModel,
-            answeredAsLeaderOf: participateAsLeader,
-            answeredAsSelfEvaluationOf: participatesAsSelfEvaluator,
-            answeredAsPairOf: participateAsPair,
-            reviewObjective: reviewObjective,
-            reviewAnswers: []
+
+            performanceReview: performanceReviewData.id,
+            evaluationRulerId: performanceReviewData.reviewRulerId,
+            reviewParticipantId: reviewerIdOnPerformanceReview.id || userLoggedId,
+            // reviewedIdOnPerformanceReview: reviewedIdOnPerformanceReview.id,
+            // reviewerIdOnPerformanceReview: reviewerIdOnPerformanceReview.id || userLoggedId,
+            answeredAsLeaderOf: null,
+            answeredAsSelfEvaluationOf: null,
+            answeredAsPairOf: null,
+            reviewParticipantComment: reviewParticipantComment
         };
 
         newGroupedData.forEach((group) => {
@@ -473,21 +556,29 @@ export function AppraisalsSkillsRegister() {
             });
 
             if (occupationalGroup.skillClassification.length > 0) {
-                finalData.reviewAnswers.push(occupationalGroup);
+                if (reviewerIdOnPerformanceReview.reviewAs === 'Líder') {
+                    return finalData.answeredAsLeaderOf = { reviewedIdOnPerformanceReview: reviewedIdOnPerformanceReview.id, occupationalGroup }
+                }
+                if (reviewerIdOnPerformanceReview.reviewAs === 'Autoavaliação') {
+                    return finalData.answeredAsSelfEvaluationOf = { reviewerIdOnPerformanceReview: reviewerIdOnPerformanceReview.id || userLoggedId, occupationalGroup }
+                }
+                if (reviewerIdOnPerformanceReview.reviewAs === 'Par') {
+                    return finalData.answeredAsPairOf = { reviewedIdOnPerformanceReview: reviewedIdOnPerformanceReview.id, occupationalGroup }
+                }
             }
         });
 
-        console.log("Dados para salvar:", finalData);
+        await handleValidateAddReviewAnswerForm(finalData);
     };
 
     const handleLimpar = () => {
-        const objectiveField = document.querySelector("#validationDescriptionReviewObjective .ql-editor");
+        const objectiveField = document.querySelector("#validationReviewParticipantComment .ql-editor");
         if (objectiveField) {
-            objectiveField.innerHTML = "<p><br></p>"; 
+            objectiveField.innerHTML = "<p><br></p>";
         }
-    
+
         const newSelectedStatus = { ...selectedStatus };
-    
+
         performanceEvidenceData.forEach((evidence) => {
             if (newSelectedStatus[evidence.id]) {
                 newSelectedStatus[evidence.id] = {
@@ -496,74 +587,14 @@ export function AppraisalsSkillsRegister() {
                 };
             }
         });
-    
+
         setSelectedStatus(newSelectedStatus);
     };
-
-    const [detailedRulerTypeData, setDetailedRulerTypeData] = useState([]);
-    const [state, dispatch] = useReducer(reviewScaleAndCriteriaFormReducer, initialStateReviewScaleAndCriteriaForm);
-    
-    const fetchCaptionOption = async (rulers) => {
-        let updatedRulers = [];
-
-        if (!Array.isArray(rulers)) {
-            rulers = [rulers];
-        }
-
-        updatedRulers = await Promise.all(
-            rulers.map(async (ruler) => {
-                try {
-                    const rulerOptionData = await useFindCaptionOptionByCaptionId(ruler.id);
-                    console.log("rulerOptionData", rulerOptionData);
-                    return {
-                        ...ruler,
-                        options: rulerOptionData
-                    };
-                } catch (error) {
-                    console.error(`Error fetching ruler options data for id ${ruler.id}:`, error);
-                    return {
-                        ...ruler,
-                        options: 'Unknown',
-                    };
-                }
-            })
-        );
-        setDetailedRulerTypeData(updatedRulers);
-    };
-   
-    const fetchCapitons = async () => {
-        if (!detailedRulerTypeData.length) {
-            try {
-                // Encontre o objeto no array que corresponde a selectedRulerType
-                const foundRuler = state.reviewScaleAndCriteriaData.rulerTypeDataList.find(ruler => ruler.id === String(reviewRulerId));
-                if (foundRuler) {
-                    
-                    // Pegue o valor do campo 'text' correspondente
-                    const captionType = foundRuler.text;
-                    // Use o valor de 'captionType' como parâmetro para o hook
-                    const foundCaption = await useFindCaptionOptionByCaptionType(captionType);
-                    // Chame fetchCaptionOption com o resultado do hook
-                    await fetchCaptionOption(foundCaption);
-                } else {
-                    console.error('Ruler type not found');
-                }
-            } catch (error) { 
-                  console.error('Error fetching types:', error);
-            }
-        }
-    };
-
-   useEffect(() => {
-        if (reviewRulerId != null) {
-            console.log("CHAMOU AQUI");
-            fetchCapitons();
-        }
-    }, [reviewRulerId]);
 
     return (
         <Card className="mb-4">
             <CardHeader>
-                <h3 className="mb-0">{performanceAppraisalData.reviewName}</h3>
+                <h3 className="mb-0">{performanceAppraisalData?.reviewName}</h3>
             </CardHeader>
             <CardBody>
                 <Form className="needs-validation" noValidate>
@@ -572,7 +603,59 @@ export function AppraisalsSkillsRegister() {
                             <label htmlFor="validationDescriptionReviewObjective">
                                 Objetivo
                             </label>
-                            <p>{performanceAppraisalData.reviewObjective}</p>
+                            <p>{reviewObjectiveText}</p>
+                        </Col>
+                    </div>
+                    <div className="form-row">
+                        <Col className="mb-3" md="8">
+                            <label
+                                htmlFor="validationCustom01"
+                            >
+                                Avaliador
+                            </label>
+                            <div className="mt-1 mb-3">
+                                <span className="name text-sm">
+                                    {reviewerIdOnPerformanceReview.name}
+                                </span>
+                            </div>
+                        </Col>
+                        <Col className="mb-3" md="4">
+                            <label
+                                htmlFor="validationCustom05"
+                            >
+                                Cargo
+                            </label>
+                            <div className="mt-1 mb-3">
+                                <span className="name text-sm">
+                                    {reviewerIdOnPerformanceReview.roleName || ''}
+                                </span>
+                            </div>
+                        </Col>
+                    </div>
+                    <div className="form-row">
+                        <Col className="mb-3" md="8">
+                            <label
+                                htmlFor="validationCustom01"
+                            >
+                                Avaliado
+                            </label>
+                            <div className="mt-1 mb-3">
+                                <span className="name text-sm">
+                                    {reviewedIdOnPerformanceReview.name}
+                                </span>
+                            </div>
+                        </Col>
+                        <Col className="mb-3" md="4">
+                            <label
+                                htmlFor="validationCustom05"
+                            >
+                                Cargo
+                            </label>
+                            <div className="mt-1 mb-3">
+                                <span className="name text-sm">
+                                    {reviewedIdOnPerformanceReview.roleName || ''}
+                                </span>
+                            </div>
                         </Col>
                     </div>
                     <div className="form-row">
@@ -580,57 +663,57 @@ export function AppraisalsSkillsRegister() {
                             <label htmlFor="validationPDIStatus">
                                 Legenda
                             </label>
-                             {detailedRulerTypeData && detailedRulerTypeData.length > 0 ? (
-                                                    detailedRulerTypeData.map((rulerType) => (
-                                                        <>
-                                                            <CardBody className="py-1" key={rulerType.id}>
-                                                                <Row>
-                                                                    <Col className="my-2" md="4">
-                                                                        <Row className="flex-column">
-                                                                            <h6 className="text-uppercase ls-1 mb-1" style={{ color: "#ff623f" }} >
-                                                                                Régua do tipo{' '}
-                                                                            </h6>
-                                                                            <h5 className="font-weith-bold text-lg text-dark mb-0">{rulerType.ruleType}</h5>
-                                                                        </Row>
-                                                                        <Row className="flex-column">
-                                                                            <h6 className="text-uppercase ls-1 mb-1" style={{ color: "#ff623f" }} >
-                                                                                Alternativas{' '}
-                                                                            </h6>
-                                                                            <h5 className="font-weith-bold text-lg text-dark mb-0">{rulerType.optionsCount}</h5>
-                                                                        </Row>
-                                                                    </Col>
-                                                                    <Col className="mb-2 d-flex flex-row justify-content-start align-items-center" md="8">
-                                                                        {rulerType.options && rulerType.options.length > 0 ? (
-                                                                            rulerType.options.map((option, index) => (
-                                                                                <Card key={index} className="bg-orange m-2" style={{ width: 96, height: 96 }}>
-                                                                                    <CardBody className="d-flex flex-column justify-content-start align-items-center">
-                                                                                        <div>
-                                                                                            <h3 className="mb-0 text-lighter text-center">{option.label}</h3>
-                                                                                        </div>
-                                                                                        <div className="mb-2 d-flex">
-                                                                                            <h4 className="text-lighter mr-2">Nota</h4>
-                                                                                            <h4 className="mb-0 text-lighter">{option.weight}</h4>
-                                                                                        </div>
-                                                                                    </CardBody>
-                                                                                </Card>
-                                                                            ))
-                                                                        ) : (
-                                                                            <Col md="12">
-                                                                                <small>Nenhuma opção encontrada.</small>
-                                                                            </Col>
-                                                                        )}
-                                                                    </Col>
-                                                                </Row>
+                            {detailedRulerTypeData && detailedRulerTypeData.length > 0 ? (
+                                detailedRulerTypeData.map((rulerType) => (
+                                    <CardBody className="py-1" key={rulerType.id}>
+                                        <Row>
+                                            <Col className="my-2" md="4">
+                                                <Row>
+                                                    <Col>
+                                                        <h6 className="text-uppercase ls-1 mb-1" style={{ color: "#ff623f" }} >
+                                                            Régua do tipo{' '}
+                                                        </h6>
+                                                        <h5 className="font-weith-bold text-lg text-dark mb-0">{rulerType.ruleType}</h5>
+                                                    </Col>
+                                                    <Col>
+                                                        <h6 className="text-uppercase ls-1 mb-1" style={{ color: "#ff623f" }} >
+                                                            Alternativas{' '}
+                                                        </h6>
+                                                        <h5 className="font-weith-bold text-lg text-dark mb-0">{rulerType.optionsCount}</h5>
+                                                    </Col>
+                                                </Row>
+                                            </Col>
+                                            <Col className="mb-2 d-flex flex-row justify-content-center align-items-center" md="8">
+                                                {rulerType.options && rulerType.options.length > 0 ? (
+                                                    rulerType.options.map((option, index) => (
+                                                        <Card key={index} className="bg-orange m-2" style={{ width: 96, height: 96 }}>
+                                                            <CardBody className="d-flex flex-column justify-content-start align-items-center">
+                                                                <div>
+                                                                    <h3 className="mb-0 text-lighter text-center">{option.label}</h3>
+                                                                </div>
+                                                                <div className="mb-2 d-flex">
+                                                                    <h4 className="text-lighter mr-2">Nota</h4>
+                                                                    <h4 className="mb-0 text-lighter">{option.weight}</h4>
+                                                                </div>
                                                             </CardBody>
-                                                        </>
+                                                        </Card>
                                                     ))
                                                 ) : (
-                                                    <ListGroupItem className="px-0">
-                                                        <div className="col">
-                                                            <small>Nenhum dado de régua de avaliação encontrado.</small>
-                                                        </div>
-                                                    </ListGroupItem>
+                                                    <Col md="12">
+                                                        <small>Nenhuma opção encontrada.</small>
+                                                    </Col>
                                                 )}
+                                            </Col>
+                                        </Row>
+                                    </CardBody>
+                                ))
+                            ) : (
+                                <ListGroupItem className="px-0">
+                                    <div className="col">
+                                        <small>Nenhum dado de régua de avaliação encontrado.</small>
+                                    </div>
+                                </ListGroupItem>
+                            )}
                         </Col>
                     </div>
                     <div>
@@ -650,7 +733,7 @@ export function AppraisalsSkillsRegister() {
                                             .filter((classification) => classification.skills.length > 0)
                                             .map((classification) => (
                                                 <div key={classification.classificationId} style={{ marginBottom: "2rem" }}>
-                                                    <Col className="py-3 d-flex justify-content-center" md="12">
+                                                    <Col className="pb-3 d-flex justify-content-center" md="12">
                                                         <p className="lead text-black">
                                                             Competência(s): {classification.classificationName}
                                                         </p>
@@ -684,13 +767,13 @@ export function AppraisalsSkillsRegister() {
                                                                             <tr>
                                                                                 <th>Evidência Comportamental</th>
                                                                                 {(ri.ruleOptions || []).map((option, i) => (
-                                                                                    <th key={i}>{option.label}</th>
+                                                                                    <th key={i} className="text-center">{option.label}</th>
                                                                                 ))}
                                                                             </tr>
                                                                         </thead>
                                                                         <tbody>
                                                                             <tr>
-                                                                                <td>{ri.evidence?.description || "Não Encontrado"}</td>
+                                                                                <td>{idx + 1}. {ri.evidence?.description || "Não Encontrado"}</td>
                                                                                 {(ri.ruleOptions || []).map((option, j) => (
                                                                                     <td key={j} align="center">
                                                                                         <input
@@ -728,13 +811,16 @@ export function AppraisalsSkillsRegister() {
                     </div>
                     <div className="form-row">
                         <Col className="mb-7" md="12">
-                            <label htmlFor="validationDescriptionReviewObjective">
-                                Objetivo
+                            <label
+                                htmlFor="validationReviewParticipantComment"
+                                className="text-justify"
+                            >
+                                Utilize o espaço abaixo para expor comentários, sugestões, críticas e/ou outras informações adicionais, que ainda não foram mencionados acima. Indique também ações e/ou treinamentos que, na sua opinião, poderão contribuir para o desenvolvimento profissional do avaliado. Sua franqueza contribuirá para a confecção do plano de desenvolvimento dele.
                             </label>
                             <div
-                                data-quill-placeholder="Escreva aqui o objetivo da avaliação..."
+                                data-quill-placeholder="..."
                                 data-toggle="quill"
-                                id="validationDescriptionReviewObjective"
+                                id="validationReviewParticipantComment"
                             />
                             <div className="valid-feedback">Parece bom!</div>
                             <div className="invalid-feedback">
@@ -742,35 +828,41 @@ export function AppraisalsSkillsRegister() {
                             </div>
                         </Col>
                     </div>
-                    <Row>
-                        <Col md="8" />
-                        <Col className="d-flex justify-content-end align-items-center" md="4">
-                            <Button className="px-5" color="primary" size="lg" onClick={handleBackToList}>
-                                Voltar
-                            </Button>
-                            <Button
-                                className="px-5"
-                                color="secundary"
-                                size="lg"
-                                type="button"
-                            onClick={handleLimpar}
-                            >
-                                <span className="btn-inner--text">Limpar</span>
-                            </Button>
-                            <Button
-                                className="px-5"
-                                color="primary"
-                                size="lg"
-                                type="button"
-                                onClick={handleSalvar}
-                            >
-                                <span className="btn-inner--text">Salvar</span>
-                            </Button>
-                        </Col>
-                    </Row>
-
                 </Form>
             </CardBody>
+            <CardFooter>
+                <Row>
+                    <Col md="8" />
+                    <Col className="d-flex justify-content-end align-items-center" md="4">
+                        <Button
+                            className="px-5"
+                            color="primary"
+                            size="lg"
+                            onClick={handleBackToList}
+                        >
+                            Voltar
+                        </Button>
+                        <Button
+                            className="btn-neutral px-5"
+                            color="default"
+                            size="lg"
+                            type="button"
+                            onClick={handleLimpar}
+                        >
+                            <span className="btn-inner--text">Limpar</span>
+                        </Button>
+                        <Button
+                            className="px-5"
+                            color="primary"
+                            size="lg"
+                            type="button"
+                            onClick={handleSalvar}
+                        >
+                            <span className="btn-inner--text">Salvar</span>
+                        </Button>
+                    </Col>
+                </Row>
+            </CardFooter>
         </Card>
     )
 }

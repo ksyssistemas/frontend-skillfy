@@ -27,7 +27,7 @@ import {
     Col,
 } from "reactstrap";
 
-function CustomerHeader({
+function PdiHeader({
     name,
     parentName,
     newRegistrationButtonText,
@@ -128,14 +128,14 @@ function CustomerHeader({
     );
 }
 
-CustomerHeader.propTypes = {
+PdiHeader.propTypes = {
     handleShowDepartmentsUserRegister: () => { },
     handleShowRolesUserRegister: () => { },
     handleShowEmployeeUserRegister: () => { },
     handleShowEmployeeRecordEntrySettings: () => { }
 };
 
-CustomerHeader.propTypes = {
+PdiHeader.propTypes = {
     name: PropTypes.string,
     parentName: PropTypes.string,
     newRegistrationButtonText: PropTypes.string,
@@ -146,4 +146,4 @@ CustomerHeader.propTypes = {
     handleShowEmployeeRecordEntrySettings: PropTypes.func,
 };
 
-export default CustomerHeader;
+export default PdiHeader;

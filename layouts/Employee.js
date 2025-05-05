@@ -1,16 +1,16 @@
 
 import React from "react";
 import { withRouter } from "next/router";
-
-// core components
-import EnterpriseNavbar from "components/Navbars/EmployeeNavbar.js";
-import RegisterFooter from "components/Footers/RegisterFooter.js";
 import Sidebar from "components/Sidebar/SidebarEmployee.js";
 import "assets/css/styles/layoutspage.css";
 import routes from "routes/employee.routes";
+import EmployeeNavbar from "../components/Navbars/EmployeeNavbar";
+import EmployeeFooter from "../components/Footers/EmployeeFooter";
+import SidebarEmployee from "../components/Sidebar/SidebarEmployee";
 
 function Employee({ router, children }) {
   const [sidenavOpen, setSidenavOpen] = React.useState(true);
+
   const getRoutes = (routes) => {
     return routes.map((prop, key) => {
       if (prop.collapse) {
@@ -29,6 +29,7 @@ function Employee({ router, children }) {
       }
     });
   };
+
   const getBrandText = (path) => {
     for (let i = 0; i < routes.length; i++) {
       if (router.pathname.indexOf(routes[i].layout + routes[i].path) !== -1) {
@@ -37,6 +38,7 @@ function Employee({ router, children }) {
     }
     return "Brand";
   };
+
   // toggles collapse between mini sidenav and normal
   const toggleSidenav = (e) => {
     if (document.body.classList.contains("g-sidenav-pinned")) {
@@ -48,6 +50,7 @@ function Employee({ router, children }) {
     }
     setSidenavOpen(!sidenavOpen);
   };
+
   const getNavbarTheme = () => {
     return router.pathname.indexOf("admin/alternative-dashboard") === -1
       ? "dark"
@@ -55,19 +58,19 @@ function Employee({ router, children }) {
   };
   return (
     <>
-      <Sidebar
+      <SidebarEmployee
         routes={routes}
         toggleSidenav={toggleSidenav}
         sidenavOpen={sidenavOpen}
         logo={{
           innerLink: "/",
-          imgSrc: require("assets/img/brand/skillfy-logo-login.png"),
+          imgSrc: require("assets/img/brand/skillfy-logo-white.png"),
           imgAlt: "...",
         }}
       />
 
       <div className="main-content">
-        <EnterpriseNavbar
+        <EmployeeNavbar
           theme={getNavbarTheme()}
           toggleSidenav={toggleSidenav}
           sidenavOpen={sidenavOpen}
@@ -76,7 +79,7 @@ function Employee({ router, children }) {
         <main>
           {children}
         </main>
-        <RegisterFooter />
+        <EmployeeFooter />
       </div>
       {sidenavOpen ? (
         <div className="backdrop d-xl-none" onClick={toggleSidenav} />

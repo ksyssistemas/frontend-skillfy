@@ -14,9 +14,6 @@ import {
   Row,
   Col,
 } from "reactstrap";
-
-// layout for this page
-import Admin from "layouts/Admin.js";
 // core components
 import CardsHeader from "components/Headers/CardsHeaderAdmin.js";
 
@@ -26,6 +23,7 @@ import {
   chartExample1,
   chartExample2,
 } from "variables/charts.js";
+import DynamicLayout from "../../layouts/DynamicLayout";
 
 function Dashboard() {
   const [activeNav, setActiveNav] = React.useState(1);
@@ -2304,6 +2302,6 @@ function Dashboard() {
   );
 }
 
-Dashboard.layout = Admin;
+Dashboard.getLayout = (page) => <DynamicLayout>{page}</DynamicLayout>;
 
 export default Dashboard;

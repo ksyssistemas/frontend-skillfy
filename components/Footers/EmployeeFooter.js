@@ -11,15 +11,15 @@ import {
   Col
  } from "reactstrap";
 
-function RegisterFooter() {
+function EmployeeFooter() {
   return (
     <>
-    <section className="bg-lighter">
+    <section style={{ backgroundColor: "#FFEEE5" }}>
       <Container>
-        <footer className="footer pt-0 py-4 bg-lighter">
+        <footer className="footer pt-0 py-4" style={{ backgroundColor: "#FFEEE5" }}>
             <Row className="align-items-center justify-content-lg-between mt-1">
               <Col lg="6">
-                <div className="copyright text-center text-lg-left text-orange">
+                <div className="copyright text-center text-lg-left text-muted text-white">
                 <img
                     alt="..."
                     src={require("assets/img/brand/skillfy-logo-pageseller.png")}
@@ -40,7 +40,7 @@ function RegisterFooter() {
                     <NavLink
                       href="/auth/login"
                       target="#"
-                      color="orange"
+                      color="white"
                     >
                     <span className="nav-link-inner--text text-orange">Sobre a SkillFy</span>
                     </NavLink>
@@ -126,4 +126,4 @@ function RegisterFooter() {
   );
 }
 
-export default RegisterFooter;
+export default EmployeeFooter;

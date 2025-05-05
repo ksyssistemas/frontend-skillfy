@@ -28,7 +28,7 @@ import {
   Col,
 } from "reactstrap";
 
-function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
+function EmployeeNavbar({ theme, sidenavOpen, toggleSidenav }) {
   // function that on mobile devices makes the search open
   const openSearch = () => {
     document.body.classList.add("g-navbar-search-showing");
@@ -55,32 +55,6 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
       document.body.classList.remove("g-navbar-search-hidden");
     }, 500);
   };
-
-  const [administratorData, setAdministratorData] = useState({});
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('http://localhost:4008/employee/email/col2@gmail.com', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setAdministratorData(data);
-        } else {
-          console.error('Error in response:', response.status);
-        }
-      } catch (error) {
-        console.error('Error in request:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
@@ -243,7 +217,7 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                         <div className="col ml--2">
                           <div className="d-flex justify-content-between align-items-center">
                             <div>
-                              <h4 className="mb-0 text-sm">{administratorData.name}</h4>
+                              <h4 className="mb-0 text-sm">John Doe</h4>
                             </div>
                             <div className="text-right text-muted">
                               <small>5 hrs ago</small>
@@ -301,7 +275,7 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                         <div className="col ml--2">
                           <div className="d-flex justify-content-between align-items-center">
                             <div>
-                              <h4 className="mb-0 text-sm">{administratorData.name}</h4>
+                              <h4 className="mb-0 text-sm">John Doe</h4>
                             </div>
                             <div className="text-right text-muted">
                               <small>3 hrs ago</small>
@@ -416,12 +390,12 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
                     <span className="avatar avatar-sm rounded-circle">
                       <img
                         alt="..."
-                        src={require("assets/img/theme/team-4.jpg")}
+                        src={require("assets/img/theme/team-0.jpg")}
                       />
                     </span>
                     <Media className="ml-2 d-none d-lg-block">
                       <span className="mb-0 text-sm font-weight-bold">
-                        {administratorData.name}
+                        John Doe
                       </span>
                     </Media>
                   </Media>
@@ -473,15 +447,15 @@ function RegisterNavbar({ theme, sidenavOpen, toggleSidenav }) {
   );
 }
 
-RegisterNavbar.defaultProps = {
+EmployeeNavbar.defaultProps = {
   toggleSidenav: () => { },
   sidenavOpen: false,
   theme: "dark",
 };
-RegisterNavbar.propTypes = {
+EmployeeNavbar.propTypes = {
   toggleSidenav: PropTypes.func,
   sidenavOpen: PropTypes.bool,
   theme: PropTypes.oneOf(["dark", "light"]),
 };
 
-export default RegisterNavbar;
+export default EmployeeNavbar;

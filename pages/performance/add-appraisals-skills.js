@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Container } from "reactstrap";
 import Performance from "../../layouts/Performance";
-import AppraisalCycleHeader from "../../components/Headers/PerformanceHeader/AppraisalCycleHeader";
 import AppraisalListHeader from "../../components/Headers/PerformanceHeader/AppraisalListHeader";
-import AppraisalCycleTable from "../../components/Tables/AppraisalTables/Appraisal/CycleAppraisal ";
-import AddAppraisalCycleModal from "../../components/Modals/AppraisalModal/add-appraisal-cycle";
 import AppraisalsSkillsRegister from "../../components/Forms/PerformanceForms/AppraisalsSkillsRegister";
-
 
 function Appraisalsskills() {
   const [admins, setAdmins] = useState([]);

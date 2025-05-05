@@ -20,31 +20,31 @@ const routes = [
     collapse: true,
     name: "Você",
     icon: "ni ni-archive-2",
-    state: "examplesCollapse",
+    state: "youCollapse",
     views: [
       {
-        path: "/user-profile",
+        path: "/profile",
         name: "Perfil",
         miniName: "P",
-        layout: "/profile",
+        layout: "/employee",
       },
       {
-        path: "/feed",
+        path: "/social-network",
         name: "Rede",
         miniName: "R",
-        layout: "/social-network ",
+        layout: "/employee",
       },
+      // {
+      //   path: "/absence-record",
+      //   name: "Ausências",
+      //   miniName: "A",
+      //   layout: "/employee",
+      // },
       {
-        path: "/absence-record",
-        name: "Ausências",
-        miniName: "A",
-        layout: "/records",
-      },
-      {
-        path: "/user-tasks",
+        path: "/tasks",
         name: "Tarefas",
         miniName: "T",
-        layout: "/tasks",
+        layout: "/employee",
       },
     ],
   },
@@ -88,7 +88,7 @@ const routes = [
   // },
   {
     collapse: true,
-    name: "Desempenho",
+    name: "Avaliações",
     icon: "ni ni-paper-diploma",
     state: "appraisalsCollapse",
     views: [

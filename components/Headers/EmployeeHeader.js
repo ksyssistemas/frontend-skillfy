@@ -27,7 +27,7 @@ import {
     Col,
 } from "reactstrap";
 
-function CustomerHeader({
+function EmployeeHeader({
     name,
     parentName,
     newRegistrationButtonText,
@@ -46,12 +46,12 @@ function CustomerHeader({
 
     return (
         <>
-            <div style={{ backgroundColor: "#E6EBFA"}} className="header header-dark pb-6 content__title content__title--calendar">
+            <div style={{ backgroundColor: "#FFEEE5" }} className="header header-light pb-6 content__title content__title--calendar">
                 <Container fluid>
                     <div className="header-body">
                         <Row className="align-items-center py-4">
                             <Col lg="6" xs="7">
-                                <h6 className="fullcalendar-title h2 text-indigo d-inline-block mb-0">
+                                <h6 className="fullcalendar-title h2 text-orange d-inline-block mb-0">
                                     {name}
                                 </h6>{" "}
                                 <Breadcrumb
@@ -60,11 +60,11 @@ function CustomerHeader({
                                 >
                                     <BreadcrumbItem>
                                         <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                                            <i className="fas fa-home text-indigo" />
+                                            <i className="fas fa-home text-orange" />
                                         </a>
                                     </BreadcrumbItem>
                                     <BreadcrumbItem>
-                                        <a className="text-indigo" href="#pablo" onClick={(e) => e.preventDefault()}>
+                                        <a className="text-orange" href="#pablo" onClick={(e) => e.preventDefault()}>
                                             {parentName}
                                         </a>
                                     </BreadcrumbItem>
@@ -78,8 +78,8 @@ function CustomerHeader({
                                 {
                                     newRegistrationButtonText && (
                                         <Button
-                                           style={{ backgroundColor: "#562f9f"}}
-                                            color="dark"
+                                            className="btn-warning"
+                                            color=""
                                             href="#pablo"
                                             onClick={
                                                 handleShowEmployeeUserRegister ?
@@ -100,8 +100,8 @@ function CustomerHeader({
                                 {
                                     employeeRecordEntrySettingsButtonName && (
                                         <Button
-                                           style={{ backgroundColor: "#562f9f"}}
-                                            color="dark"
+                                            className="btn-warning"
+                                            color=""
                                             href="#pablo"
                                             onClick={handleShowEmployeeRecordEntrySettings}
                                             size="sm"
@@ -111,8 +111,8 @@ function CustomerHeader({
                                     )
                                 }
                                 <Button
-                                   style={{ backgroundColor: "#562f9f"}}
-                                    color="dark"
+                                    className="btn-warning"
+                                    color=""
                                     href="#pablo"
                                     onClick={(e) => e.preventDefault()}
                                     size="sm"
@@ -128,14 +128,14 @@ function CustomerHeader({
     );
 }
 
-CustomerHeader.propTypes = {
+EmployeeHeader.propTypes = {
     handleShowDepartmentsUserRegister: () => { },
     handleShowRolesUserRegister: () => { },
     handleShowEmployeeUserRegister: () => { },
     handleShowEmployeeRecordEntrySettings: () => { }
 };
 
-CustomerHeader.propTypes = {
+EmployeeHeader.propTypes = {
     name: PropTypes.string,
     parentName: PropTypes.string,
     newRegistrationButtonText: PropTypes.string,
@@ -146,4 +146,4 @@ CustomerHeader.propTypes = {
     handleShowEmployeeRecordEntrySettings: PropTypes.func,
 };
 
-export default CustomerHeader;
+export default EmployeeHeader;

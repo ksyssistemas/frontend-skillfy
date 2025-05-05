@@ -1,48 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import PropTypes from "prop-types";
+import { Button, Container, Row, Col } from "reactstrap";
 
-// reactstrap components
-import { 
-  Button, 
-  Container,
-  Modal,
-  ModalBody,
-  ModalFooter, 
-  Row, 
-  Col 
-} from "reactstrap";
-
-import EditProfile from "../Modals/editEmployeeProfile"
-
-function ProfileHeader() {
-  const [modalOpen, setModalOpen] = React.useState(false);
-
-  const [administratorData, setAdministratorData] = useState({});
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('http://localhost:4008/employee/email/col2@gmail.com', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setAdministratorData(data);
-        } else {
-          console.error('Error in response:', response.status);
-        }
-      } catch (error) {
-        console.error('Error in request:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-
+function ProfileEmployeeHeader({employeeName, employeeProfileCoverText}) {
   return (
     <>
       <div
@@ -60,20 +20,17 @@ function ProfileHeader() {
         <Container className="d-flex align-items-center" fluid>
           <Row>
             <Col lg="7" md="10">
-              <h1 className="display-2 text-white">{administratorData.name}</h1>
+              <h1 className="display-2 text-white">Olá {employeeName}</h1>
               <p className="text-white mt-0 mb-5">
-              "Confie no Senhor de todo o seu coração e não se apoie em seu
-               próprio entendimento; reconheça o Senhor em todos os seus caminhos, 
-               e ele endireitará as suas veredas."
+                {employeeProfileCoverText}
               </p>
               <Button
                 className="btn-neutral"
                 color="default"
                 href="#pablo"
-                onClick={() => setModalOpen(!modalOpen)}
+                onClick={(e) => e.preventDefault()}
               >
-                Editar Perfil
-                <EditProfile isOpen={modalOpen} toggle={() => setModalOpen(!modalOpen)} />
+                Editar perfil
               </Button>
             </Col>
           </Row>
@@ -83,4 +40,14 @@ function ProfileHeader() {
   );
 }
 
-export default ProfileHeader;
+ProfileEmployeeHeader.propTypes = {
+  employeeName: 'Desconhecido',
+  employeeProfileCoverText: "This is your profile page. You can see the progress you've made with your work and manage your projects or assigned tasks.",
+};
+
+ProfileEmployeeHeader.propTypes = {
+  employeeName: PropTypes.string,
+  employeeProfileCoverText: PropTypes.string,
+};
+
+export default ProfileEmployeeHeader;

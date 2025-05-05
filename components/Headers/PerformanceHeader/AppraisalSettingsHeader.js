@@ -54,29 +54,29 @@ function AppraisalSettingsHeader(
 
   return (
     <>
-      <div style={{ backgroundColor: '#562f9f' }} className="header header-dark pb-6 content__title content__title--calendar">
+      <div style={{ backgroundColor: "#E6EBFA" }} className="header header-dark pb-6 content__title content__title--calendar">
         <Container fluid>
           <div className="header-body">
             <Row className="align-items-center py-4">
               <Col lg="6" xs="7">
-                <h6 className="fullcalendar-title h2 text-white d-inline-block mb-0">
+                <h6 className="fullcalendar-title h2 text-indigo d-inline-block mb-0">
                   {name}
                 </h6>{" "}
                 <Breadcrumb
                   className="d-none d-md-inline-block ml-lg-4"
-                  listClassName="breadcrumb-links breadcrumb-dark"
+                  listClassName="breadcrumb-links breadcrumb-light"
                 >
                   <BreadcrumbItem>
                     <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                      <i className="fas fa-home" />
+                      <i className="fas fa-home text-indigo" />
                     </a>
                   </BreadcrumbItem>
                   <BreadcrumbItem>
-                    <a href="#pablo" onClick={(e) => e.preventDefault()}>
+                    <a className="text-indigo" href="#pablo" onClick={(e) => e.preventDefault()}>
                       {parentName}
                     </a>
                   </BreadcrumbItem>
-                  <BreadcrumbItem aria-current="page" className="active">
+                  <BreadcrumbItem aria-current="page" className={!sonName ? "active" : "text-indigo"}>
                     {name}
                   </BreadcrumbItem>
                   {
@@ -93,7 +93,7 @@ function AppraisalSettingsHeader(
                 {/* {
                   firstButtonText && (
                     <Button
-                      className="btn-neutral"
+                     style={{ backgroundColor: "#562f9f"}}
                       color=""
                       href="#pablo"
                       size="sm"
@@ -114,8 +114,8 @@ function AppraisalSettingsHeader(
                       <Link href="/performance/add-appraisal">
                         <NavLink href="#pablo">
                           <Button
-                            className="btn-neutral"
-                            color=""
+                            style={{ backgroundColor: "#562f9f" }}
+                            color="dark"
                             href="#pablo"
                             size="sm"
                           >
@@ -131,8 +131,8 @@ function AppraisalSettingsHeader(
                     </Nav>
                   ) : (firstButtonText && view !== 'default' && (
                     <Button
-                      className="btn-neutral"
-                      color=""
+                      style={{ backgroundColor: "#562f9f" }}
+                      color="dark"
                       href="#pablo"
                       size="sm"
                       onClick={onFirstButtonClick}
@@ -150,8 +150,9 @@ function AppraisalSettingsHeader(
                   secondButtonText && view === 'skills' ? (
                     <UncontrolledDropdown className="mx-1">
                       <DropdownToggle
-                        className="btn-neutral btn-fixed-width"
-                        color=""
+                      style={{ backgroundColor: "#562f9f"}}
+                        className="btn-fixed-width"
+                        color="dark"
                         href="#pablo"
                         size="sm"
                       >
@@ -176,8 +177,9 @@ function AppraisalSettingsHeader(
                     secondButtonText && view === 'captions' && !isShouldSubmitCaptionsRegistration ? (
                       <UncontrolledDropdown className="mx-1">
                         <DropdownToggle
-                          className="btn-neutral btn-fixed-width"
-                          color=""
+                        style={{ backgroundColor: "#562f9f"}}
+                          className="btn-fixed-width"
+                          color="dark"
                           href="#pablo"
                           size="sm"
                         >
@@ -208,8 +210,8 @@ function AppraisalSettingsHeader(
                       // : (
                       //   secondButtonText && view === 'captions' && !isShouldSubmitCaptionsRegistration ? (
                       //     <Button
-                      //       className="btn-neutral"
-                      //       color=""
+                      //       className="text-indigo"
+                      //       color="dark"
                       //       href="#pablo"
                       //       size="sm"
                       //       onClick={onSecondButtonClick}
@@ -227,8 +229,8 @@ function AppraisalSettingsHeader(
                   )
                 }
                 <Button
-                  className="btn-neutral"
-                  color=""
+                  style={{ backgroundColor: "#562f9f" }}
+                  color="dark"
                   href="#pablo"
                   onClick={(e) => e.preventDefault()}
                   size="sm"

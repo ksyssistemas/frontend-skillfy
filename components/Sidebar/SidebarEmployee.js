@@ -127,21 +127,21 @@ function SidebarEmployee({
             >
               {prop.icon ? (
                 <>
-                  <i style={{ color: "#FFFFFF" }} className={prop.icon} />
-                  <span style={{ color: "#FFFFFF" }} className="nav-link-text">
+                  <i style={{ color: getCollapseInitialState(prop.views) ? '#ff623f' : '#FFFFFF' }} className={prop.icon} />
+                  <span style={{ color: getCollapseInitialState(prop.views) ? '#ff623f' : '#FFFFFF' }} className="nav-link-text">
                     {prop.name}
                   </span>
                 </>
               ) : prop.miniName ? (
                 <>
                   <span
-                    style={{ color: "#FFFFFF" }}
+                    style={{ color: getCollapseInitialState(prop.views) ? '#ff623f' : '#FFFFFF' }}
                     className="sidenav-mini-icon"
                   >
                     {" "}
                     {prop.miniName}{" "}
                   </span>
-                  <span style={{ color: "#FFFFFF" }} className="sidenav-normal">
+                  <span style={{ color: getCollapseInitialState(prop.views) ? '#ff623f' : '#FFFFFF' }} className="sidenav-normal">
                     {" "}
                     {prop.name}{" "}
                   </span>
@@ -305,7 +305,7 @@ function SidebarEmployee({
 
 SidebarEmployee.defaultProps = {
   routes: [{}],
-  toggleSidenav: () => {},
+  toggleSidenav: () => { },
   sidenavOpen: false,
   rtlActive: false,
 };

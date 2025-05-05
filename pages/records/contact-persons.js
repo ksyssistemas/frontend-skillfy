@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
-import Admin from "../../layouts/Admin";
+import React, { useState } from "react";
 import AdminHeader from "components/Headers/AdminHeader.js";
 import ContactPersonsList from "../../components/Tables/Admin/ContactPersonsList";
 import { Container } from "reactstrap";
 import ContactPersonsRegister from "../../components/Forms/AdministratorForms/ContactPersonsRegister";
-import { TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT } from '../../contexts/AuthContext';
+import DynamicLayout from "../../layouts/DynamicLayout";
 
 function ContactPersonsRecords() {
 
@@ -53,10 +52,6 @@ function ContactPersonsRecords() {
   );
 }
 
-TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'administrator'
-  ? ContactPersonsRecords.layout = Admin
-  : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'customer'
-    ? ContactPersonsRecords.layout = Performance
-    : ContactPersonsRecords.layout = Admin);
+ContactPersonsRecords.getLayout = (page) => <DynamicLayout>{page}</DynamicLayout>;
 
 export default ContactPersonsRecords;

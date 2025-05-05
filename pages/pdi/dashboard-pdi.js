@@ -1,26 +1,8 @@
-import React, { useState, useEffect, useContext } from "react";
-import dynamic from "next/dynamic";
-import {
-    Button,
-    Card,
-    CardHeader,
-    CardBody,
-    Container,
-    Row,
-    Col,
-    ListGroup,
-    ListGroupItem,
-    Table,
-    Progress
-} from "reactstrap";
-import Performance from "../../layouts/Performance";
-import AppraisalSettingsHeader from "../../components/Headers/PerformanceHeader/AppraisalSettingsHeader";
-import AdminHeader from "components/Headers/AdminHeader.js";
-import Admin from "layouts/Admin.js";
-import Employee from "../../layouts/Employee";
-import { useAuth } from '../../hooks/useAuth';
-import { TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT } from '../../contexts/AuthContext';
+import React from "react";
+import { Container } from "reactstrap";
 import { PDIListDashBoard } from "../../components/Tables/PDI/PDIListDashBoard";
+import PdiHeader from "../../components/Headers/PdiHeader";
+import DynamicLayout from "../../layouts/DynamicLayout";
 
 function DashboardPDI() {
     // const { authenticationDataLoggedInUser } = useAuth();
@@ -31,7 +13,7 @@ function DashboardPDI() {
     
     return (
         <>
-            <AdminHeader name="Dashboard" parentName="Desempenho" />
+            <PdiHeader name="Dashboard" parentName="Desempenho" />
             <Container className="mt--6" fluid>
                 <PDIListDashBoard />
             </Container>
@@ -39,12 +21,6 @@ function DashboardPDI() {
     );
 }
 
-TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'administrator'
-    ? DashboardPDI.layout = Admin
-    : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'customer'
-        ? DashboardPDI.layout = Performance
-        : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'employee'
-            ? DashboardPDI.layout = Employee
-            : DashboardPDI.layout = Admin));
+DashboardPDI.getLayout = (page) => <DynamicLayout>{page}</DynamicLayout>;
 
 export default DashboardPDI;

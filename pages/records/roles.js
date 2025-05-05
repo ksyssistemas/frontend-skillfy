@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import Admin from "../../layouts/Admin";
-import Performance from "../../layouts/Performance";
 import AdminHeader from "components/Headers/AdminHeader.js";
 import CustomerHeader from "../../components/Headers/CustomerHeader";
 import { Container } from "reactstrap";
 import RolesRegister from "../../components/Forms/CustomerForms/RolesRegister";
 import RolesList from "../../components/Tables/Customer/RolesList";
 import { useAuth } from '../../hooks/useAuth';
-import { TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT } from '../../contexts/AuthContext';
+import DynamicLayout from "../../layouts/DynamicLayout";
 
 function RolesRecords() {
 
@@ -76,6 +74,6 @@ function RolesRecords() {
     );
 }
 
-TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'administrator' ? RolesRecords.layout = Admin : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'customer' ? RolesRecords.layout = Performance : RolesRecords.layout = Admin);
+RolesRecords.getLayout = (page) => <DynamicLayout>{page}</DynamicLayout>;
 
 export default RolesRecords;

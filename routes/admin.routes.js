@@ -137,32 +137,32 @@ const routes = [
   //     },
   //   ],
   // },
-  {
-    collapse: true,
-    name: "PDI",
-    icon: "ni ni-chart-bar-32",
-    state: "pdiCollapse",
-    views: [
-      {
-        path: "/dashboard-pdi",
-        name: "Dashboard",
-        miniName: "D",
-        layout: "/pdi",
-      },
-      {
-        path: "/competencies-pdi",
-        name: "Competências",
-        miniName: "C",
-        layout: "/pdi",
-      },
-      {
-        path: "/add-pdi",
-        name: "Cadastro PDI",
-        miniName: "C",
-        layout: "/pdi",
-      },
-    ],
-  }
+  // {
+  //   collapse: true,
+  //   name: "PDI",
+  //   icon: "ni ni-chart-bar-32",
+  //   state: "pdiCollapse",
+  //   views: [
+  //     {
+  //       path: "/dashboard-pdi",
+  //       name: "Dashboard",
+  //       miniName: "D",
+  //       layout: "/pdi",
+  //     },
+  //     {
+  //       path: "/competencies-pdi",
+  //       name: "Competências",
+  //       miniName: "C",
+  //       layout: "/pdi",
+  //     },
+  //     {
+  //       path: "/add-pdi",
+  //       name: "Cadastro PDI",
+  //       miniName: "C",
+  //       layout: "/pdi",
+  //     },
+  //   ],
+  // }
 ]
 
 export default routes;

@@ -33,23 +33,23 @@ import {
 function CardsHeader({ name, parentName }) {
   return (
     <>
-      <div style={{ backgroundColor: "#562f9f"}} className="header pb-6">
+      <div style={{ backgroundColor: "#E6EBFA"}} className="header pb-6">
         <Container fluid>
           <div className="header-body">
             <Row className="align-items-center py-4">
               <Col lg="6" xs="7">
-                <h6 className="h2 text-white d-inline-block mb-0">{name}</h6>{" "}
+                <h6 className="h2 text-indigo d-inline-block mb-0">{name}</h6>{" "}
                 <Breadcrumb
                   className="d-none d-md-inline-block ml-md-4"
-                  listClassName="breadcrumb-links breadcrumb-dark"
+                  listClassName="breadcrumb-links breadcrumb-light"
                 >
                   <BreadcrumbItem>
                     <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                      <i className="fas fa-home" />
+                      <i className="fas fa-home text-indigo" />
                     </a>
                   </BreadcrumbItem>
                   <BreadcrumbItem>
-                    <a href="#pablo" onClick={(e) => e.preventDefault()}>
+                    <a className="text-indigo" href="#pablo" onClick={(e) => e.preventDefault()}>
                       {parentName}
                     </a>
                   </BreadcrumbItem>
@@ -60,8 +60,8 @@ function CardsHeader({ name, parentName }) {
               </Col>
               <Col className="text-right" lg="6" xs="5">
                 <Button
-                  className="btn-neutral"
-                  color="default"
+                  style={{ backgroundColor: "#562f9f"}}
+                  color="dark"
                   href="#pablo"
                   onClick={(e) => e.preventDefault()}
                   size="sm"
@@ -69,8 +69,8 @@ function CardsHeader({ name, parentName }) {
                   New
                 </Button>
                 <Button
-                  className="btn-neutral"
-                  color="default"
+                  style={{ backgroundColor: "#562f9f"}}
+                  color="dark"
                   href="#pablo"
                   onClick={(e) => e.preventDefault()}
                   size="sm"

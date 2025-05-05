@@ -110,12 +110,12 @@ const routes = () => {
           miniName: "C",
           layout: "/performance",
         },
-        {
-          path: "/add-appraisals-skills-list",
-          name: "Realizar",
-          miniName: "R",
-          layout: "/performance",
-        },
+        // {
+        //   path: "/add-appraisals-skills-list",
+        //   name: "Realizar",
+        //   miniName: "R",
+        //   layout: "/performance",
+        // },
       ],
     },
     {

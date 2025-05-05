@@ -1,13 +1,9 @@
 import React, { useState } from "react";
 import { Container } from "reactstrap";
-import AdminHeader from "components/Headers/AdminHeader.js";
+import PdiHeader from "components/Headers/PdiHeader.js";
 import { CompetenciesRegister } from "../../components/Forms/PDIForms/CompetenciesRegister";
 import CompetenciesList from "../../components/Tables/PDI/CompetenciesList";
-import Admin from "layouts/Admin.js";
-import { TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT } from '../../contexts/AuthContext';
-import Performance from "../../layouts/Performance";
-import Employee from "../../layouts/Employee";
-import { useAuth } from '../../hooks/useAuth';
+import DynamicLayout from "../../layouts/DynamicLayout";
 
 function CompetenciesPDI() {
 
@@ -29,7 +25,7 @@ function CompetenciesPDI() {
                 !isAddingCompetency
                     ? (
                         <>
-                            <AdminHeader
+                            <PdiHeader
                                 name="Competências"
                                 parentName="Desempenho"
                                 newRegistrationButtonText="Adicionar Competência"
@@ -42,7 +38,7 @@ function CompetenciesPDI() {
                     )
                     : (
                         <>
-                            <AdminHeader
+                            <PdiHeader
                                 name="Competências"
                                 parentName="Desempenho"
                                 newRegistrationButtonText="Voltar para Lista"
@@ -58,12 +54,6 @@ function CompetenciesPDI() {
     );
 }
 
-TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'administrator'
-    ? CompetenciesPDI.layout = Admin
-    : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'customer'
-        ? CompetenciesPDI.layout = Performance
-        : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'employee'
-            ? CompetenciesPDI.layout = Employee
-            : CompetenciesPDI.layout = Admin));
+CompetenciesPDI.getLayout = (page) => <DynamicLayout>{page}</DynamicLayout>;
 
 export default CompetenciesPDI;

@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from "react";
-import Admin from "../../layouts/Admin";
+import React, { useState } from "react";
 import { useAuth } from '../../hooks/useAuth';
-import Performance from "../../layouts/Performance";
-import { TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT } from '../../contexts/AuthContext';
 import EmployeeUserListView from "../../components/EmployeeComponents/InterfaceByUserRole/EmployeeUserListView";
 import EmployeeUserRegisterView from "../../components/EmployeeComponents/InterfaceByUserRole/EmployeeUserRegisterView";
 import EmployeeRegisterFieldsRegisterView from "../../components/EmployeeComponents/InterfaceByUserRole/EmployeeRegisterFieldsRegisterView";
+import DynamicLayout from "../../layouts/DynamicLayout";
 
 function EmployeeRecords() {
 
@@ -50,11 +48,6 @@ function EmployeeRecords() {
   );
 }
 
-
-TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'administrator'
-  ? EmployeeRecords.layout = Admin
-  : (TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT === 'customer'
-    ? EmployeeRecords.layout = Performance
-    : EmployeeRecords.layout = Admin);
+EmployeeRecords.getLayout = (page) => <DynamicLayout>{page}</DynamicLayout>;
 
 export default EmployeeRecords;

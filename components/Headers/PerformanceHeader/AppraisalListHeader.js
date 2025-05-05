@@ -42,25 +42,25 @@ function AppraisalListHeader({ name, parentName }) {
 
   return (
     <>
-      <div style={{ backgroundColor: "#562f9f" }} className="header header-dark pb-6 content__title content__title--calendar">
+      <div style={{ backgroundColor: "#E6EBFA"}} className="header header-dark pb-6 content__title content__title--calendar">
         <Container fluid>
           <div className="header-body">
             <Row className="align-items-center py-4">
               <Col lg="6" xs="7">
-                <h6 className="fullcalendar-title h2 text-white d-inline-block mb-0">
+                <h6 className="fullcalendar-title h2 text-indigo d-inline-block mb-0">
                   {name}
                 </h6>{" "}
                 <Breadcrumb
                   className="d-none d-md-inline-block ml-lg-4"
-                  listClassName="breadcrumb-links breadcrumb-dark"
+                  listClassName="breadcrumb-links breadcrumb-light"
                 >
                   <BreadcrumbItem>
                     <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                      <i className="fas fa-home" />
+                      <i className="fas fa-home text-indigo" />
                     </a>
                   </BreadcrumbItem>
                   <BreadcrumbItem>
-                    <a href="#pablo" onClick={(e) => e.preventDefault()}>
+                    <a className="text-indigo" href="#pablo" onClick={(e) => e.preventDefault()}>
                       {parentName}
                     </a>
                   </BreadcrumbItem>
@@ -74,8 +74,8 @@ function AppraisalListHeader({ name, parentName }) {
                   <Link href="/performance/add-appraisal">
                     <NavLink href="#pablo">
                       <Button
-                        className="btn-neutral"
-                        color="default"
+                        style={{ backgroundColor: "#562f9f"}}
+                        color="dark"
                         size="sm"
                       >
                         <span
@@ -92,8 +92,8 @@ function AppraisalListHeader({ name, parentName }) {
                   <Link href="/performance/add-appraisal">
                     <NavLink href="#pablo">
                       <Button
-                        className="btn-neutral"
-                        color="default"
+                        style={{ backgroundColor: "#562f9f"}}
+                        color="dark"
                         size="sm"
                       >
                         <span
@@ -106,7 +106,7 @@ function AppraisalListHeader({ name, parentName }) {
                     </NavLink>
                   </Link>
                 </Nav>
-                <Button className="btn-neutral" color="default" size="sm">
+                <Button style={{ backgroundColor: "#562f9f"}} color="dark" size="sm">
                   Filtros
                 </Button>
               </Col>

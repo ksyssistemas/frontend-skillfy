@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   Badge,
   Button,
@@ -28,74 +28,16 @@ import { ReviewContext } from '../../../../contexts/PerformanceContext/Performan
 import { AuthContext } from '../../../../contexts/AuthContext';
 import { useFindAllReviewParticipants } from '../../../../hooks/PerformanceReview/ReviewParticipants/useFindAllReviewParticipants';
 import { useFindEmployee } from '../../../../hooks/RecordsHooks/employee/useFindEmployee';
-
+import { useFindAllEmployee } from '../../../../hooks/RecordsHooks/employee/useFindAllEmployee';
+import { useFindReviewParticipantsById } from '../../../../hooks/PerformanceReview/ReviewParticipants/useFindReviewParticipantsById';
+import _ from 'lodash';
+import { useFindReviewAnswersByReviewParticipantId } from '../../../../hooks/PerformanceReview/ReviewAnswer/useFindReviewAnswersByReviewParticipantId';
 
 function AppraisalsListTableCompetencies() {
 
   const { authenticationDataLoggedInUser } = useContext(AuthContext);
-  // console.log("AuthContex", authenticationDataLoggedInUser);
 
-  // const userLoggedId = authenticationDataLoggedInUser?.data?.id;
-  const userLoggedId = 5;
-  // console.log("userLoggedId", userLoggedId);
-
-  const badgeConfig = {
-    "Concluída": { color: "success", text: "Concluída" },
-    "Solicitada": { color: "yellow", text: "Solicitada", customStyle: { color: "#ccab00" } },
-    "Negada": { color: "danger", text: "Negada" },
-  };
-
-
-  const renderBadge = (validation) => {
-    const { color, text, customStyle } = badgeConfig[validation] || { color: "primary", text: "N/A" };
-    return (
-      <Badge
-        color={color !== "yellow" ? color : undefined}
-        pill
-        className={color === "yellow" ? "bg-yellow" : undefined}
-        style={customStyle || {}}
-      >
-        {text}
-      </Badge>
-    );
-  };
-
-  const progressConfig = {
-    "0%": { value: 5, color: "danger" },
-    "25%": { value: 25, color: "warning" },
-    "50%": { value: 50, color: "yellow" },
-    "75%": { value: 75, color: "info" },
-    "100%": { value: 100, color: "success" },
-  };
-
-  const renderProgress = (completion) => {
-    const { value, color } = progressConfig[completion] || { value: 0, color: "secondary" };
-
-    return (
-      <div className="d-flex align-items-center">
-        <span className="completion mr-2">{completion}</span>
-        <div>
-          <Progress max="100" value={value} color={color} />
-        </div>
-      </div>
-    );
-  };
-
-  const statusConfig = {
-    "dentro do prazo": { colorClass: "bg-info", text: "dentro do prazo" },
-    "pendente": { colorClass: "bg-warning", text: "pendente" },
-    "completo": { colorClass: "bg-success", text: "completo" },
-  };
-
-  const renderStatusBadge = (status) => {
-    const { colorClass, text } = statusConfig[status] || { colorClass: "bg-secondary", text: "desconhecido" };
-    return (
-      <Badge color="" className="badge-dot mr-4">
-        <i className={colorClass} />
-        <span className="status">{text}</span>
-      </Badge>
-    );
-  };
+  const userLoggedId = authenticationDataLoggedInUser?.data?.id;
 
   function formatDate(dateString) {
     const date = new Date(dateString);
@@ -107,149 +49,332 @@ function AppraisalsListTableCompetencies() {
     return `${day}/${month}/${year}`;
   }
 
-  const [performanceAppraisalData, setPerformanceAppraisalData] = useState([]);
+  const [userLoggedParticipationOnPerformanceReviewData, setUserLoggedParticipationOnPerformanceReviewData] = useState([]);
 
-  const [performanceReviewParticipantsData, setPerformanceReviewParticipantsData] = useState([]);
+  const [employeesData, setEmployeesData] = useState([]);
 
-  const [performanceAppraisalIgualsUserLoggedIdData, setPerformanceAppraisalIgualsUserLoggedIdData] = useState([]);
+  const [performanceReviewAndEmployeesLedData, setPerformanceReviewAndEmployeesLedData] = useState([]);
 
-  const [performanceReviewParticipantsAppraiserData, setPerformanceReviewParticipantsAppraiserData] = useState([]);
+  const [userLoggedData, setUserLoggedData] = useState({});
 
-  const [performanceReviewParticipantsSelfEvaluationData, setPerformanceReviewParticipantsSelfEvaluationData] = useState([]);
+  const [employeesLedData, setEmployeesLedData] = useState([]);
+
+  const [userLoggedPerformanceReviewsList, setUserLoggedPerformanceReviewsList] = useState([]);
+
+  const [reviewsToExecuteList, setReviewsToExecuteList] = useState([]);
+
+  const [reviewStatus, setReviewStatus] = useState('');
 
   useEffect(() => {
-    async function fetchPerformanceReviewParticipants() {
+    async function fetchData() {
       try {
-        const foundReviewParticipants = await useFindAllReviewParticipants();
-        setPerformanceReviewParticipantsData(foundReviewParticipants);
+        // Fetch all employees first
+        const foundEmployees = await useFindAllEmployee();
+        setEmployeesData(foundEmployees);
+
+        // Find the logged-in user after employees are loaded
+        const employeeLoggedData = foundEmployees.find((emp) => Number(emp.id) === Number(userLoggedId));
+        if (employeeLoggedData) {
+          setUserLoggedData(employeeLoggedData);
+        }
+
+        // Fetch user participation after user data is loaded
+        const foundReviewParticipants = await useFindReviewParticipantsById(userLoggedId);
+        setUserLoggedParticipationOnPerformanceReviewData(foundReviewParticipants);
       } catch (error) {
-        console.error('Error fetching performance:', error);
+        console.error("Error fetching data:", error);
+      }
+    }
+    fetchData();
+  }, [userLoggedId]); // Only trigger when userLoggedId changes
+
+  useEffect(() => {
+    const fetchPerformanceReviewAnswerData = async () => {
+      const foundReviewAnswerData = await useFindReviewAnswersByReviewParticipantId(userLoggedId);
+
+      if (foundReviewAnswerData &&
+        Number(foundReviewAnswerData.performanceReview) === Number(userLoggedParticipationOnPerformanceReviewData.performanceReviewId)
+      ) {
+        setReviewStatus(foundReviewAnswerData.status);
+      }
+    };
+
+    if (userLoggedId) {
+      fetchPerformanceReviewAnswerData();
+    }
+  }, [userLoggedId, userLoggedParticipationOnPerformanceReviewData]);
+
+  const statusConfig = {
+    "late": { colorClass: "bg-danger", text: "atrasada" },
+    "pending": { colorClass: "bg-yellow", text: "pendente" },
+    "completed": { colorClass: "bg-success", text: "completo" },
+  };
+
+  const renderStatusBadge = (status, endDate = null) => {
+    let newStatus = '';
+
+    // Verificar se endDate existe e comparar com a data atual
+    if (endDate) {
+      const currentDate = new Date();
+      const deadlineDate = new Date(endDate);
+
+      // Remover as horas, minutos e segundos para comparação apenas da data
+      currentDate.setHours(0, 0, 0, 0);
+      deadlineDate.setHours(0, 0, 0, 0);
+
+      // Se a data de término for menor que a data atual, está atrasado
+      if (deadlineDate < currentDate) {
+        newStatus = "late";
       }
     }
 
-    fetchPerformanceReviewParticipants();
-  }, []);
-
-  const performanceReviewParticipantsIgualsUserLoggedIdData = performanceReviewParticipantsData.filter
-    (participants => Number(participants.reviewParticipantId) === Number(userLoggedId));
-
-  const performanceReviewParticipantsIgualsUserLoggedIdAvaliadorData = performanceReviewParticipantsData.filter(
-    participant => Array.isArray(participant.participateAsEmployeePeerTo) &&
-      participant.participateAsEmployeePeerTo.some(
-        peer => peer.employeeToWhomIsPairedId === Number(userLoggedId)
-      )
-  );
-  // console.log("performanceReviewParticipantsIgualsUserLoggedIdAvaliadorData", performanceReviewParticipantsIgualsUserLoggedIdAvaliadorData);
-
-  const performanceReviewParticipantsIgualsUserLoggedIdAutoAvaliacaoData = performanceReviewParticipantsData.filter(
-    participant => (
-      (!Array.isArray(participant.participateAsEmployeePeerTo) || participant.participateAsEmployeePeerTo.length === 0) &&
-      participant.participatesAsSelfEvaluator === true && participant.reviewParticipantId === Number(userLoggedId)
-    )
-  );
-  // console.log("performanceReviewParticipantsIgualsUserLoggedIdAutoAvaliacaoData", performanceReviewParticipantsIgualsUserLoggedIdAutoAvaliacaoData);
-
-  useEffect(() => {
-    if (performanceReviewParticipantsIgualsUserLoggedIdAvaliadorData.length > 0) {
-      Promise.all(performanceReviewParticipantsIgualsUserLoggedIdAvaliadorData.map(async (appraiser) => {
-        const performanceReview = await useFindPerformanceReview(appraiser.performanceReviewId);
-        const employee = await useFindEmployee(appraiser.reviewParticipantId);
-
-        return {
-          originalData: appraiser,
-          performanceReview,
-          employee
-        };
-      }))
-        .then(combinedData => setPerformanceReviewParticipantsAppraiserData(combinedData))
-        .catch(error => console.error("Erro ao buscar avaliações e informações do avaliado:", error));
-    } else {
-      setPerformanceReviewParticipantsAppraiserData([]);
-    }
-  }, [performanceReviewParticipantsData]);
-  // console.log("performanceReviewParticipantsAppraiserData", performanceReviewParticipantsAppraiserData);
-
-  useEffect(() => {
-    if (performanceReviewParticipantsIgualsUserLoggedIdAutoAvaliacaoData.length > 0) {
-      Promise.all(performanceReviewParticipantsIgualsUserLoggedIdAutoAvaliacaoData.map(async (selfevaluation) => {
-        const performanceReview = await useFindPerformanceReview(selfevaluation.performanceReviewId);
-
-        return {
-          originalData: selfevaluation,
-          performanceReview
-        };
-      }))
-        .then(combinedData => setPerformanceReviewParticipantsSelfEvaluationData(combinedData))
-        .catch(error => console.error("Erro ao buscar as auto avaliações :", error));
-    } else {
-      setPerformanceReviewParticipantsSelfEvaluationData([]);
-    }
-  }, [performanceReviewParticipantsData]);
-  // console.log("performanceReviewParticipantsSelfEvaluationData", performanceReviewParticipantsSelfEvaluationData);
-
-  useEffect(() => {
-    const combined = [
-      ...performanceReviewParticipantsAppraiserData.map(item => ({
-        id: item.performanceReview.id,
-        reviewName: `Avaliação do ${item.employee.name}`,
-        startDate: item.performanceReview.startDate,
-        endDate: item.performanceReview.endDate,
-        status: item.performanceReview.status,
-        type: 'avaliacao',
-        reviewModel: item.performanceReview.reviewModel,
-        reviewParticipantId: item.employee.id,
-        participatesAsSelfEvaluator: item.originalData.participatesAsSelfEvaluator,
-        participateAsPair: item.originalData.participateAsPair,
-        participateAsLeader: item.originalData.participateAsLeader,
-        reviewRulerId: item.performanceReview.reviewRulerId,
-      })),
-      ...performanceReviewParticipantsSelfEvaluationData.map(item => ({
-        id: item.performanceReview.id,
-        reviewName: 'Autoavaliação',
-        startDate: item.performanceReview.startDate,
-        endDate: item.performanceReview.endDate,
-        status: item.performanceReview.status,
-        type: 'autoavaliacao',
-        reviewModel: item.performanceReview.reviewModel,
-        participatesAsSelfEvaluator: item.originalData.participatesAsSelfEvaluator,
-        participateAsPair: item.originalData.participateAsPair,
-        participateAsLeader: item.originalData.participateAsLeader,
-        reviewRulerId: item.performanceReview.reviewRulerId,
-      }))
-    ];
-    setPerformanceAppraisalIgualsUserLoggedIdData(combined);
-  }, [performanceReviewParticipantsAppraiserData, performanceReviewParticipantsSelfEvaluationData]);
-  // console.log(performanceAppraisalIgualsUserLoggedIdData);
-
-  useEffect(() => {
-    async function fetchPerformanceAppraisal() {
-      try {
-        const foundPerformanceAppraisal = await useFindAllPerformanceReview();
-        setPerformanceAppraisalData(foundPerformanceAppraisal);
-      } catch (error) {
-        console.error('Error fetching performance:', error);
+    // Verificação original do status se não foi definido como "late"
+    if (!newStatus) {
+      if (!status || status === '') {
+        newStatus = "pending";
+      } else {
+        newStatus = status;
       }
     }
 
-    fetchPerformanceAppraisal();
-  }, []);
+    const { colorClass, text } = statusConfig[newStatus] || { colorClass: "bg-secondary", text: "desconhecido" };
 
-  const { handlePerformanceIdIdToUEvaluation,
-    handlePerformanceRulerIdToEvaluation,
-    handlePerformanceIdParticipantToEvaluation,
-    handlePerformanceModelToEvaluation,
-    handlePerformanceParticipatesAsSelfEvaluatorToEvaluation,
-    handlePerformanceParticipateAsPairToEvaluation,
-    handlePerformanceParticipateAsLeaderToEvaluation } = useContext(ReviewContext);
+    console.log(colorClass, text);
+    return (
+      <Badge color="" className="badge-dot mr-4">
+        <i className={colorClass} />
+        <span className="status">{text}</span>
+      </Badge>
+    );
+  };
 
-  const handleSetId = (performanceId, rulerId, participantId, modelId, selfEvaluator, asPair, asLeader) => {
-    handlePerformanceIdIdToUEvaluation(performanceId);
-    handlePerformanceRulerIdToEvaluation(rulerId);
-    handlePerformanceIdParticipantToEvaluation(participantId);
-    handlePerformanceModelToEvaluation(modelId);
-    handlePerformanceParticipatesAsSelfEvaluatorToEvaluation(selfEvaluator);
-    handlePerformanceParticipateAsPairToEvaluation(asPair);
-    handlePerformanceParticipateAsLeaderToEvaluation(asLeader);
+  // Verificações da participacação do usuário logado nas avalições de desempenho
+  const performanceReviewDataById = useMemo(() => {
+    return userLoggedParticipationOnPerformanceReviewData.reduce((acc, participant) => {
+      const { performanceReviewId, reviewParticipantId, participateAsPair, participateAsEmployeePeerTo, participatesAsSelfEvaluator, participateAsLeader } = participant;
+
+      acc[performanceReviewId] = {
+        // Verifica se o usuário logado participa da avaliação
+        hasParticipation: Number(reviewParticipantId) === Number(userLoggedId),
+        // Verifica se o usuário logado participa como par (participateAsPair)
+        isParticipateAsPair: participateAsPair,
+        // Se participa como par, armazena os valores de participateAsEmployeePeerTo
+        employeeToWhomIsPaired: participateAsPair ? participateAsEmployeePeerTo : [],
+        // Verifica se o usuário logado participa realizando autoavaliação
+        isParticipateAsSelfEvaluator: participatesAsSelfEvaluator,
+        // Verifica se o usuário logado participa como líder
+        isParticipateAsLeader: participateAsLeader
+      };
+
+      return acc;
+    }, {});
+  }, [userLoggedParticipationOnPerformanceReviewData]);
+
+  // Filtras os usuário líderados pelo usuário logado
+  const employeesLedId = useCallback(async (userData) => {
+    if (!userData) return [];
+    const userName = `${userData.name} ${userData.lastName}`
+    return employeesData.filter((led) => led.LeaderName === userName);
+  }, [employeesData]);
+
+  useEffect(() => {
+    async function fetchReviewAndEmployees() {
+      try {
+        const employeesLed = await Promise.all(
+          Object.entries(performanceReviewDataById).map(async ([performanceReview, reviewData]) => {
+            if (reviewData.isParticipateAsLeader && userLoggedData) {
+              const employeesLedByEmployeeLogged = await employeesLedId(userLoggedData);
+              return employeesLedByEmployeeLogged;
+            }
+
+            return null; // Retorna null para evitar valores indefinidos
+          })
+        );
+
+        // Atualiza o estado apenas se os valores forem diferentes
+        const filteredEmployeesLed = employeesLed.filter(Boolean).flat();
+        setEmployeesLedData((prev) => JSON.stringify(prev) !== JSON.stringify(filteredEmployeesLed) ? filteredEmployeesLed : prev);
+      } catch (error) {
+        console.error("Error fetching review and employees:", error);
+      }
+    }
+
+    // Verifica se há participação do usuário antes de disparar a função
+    const hasParticipation = Object.values(performanceReviewDataById).some(data => data.hasParticipation);
+    if (hasParticipation) {
+      fetchReviewAndEmployees();
+    }
+  }, [performanceReviewDataById, userLoggedData]);
+
+  const onParticipantTypeOnReview = (isParticipateAsLeaderToReview, isParticipateAsSelfEvaluatorToReview, pairedParticipants) => {
+    if (isParticipateAsLeaderToReview) return 'Líder';
+    if (isParticipateAsSelfEvaluatorToReview) return 'Autoavaliação';
+    if (pairedParticipants) return 'Par';
+    return 'Indefinido';
+  };
+
+  const performanceReviewCache = useRef(new Map());
+
+  async function getPerformanceReview(performanceReviewId) {
+    if (performanceReviewCache.current.has(performanceReviewId)) {
+      return performanceReviewCache.current.get(performanceReviewId);
+    }
+
+    const performanceReview = await useFindPerformanceReview(performanceReviewId);
+    if (performanceReview) {
+      performanceReviewCache.current.set(performanceReviewId, performanceReview);
+    }
+    return performanceReview;
+  }
+
+  useEffect(() => {
+    async function fetchReviewsToExecute() {
+      try {
+        let newReviewsList = [];
+
+        await Promise.all(
+          userLoggedParticipationOnPerformanceReviewData.map(async (participant) => {
+            const { performanceReviewId } = participant;
+            const reviewData = performanceReviewDataById[performanceReviewId];
+
+            if (!reviewData) return;
+
+            // Buscar dados da avaliação
+            const performanceReview = await getPerformanceReview(performanceReviewId);
+            if (!performanceReview) return;
+
+            // Verifica se o usuário logado participa como autoavaliação
+            if (reviewData.hasParticipation && reviewData.isParticipateAsSelfEvaluator) {
+              const selfReview = {
+
+                id: _.uniqueId('selfReview_'),
+                performanceReviewToExecute: performanceReview,
+                reviewAs: onParticipantTypeOnReview(false, reviewData.isParticipateAsSelfEvaluator, false),
+                reviewerParticipant: {
+                  id: userLoggedData.id,
+                  name: `${userLoggedData.name} ${userLoggedData.lastName}`,
+                  roleId: userLoggedData.rolesId,
+                  reviewAs: onParticipantTypeOnReview(false, reviewData.isParticipateAsSelfEvaluator, false),
+                },
+                reviewedParticipant: {
+                  id: userLoggedData.id,
+                  name: `${userLoggedData.name} ${userLoggedData.lastName}`,
+                  roleId: userLoggedData.rolesId
+                },
+                performanceReviewParticipationData: reviewData,
+
+                // reviewName: performanceReview.reviewName,
+                // startDate: performanceReview.startDate,
+                // endDate: performanceReview.endDate,
+                // status: performanceReview.status,
+                // reviewModel: performanceReview.reviewModel,
+                // reviewRulerId: performanceReview.reviewRulerId,
+                // participatesAsSelfEvaluator: reviewData.isParticipateAsSelfEvaluator,
+                // participateAsPair: reviewData.isParticipateAsPair,
+                // participateAsLeader: reviewData.isParticipateAsLeader
+              };
+
+              newReviewsList.push(selfReview);
+            }
+
+            // Verifica se o usuário logado participa como líder
+            if (reviewData.hasParticipation && reviewData.isParticipateAsLeader) {
+              employeesLedData.forEach((led) => {
+                const leaderReview = {
+                  id: _.uniqueId('leaderReview_'),
+                  performanceReviewToExecute: performanceReview,
+                  reviewAs: onParticipantTypeOnReview(reviewData.isParticipateAsLeader, false, false),
+                  reviewerParticipant: {
+                    id: userLoggedData.id,
+                    name: `${userLoggedData.name} ${userLoggedData.lastName}`,
+                    roleId: userLoggedData.rolesId,
+                    reviewAs: onParticipantTypeOnReview(reviewData.isParticipateAsLeader, false, false),
+                  },
+                  reviewedParticipant: {
+                    id: led.id,
+                    name: `${led.name} ${led.lastName}`,
+                    roleId: led.rolesId
+                  },
+                  performanceReviewParticipationData: reviewData,
+
+                  // reviewName: performanceReview.reviewName,
+                  // startDate: performanceReview.startDate,
+                  // endDate: performanceReview.endDate,
+                  // status: performanceReview.status,
+                  // reviewModel: performanceReview.reviewModel,
+                  // reviewRulerId: performanceReview.reviewRulerId,
+                  // participatesAsSelfEvaluator: reviewData.isParticipateAsSelfEvaluator,
+                  // participateAsPair: reviewData.isParticipateAsPair,
+                  // participateAsLeader: reviewData.isParticipateAsLeader
+                };
+
+                newReviewsList.push(leaderReview);
+              });
+            }
+
+            // Verifica se o usuário logado participa como par
+            if (reviewData.hasParticipation && reviewData.isParticipateAsPair && reviewData.employeeToWhomIsPaired.length > 0) {
+              reviewData.employeeToWhomIsPaired.forEach((employee) => {
+                const pairedEmployee = employeesData.find((emp) => Number(emp.id) === Number(employee.employeeToWhomIsPairedId));
+                if (pairedEmployee) {
+                  newReviewsList.push({
+                    id: _.uniqueId('pairReview_'),
+                    performanceReviewToExecute: performanceReview,
+                    reviewAs: onParticipantTypeOnReview(false, false, reviewData.isParticipateAsPair),
+                    reviewerParticipant: {
+                      id: userLoggedData.id,
+                      name: `${userLoggedData.name} ${userLoggedData.lastName}`,
+                      roleId: userLoggedData.rolesId,
+                      reviewAs: onParticipantTypeOnReview(false, false, reviewData.isParticipateAsPair),
+                    },
+                    reviewedParticipant: {
+                      id: pairedEmployee.id,
+                      name: `${pairedEmployee.name} ${pairedEmployee.lastName}`,
+                      roleId: pairedEmployee.rolesId
+                    },
+                    performanceReviewParticipationData: reviewData,
+
+                    // reviewName: performanceReview.reviewName,
+                    // startDate: performanceReview.startDate,
+                    // endDate: performanceReview.endDate,
+                    // status: performanceReview.status,
+                    // reviewModel: performanceReview.reviewModel,
+                    // reviewRulerId: performanceReview.reviewRulerId,
+                    // participatesAsSelfEvaluator: reviewData.isParticipateAsSelfEvaluator,
+                    // participateAsPair: reviewData.isParticipateAsPair,
+                    // participateAsLeader: reviewData.isParticipateAsLeader
+                  });
+                }
+              });
+            }
+
+          })
+        );
+        // Atualiza o estado apenas se os valores forem diferentes para evitar re-renderizações
+        const newReviewsString = JSON.stringify(newReviewsList);
+        setReviewsToExecuteList((prev) => JSON.stringify(prev) !== newReviewsString ? newReviewsList : prev);
+
+      } catch (error) {
+        console.error("Error fetching reviews to execute:", error);
+      }
+    }
+    if (userLoggedParticipationOnPerformanceReviewData.length > 0 || employeesLedData.length > 0) {
+      fetchReviewsToExecute();
+    }
+  }, [userLoggedParticipationOnPerformanceReviewData, employeesLedData, userLoggedData]);
+
+  const {
+    handlePerformanceReviewData,
+    handleReviewedIdOnPerformanceReview,
+    handleReviewerIdOnPerformanceReview,
+    handlePerformanceReviewParticipationData
+  } = useContext(ReviewContext);
+
+  const handleSetId = (reviewData, reviewerParticipant, reviewedParticipant, reviewParticipationData) => {
+    handlePerformanceReviewData(reviewData);
+    handleReviewerIdOnPerformanceReview(reviewerParticipant);
+    handleReviewedIdOnPerformanceReview(reviewedParticipant);
+    handlePerformanceReviewParticipationData(reviewParticipationData);
   };
 
   return (
@@ -263,16 +388,18 @@ function AppraisalsListTableCompetencies() {
           <Table className="align-items-center table-flush" responsive>
             <thead className="thead-light">
               <tr>
-                <th className="sort text-left" data-sort="name" scope="col">Nome</th>
+                <th className="sort text-left" data-sort="name" scope="col">Título</th>
+                <th className="sort text-left" data-sort="name" scope="col">Avaliar Como</th>
+                <th className="sort text-left" data-sort="name" scope="col">Do Avaliado</th>
                 <th className="sort text-left" data-sort="startDate" scope="col">Data de Início</th>
                 <th className="sort text-left" data-sort="endDate" scope="col">Data de Fim</th>
-                <th className="sort text-center" data-sort="status" scope="col">Modelo de Avaliação</th>
-                <th className="sort text-left" data-sort="actions" scope="col">Ações</th>
+                <th className="sort text-center" data-sort="status" scope="col">Estado</th>
+                <th className="sort text-left" scope="col"></th>
               </tr>
             </thead>
             <tbody className="list">
-              {performanceAppraisalIgualsUserLoggedIdData.length > 0 ? (
-                performanceAppraisalIgualsUserLoggedIdData.map((appraisal) => (
+              {reviewsToExecuteList.length > 0 ? (
+                reviewsToExecuteList.map((appraisal) => (
                   <tr key={appraisal.id}>
                     <td scope="row">
                       <Button
@@ -281,38 +408,34 @@ function AppraisalsListTableCompetencies() {
                         href="#pablo"
                         onClick={(e) => e.preventDefault()}
                       >
-                        <p className="name mb-0 text-sm">{appraisal.reviewName}</p>
+                        <p className="name mb-0 text-sm text-orange font-weight-bold">{appraisal.performanceReviewToExecute.reviewName}</p>
                       </Button>
                     </td>
-                    <td className="budget">{formatDate(appraisal.startDate)}</td>
-                    <td className="budget">{formatDate(appraisal.endDate)}</td>
-                    <td className="text-center">
-                      <p className="name mb-0 text-sm">{appraisal.reviewModel}</p>
+                    <td className="budget">
+                      <p className="text-left text-muted mb-0">
+                        {appraisal.reviewAs}
+                      </p>
                     </td>
+                    <td className="budget">{appraisal.reviewedParticipant.name}</td>
+                    <td className="budget">{formatDate(appraisal.performanceReviewToExecute.startDate)}</td>
+                    <td className="budget">{formatDate(appraisal.performanceReviewToExecute.endDate)}</td>
+                    <td className="text-center">{renderStatusBadge(reviewStatus, appraisal.performanceReviewToExecute.endDate)}</td>
                     <td className="text-left">
-                      <UncontrolledDropdown>
-                        <DropdownToggle
-                          className="btn-icon-only text-light"
-                          color=""
-                          role="button"
-                          size="sm"
-                        >
-                          <i className="fas fa-ellipsis-v" />
-                        </DropdownToggle>
-                        <DropdownMenu className="dropdown-menu-arrow" right>
-                          <DropdownItem
-                            onClick={() => handleSetId(appraisal.id, 
-                              appraisal.reviewRulerId, 
-                              appraisal.reviewParticipantId, 
-                              appraisal.reviewModel, 
-                              appraisal.participatesAsSelfEvaluator, 
-                              appraisal.participateAsPair, 
-                              appraisal.participateAsLeader)}
-                          >
-                            Fazer a avaliação
-                          </DropdownItem>
-                        </DropdownMenu>
-                      </UncontrolledDropdown>
+                      <Button
+                        className="btn-warning btn-warning:hover"
+                        color="warning"
+                        outline
+                        size="sm"
+                        type="button"
+                        onClick={() => handleSetId(
+                          appraisal.performanceReviewToExecute,
+                          appraisal.reviewerParticipant,
+                          appraisal.reviewedParticipant,
+                          appraisal.performanceReviewParticipationData,
+                        )}
+                      >
+                        Executar
+                      </Button>
                     </td>
                   </tr>
                 ))
@@ -343,6 +466,7 @@ function AppraisalsListTableCompetencies() {
                 </PaginationItem>
                 <PaginationItem className="active">
                   <PaginationLink
+                    className='bg-warning border-warning'
                     href="#pablo"
                     onClick={(e) => e.preventDefault()}
                   >

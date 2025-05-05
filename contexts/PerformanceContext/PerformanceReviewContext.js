@@ -1,71 +1,77 @@
 // Contexto para armazenar informações de autenticação
-import React, { createContext, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
+import { useFindRole } from '../../hooks/RecordsHooks/role/useFindRole';
 
 export const ReviewContext = createContext({});
 
 function PerformanceReviewContext({ children }) {
 
-    const [performanceIdToEvaluation, setPerformanceIdToEvaluation] = useState('');
-    const [evaluationRulerId, setEvaluationRulerId] = useState('');
-    const [reviewParticipantId, setReviewParticipantId] = useState('');
-    const [reviewModel, setReviewModel] = useState('');
-    const [participatesAsSelfEvaluator, setParticipatesAsSelfEvaluator] = useState('');
-    const [participateAsPair, setParticipateAsPair] = useState('');
-    const [participateAsLeader, setParticipateAsLeader] = useState('');
+    const [performanceReviewData, setPerformanceReviewData] = useState(null);
+    const [reviewedIdOnPerformanceReview, setReviewedIdOnPerformanceReview] = useState(null);
+    const [reviewerIdOnPerformanceReview, setReviewerIdOnPerformanceReview] = useState(null);
+    const [performanceReviewParticipationData, setPerformanceReviewParticipationData] = useState(null);
 
     function handlePerformanceIdStatusCleanupToUpdate() {
-        setPerformanceIdToEvaluation('');
-        setEvaluationRulerId('');
-        setReviewParticipantId('');
-        setReviewModel('');
+        setPerformanceReviewData(null);
+        setReviewedIdOnPerformanceReview(null);
+        setReviewerIdOnPerformanceReview(null);
+        setPerformanceReviewParticipationData(null);
     }
 
-    function handlePerformanceIdIdToUEvaluation(performanceId) {
-        setPerformanceIdToEvaluation(performanceId);
+    function handlePerformanceReviewData(reviewData) {
+        setPerformanceReviewData(reviewData);
     }
 
-    function handlePerformanceRulerIdToEvaluation(rulerId) {
-        setEvaluationRulerId(rulerId);
+    function handleReviewedIdOnPerformanceReview(reviewedId) {
+        setReviewedIdOnPerformanceReview(reviewedId);
     }
 
-    function handlePerformanceIdParticipantToEvaluation(participantId) {
-        setReviewParticipantId(participantId);
+    function handleReviewerIdOnPerformanceReview(reviewerId) {
+        setReviewerIdOnPerformanceReview(reviewerId);
     }
 
-    function handlePerformanceModelToEvaluation(modelId) {
-        setReviewModel(modelId);
+    function handlePerformanceReviewParticipationData(reviewParticipationData) {
+        setPerformanceReviewParticipationData(reviewParticipationData);
     }
 
-    function handlePerformanceParticipatesAsSelfEvaluatorToEvaluation(selfEvaluator) {
-        setParticipatesAsSelfEvaluator(selfEvaluator);
-    }
+    useEffect(() => {
+        const fetchReviewerAndReviewedRole = async () => {
+            if (reviewedIdOnPerformanceReview && !reviewedIdOnPerformanceReview.roleName && reviewedIdOnPerformanceReview.roleId) {
+                try {
+                    const foundRoleName = await useFindRole(reviewedIdOnPerformanceReview?.roleId);
+                    if (foundRoleName) setReviewedIdOnPerformanceReview(prevState => ({ ...prevState, roleName: foundRoleName.roleName }));
+                } catch (error) {
+                    console.error(`Error fetching employee role data for employeeId ${reviewedIdOnPerformanceReview?.id}:`, error);
+                    setReviewedIdOnPerformanceReview(prevState => ({ ...prevState, roleName: 'Unknown' }));
+                }
+            }
+            if (reviewedIdOnPerformanceReview && !reviewedIdOnPerformanceReview.roleName && reviewedIdOnPerformanceReview.roleId) {
+                try {
+                    const foundRoleName = await useFindRole(reviewerIdOnPerformanceReview?.roleId);
+                    if (foundRoleName) setReviewerIdOnPerformanceReview(prevState => ({ ...prevState, roleName: foundRoleName.roleName }));
+                } catch (error) {
+                    console.error(`Error fetching employee role data for employeeId ${reviewerIdOnPerformanceReview?.id}:`, error);
+                    setReviewerIdOnPerformanceReview(prevState => ({ ...prevState, roleName: 'Unknown' }));
+                }
+            }
+        };
 
-    function handlePerformanceParticipateAsPairToEvaluation(asPair) {
-        setParticipateAsPair(asPair);
-    }
-    
-    function handlePerformanceParticipateAsLeaderToEvaluation(asLeader) {
-        setParticipateAsLeader(asLeader);
-    }
+        fetchReviewerAndReviewedRole();
+    }, [reviewedIdOnPerformanceReview,
+        reviewedIdOnPerformanceReview]);
 
     return (
         <ReviewContext.Provider
             value={{
-                performanceIdToEvaluation,
-                evaluationRulerId,
-                reviewParticipantId,
-                reviewModel,
-                participatesAsSelfEvaluator,
-                participateAsPair,
-                participateAsLeader,
-                handlePerformanceRulerIdToEvaluation,
-                handlePerformanceIdIdToUEvaluation,
-                handlePerformanceIdParticipantToEvaluation,
-                handlePerformanceModelToEvaluation,
+                performanceReviewData,
+                reviewedIdOnPerformanceReview,
+                reviewerIdOnPerformanceReview,
+                performanceReviewParticipationData,
                 handlePerformanceIdStatusCleanupToUpdate,
-                handlePerformanceParticipatesAsSelfEvaluatorToEvaluation,
-                handlePerformanceParticipateAsPairToEvaluation,
-                handlePerformanceParticipateAsLeaderToEvaluation
+                handlePerformanceReviewData,
+                handleReviewedIdOnPerformanceReview,
+                handleReviewerIdOnPerformanceReview,
+                handlePerformanceReviewParticipationData,
             }}>
             {children}
         </ReviewContext.Provider>
