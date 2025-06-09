@@ -4,6 +4,7 @@ import AdminHeader from "components/Headers/AdminHeader.js";
 import PlansList from "../../components/Tables/Admin/PlansList";
 import { Container } from "reactstrap";
 import PlansRegister from "../../components/Forms/AdministratorForms/PlansRegister";
+import DynamicLayout from "../../layouts/DynamicLayout";
 
 function PlansRecords() {
 
@@ -44,7 +45,7 @@ function PlansRecords() {
           )
           : (
             <>
-              <AdminHeader name="Planos" parentName="Cadastros" />
+              <AdminHeader name="Planos" parentName="Cadastros" newRegistrationButtonText="Voltar" handleShowPlansUserRegister={handleShowPlansUserRegister}/>
               <Container className="mt--6" fluid>
                 <PlansRegister />
               </Container>
@@ -55,6 +56,6 @@ function PlansRecords() {
   );
 }
 
-PlansRecords.layout = Admin;
+PlansRecords.getLayout = (page) => <DynamicLayout>{page}</DynamicLayout>;
 
 export default PlansRecords;

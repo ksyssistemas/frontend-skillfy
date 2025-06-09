@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
-import useCEP from '../useCEP';
-import useCNPJ from '../useCNPJ';
+import useFindValidCEP from '../useFindValidCEP';
+import useFindValidCNPJ from '../useFindValidCNPJ';
 import useCreateCustomer from './useCreateCustomerAccountHolder';
 import { CustomerContext } from '../../../contexts/RecordsContext/CustomerContext';
 import { employmentContractDataSearchAndProcess } from '../../../util/employmentContractDataSearchAndProcess';
@@ -9,238 +9,190 @@ const useCreateClientCompany = () => {
 
   const {
     idAccountHolderToLinkToCustomer,
-    handleIdAccountHolderToLinkToCustomer,
-    handleCleaningIdAccountHolderToLinkToCustomer
+    handleCleaningIdAccountHolderToLinkToCustomer,
+    handleShowCustomerUserRegister
   } = useContext(CustomerContext);
-
-  const {
-    brasilAPICNPJData,
-    individualEmployerIdNumber,
-    handleSaveCNPJ,
-    individualEmployerIdNumberState,
-    setIndividualEmployerIdNumberState,
-    validateCnpj
-  } = useCNPJ("");
-
-  const {
-    brasilAPICEPData,
-    loadingCEPValidation,
-    errorCEPValidation,
-    handleCEPValidationLoading,
-    handleSaveCEP,
-    zipCode,
-    setZipCode,
-    zipCodeState,
-    setZipCodeState
-  } = useCEP("");
 
   const { resetCreateCustomer } = useCreateCustomer();
 
-  const [companyName, setCompanyName] = React.useState("");
-  const [companyNameState, setCompanyNameState] = React.useState(null);
-  const [registrationName, setRegistrationName] = React.useState("");
-  const [registrationNameState, setRegistrationNameState] = React.useState(null);
-  const [companyTypes, setCompanyTypes] = React.useState("");
-  const [companyTypesState, setCompanyTypesState] = React.useState(null);
-  const [customerBusinessPhoneNumber, setCustomerBusinessPhoneNumber] = React.useState("");
-  const [customerBusinessPhoneNumberState, setCustomerBusinessPhoneNumberState] = React.useState(null);
-  const [customerPhoneNumber, setCustomerPhoneNumber] = React.useState("");
-  const [customerPhoneNumberState, setCustomerPhoneNumberState] = React.useState(null);
-  const [companyEmailAddress, setCompanyEmailAddress] = React.useState("");
-  const [companyEmailAddressState, setCompanyEmailAddressState] = React.useState(null);
-  const [customerBusinessSector, setCustomerBusinessSector] = React.useState("");
-  const [customerBusinessSectorState, setCustomerBusinessSectorState] = React.useState(null);
-  const [customerWebSite, setCustomerWebSite] = React.useState("");
-  const [customerWebSiteState, setCustomerWebSiteState] = React.useState(null);
-  const [customerStatus, setCustomerStatus] = React.useState(false);
-  const [customerAccessionDate, setCustomerAccessionDate] = React.useState("");
+  const validateAddClientCompanyForm = (stateCNPJ, dispatchCNPJ, state, dispatch) => {
+    const stateCNPJData = stateCNPJ.cnpjData;
+    const stateData = state.legalEntityRegistrationData;
 
-  const [idHeadOfficeBranch, setIdHeadOfficeBranch] = React.useState("");
-  const [idHeadOfficeBranchState, setIdHeadOfficeBranchState] = React.useState(null);
-  const [customerZipCode, setCustomerZipCode] = React.useState("");
-  const [customerZipCodeState, setCustomerZipCodeState] = React.useState(null);
-  const [federatedUnit, setFederatedUnit] = React.useState("");
-  const [federatedUnitState, setFederatedUnitState] = React.useState(null);
-  const [companyCity, setCompanyCity] = React.useState("");
-  const [companyCityState, setCompanyCityState] = React.useState(null);
-  const [companyAddress, setCompanyAddress] = React.useState("");
-  const [companyAddressState, setCompanyAddressState] = React.useState(null);
-  const [companyAddressNumber, setCompanyAddressNumber] = React.useState("");
-  const [companyAddressNumberState, setCompanyAddressNumberState] = React.useState(null);
-  const [companyAddressComplement, setCompanyAddressComplement] = React.useState("");
-  const [companyAddressComplementState, setCompanyAddressComplementState] = React.useState(null);
-  const [companyDistrict, setCompanyDistrict] = React.useState("");
-  const [companyDistrictState, setCompanyDistrictState] = React.useState(null);
-  const [companyCountry, setCompanyCountry] = React.useState("");
-  const [companyCountryState, setCompanyCountryState] = React.useState(null);
-  const [isCustomerCompanyFormValidated, setIsCustomerCompanyFormValidated] = React.useState(false);
-  const [isClientCompanySaved, setIsClientCompanySaved] = React.useState(false);
-  const [isCompanyAddressSaved, setIsCompanyAddressSaved] = React.useState(false);
-  const [customerUserIdToCreateAddress, setCustomerUserIdToCreateAddress] = React.useState('');
+    dispatchCNPJ({
+      type: 'SET_INDIVIDUAL_EMPLOYER_ID_NUMBER_STATE',
+      payload: stateCNPJData.individualEmployerIdNumber !== "" ? 'invalid' : 'valid'
+    });
+    dispatch({
+      type: 'SET_COMPANY_NAME_STATE',
+      payload: stateData.companyName === "" ? 'invalid' : 'valid'
+    });
+    dispatch({
+      type: 'SET_REGISTRATION_NAME_STATE',
+      payload: stateData.registrationName === "" ? 'invalid' : 'valid'
+    });
+    dispatch({
+      type: 'SET_COMPANY_TYPES_STATE',
+      payload: stateData.companyTypes === "" ? 'invalid' : 'valid'
+    });
+    dispatch({
+      type: 'SET_CUSTOMER_BUSINESS_PHONE_NUMBER_STATE',
+      payload: stateData.customerBusinessPhoneNumber === ""
+        || !validatePhoneNumber(stateData.customerBusinessPhoneNumber, 'business')
+        ? 'invalid' : 'valid'
+    });
 
-  const [hasValuesChangedWithAPIData, setHasValuesChangedWithAPIData] = React.useState(false);
-  const handleValuesChangedWithAPIData = () => setHasValuesChangedWithAPIData(!hasValuesChangedWithAPIData);
+    let validationCustomerPhoneNumberState;
 
-  const [hasValuesChangedWithAPIDataCEP, setHasValuesChangedWithAPIDataCEP] = React.useState(false);
-  const handleValuesChangedWithAPIDataCEP = () => setHasValuesChangedWithAPIDataCEP(!hasValuesChangedWithAPIDataCEP);
+    if (stateData.customerPhoneNumber === "") {
+      validationCustomerPhoneNumberState = null;
+    } else if (!validatePhoneNumber(stateData.customerPhoneNumber, 'personal')) {
+      validationCustomerPhoneNumberState = 'invalid';
+    } else {
+      validationCustomerPhoneNumberState = 'valid';
+    }
+    dispatch({
+      type: 'SET_CUSTOMER_PHONE_NUMBER_STATE',
+      payload: validationCustomerPhoneNumberState
+    });
+    dispatch({
+      type: 'SET_COMPANY_EMAIL_ADDRESS_STATE',
+      payload: stateData.companyEmailAddress === "" ? 'invalid' : 'valid'
+    });
+    dispatch({
+      type: 'SET_CUSTOMER_BUSINESS_SECTOR_STATE',
+      payload: stateData.customerBusinessSector === "" ? 'invalid' : 'valid'
+    });
 
-  const validateAddClientCompanyForm = () => {
-    if (individualEmployerIdNumber !== "") {
-      setIndividualEmployerIdNumberState("invalid");
+    let validationCustomerWebSiteState;
+
+    if (stateData.customerWebSite === "") {
+      validationCustomerWebSiteState = null;
+    } else if (!validateWebSite(stateData.customerWebSite)) {
+      validationCustomerWebSiteState = 'invalid';
     } else {
-      setIndividualEmployerIdNumberState("valid");
+      validationCustomerWebSiteState = 'valid';
     }
-    if (companyName === "") {
-      setCompanyNameState("invalid");
-    } else {
-      setCompanyNameState("valid");
-    }
-    if (registrationName === "") {
-      setRegistrationNameState("invalid");
-    } else {
-      setRegistrationNameState("valid");
-    }
-    if (companyTypes === "") {
-      setCompanyTypesState("invalid");
-    } else {
-      setCompanyTypesState("valid");
-    }
-    if (customerBusinessPhoneNumber === "") {
-      setCustomerBusinessPhoneNumberState("invalid");
-    } else {
-      setCustomerBusinessPhoneNumberState("valid");
-    }
-    if (customerBusinessPhoneNumber === "" || !validatePhoneNumber(customerBusinessPhoneNumber, 'business')) {
-      setCustomerBusinessPhoneNumberState("invalid");
-    } else {
-      setCustomerBusinessPhoneNumberState("valid");
-    }
-    if (customerPhoneNumber !== "" && !validatePhoneNumber(customerPhoneNumber, 'personal')) {
-      setCustomerPhoneNumberState("invalid");
-    } else {
-      setCustomerPhoneNumberState(customerPhoneNumber === "" ? null : "valid");
-    }
-    if (companyEmailAddress === "") {
-      setCompanyEmailAddressState("invalid");
-    } else {
-      setCompanyEmailAddressState("valid");
-    }
-    if (customerBusinessSector === "") {
-      setCustomerBusinessSectorState("invalid");
-    } else {
-      setCustomerBusinessSectorState("valid");
-    }
-    if (customerWebSite !== "" && !validateWebSite(customerWebSite)) {
-      setCustomerWebSiteState("invalid");
-    } else {
-      setCustomerWebSiteState(customerWebSite === "" ? null : "valid");
-    }
+    dispatch({
+      type: 'SET_CUSTOMER_WEBSITE_STATE',
+      payload: validationCustomerWebSiteState
+    });
+    dispatch({
+      type: 'SET_ID_HEAD_OFFICE_BRANCH_STATE',
+      payload: stateData.customerBusinessSector === "" ? 'invalid' : 'valid'
+    });
   }
 
-  function validateAddCustomerAddressForm() {
-    if (idHeadOfficeBranch === "") {
-      setIdHeadOfficeBranchState("invalid");
+  function validateAddCustomerAddressForm(stateCEP, dispatchCEP, state, dispatch) {
+    const stateCEPData = stateCEP.cepData;
+    const stateData = state.legalEntityRegistrationData;
+
+    dispatchCEP({
+      type: 'SET_ZIP_CODE_STATE',
+      payload: stateCEPData.zipCode === "" ? 'invalid' : 'valid'
+    });
+    dispatch({
+      type: 'SET_FEDERATED_UNIT_STATE',
+      payload: stateData.federatedUnit === "" ? 'invalid' : 'valid'
+    });
+    dispatch({
+      type: 'SET_COMPANY_CITY_STATE',
+      payload: stateData.companyCity === "" ? 'invalid' : 'valid'
+    });
+    dispatch({
+      type: 'SET_COMPANY_ADDRESS_STATE',
+      payload: stateData.companyAddress === "" ? 'invalid' : 'valid'
+    });
+    dispatch({
+      type: 'SET_COMPANY_ADDRESS_NUMBER_STATE',
+      payload: stateData.companyAddressNumber === "" ? 'invalid' : 'valid'
+    });
+    dispatch({
+      type: 'SET_COMPANY_DISTRICT_STATE',
+      payload: stateData.companyDistrict === "" ? 'invalid' : 'valid'
+    });
+    let validationCompanyAddressComplementState;
+
+    if (stateData.companyAddressComplement === "") {
+      validationCompanyAddressComplementState = null;
+    } else if (stateData.companyAddressComplementState === null) {
+      validationCompanyAddressComplementState = 'invalid';
     } else {
-      setIdHeadOfficeBranchState("valid");
+      validationCompanyAddressComplementState = 'valid';
     }
-    if (customerZipCode === "") {
-      setCustomerZipCodeState("invalid");
-    } else {
-      setCustomerZipCodeState("valid");
-    }
-    if (federatedUnit === "") {
-      setFederatedUnitState("invalid");
-    } else {
-      setFederatedUnitState("valid");
-    }
-    if (companyCity === "") {
-      setCompanyCityState("invalid");
-    } else {
-      setCompanyCityState("valid");
-    }
-    if (companyAddress === "") {
-      setCompanyAddressState("invalid");
-    } else {
-      setCompanyAddressState("valid");
-    }
-    if (companyAddressNumber === "") {
-      setCompanyAddressNumberState("invalid");
-    } else {
-      setCompanyAddressNumberState("valid");
-    }
-    if (companyAddressComplement === "") {
-      setCompanyAddressComplementState(null);
-    } else if (companyAddressComplementState === null) {
-      setCompanyAddressComplementState("invalid");
-    }
-    if (companyDistrict === "") {
-      setCompanyDistrictState("invalid");
-    } else {
-      setCompanyDistrictState("valid");
-    }
+    dispatch({
+      type: 'SET_COMPANY_ADDRESS_COMPLEMENT_STATE',
+      payload: validationCompanyAddressComplementState
+    });
   };
 
-  function handleFormFieldsAutocomplete(cnpj) {
-    if (cnpj.cnpj) {
-      handleSaveCNPJ(cnpj.cnpj)
+  function handleFormFieldsAutocomplete(stateCNPJ, dispatchCNPJ, state, dispatch, stateCEP, dispatchCEP,) {
+    const apiData = stateCNPJ.cnpjData.brasilAPICNPJData;
+    if (apiData.cnpj) {
+      dispatchCNPJ({ type: 'SET_INDIVIDUAL_EMPLOYER_ID_NUMBER', payload: apiData.cnpj });
     }
-    if (cnpj.nome_fantasia) {
-      setCompanyName(cnpj.nome_fantasia)
+    if (apiData.nome_fantasia) {
+      dispatch({ type: 'SET_COMPANY_NAME', payload: apiData.nome_fantasia });
     }
-    if (cnpj.razao_social) {
-      setRegistrationName(cnpj.razao_social)
+    if (apiData.razao_social) {
+      dispatch({ type: 'SET_REGISTRATION_NAME', payload: apiData.razao_social });
     }
-    if (cnpj.ddd_telefone_1) {
-      setCustomerBusinessPhoneNumber(formatPhoneNumber(cnpj.ddd_telefone_1, 'business'));
+    if (apiData.ddd_telefone_1) {
+      dispatch({ type: 'SET_CUSTOMER_BUSINESS_PHONE_NUMBER', payload: formatPhoneNumber(apiData.ddd_telefone_1, 'business') });
     }
-    if (cnpj.descricao_identificador_matriz_filial) {
-      if (cnpj.descricao_identificador_matriz_filial === "MATRIZ" || cnpj.descricao_identificador_matriz_filial === "Matriz") {
-        setIdHeadOfficeBranch("Matriz")
+    if (apiData.descricao_identificador_matriz_filial) {
+      if (apiData.descricao_identificador_matriz_filial === "MATRIZ"
+        || apiData.descricao_identificador_matriz_filial === "Matriz"
+      ) {
+        dispatch({ type: 'SET_ID_HEAD_OFFICE_BRANCH', payload: "Matriz" });
       } else {
-        setIdHeadOfficeBranch("Filial")
+        dispatch({ type: 'SET_ID_HEAD_OFFICE_BRANCH', payload: "Filial" });
       }
     }
-    if (cnpj.cep) {
-      setCustomerZipCode(cnpj.cep)
+    if (apiData.cep) {
+      dispatchCEP({ type: 'SET_ZIP_CODE', payload: apiData.cep });
     }
-    if (cnpj.uf) {
-      setFederatedUnit(cnpj.uf)
+    if (apiData.uf) {
+      dispatch({ type: 'SET_FEDERATED_UNIT', payload: apiData.uf });
     }
-    if (cnpj.municipio) {
-      setCompanyCity(cnpj.municipio)
+    if (apiData.municipio) {
+      dispatch({ type: 'SET_COMPANY_CITY', payload: apiData.municipio });
     }
-    if (cnpj.logradouro && cnpj.descricao_tipo_de_logradouro) {
-      setCompanyAddress(`${cnpj.descricao_tipo_de_logradouro} ${cnpj.logradouro}`)
+    if (apiData.logradouro && apiData.descricao_tipo_de_logradouro) {
+      dispatch({ type: 'SET_COMPANY_ADDRESS', payload: `${apiData.descricao_tipo_de_logradouro} ${apiData.logradouro}` });
     }
-    if (cnpj.numero) {
-      setCompanyAddressNumber(cnpj.numero)
+    if (apiData.numero) {
+      dispatch({ type: 'SET_COMPANY_ADDRESS_NUMBER', payload: apiData.numero });
     }
-    if (cnpj.complemento) {
-      setCompanyAddressComplement(cnpj.complemento)
+    if (apiData.complemento) {
+      dispatch({ type: 'SET_COMPANY_ADDRESS_COMPLEMENT', payload: apiData.complemento });
     }
-    if (cnpj.bairro) {
-      setCompanyDistrict(cnpj.bairro)
+    if (apiData.bairro) {
+      dispatch({ type: 'SET_COMPANY_DISTRICT', payload: apiData.bairro });
     }
-    handleValuesChangedWithAPIData();
+
+    dispatchCNPJ({ type: 'SET_HAS_VALUES_CHANGED_WITH_CNPJ_API_DATA', payload: true });
   }
 
-  function handleFormFieldsAutocompleteCEP(cep) {
-    if (cep.cep) {
-      setCustomerZipCode(cep.cep);
+  function handleFormFieldsAutocompleteCEP(stateCEP, dispatchCEP, state, dispatch) {
+    const apiData = stateCEP.cepData.brasilAPICEPData;
+    if (apiData.cep) {
+      dispatchCEP({ type: 'SET_ZIP_CODE', payload: apiData.cep });
     }
-    if (cep.state) {
-      setFederatedUnit(cep.state)
+    if (apiData.state) {
+      dispatch({ type: 'SET_FEDERATED_UNIT', payload: apiData.state });
     }
-    if (cep.city) {
-      setCompanyCity(cep.city)
+    if (apiData.city) {
+      dispatch({ type: 'SET_COMPANY_CITY', payload: apiData.city });
     }
-    if (cep.neighborhood) {
-      setCompanyDistrict(cep.neighborhood)
+    if (apiData.neighborhood) {
+      dispatch({ type: 'SET_COMPANY_DISTRICT', payload: apiData.neighborhood });
     }
-    if (cep.street) {
-      setCompanyAddress(cep.street);
+    if (apiData.street) {
+      dispatch({ type: 'SET_COMPANY_ADDRESS', payload: apiData.street });
     }
-    handleValuesChangedWithAPIDataCEP();
+
+    dispatchCEP({ type: 'SET_HAS_VALUES_CHANGED_WITH_CEP_API_DATA', payload: true });
   }
 
   const formatPhoneNumber = (phone, type) => {
@@ -277,50 +229,76 @@ const useCreateClientCompany = () => {
     }
   };
 
-  async function handleValidateAddClientCompanyForm(handleShowCustomerUserRegister) {
+  async function handleValidateAddClientCompanyForm(state, dispatch) {
+    const stateLegalEntityData = state.legalEntityRegistrationData;
+    const stateCNPJData = state.cnpjData;
+    const stateCEPData = state.cepData;
+
     validateAddClientCompanyForm();
     validateAddCustomerAddressForm();
     if (
-      individualEmployerIdNumberState === "valid" &&
-      companyNameState === "valid" &&
-      registrationNameState === "valid" &&
-      companyTypesState === "valid" &&
-      customerBusinessPhoneNumberState === "valid" &&
-      customerBusinessSectorState === "valid" &&
-      companyEmailAddressState === "valid"
+      stateCNPJData.individualEmployerIdNumberState === "valid" &&
+      stateLegalEntityData.companyNameState === "valid" &&
+      stateLegalEntityData.registrationNameState === "valid" &&
+      stateLegalEntityData.companyTypesState === "valid" &&
+      stateLegalEntityData.customerBusinessPhoneNumberState === "valid" &&
+      stateLegalEntityData.customerBusinessSectorState === "valid" &&
+      stateLegalEntityData.companyEmailAddressState === "valid"
     ) {
-      setIsCustomerCompanyFormValidated(!isCustomerCompanyFormValidated);
-      const customerUserIdCreated = await handleSubmitCompany(individualEmployerIdNumber, companyName, registrationName, companyTypes, customerBusinessPhoneNumber, customerPhoneNumber, companyEmailAddress, customerBusinessSector, customerWebSite);
-      //console.log("1", isClientCompanySaved);
-      //setIsClientCompanySaved(!isClientCompanySaved);
-
+      dispatch({
+        type: 'LEGAL_ENTITY_SET_IS_CUSTOMER_COMPANY_FORM_VALIDATED',
+        payload: true
+      });
+      const customerUserIdCreated = await handleSubmitCompany(
+        stateCNPJData.individualEmployerIdNumber,
+        stateLegalEntityData.companyName,
+        stateLegalEntityData.registrationName,
+        stateLegalEntityData.companyTypes,
+        stateLegalEntityData.customerBusinessPhoneNumber,
+        stateLegalEntityData.customerPhoneNumber,
+        stateLegalEntityData.companyEmailAddress,
+        stateLegalEntityData.customerBusinessSector,
+        stateLegalEntityData.customerWebSite
+      );
+      dispatch({
+        type: 'LEGAL_ENTITY_SET_IS_CLIENT_COMPANY_SAVED',
+        payload: true
+      });
       if (
-        idHeadOfficeBranchState === "valid" &&
-        customerZipCodeState === "valid" &&
-        federatedUnitState === "valid" &&
-        companyCityState === "valid" &&
-        companyAddressState === "valid" &&
-        companyAddressNumberState === "valid" &&
-        companyDistrictState === "valid" &&
+        stateLegalEntityData.idHeadOfficeBranchState === "valid" &&
+        stateCEPData.zipCodeState === "valid" &&
+        stateLegalEntityData.federatedUnitState === "valid" &&
+        stateLegalEntityData.companyCityState === "valid" &&
+        stateLegalEntityData.companyAddressState === "valid" &&
+        stateLegalEntityData.companyAddressNumberState === "valid" &&
+        stateLegalEntityData.companyDistrictState === "valid" &&
         customerUserIdCreated
       ) {
-        await handleSubmitCompanyAddress(idHeadOfficeBranch, customerZipCode, federatedUnit, companyCity, companyAddress, companyAddressNumber, companyAddressComplement, companyDistrict, customerUserIdCreated);
-        //console.log("1", isCompanyAddressSaved);
-        //setIsCompanyAddressSaved(!isCompanyAddressSaved);
+        await handleSubmitCompanyAddress(
+          stateLegalEntityData.idHeadOfficeBranch,
+          stateCEPData.zipCode,
+          stateLegalEntityData.federatedUnit,
+          stateLegalEntityData.companyCity,
+          stateLegalEntityData.companyAddress,
+          stateLegalEntityData.companyAddressNumber,
+          stateLegalEntityData.companyAddressComplement,
+          stateLegalEntityData.companyDistrict,
+          customerUserIdCreated
+        );
+        dispatch({
+          type: 'LEGAL_ENTITY_SET_IS_COMPANY_ADDRESS_SAVED',
+          payload: true
+        });
         await handleLinkingAccountHolderToCustomer(customerUserIdCreated);
-
         goBackToCustomerUserList(handleShowCustomerUserRegister);
       }
     }
   }
 
   function goBackToCustomerUserList(handleShowCustomerUserRegister) {
-    //console.log("2", isClientCompanySaved, "2", isCompanyAddressSaved);
-    //if (isClientCompanySaved && isCompanyAddressSaved) {
-    resetCreateCustomer();
-    resetCreateCustomerAddress();
+    dispatchCNPJ({ type: 'SET_HAS_VALUES_CHANGED_WITH_CNPJ_API_DATA', payload: false });
+    dispatchCEP({ type: 'SET_HAS_VALUES_CHANGED_WITH_CEP_API_DATA', payload: false });
     handleShowCustomerUserRegister();
-    //}
   }
 
   const handleSubmitCompany = async (individualEmployerIdNumber, companyName, registrationName, companyTypes, customerBusinessPhoneNumber, customerPhoneNumber, companyEmailAddress, customerBusinessSector, customerWebSite) => {
@@ -357,7 +335,7 @@ const useCreateClientCompany = () => {
         if (response.ok) {
 
           const data = await response.json();
-          console.log('Data sent successfully!');
+          console.log('Dados de entidade enviados com sucesso!');
 
           return data.id;
         } else {
@@ -397,7 +375,7 @@ const useCreateClientCompany = () => {
         });
 
         if (response.ok) {
-          console.log('Data sent successfully!');
+          console.log('Dados de endereço da entidade enviados com sucesso!');
         } else {
           console.error('Error in response:', response.status);
         }
@@ -425,10 +403,9 @@ const useCreateClientCompany = () => {
         });
 
         if (response.ok) {
-
           const data = await response.json();
           handleCleaningIdAccountHolderToLinkToCustomer();
-          console.log('Data sent successfully!\n', data);
+          console.log('O titular da conta pertence a uma pessoa jurídica agora!\n', data);
 
           return data.id;
         } else {
@@ -440,133 +417,13 @@ const useCreateClientCompany = () => {
     }
   };
 
-  function resetCreateCustomerAddress() {
-    setCompanyName("");
-    setCompanyNameState(null);
-    setRegistrationName("");
-    setRegistrationNameState(null);
-    setCompanyTypes("");
-    setCompanyTypesState(null);
-    setCustomerBusinessPhoneNumber("");
-    setCustomerBusinessPhoneNumberState(null);
-    setCustomerPhoneNumber("");
-    setCustomerPhoneNumberState(null);
-    setCompanyEmailAddress("");
-    setCompanyEmailAddressState(null);
-    setCustomerBusinessSector("");
-    setCustomerBusinessSectorState(null);
-    setCustomerWebSite("");
-    setCustomerWebSiteState(null);
-    setIdHeadOfficeBranch("");
-    setIdHeadOfficeBranchState(null);
-    setCustomerZipCode("");
-    setCustomerZipCodeState(null);
-    setFederatedUnit("");
-    setFederatedUnitState(null);
-    setCompanyCity("");
-    setCompanyCityState(null);
-    setCompanyAddress("");
-    setCompanyAddressState(null);
-    setCompanyAddressNumber("");
-    setCompanyAddressNumberState(null);
-    setCompanyAddressComplement("");
-    setCompanyAddressComplementState(null);
-    setCompanyDistrict("");
-    setCompanyDistrictState(null);
-    setHasValuesChangedWithAPIData(false);
-    setIsCustomerCompanyFormValidated(false);
-    setIsClientCompanySaved(false);
-    setIsCompanyAddressSaved(false);
-  }
-
   return {
-    individualEmployerIdNumberState,
-    setIndividualEmployerIdNumberState,
-    companyName,
-    setCompanyName,
-    companyNameState,
-    setCompanyNameState,
-    registrationName,
-    setRegistrationName,
-    registrationNameState,
-    setRegistrationNameState,
-    companyTypes,
-    setCompanyTypes,
-    companyTypesState,
-    setCompanyTypesState,
-    customerBusinessPhoneNumber,
-    setCustomerBusinessPhoneNumber,
-    customerBusinessPhoneNumberState,
-    setCustomerBusinessPhoneNumberState,
-    customerPhoneNumber,
-    setCustomerPhoneNumber,
-    customerPhoneNumberState,
-    setCustomerPhoneNumberState,
-    companyEmailAddress,
-    setCompanyEmailAddress,
-    companyEmailAddressState,
-    setCompanyEmailAddressState,
-    customerWebSite,
-    setCustomerWebSite,
-    customerWebSiteState,
-    setCustomerWebSiteState,
-    customerStatus,
-    setCustomerStatus,
-    customerAccessionDate,
-    setCustomerAccessionDate,
-    idHeadOfficeBranch,
-    setIdHeadOfficeBranch,
-    idHeadOfficeBranchState,
-    setIdHeadOfficeBranchState,
-    customerBusinessSector,
-    setCustomerBusinessSector,
-    customerBusinessSectorState,
-    setCustomerBusinessSectorState,
-    customerZipCode,
-    setCustomerZipCode,
-    customerZipCodeState,
-    setCustomerZipCodeState,
-    federatedUnit,
-    setFederatedUnit,
-    federatedUnitState,
-    setFederatedUnitState,
-    companyCity,
-    setCompanyCity,
-    companyCityState,
-    setCompanyCityState,
-    companyAddress,
-    setCompanyAddress,
-    companyAddressState,
-    setCompanyAddressState,
-    companyAddressNumber,
-    setCompanyAddressNumber,
-    companyAddressNumberState,
-    setCompanyAddressNumberState,
-    companyAddressComplement,
-    setCompanyAddressComplement,
-    companyAddressComplementState,
-    setCompanyAddressComplementState,
-    companyDistrict,
-    setCompanyDistrict,
-    companyDistrictState,
-    setCompanyDistrictState,
-    companyCountry,
-    setCompanyCountry,
-    companyCountryState,
-    setCompanyCountryState,
-    handleSaveCNPJ,
     handleValidateAddClientCompanyForm,
     handleFormFieldsAutocomplete,
-    hasValuesChangedWithAPIData,
-    handleValuesChangedWithAPIData,
     validateAddClientCompanyForm,
-    isCustomerCompanyFormValidated,
     validatePhoneNumber,
     validateWebSite,
     validateCompanyEmail,
-    resetCreateCustomerAddress,
-    hasValuesChangedWithAPIDataCEP,
-    handleValuesChangedWithAPIDataCEP,
     validateAddCustomerAddressForm,
     handleFormFieldsAutocompleteCEP,
   };

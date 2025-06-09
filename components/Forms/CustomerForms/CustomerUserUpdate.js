@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import PropTypes from "prop-types";
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useReducer, useState } from 'react';
 // nodejs library that concatenates classes
 // react plugin used to create DropdownMenu for selecting items
 const Select2 = dynamic(() => import("react-select2-wrapper"));
@@ -8,20 +8,27 @@ const Select2 = dynamic(() => import("react-select2-wrapper"));
 import ReactDatetime from "react-datetime";
 import InputMask from 'react-input-mask';
 import useCreateClientCompany from '../../../hooks/RecordsHooks/customer/useCreateClientCompany';
-import useCNPJ from '../../../hooks/RecordsHooks/useCNPJ';
 // reactstrap components
 import {
     Col, Input, Row
 } from "reactstrap";
+import { initialStateLegalEntityRegistrationForm, legalEntityRegistrationFormReducer } from '../../../reducers/CustomerForms/LegalEntityRegistrationFormReducer';
+import { initialStateCNPJForm, cnpjFormReducer } from '../../../reducers/cnpjFormReducer';
+import { initialStateCEPForm, cepFormReducer } from '../../../reducers/cepFormReducer';
 import { CustomerContext } from '../../../contexts/RecordsContext/CustomerContext';
 import { useFindClientCompany } from "../../../hooks/RecordsHooks/customer/useFindClientCompany";
 import { useFindEmployeeAddress } from "../../../hooks/RecordsHooks/customer/useFindClientCompanyAddress";
 import useUpdateClientCompany from '../../../hooks/RecordsHooks/customer/useUpdateClientCompany';
-import useCEP from "../../../hooks/RecordsHooks/useCEP";
 import { handleSelectionEmploymentContractData } from '../../../util/handleSelectionEmploymentContractData';
 import { handleDateFormatting } from "../../../util/handleDateFormatting";
 
 function CustomerUserUpdate({ handleOpenCustomerModal }) {
+
+    const [state, dispatch] = useReducer(legalEntityRegistrationFormReducer, initialStateLegalEntityRegistrationForm);
+
+    const [stateCNPJ, dispatchCNPJ] = useReducer(cnpjFormReducer, initialStateCNPJForm);
+
+    const [stateCEP, dispatchCEP] = useReducer(cepFormReducer, initialStateCEPForm);
 
     const {
         isShouldUpdateClientCompany,
@@ -36,120 +43,15 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
     } = useUpdateClientCompany();
 
     const {
-        companyName,
-        setCompanyName,
-        companyNameState,
-        setCompanyNameState,
-        registrationName,
-        setRegistrationName,
-        registrationNameState,
-        setRegistrationNameState,
-        companyTypes,
-        setCompanyTypes,
-        companyTypesState,
-        setCompanyTypesState,
-        customerBusinessPhoneNumber,
-        setCustomerBusinessPhoneNumber,
-        customerBusinessPhoneNumberState,
-        setCustomerBusinessPhoneNumberState,
-        customerPhoneNumber,
-        setCustomerPhoneNumber,
-        customerPhoneNumberState,
-        setCustomerPhoneNumberState,
-        companyEmailAddress,
-        setCompanyEmailAddress,
-        companyEmailAddressState,
-        setCompanyEmailAddressState,
-        customerBusinessSector,
-        setCustomerBusinessSector,
-        customerBusinessSectorState,
-        setCustomerBusinessSectorState,
-        customerWebSite,
-        setCustomerWebSite,
-        customerWebSiteState,
-        setCustomerWebSiteState,
-        customerStatus,
-        setCustomerStatus,
-        customerStatusState,
-        setCustomerStatusState,
-        customerAccessionDate,
-        setCustomerAccessionDate,
-        customerAccessionDateState,
-        setCustomerAccessionDateState,
-        idHeadOfficeBranch,
-        setIdHeadOfficeBranch,
-        idHeadOfficeBranchState,
-        setIdHeadOfficeBranchState,
-        customerZipCode,
-        setCustomerZipCode,
-        customerZipCodeState,
-        setCustomerZipCodeState,
-        federatedUnit,
-        setFederatedUnit,
-        federatedUnitState,
-        setFederatedUnitState,
-        companyCity,
-        setCompanyCity,
-        companyCityState,
-        setCompanyCityState,
-        companyAddress,
-        setCompanyAddress,
-        companyAddressState,
-        setCompanyAddressState,
-        companyAddressNumber,
-        setCompanyAddressNumber,
-        companyAddressNumberState,
-        setCompanyAddressNumberState,
-        companyAddressComplement,
-        setCompanyAddressComplement,
-        companyAddressComplementState,
-        setCompanyAddressComplementState,
-        companyDistrict,
-        setCompanyDistrict,
-        companyDistrictState,
-        setCompanyDistrictState,
-        companyCountry,
-        setCompanyCountry,
-        companyCountryState,
-        setCompanyCountryState,
-        handleFormFieldsAutocomplete,
-        hasValuesChangedWithAPIData,
-        handleValuesChangedWithAPIData,
-        validateAddClientCompanyForm,
         handleValidateAddClientCompanyForm,
-        isCustomerCompanyFormValidated,
+        handleFormFieldsAutocomplete,
+        validateAddClientCompanyForm,
         validatePhoneNumber,
         validateWebSite,
         validateCompanyEmail,
-        hasValuesChangedWithAPIDataCEP,
-        handleValuesChangedWithAPIDataCEP,
         validateAddCustomerAddressForm,
         handleFormFieldsAutocompleteCEP,
     } = useCreateClientCompany();
-
-    const {
-        brasilAPICNPJData,
-        loadingCNPJValidation,
-        errorCNPJValidation,
-        handleCPNJValidationLoading,
-        individualEmployerIdNumber,
-        handleSaveCNPJ,
-        individualEmployerIdNumberState,
-        setIndividualEmployerIdNumberState
-    } = useCNPJ();
-
-    const {
-        brasilAPICEPData,
-        loadingCEPValidation,
-        errorCEPValidation,
-        handleCEPValidationLoading,
-        handleSaveCEP,
-        zipCode,
-        setZipCode,
-        zipCodeState,
-        setZipCodeState,
-        handleErrorCEPValidation
-    } = useCEP();
 
     const [fieldTouchStatus, setFieldTouchStatus] = useState({
 
@@ -165,7 +67,7 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
         customerStatus: { value: false, touched: false, state: null },
         privileges: { value: false, touched: false, state: null },
 
-        customerZipCode: { value: "", touched: false, state: null },
+        zipCode: { value: "", touched: false, state: null },
         companyAddress: { value: "", touched: false, state: null },
         companyAddressNumber: { value: "", touched: false, state: null },
         companyAddressComplement: { value: "", touched: false, state: null },
@@ -178,8 +80,6 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
 
     const [cnpjTouched, setCnpjTouched] = useState(false);
     const [cepTouched, setCepTouched] = useState(false);
-    const [customerBusinessPhoneTouched, setCustomerBusinessPhoneTouched] = useState(false);
-    const [customerPhoneTouched, setCustomerPhoneTouched] = useState(false);
 
     const handleTouchStart = (field) => {
         setFieldTouchStatus((prev) => ({
@@ -239,13 +139,13 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
 
     const handleCEPChange = (e) => {
         const newValue = e.target.value;
-        handleSaveCEP(newValue);
+        dispatchCEP({ type: 'SET_ZIP_CODE', payload: newValue });
 
         if (!cepTouched) {
             setCepTouched(true);
             setFieldTouchStatus((prev) => ({
                 ...prev,
-                customerZipCode: { ...prev.customerZipCode, touched: true },
+                zipCode: { ...prev.zipCode, touched: true },
             }));
         }
     };
@@ -256,60 +156,66 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
         });
     };
 
-    const [selectedCompanySector, setSelectedCompanySector] = useState('');
-    const [companySectorDataList, setCompanySectorDataList] = useState([
-        { id: "0", text: "Privado" },
-        { id: "1", text: "Público" },
-    ]);
-    const handleCompanySectorDataList = (companySector) => {
-        setCompanySectorDataList(companySector);
-    }
+    // const [companyPrivileges, setCompanyPrivileges] = useState('');
+    // const [companyPrivilegesState, setCompanyPrivilegesState] = useState(null);
 
-    const [selectedCompanyTypes, setSelectedCompanyTypes] = useState('');
-    const [companyTypesDataList, setCompanyTypesDataList] = useState([
-        { id: "0", text: "EI" },
-        { id: "1", text: "MEI" },
-        { id: "2", text: "Ltda" },
-        { id: "3", text: "SLU" },
-        { id: "4", text: "SS" },
-        { id: "5", text: "S/A" },
-    ]);
-    const handleCompanyTypesDataList = (companyTypes) => {
-        setCompanyTypesDataList(companyTypes);
-    }
+    // const [selectedCompanyPrivileges, setSelectedCompanyPrivileges] = useState('');
+    // const [companyPrivilegesDataList, setCompanyPrivilegesDataList] = useState([
+    //     { id: "0", text: "Todos" },
+    //     { id: "1", text: "Titular da Conta" },
+    //     { id: "2", text: "Administrador" },
+    //     { id: "3", text: "Finanças" },
+    //     { id: "4", text: "Acesso a Relátorios" },
+    //     { id: "5", text: "Vendas" },
+    //     { id: "6", text: "Desenvolvedor" },
+    //     { id: "7", text: "Suporte ao Cliente" },
+    //     { id: "8", text: "Marketing" },
+    // ]);
+    // const handleCompanyPrivilegesDataList = (companyPrivileges) => {
+    //     setCompanyPrivilegesDataList(companyPrivileges);
+    // }
 
-    const [companyPrivileges, setCompanyPrivileges] = useState('');
-    const [companyPrivilegesState, setCompanyPrivilegesState] = useState(null);
-
-    const [selectedCompanyPrivileges, setSelectedCompanyPrivileges] = useState('');
-    const [companyPrivilegesDataList, setCompanyPrivilegesDataList] = useState([
-        { id: "0", text: "Todos" },
-        { id: "1", text: "Titular da Conta" },
-        { id: "2", text: "Administrador" },
-        { id: "3", text: "Finanças" },
-        { id: "4", text: "Acesso a Relátorios" },
-        { id: "5", text: "Vendas" },
-        { id: "6", text: "Desenvolvedor" },
-        { id: "7", text: "Suporte ao Cliente" },
-        { id: "8", text: "Marketing" },
-    ]);
-    const handleCompanyPrivilegesDataList = (companyPrivileges) => {
-        setCompanyPrivilegesDataList(companyPrivileges);
-    }
+    const handleSelectionEmploymentContractDataWrapper = (
+        selectedId,
+        dataList,
+        setSelectedAction,
+        setFieldAction,
+        setStateAction,
+        setSelectedDepartmentIdAction = null,
+        setHasDepartmentSelectedAction = null,
+        savedDataType = 'id'
+    ) => {
+        // Despache o estado 'valid' antes de iniciar o processo de seleção
+        if (setStateAction) dispatch({ type: setStateAction, payload: 'valid' });
+        if (setHasDepartmentSelectedAction) dispatch({ type: setHasDepartmentSelectedAction, payload: true });
+        // Chama a função de processamento de seleção de dados
+        handleSelectionEmploymentContractData(
+            selectedId,
+            dataList,
+            (value) => dispatch({ type: setSelectedAction, payload: value }),
+            (value) => dispatch({ type: setFieldAction, payload: value }), // Agora definirá o valor correto
+            (state) => dispatch({ type: setStateAction, payload: state }),
+            (id) => dispatch({ type: setSelectedDepartmentIdAction, payload: id }),
+            () => dispatch({ type: setHasDepartmentSelectedAction, payload: true }),
+            savedDataType
+        );
+    };
 
     const selectedListItemToUpdate = (item, list, setSelectedItem, setItem, setItemState) => {
         const selectedItem = list.find(p => p.text === item);
         if (selectedItem) {
             setSelectedItem(selectedItem.id);
-            handleSelectionEmploymentContractData(selectedItem.id, list, setSelectedItem, setItem, setItemState);
+            handleSelectionEmploymentContractDataWrapper(selectedItem.id, list, setSelectedItem, setItem, setItemState, null, null, 'id');
         }
     };
 
+    // Lista para armazenar dados da Entidade Legal cadastrada
     const [detailedClientCompanyData, setDetailedClientCompanyData] = useState([]);
     function handleCleanDetailedClientCompanyData() {
         setDetailedClientCompanyData([]);
     };
 
+    // Lista para armazenar dados de endereço da Entidade Legal cadastrada
     const [detailedClientCompanyAddressData, setDetailedClientCompanyAddressData] = useState([]);
     function handleCleanDetailedClientCompanyAddressData() {
         setDetailedClientCompanyAddressData([]);
@@ -317,53 +223,69 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
 
     const [formattedAccessionDate, setFormattedAccessionDate] = useState('');
 
-    useEffect(() => {
-        if (brasilAPICNPJData !== null) {
-            handleCPNJValidationLoading();
-            handleFormFieldsAutocomplete(brasilAPICNPJData);
-        }
-    }, [brasilAPICNPJData])
+    const hasHandledCNPJ = useRef(false);
 
     useEffect(() => {
-        if (hasValuesChangedWithAPIData) {
-            handleValuesChangedWithAPIData(!hasValuesChangedWithAPIData);
-            validateAddClientCompanyForm();
+        if (stateCNPJ.cnpjData.brasilAPICNPJData !== null && !hasHandledCNPJ.current) {
+            if (stateCNPJ.cnpjData.loadingCNPJValidation === true) {
+                hasHandledCNPJ.current = true;
+                dispatchCNPJ({
+                    type: 'SET_LOADING_CNPJ_VALIDATION',
+                    payload: false
+                });
+                handleFormFieldsAutocomplete(stateCNPJ, dispatchCNPJ, state, dispatch, stateCEP, dispatchCEP,);
+            }
         }
-    }, [hasValuesChangedWithAPIData, validateAddClientCompanyForm]);
-
+    }, [stateCNPJ.cnpjData.brasilAPICNPJData])
 
     useEffect(() => {
-        if (brasilAPICEPData !== null) {
-            handleFormFieldsAutocompleteCEP(brasilAPICEPData);
-            handleCEPValidationLoading();
-            handleErrorCEPValidation();
+        if (stateCNPJ.cnpjData.hasValuesChangedWithCNPJAPIData) {
+            dispatchCNPJ({
+                type: 'SET_HAS_VALUES_CHANGED_WITH_CNPJ_API_DATA',
+                payload: false
+            });
+            validateAddClientCompanyForm(stateCNPJ, dispatchCNPJ, state, dispatch);
         }
-        if (errorCEPValidation) {
+    }, [stateCNPJ.cnpjData.hasValuesChangedWithCNPJAPIData, validateAddClientCompanyForm]);
+
+    useEffect(() => {
+        if (stateCEP.cepData.brasilAPICEPData !== null) {
+            handleFormFieldsAutocompleteCEP(stateCEP, dispatchCEP, state, dispatch);
+            dispatchCEP({
+                type: 'SET_LOADING_CEP_VALIDATION',
+                payload: false
+            });
+            dispatchCEP({
+                type: 'SET_LOADING_CEP_VALIDATION',
+                payload: false
+            });
+            dispatchCEP({ type: 'SET_ERROR_CEP_VALIDATION', payload: null });
+        }
+        if (stateCEP.cepData.errorCEPValidation) {
             setFieldTouchStatus((prev) => ({
                 ...prev,
-                customerZipCode: {
-                    ...prev.customerZipCode,
+                zipCode: {
+                    ...prev.zipCode,
                     state: "invalid",
                     touched: true
                 }
             }));
         }
-    }, [brasilAPICEPData, errorCEPValidation]);
+    }, [stateCEP.cepData.brasilAPICEPData, stateCEP.cepData.errorCEPValidation]);
 
     useEffect(() => {
-        if (hasValuesChangedWithAPIDataCEP) {
-            handleValuesChangedWithAPIDataCEP(!hasValuesChangedWithAPIDataCEP);
+        if (stateCEP.cepData.hasValuesChangedWithAPIDataCEP) {
+            dispatchCEP({ type: 'SET_HAS_VALUES_CHANGED_WITH_CEP_API_DATA', payload: true });
             const fieldsToUpdate = {
                 federatedUnit,
                 companyCity,
                 companyAddress,
                 companyDistrict,
-                customerZipCode,
+                zipCode,
             };
-
             updateFieldsWithHandleChange(fieldsToUpdate);
         }
-    }, [hasValuesChangedWithAPIDataCEP, validateAddCustomerAddressForm]);
+    }, [stateCEP.cepData.hasValuesChangedWithAPIDataCEP, validateAddCustomerAddressForm]);
 
     useEffect(() => {
         const fetchClientCompanyAndAddressById = async () => {
@@ -381,7 +303,7 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                     customerStatus: { ...prev.customerStatus, value: foundCustomer.status },
                     privileges: { ...prev.privileges, value: foundCustomer.privileges },
                 }));
-                handleSaveCNPJ(foundCustomer.identificationNumber);
+                dispatchCNPJ({ type: 'SET_INDIVIDUAL_EMPLOYER_ID_NUMBER', payload: foundCustomer.identificationNumber });
                 selectedListItemToUpdate(foundCustomer.type, companyTypesDataList, setSelectedCompanyTypes, setCompanyTypes, setCompanyTypesState);
                 selectedListItemToUpdate(foundCustomer.sector, companySectorDataList, setSelectedCompanySector, setCustomerBusinessSector, setCustomerBusinessSectorState);
                 setCustomerAccessionDate(new Date(foundCustomer.createdAt));
@@ -425,7 +347,7 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                 fieldTouchStatus.customerStatus.value,
                 formattedAccessionDate,
                 fieldTouchStatus.idHeadOfficeBranch.value,
-                fieldTouchStatus.customerZipCode.value,
+                fieldTouchStatus.zipCode.value,
                 fieldTouchStatus.federatedUnit.value,
                 fieldTouchStatus.companyCity.value,
                 fieldTouchStatus.companyAddress.value,
@@ -504,35 +426,26 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 placeholder="99.999.999/9999-99"
                                 mask="99.999.999/9999-99"
                                 maskChar="_"
-                                value={individualEmployerIdNumber}
+                                value={stateCNPJ.cnpjData.individualEmployerIdNumber}
                                 onChange={(e) => {
-                                    handleSaveCNPJ(e.target.value);
+                                    dispatchCNPJ({ type: 'SET_INDIVIDUAL_EMPLOYER_ID_NUMBER', payload: value });
                                     if (!cnpjTouched) {
                                         setCnpjTouched(true);
                                     }
                                 }}
                                 onBlur={() => {
-                                    if (individualEmployerIdNumber !== "") {
-                                        setIndividualEmployerIdNumberState("valid");
-                                    } else {
-                                        setIndividualEmployerIdNumberState("invalid");
-                                    }
+                                    dispatchCNPJ({ type: 'SET_INDIVIDUAL_EMPLOYER_ID_NUMBER_STATE', payload: individualEmployerIdNumber !== '' ? 'valid' : 'invalid' });
                                 }}
                             >
                                 {(inputProps) => <Input {...inputProps} id="validationCustomerIndividualEmployerIdnNumber" valid={cnpjTouched && individualEmployerIdNumberState === "valid"} invalid={cnpjTouched && individualEmployerIdNumberState === "invalid"} disabled />}
                             </InputMask>
-                            {loadingCNPJValidation ? (
-                                <div style={{ display: 'none', width: '100%', marginTop: '0.25rem', fontSize: '80%', color: '#5e72e4' }}>Validando CNPJ...</div>
-                            ) : (
-                                errorCNPJValidation !== null ? (
-                                    <div className="invalid-feedback">Ocorreu um erro ao validar o CNPJ.</div>
-                                ) : (
-                                    brasilAPICNPJData ? (
-                                        <div className="valid-feedback">CNPJ válido!</div>
-                                    ) : (
-                                        <div className="invalid-feedback">CNPJ inválido!</div>
-                                    )
-                                )
+                            {stateCNPJ.cnpjData.individualEmployerIdNumberState === 'invalid' && (
+                                <div className="invalid-feedback">
+                                    {stateCNPJ.cnpjData.errorCNPJValidation || 'CNPJ inválido!'}
+                                </div>
+                            )}
+                            {stateCNPJ.cnpjData.individualEmployerIdNumberState === 'valid' && (
+                                <div className="valid-feedback">CNPJ válido!</div>
                             )}
                         </Col>
                     </div>

@@ -6,26 +6,13 @@ import {
   Modal,
   ModalBody,
   ModalFooter,
-  Card,
-  CardHeader,
-  CardBody,
-  FormGroup,
-  Form,
-  Input,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroup,
-  Container,
   Row,
   Col,
 } from "reactstrap";
-
-import ReactDatetime from "react-datetime";
 import { useFindClientCompany } from "../../../hooks/RecordsHooks/customer/useFindClientCompany";
 import { useFindEmployeeAddress } from "../../../hooks/RecordsHooks/customer/useFindClientCompanyAddress";
 import useCreateClientCompany from "../../../hooks/RecordsHooks/customer/useCreateClientCompany";
 import CustomerUserUpdate from "../../Forms/CustomerForms/CustomerUserUpdate";
-import useCNPJ from "../../../hooks/RecordsHooks/useCNPJ";
 import { CustomerContext } from "../../../contexts/RecordsContext/CustomerContext";
 
 function ShowCustomerDetailsModal(

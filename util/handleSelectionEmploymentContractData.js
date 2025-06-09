@@ -43,6 +43,7 @@ export function handleSelectionEmploymentContractData(
 
         if (optionType.length > 0) {
             const itemValue = savedDataType === 'id' ? optionType[0].id : optionType[0].text;
+            console.log(itemValue);
             setItem(itemValue);
             setItemState("valid");
         } else {

@@ -1,22 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from "prop-types";
 import {
-    Button,
     Card,
-    CardHeader,
-    CardBody,
-    FormGroup,
-    Form,
-    Input,
-    InputGroupAddon,
-    InputGroupText,
-    InputGroup,
-    Container,
-    Row,
-    Col,
-    Badge,
-    ListGroup,
-    ListGroupItem,
     Progress
 } from "reactstrap";
 
@@ -44,29 +29,29 @@ function SimpleWizard({ stepsNumber, currentStep, stepTitles, hasWizartStyleOfRe
                             const title = stepTitles[index];
                             return (
                                 <React.Fragment key={index}>
-                                    <li className={`d-flex align-items-center justify-content-center ${step.status === 'isCurrent' ? 'font-weight-bold' : ''}`} style={{ zIndex: hasWizartStyleOfReviewCreation ? undefined : 10 }}>
+                                    <li className={`d-flex align-items-center justify-content-center ${step.status === 'isCurrent' ? 'font-weight-bold' : ''}`} style={{ zIndex: undefined }}>
                                         <a
                                             href="#"
                                             className="d-flex flex-column align-items-center justify-content-center p-1 text-decoration-none"
                                             style={{
                                                 color: hasWizartStyleOfReviewCreation
                                                     ? (step.status === 'isDone' ? '#ff623f' : '#6c757d')
-                                                    : (step.status === 'isDone' ? '#BBDB35' : '#6c757d')
+                                                    : (step.status === 'isDone' ? '#562f9f' : '#6c757d')
                                             }}
                                         >
                                             {step.status === 'isDone' ? (
                                                 <span
                                                     className="d-inline-flex align-items-center justify-content-center rounded-circle text-md"
                                                     style={{
-                                                        width: hasWizartStyleOfReviewCreation ? '2rem' : '4rem',
-                                                        height: hasWizartStyleOfReviewCreation ? '2rem' : '4rem',
-                                                        fontSize: hasWizartStyleOfReviewCreation ? undefined : '2rem',
+                                                        width: '2rem',
+                                                        height: '2rem',
+                                                        fontSize: '2rem',
                                                         color: hasWizartStyleOfReviewCreation
                                                             ? (step.status === 'isDone' ? '#ffeeef' : '#6c757d')
-                                                            : (step.status === 'isDone' ? '#ffeeef' : '#57249F'),
+                                                            : (step.status === 'isDone' ? '#ffeeef' : '#6c757d'),
                                                         backgroundColor: hasWizartStyleOfReviewCreation
                                                             ? (step.status === 'isDone' ? '#ff623f' : '#e9ecef')
-                                                            : (step.status === 'isDone' ? '#BBDB35' : '#e9ecef'),
+                                                            : (step.status === 'isDone' ? '#57249F' : '#e9ecef'),
                                                     }}
                                                 >
                                                     <i className="ni ni-check-bold"></i>
@@ -75,15 +60,15 @@ function SimpleWizard({ stepsNumber, currentStep, stepTitles, hasWizartStyleOfRe
                                                 <span
                                                     className="d-inline-flex align-items-center justify-content-center rounded-circle text-md"
                                                     style={{
-                                                        width: hasWizartStyleOfReviewCreation ? '2rem' : '4rem',
-                                                        height: hasWizartStyleOfReviewCreation ? '2rem' : '4rem',
-                                                        fontSize: hasWizartStyleOfReviewCreation ? undefined : '2rem',
+                                                        width: '2rem',
+                                                        height: '2rem',
+                                                        fontSize: undefined,
                                                         color: hasWizartStyleOfReviewCreation
                                                             ? (step.status === 'isDone' ? '#ffeeef' : '#6c757d')
-                                                            : (step.status === 'isDone' ? '#ffeeef' : '#57249F'),
+                                                            : (step.status === 'isDone' ? '#ffeeef' : '#6c757d'),
                                                         backgroundColor: hasWizartStyleOfReviewCreation
                                                             ? (step.status === 'isDone' ? '#ff623f' : '#e9ecef')
-                                                            : (step.status === 'isDone' ? '#BBDB35' : '#e9ecef'),
+                                                            : (step.status === 'isDone' ? '#57249F' : '#e9ecef'),
                                                     }}
                                                 >
                                                     {index + 1}
@@ -99,15 +84,15 @@ function SimpleWizard({ stepsNumber, currentStep, stepTitles, hasWizartStyleOfRe
                                         <div
                                             className="mb-4"
                                             style={{
-                                                width: hasWizartStyleOfReviewCreation ? '6rem' : '28rem',
-                                                zIndex: hasWizartStyleOfReviewCreation ? undefined : 10
+                                                width: '6rem',
+                                                zIndex: undefined,
                                             }}
                                         >
                                             <Progress
                                                 color={
                                                     hasWizartStyleOfReviewCreation
                                                         ? (step.status === 'isDone' ? 'warning' : 'light')
-                                                        : (step.status === 'isDone' ? 'green-sk' : 'light')
+                                                        : (step.status === 'isDone' ? 'primary' : 'light')
                                                 }
                                                 className={`progress-xs mb-3 mb-md-0`}
                                                 max="100"
@@ -126,17 +111,9 @@ function SimpleWizard({ stepsNumber, currentStep, stepTitles, hasWizartStyleOfRe
 
     return (
         <>
-            {
-                hasWizartStyleOfReviewCreation ? (
-                    <Card className="pt-4 mb-0">
-                        {wizardContent()}
-                    </Card>
-                ) : (
-                    <div className="pt-4 mb-0">
-                        {wizardContent()}
-                    </div>
-                )
-            }
+            <Card className="pt-4 mb-0">
+                {wizardContent()}
+            </Card>
         </>
     );
 }

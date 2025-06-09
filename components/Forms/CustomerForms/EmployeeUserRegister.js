@@ -16,7 +16,6 @@ import {
 } from "reactstrap";
 import useCreateEmployee from '../../../hooks/RecordsHooks/employee/useCreateEmployee';
 import InputMask from 'react-input-mask';
-import useCEP from '../../../hooks/RecordsHooks/useCEP';
 import { useFindAllEmployeeAndRole } from '../../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllEmployeeAndRole';
 import { useFindAllTypeContract } from '../../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllTypeContract';
 import { useFindAllWorkModels } from '../../../hooks/RecordsHooks/featuresEmploymentContract/useFindAllWorkModels';
@@ -42,18 +41,6 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
         hasValuesChangedWithAPIData,
         handleValuesChangedWithAPIData,
     } = useCreateEmployee(state, dispatch);
-
-    const {
-        brasilAPICEPData,
-        loadingCEPValidation,
-        errorCEPValidation,
-        handleCEPValidationLoading,
-        handleSaveCEP,
-        employeeZipCode,
-        setEmployeeZipCode,
-        employeeZipCodeState,
-        setEmployeeZipCodeState
-    } = useCEP();
 
     // async function employeeAndRoleDataSearchAndProcess(apiCall, departamentId, dispatch) {
     //     if (!departamentId || departamentId === '') {

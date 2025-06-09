@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import {
   Badge,
-  Button,
   Card,
   CardHeader,
   Col,
@@ -9,23 +8,13 @@ import {
   DropdownItem,
   DropdownToggle,
   UncontrolledDropdown,
-  Nav,
-  NavItem,
-  NavLink,
   Row,
-  Table,
-  UncontrolledTooltip,
+  Table
 } from 'reactstrap';
 import { useFindAllClientCompany } from "../../../hooks/RecordsHooks/customer/useFindAllClientCompany";
-import { useFindClientCompany } from "../../../hooks/RecordsHooks/customer/useFindClientCompany";
-import { useFindClientCompanyAddress } from "../../../hooks/RecordsHooks/customer/useFindClientCompanyAddress";
 import { useDeleteCustomerAccount } from "../../../hooks/RecordsHooks/customer/useDeleteCustomerAccount";
-
 import ShowCustomerDetailsModal from "../../Modals/admin/show-customer-details";
-import ModalEnterprise from "../../Modals/admin/ModalEnterprise"
-import fakeCompanies from '../../../mocks/mockEnterprises'
-
-import useCNPJ from "../../../hooks/RecordsHooks/useCNPJ"
+import { useFindValidCNPJ } from '../../../hooks/RecordsHooks/useFindValidCNPJ';
 import { CustomerContext } from '../../../contexts/RecordsContext/CustomerContext';
 import { useSweetAlert } from '../../../contexts/SweetAlertContext';
 

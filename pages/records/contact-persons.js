@@ -41,7 +41,7 @@ function ContactPersonsRecords() {
           )
           : (
             <>
-              <AdminHeader name="Contatos" parentName="Cadastros" />
+              <AdminHeader name="Contatos" parentName="Cadastros" newRegistrationButtonText="Voltar" handleShowAdminUserRegister={handleShowContactPersonsUserRegister}/>
               <Container className="mt--6" fluid>
                 <ContactPersonsRegister handleShowContactPersonsUserRegister={handleShowContactPersonsUserRegister} />
               </Container>

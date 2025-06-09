@@ -38,6 +38,7 @@ import { ModelSelectionReviewProvider } from "../contexts/PerformanceContext/Mod
 import QueryProvider from "../lib/react-query";
 import { CompetenciesProvider } from "../contexts/RecordsContext/CompetenciesContext";
 import { PdiProvider } from "../contexts/RecordsContext/PdiContext";
+import { ModelSelectionCustomerRecordProvider } from "../contexts/PerformanceContext/ModelSelectionCustomerRecordContext";
 
 Router.events.on("routeChangeStart", (url) => {
   console.log(`Loading: ${url}`);
@@ -111,15 +112,17 @@ export default class MyApp extends App {
                                         <CompetenciesProvider>
                                           <PdiProvider>
                                             <PerformanceReviewContext>
-                                              <Head>
-                                                <meta
-                                                  name="viewport"
-                                                  content="width=device-width, initial-scale=1, shrink-to-fit=no"
-                                                />
-                                                <title>SkillFy</title>
-                                                {/* <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script> */}
-                                              </Head>
-                                              {getLayout(<Component {...pageProps} />)}
+                                              <ModelSelectionCustomerRecordProvider>
+                                                <Head>
+                                                  <meta
+                                                    name="viewport"
+                                                    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+                                                  />
+                                                  <title>SkillFy</title>
+                                                  {/* <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script> */}
+                                                </Head>
+                                                {getLayout(<Component {...pageProps} />)}
+                                              </ModelSelectionCustomerRecordProvider>
                                             </PerformanceReviewContext>
                                           </PdiProvider>
                                         </CompetenciesProvider>

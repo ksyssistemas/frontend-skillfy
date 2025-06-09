@@ -1,6 +1,5 @@
 // Hook para gerenciar o formulário
 import React, { useContext, useState } from 'react';
-import useCEP from '../useCEP';
 import { EmployeeContext } from '../../../contexts/RecordsContext/EmployeeContext';
 
 const useCreateEmployee = (state, dispatch) => {
@@ -48,18 +47,6 @@ const useCreateEmployee = (state, dispatch) => {
         handleCustomerIdStatusCleanup,
         handleCustomerIdToLinkToEmployee,
     } = useContext(EmployeeContext);
-
-    const {
-        brasilAPICEPData,
-        loadingCEPValidation,
-        errorCEPValidation,
-        handleCEPValidationLoading,
-        handleSaveCEP,
-        employeeZipCode,
-        setEmployeeZipCode,
-        employeeZipCodeState,
-        setEmployeeZipCodeState
-    } = useCEP("");
 
     const [hasValuesChangedWithAPIData, setHasValuesChangedWithAPIData] = React.useState(false);
     const handleValuesChangedWithAPIData = () => setHasValuesChangedWithAPIData(!hasValuesChangedWithAPIData);

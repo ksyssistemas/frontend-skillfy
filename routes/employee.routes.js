@@ -48,56 +48,12 @@ const routes = [
       },
     ],
   },
-  // {
-  //   collapse: true,
-  //   name: "Cadastro",
-  //   icon: "ni ni-single-copy-04 text-blue",
-  //   state: "dashboardsCollapse",
-  //   views: [
-  //     // {
-  //     //   path: "/admin",
-  //     //   name: "Administrador",
-  //     //   miniName: "A",
-  //     //   layout: "/register",
-  //     // },
-  //     // {
-  //     //   path: "/plans",
-  //     //   name: "Plano",
-  //     //   miniName: "P",
-  //     //   layout: "/register",
-  //     // },
-  //     {
-  //       path: "/departments",
-  //       name: "Departamentos",
-  //       miniName: "D",
-  //       layout: "/register",
-  //     },
-  //     {
-  //       path: "/roles",
-  //       name: "Cargos",
-  //       miniName: "C",
-  //       layout: "/register",
-  //     },
-  //     {
-  //       path: "/employees",
-  //       name: "Colaboradores",
-  //       miniName: "C",
-  //       layout: "/register",
-  //     },
-  //   ],
-  // },
   {
     collapse: true,
     name: "Avaliações",
     icon: "ni ni-paper-diploma",
     state: "appraisalsCollapse",
     views: [
-      // {
-        // collapse: true,
-        // name: "Avaliações",
-        // miniName: "A",
-        // state: "appraisalCollapse",
-        // views: [
           {
             path: "/add-appraisals-skills-list",
             name: "Realizar",
@@ -110,8 +66,6 @@ const routes = [
             miniName: "R",
             layout: "/performance",
           },
-        // ],
-      // },
     ],
   },
   {

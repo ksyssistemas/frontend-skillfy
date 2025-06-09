@@ -1,9 +1,9 @@
-import React, { useContext, useState } from "react";
-import Admin from "../../layouts/Admin";
+import { useState } from "react";
 import AdminHeader from "components/Headers/AdminHeader.js";
 import { Container } from "reactstrap";
 import AdminList from "../../components/Tables/Admin/AdminUserList";
 import AdminUserRegister from "../../components/Forms/AdministratorForms/AdminUserRegister";
+import DynamicLayout from "../../layouts/DynamicLayout";
 
 function AdminRecords() {
 
@@ -27,7 +27,7 @@ function AdminRecords() {
           )
           : (
             <>
-              <AdminHeader name="Administrador" parentName="Cadastros" />
+              <AdminHeader name="Administrador" parentName="Cadastros" newRegistrationButtonText="Voltar" handleShowAdminUserRegister={handleShowAdminUserRegister}/>
               <Container className="mt--6" fluid>
                 <AdminUserRegister handleShowAdminUserRegister={handleShowAdminUserRegister} />
               </Container>
@@ -38,6 +38,6 @@ function AdminRecords() {
   );
 }
 
-AdminRecords.layout = Admin;
+AdminRecords.getLayout = (page) => <DynamicLayout>{page}</DynamicLayout>;
 
 export default AdminRecords;

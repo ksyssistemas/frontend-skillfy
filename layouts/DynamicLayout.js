@@ -11,7 +11,6 @@ export default function DynamicLayout({ children }) {
   useEffect(() => {
     const storedUser = sessionStorage.getItem('userAuthData');
     const role = storedUser ? JSON.parse(storedUser)?.role : 'administrator';
-
     const layoutComponent = getLayoutByRole(role);
     setLayout(() => layoutComponent); // Use função para não renderizar imediatamente
   }, []);
@@ -19,7 +18,7 @@ export default function DynamicLayout({ children }) {
   if (!layout) {
     return <PageChange/> // Fallback UI temporário
   }
-
+  
   const Layout = layout;
   return <Layout>{children}</Layout>;
 }

@@ -55,24 +55,6 @@ const routes = [
         miniName: "C",
         layout: "/records",
       },
-      // {
-      //   path: "/employees",
-      //   name: "Colaboradores",
-      //   miniName: "C",
-      //   layout: "/records",
-      // },
-      // {
-      //   path: "/departments",
-      //   name: "Departamentos",
-      //   miniName: "D",
-      //   layout: "/records",
-      // },
-      // {
-      //   path: "/roles",
-      //   name: "Cargos e Funçôes",
-      //   miniName: "C",
-      //   layout: "/records",
-      // },
       {
         path: "/plans",
         name: "Planos",
@@ -81,88 +63,58 @@ const routes = [
       },
     ],
   },
-  // {
-  //   collapse: true,
-  //   name: "Cadastros",
-  //   icon: "ni ni-single-copy-04",
-  //   state: "dashboardsCollapse",
-  //   views: [
-  //     {
-  //       path: "/admin",
-  //       name: "Administradores",
-  //       miniName: "A",
-  //       layout: "/register",
-  //     },
-  //     {
-  //       path: "/public-entity",
-  //       name: "Entidades Públicas",
-  //       miniName: "E",
-  //       layout: "/register",
-  //     },
-  //     {
-  //       path: "/public-bodies",
-  //       name: "Órgãos Públicos",
-  //       miniName: "O",
-  //       layout: "/register",
-  //     },
-  //     {
-  //       path: "/public-agents",
-  //       name: "Agentes Públicos",
-  //       miniName: "A",
-  //       layout: "/register",
-  //     },
-  //     {
-  //       path: "/departments",
-  //       name: "Departamentos",
-  //       miniName: "D",
-  //       layout: "/register",
-  //     },
-  //     {
-  //       path: "/roles",
-  //       name: "Cargos",
-  //       miniName: "C",
-  //       layout: "/register",
-  //     },
-  //     {
-  //       path: "/employees",
-  //       name: "Colaboradores",
-  //       miniName: "C",
-  //       layout: "/register",
-  //     },
-  //     {
-  //       path: "/plans",
-  //       name: "Plano",
-  //       miniName: "P",
-  //       layout: "/register",
-  //     },
-  //   ],
-  // },
-  // {
-  //   collapse: true,
-  //   name: "PDI",
-  //   icon: "ni ni-chart-bar-32",
-  //   state: "pdiCollapse",
-  //   views: [
-  //     {
-  //       path: "/dashboard-pdi",
-  //       name: "Dashboard",
-  //       miniName: "D",
-  //       layout: "/pdi",
-  //     },
-  //     {
-  //       path: "/competencies-pdi",
-  //       name: "Competências",
-  //       miniName: "C",
-  //       layout: "/pdi",
-  //     },
-  //     {
-  //       path: "/add-pdi",
-  //       name: "Cadastro PDI",
-  //       miniName: "C",
-  //       layout: "/pdi",
-  //     },
-  //   ],
-  // }
+  {
+      collapse: true,
+      name: "Avaliações",
+      icon: "ni ni-paper-diploma",
+      state: "appraisalsCollapse",
+      views: [
+        {
+          path: "/appraisal-settings",
+          name: "Configurar",
+          miniName: "C",
+          layout: "/performance",
+        },
+],
+    },
+    {
+    collapse: true,
+    name: "Exemplos",
+    icon: "ni ni-ungroup text-orange",
+    state: "examplesCollapse",
+    views: [
+      {
+        path: "/pricing",
+        name: "Preços",
+        miniName: "P",
+        layout: "/auth",
+      },
+      {
+        path: "/timeline",
+        name: "Timeline",
+        miniName: "T",
+        layout: "/admin",
+      },
+      ],
+  },
+   {
+    path: "/widgets",
+    name: "Ferramentas",
+    icon: "ni ni-archive-2 text-green",
+    layout: "/admin",
+  },
+  {
+    path: "/charts",
+    name: "Gráficos",
+    icon: "ni ni-chart-pie-35 text-info",
+    layout: "/admin",
+  },
+  {
+    path: "/calendar",
+    name: "Calendário",
+    icon: "ni ni-calendar-grid-58 text-red",
+    layout: "/admin",
+  },
 ]
 
 export default routes;

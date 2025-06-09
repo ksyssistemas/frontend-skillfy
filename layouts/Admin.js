@@ -1,14 +1,11 @@
-
 import React from "react";
 import { withRouter } from "next/router";
 
 // core components
-import RegisterFooter from "components/Footers/RegisterFooter.js";
-import Sidebar from "components/Sidebar/Sidebar.js";
-import routes from "../routes/admin.routes";
 import AdminNavbar from "../components/Navbars/AdminNavbar";
-import "assets/css/styles/layoutspage.css";
-// import routes from "routes.js";
+import AdminFooter from "components/Footers/AdminFooter.js";
+import Sidebar from "components/Sidebar/Sidebar.js";
+import routes from "routes/admin.routes";
 
 function Admin({ router, children }) {
   const [sidenavOpen, setSidenavOpen] = React.useState(true);
@@ -76,7 +73,7 @@ function Admin({ router, children }) {
         <main>
           {children}
         </main>
-        <RegisterFooter />
+        <AdminFooter />
       </div>
       {sidenavOpen ? (
         <div className="backdrop d-xl-none" onClick={toggleSidenav} />

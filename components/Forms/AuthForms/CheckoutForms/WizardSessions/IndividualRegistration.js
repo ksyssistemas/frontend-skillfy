@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer, useRef, useContext } from 'react';
 // nodejs library that concatenates classes
 import classnames from "classnames";
 import ReactDatetime from 'react-datetime';
@@ -6,7 +6,10 @@ import InputMask from 'react-input-mask';
 import useCPF from 'hooks/RecordsHooks/useCPF.js';
 import useCreateCustomerAccountHolder from 'hooks/RecordsHooks/customer/useCreateCustomerAccountHolder.js';
 import moment from 'moment';
-
+import { initialStateIndividualRegistrationForm, individualRegistrationFormReducer } from '../../../../../reducers/CustomerForms/IndividualRegistrationFormReducer';
+import { ModelSelectionCustomerRecordContext } from '../../../../../contexts/PerformanceContext/ModelSelectionCustomerRecordContext';
+import { resetFormAndLocalStorage } from "../../../../../util/resetReviewFormData";
+import PropTypes from "prop-types";
 // reactstrap components
 import {
   FormGroup,
@@ -15,83 +18,37 @@ import {
   Col,
   Button,
 } from "reactstrap";
+import PageChange from '../../../../PageChange/PageChange';
 
-export function IndividualRegistration({ handleShowIndividualRegistration, data, updateData }) {
+export function IndividualRegistration({ handleShowCustomerUserRegister }) {
+
+  const [state, dispatch] = useReducer(individualRegistrationFormReducer, initialStateIndividualRegistrationForm);
+
+  const latestIndividualRegistrationData = useRef(state.individualRegistrationData);
+
+  const [isLoadingIndividualRegistrationData, setIsLoadingIndividualRegistrationData] = useState(true);
 
   const {
-    firstName,
-    setFirstName,
-    firstNameState,
-    setFirstNameState,
-    lastName,
-    setLastName,
-    lastNameState,
-    setLastNameState,
-    taxIdentificationNumber,
-    setTaxIdentificationNumber,
-    taxIdentificationNumberState,
-    setTaxIdentificationNumberState,
-    emailAddress,
-    setEmailAddress,
-    emailAddressState,
-    setEmailAddressState,
-    birthdate,
-    setBirthdate,
-    birthdateState,
-    setBirthdateState,
-    password,
-    setPassword,
-    passwordState,
-    setPasswordState,
-    confirmPassword,
-    setConfirmPassword,
-    confirmPasswordState,
-    setConfirmPasswordState,
-    phoneNumber,
-    setPhoneNumber,
-    phoneNumberState,
-    setPhoneNumberState,
-    contactStatus,
-    setContactStatus,
-    contactStatusState,
-    setContactStatusState,
-    checkbox,
-    setCheckbox,
-    checkboxState,
-    setCheckboxState,
-    isCustomerAccountHolderFormValidated,
-    setIsCustomerAccountHolderFormValidated,
-    validateCheckboxIsChecked,
-    handleBirthdateChange,
-    handleChangeCPF,
-    validateEmail,
-    handleValidateAddCustomerAccountHolderForm,
-    resetCreateCustomer,
-    contactPersonOccupation,
-    setContactPersonOccupation,
-    contactPersonOccupationState,
-    setContactPersonOccupationState,
-    contactPersonBelongsToClientCompany,
-    setContactPersonBelongsToClientCompany,
-    contactPersonBelongsToClientCompanyState,
-    setContactPersonBelongsToClientCompanyState,
-  } = useCreateCustomerAccountHolder(handleShowIndividualRegistration);
+    clearStepIndex,
+    handleClearStepIndex,
+    stateGlobalCustomerRegisterReducer,
+    dispatchGlobalCustomerRegisterReducer
+  } = useContext(ModelSelectionCustomerRecordContext);
+
+  // Ref para armazenar o estado anterior em formato de string
+  const previousStateRef = useRef(null);
+
+  const {
+    validateCPF
+  } = useCPF();
 
   const handleCheckboxChange = (e) => {
     const isChecked = e.target.checked;
-    setCheckbox(isChecked);
-    updateData('checkbox', isChecked);
-
-    if (isChecked) {
-      updateData('checkboxState', "valid");
-      setCheckboxState("valid");
-    } else {
-      updateData('checkboxState', "invalid");
-      setCheckboxState("invalid");
-    }
+    dispatch({ type: 'SET_CHECKBOX', payload: isChecked });
+    dispatch({ type: 'SET_CHECKBOX_STATE', payload: isChecked ? 'valid' : 'invalid' });
   };
 
-  const handleChange = (inputDate) => {
+  const handleChangeBirthdate = (inputDate) => {
     const date = typeof inputDate === 'string' ? inputDate : inputDate.format('DD/MM/YYYY');
 
     const isDateValid = (dateStr) => {
@@ -99,26 +56,15 @@ export function IndividualRegistration({ handleShowIndividualRegistration, data,
       return formattedDate.isValid() && dateStr.length === 10;
     };
 
-    if (isDateValid(date)) {
-      setBirthdate(date);
-      setBirthdateState("valid");
-      updateData('birthdate', date);
-      updateData('birthdateState', "valid");
-    } else {
-      setBirthdate(date);
-      setBirthdateState("invalid");
-      updateData('birthdate', date);
-      updateData('birthdateState', "invalid");
-    }
+    dispatch({ type: 'SET_BIRTHDATE', payload: date });
+    dispatch({ type: 'SET_BIRTHDATE_STATE', payload: isDateValid(date) ? 'valid' : 'invalid' });
   };
 
   const formatInput = (input) => {
     if (typeof input !== 'string') {
       return '';
     }
-
     const numbers = input.replace(/\D/g, '');
-
     if (numbers.length >= 2 && numbers.length < 4) {
       return `${numbers.slice(0, 2)}/${numbers.slice(2)}`;
     } else if (numbers.length >= 4) {
@@ -129,97 +75,145 @@ export function IndividualRegistration({ handleShowIndividualRegistration, data,
 
   const handleFirstNameChange = (e) => {
     const value = e.target.value;
-    updateData('firstName', value);
-    const filteredValue = value.replace(/[^a-zA-Z]/g, '');
-    setFirstName(filteredValue);
-
-    if (filteredValue === "") {
-      setFirstNameState("invalid");
-    } else {
-      setFirstNameState("valid");
-    }
-    updateData('firstNameState', firstNameState);
+    const filteredValue = value.replace(/[^\p{L}\s'-]/gu, '');
+    dispatch({ type: 'SET_FIRST_NAME', payload: filteredValue });
+    dispatch({ type: 'SET_FIRST_NAME_STATE', payload: filteredValue ? 'valid' : 'invalid' });
   };
 
   const handleLastNameChange = (e) => {
     const value = e.target.value;
-    updateData('lastName', value);
-    const filteredValue = value.replace(/[^a-zA-Z]/g, '');
-    setLastName(filteredValue);
-
-    if (filteredValue === "") {
-      setLastNameState("invalid");
-    } else {
-      setLastNameState("valid");
-    }
-    updateData('lastNameState', lastNameState);
+    const filteredValue = value.replace(/[^\p{L}\s'-]/gu, '');
+    dispatch({ type: 'SET_LAST_NAME', payload: filteredValue });
+    dispatch({ type: 'SET_LAST_NAME_STATE', payload: filteredValue ? 'valid' : 'invalid' });
   };
 
-  const handlephoneNumberChange = (e) => {
+  const handlePhoneNumberChange = (e) => {
     const value = e.target.value;
-    updateData('phoneNumber', value);
     const filteredValue = value.replace(/\D/g, '');
-    setPhoneNumber(filteredValue);
-
-    if (filteredValue.length !== 13) {
-      setPhoneNumberState("invalid");
-      updateData('phoneNumberState', "invalid");
-    } else {
-      setPhoneNumberState("valid");
-      updateData('phoneNumberState', "valid");
-    }
+    dispatch({ type: 'SET_PHONE_NUMBER', payload: filteredValue });
+    dispatch({ type: 'SET_PHONE_NUMBER_STATE', payload: filteredValue.length === 13 || filteredValue.length === 12 ? 'valid' : 'invalid' });
   };
 
-  const handletaxIdentificationNumberChange = (e) => {
+  const handleTaxIdentificationNumberChange = (e) => {
     const value = e.target.value;
-    handleChangeCPF(value);
-    updateData('taxIdentificationNumber', value);
-    const isValid = value.match(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/);
-    if (!isValid) {
-      updateData('taxIdentificationNumberState', "invalid");
-    } else {
-      updateData('taxIdentificationNumberState', "valid");
-    }
+    dispatch({ type: 'SET_TAX_IDENTIFICATION_NUMBER', payload: value });
+    const isValid = value !== '' && validateCPF(value);
+    dispatch({ type: 'SET_TAX_IDENTIFICATION_NUMBER_STATE', payload: isValid ? 'valid' : 'invalid' });
   };
 
-  const handleemailChange = (e) => {
+  const handleEmailChange = (e) => {
     const emailAddress = e.target.value;
-    updateData('emailAddress', emailAddress);
-    setEmailAddress(emailAddress);
-    if (validateEmail(emailAddress)) {
-      setEmailAddressState("valid");
-    } else {
-      setEmailAddressState("invalid");
-    }
-    updateData('emailAddressState', emailAddressState);
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    dispatch({ type: 'SET_EMAIL_ADDRESS', payload: emailAddress });
+    dispatch({ type: 'SET_EMAIL_ADDRESS_STATE', payload: regex.test(emailAddress) ? 'valid' : 'invalid' });
   };
 
-  const handlepassWordChange = (e) => {
-    updateData('password', e.target.value);
-    setPassword(e.target.value);
-    if (e.target.value === "") {
-      setPasswordState("invalid");
-    } else {
-      setPasswordState("valid");
-    }
-    updateData('passwordState', passwordState);
+  const handlePasswordChange = (e) => {
+    const password = e.target.value;
+    dispatch({ type: 'SET_PASSWORD', payload: password });
+    dispatch({ type: 'SET_PASSWORD_STATE', payload: password !== "" ? 'valid' : 'invalid' });
   };
 
-  const handlepassWordConfirmChange = (e) => {
+  const handlePasswordConfirmChange = (e) => {
     const value = e.target.value;
-    setConfirmPassword(value);
-    updateData('confirmPassword', value);
-
-    let newConfirmPasswordState = "valid";
-    if (value === "") {
-      newConfirmPasswordState = "invalid";
-    } else if (value !== password) {
-      newConfirmPasswordState = "invalid";
-    }
-
-    setConfirmPasswordState(newConfirmPasswordState);
-    updateData('confirmPasswordState', newConfirmPasswordState);
+    dispatch({ type: 'SET_CONFIRM_PASSWORD', payload: value });
+    const isValid = value !== '' && value === state.individualRegistrationData.password;
+    dispatch({ type: 'SET_CONFIRM_PASSWORD_STATE', payload: isValid ? 'valid' : 'invalid' });
   };
+
+  // Função utilitária para salvar os dados formatados no localStorage
+  const saveDataToLocalStorage = (data) => {
+    const dataToSave = {
+      ...data,
+      // startDate: moment(data.startDate).format("YYYY-MM-DD"), // Salvar no formato ISO
+      // endDate: moment(data.endDate).format("YYYY-MM-DD"),
+      // realizationDate: moment(data.realizationDate).format("YYYY-MM-DD"),
+    };
+    localStorage.setItem('individualRegistrationData', JSON.stringify(dataToSave));
+  };
+
+  // Execute o carregamento dos dados ao montar o componente
+  useEffect(() => {
+    // Função para carregar os dados do localStorage
+    const loadIndividualRegistrationData = async () => {
+      try {
+        const rawData = localStorage.getItem('individualRegistrationData');
+        if (rawData) {
+          const parsedData = JSON.parse(rawData);
+          if (parsedData && typeof parsedData === 'object') {
+            dispatch({
+              type: 'LOAD_SAVED_REVIEW_DATA',
+              payload: {
+                ...parsedData,
+                // startDate: parsedData.startDate ? moment(parsedData.startDate, "YYYY-MM-DD").toDate() : null,
+                // endDate: parsedData.endDate ? moment(parsedData.endDate, "YYYY-MM-DD").toDate() : null,
+                // realizationDate: parsedData.realizationDate ? moment(parsedData.realizationDate, "YYYY-MM-DD").toDate() : null,
+              },
+            });
+            latestIndividualRegistrationData.current = parsedData; // Atualiza a ref para os dados carregados
+          }
+        } else {
+          dispatch({ type: 'RESET_INDIVIDUAL_REGISTRATION_DATA' }); // Limpa o estado para evitar inconsistências
+        }
+      } catch (error) {
+        console.error('Failed to parse individualRegistrationData from localStorage:', error);
+      } finally {
+        setIsLoadingIndividualRegistrationData(false); // Marque como carregado
+      }
+    };
+
+    loadIndividualRegistrationData();
+  }, []);
+
+  // Salvar no Contexto Global antes de sair
+  useEffect(() => {
+    return () => {
+      dispatchGlobalCustomerRegisterReducer({
+        type: "UPDATE_INDIVIDUAL_REGISTRATION",
+        payload: state.individualRegistrationData,
+      });
+    };
+  }, [state.individualRegistrationData, dispatchGlobalCustomerRegisterReducer]);
+
+  // Atualize a lógica de persistência para incluir verificações e evitar sobrescrever valores críticos
+  useEffect(() => {
+    const currentStateString = JSON.stringify(state.individualRegistrationData);
+
+    if (previousStateRef.current !== currentStateString) {
+      previousStateRef.current = currentStateString;
+      latestIndividualRegistrationData.current = { ...state.individualRegistrationData };
+      saveDataToLocalStorage(state.individualRegistrationData);
+    }
+  }, [state.individualRegistrationData]);
+
+  useEffect(() => {
+    if (clearStepIndex === 1) {
+      resetFormAndLocalStorage(
+        true,
+        1,
+        clearStepIndex,
+        'individualRegistrationData',
+        'RESET_INDIVIDUAL_REGISTRATION_DATA',
+        handleClearStepIndex,
+        dispatch
+      );
+    }
+  }, [clearStepIndex, dispatch]);
+
+  useEffect(() => {
+    if (state.individualRegistrationData.checkbox !== null) {
+      dispatch({
+        type: 'SET_CHECKBOX_STATE',
+        payload: state.individualRegistrationData.checkbox === false ? 'invalid' : 'valid'
+      });
+    }
+  }, [state.individualRegistrationData.checkbox])
+
+  if (isLoadingIndividualRegistrationData) {
+    return (
+      <PageChange />
+    );
+  }
 
   return (
     <div>
@@ -235,12 +229,12 @@ export function IndividualRegistration({ handleShowIndividualRegistration, data,
                 Nome
               </label>
               <Input
-                value={data.firstName || firstName}
+                value={state.individualRegistrationData.firstName || ''}
                 id="validationContactPersonFirstName"
                 placeholder="Nome"
                 type="text"
-                valid={data.firstNameState === "valid" || firstNameState === "valid"}
-                invalid={data.firstNameState === "invalid" || firstNameState === "invalid"}
+                valid={state.individualRegistrationData.firstNameState === "valid"}
+                invalid={state.individualRegistrationData.firstNameState === "invalid"}
                 onChange={handleFirstNameChange}
               />
               <div className="invalid-feedback">
@@ -256,12 +250,12 @@ export function IndividualRegistration({ handleShowIndividualRegistration, data,
                 Sobrenome
               </label>
               <Input
-                value={data.lastName || lastName}
+                value={state.individualRegistrationData.lastName || ''}
                 id="validationContactPersonLastName"
                 placeholder="Sobrenome"
                 type="text"
-                valid={data.lastNameState === "valid" || lastNameState === "valid"}
-                invalid={data.lastNameState === "invalid" || lastNameState === "invalid"}
+                valid={state.individualRegistrationData.lastNameState === "valid"}
+                invalid={state.individualRegistrationData.lastNameState === "invalid"}
                 onChange={handleLastNameChange}
               />
               <div className="invalid-feedback">
@@ -276,13 +270,13 @@ export function IndividualRegistration({ handleShowIndividualRegistration, data,
                 CPF
               </label>
               <InputMask
+                value={state.individualRegistrationData.taxIdentificationNumber || ''}
                 placeholder='999.999.999-99'
                 mask="999.999.999-99"
                 maskChar="_"
-                valid={data.taxIdentificationNumberState === "valid" || taxIdentificationNumberState === "valid"}
-                invalid={data.taxIdentificationNumberState === "invalid" || taxIdentificationNumberState === "invalid"}
-                value={data.taxIdentificationNumber || taxIdentificationNumber}
-                onChange={handletaxIdentificationNumberChange}
+                valid={state.individualRegistrationData.taxIdentificationNumberState === "valid"}
+                invalid={state.individualRegistrationData.taxIdentificationNumberState === "invalid"}
+                onChange={handleTaxIdentificationNumberChange}
               >
                 {(inputProps) => <Input {...inputProps} id="validationContactPersonTaxIdNumber" />}
               </InputMask>
@@ -296,15 +290,15 @@ export function IndividualRegistration({ handleShowIndividualRegistration, data,
                 Data de Nascimento
               </label>
               <ReactDatetime
-                valid={data.birthdateState === "valid" || birthdateState === "valid"}
-                invalid={data.birthdateState === "invalid" || birthdateState === "invalid"}
+                valid={state.individualRegistrationData.birthdateState === "valid"}
+                invalid={state.individualRegistrationData.birthdateState === "invalid"}
                 inputProps={{
                   placeholder: 'DD/MM/YYYY',
-                  value: formatInput(data.birthdate || birthdate),
+                  value: formatInput(state.individualRegistrationData.birthdate || ''),
                 }}
                 timeFormat={false}
                 dateFormat="DD/MM/YYYY"
-                onChange={handleChange}
+                onChange={handleChangeBirthdate}
               />
               <div className="invalid-feedback">
                 É necessário preencher este campo.
@@ -324,10 +318,10 @@ export function IndividualRegistration({ handleShowIndividualRegistration, data,
                 placeholder='+55 (99) 9 9999-9999'
                 mask="+55 (99) 9 9999-9999"
                 maskChar=" "
-                value={data.phoneNumber || phoneNumber}
-                valid={data.phoneNumberState === "valid" || phoneNumberState === "valid"}
-                invalid={data.phoneNumberState === "invalid" || phoneNumberState === "invalid"}
-                onChange={handlephoneNumberChange}
+                value={state.individualRegistrationData.phoneNumber || ''}
+                valid={state.individualRegistrationData.phoneNumberState === "valid"}
+                invalid={state.individualRegistrationData.phoneNumberState === "invalid"}
+                onChange={handlePhoneNumberChange}
               >
                 {(inputProps) => <Input {...inputProps} id="validationContactPersonPhoneNumber" type="text" />}
               </InputMask>
@@ -348,13 +342,13 @@ export function IndividualRegistration({ handleShowIndividualRegistration, data,
                 id="validationContactPersonEmailAddress"
                 placeholder="Endereço de e-mail"
                 type="email"
-                value={data.emailAddress || emailAddress}
-                valid={data.emailAddressState === "valid" || emailAddressState === "valid"}
-                invalid={data.emailAddressState === "invalid" || emailAddressState === "invalid"}
-                onChange={handleemailChange}
+                value={state.individualRegistrationData.emailAddress || ''}
+                valid={state.individualRegistrationData.emailAddressState === "valid"}
+                invalid={state.individualRegistrationData.emailAddressState === "invalid"}
+                onChange={handleEmailChange}
               />
               <div className="invalid-feedback">
-                {emailAddressState === "invalid" && "Forneça um endereço de e-mail válido."}
+                {state.individualRegistrationData.emailAddressState === "invalid" && "Forneça um endereço de e-mail válido."}
               </div>
               <div className="valid-feedback">Parece bom!</div>
             </Col>
@@ -368,13 +362,13 @@ export function IndividualRegistration({ handleShowIndividualRegistration, data,
                 Senha
               </label>
               <Input
-                value={data.password || password}
+                value={state.individualRegistrationData.password || ''}
                 id="validationPassword"
                 placeholder="Senha de acesso ao sistema"
                 type="password"
-                valid={data.passwordState === "valid" || passwordState === "valid"}
-                invalid={data.passwordState === "invalid" || passwordState === "invalid"}
-                onChange={handlepassWordChange}
+                valid={state.individualRegistrationData.passwordState === "valid"}
+                invalid={state.individualRegistrationData.passwordState === "invalid"}
+                onChange={handlePasswordChange}
               />
               <div className="invalid-feedback">
                 É necessário preencher este campo.
@@ -386,16 +380,16 @@ export function IndividualRegistration({ handleShowIndividualRegistration, data,
                 Confirmar Senha
               </label>
               <Input
-                value={data.confirmPassword}
+                value={state.individualRegistrationData.confirmPassword || ''}
                 id="validationConfirmPassword"
                 placeholder="Confirme a senha digitada"
                 type="password"
-                valid={data.confirmPasswordState === "valid" || confirmPasswordState === "valid"}
-                invalid={data.confirmPasswordState === "invalid" || confirmPasswordState === "invalid"}
-                onChange={handlepassWordConfirmChange}
+                valid={state.individualRegistrationData.confirmPasswordState === "valid"}
+                invalid={state.individualRegistrationData.confirmPasswordState === "invalid"}
+                onChange={handlePasswordConfirmChange}
               />
               <div className="invalid-feedback">
-                {confirmPasswordState === "invalid" && "As senhas não coincidem."}
+                {state.individualRegistrationData.confirmPasswordState === "invalid" && "As senhas não coincidem."}
               </div>
               <div className="valid-feedback">Parece bom!</div>
             </Col>
@@ -403,16 +397,16 @@ export function IndividualRegistration({ handleShowIndividualRegistration, data,
           <FormGroup>
             <div className="custom-control custom-checkbox mb-3">
               <input
-                className={`custom-control-input ${checkboxState === "invalid" ? "is-invalid" : ""}`}
+                className={`custom-control-input ${state.individualRegistrationData.checkboxState === "invalid" ? "is-invalid" : ""}`}
                 id="checkUseTerms"
                 type="checkbox"
-                checked={data.checkbox || checkbox}
+                checked={state.individualRegistrationData.checkbox}
                 onChange={handleCheckboxChange}
               />
               <label className="custom-control-label" htmlFor="checkUseTerms">
                 Declaro que estou ciente e de acordo com os termos de uso: Skillfy
               </label>
-              {checkboxState === "invalid" && (
+              {state.individualRegistrationData.checkboxState === "invalid" && (
                 <div className="invalid-feedback mt-3">
                   Você deve concordar antes de enviar.
                 </div>
@@ -424,3 +418,11 @@ export function IndividualRegistration({ handleShowIndividualRegistration, data,
     </div>
   )
 }
+
+IndividualRegistration.defaultProps = {
+  handleShowCustomerUserRegister: () => { }
+};
+
+IndividualRegistration.propTypes = {
+  handleShowCustomerUserRegister: PropTypes.func
+};

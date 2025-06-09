@@ -21,8 +21,6 @@ import {
   capitaisBrasileiras
 } from "../../../mocks/mockStateBr"
 
-import useCNPJ from "../../../hooks/RecordsHooks/useCNPJ"
-
 function ModalEnterprise({ isOpen, toggle }) {
 
   const [formData, setFormData] = useState({
@@ -35,8 +33,6 @@ function ModalEnterprise({ isOpen, toggle }) {
     web_site: '',
     numero_contato: ''
   });
-
-  const { data: enterpriseData, loading, error } = useCNPJ(formData.cnpj);
 
   useEffect(() => {
     // Atualize o formData com os dados da empresa quando eles estiverem disponíveis

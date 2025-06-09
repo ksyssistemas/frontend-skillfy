@@ -1,6 +1,5 @@
 // Hook para gerenciar o formulário
 import React, { useContext, useState } from 'react';
-import useCEP from '../useCEP';
 import { EmployeeContext } from '../../../contexts/RecordsContext/EmployeeContext';
 
 const useUpdateEmployee = () => {

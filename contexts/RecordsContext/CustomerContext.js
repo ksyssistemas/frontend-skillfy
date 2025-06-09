@@ -4,6 +4,11 @@ import React, { createContext, useState } from 'react';
 export const CustomerContext = createContext({});
 
 function CustomerProvider({ children }) {
+    const [isShouldSubmitCustomerRegistration, setIsShouldSubmitCustomerRegistration] = useState(false);
+
+    function handleShowCustomerUserRegister() {
+        setIsShouldSubmitCustomerRegistration(!isShouldSubmitCustomerRegistration);
+    }
 
     const [customerIdToUpdate, setCustomerIdToUpdate] = useState(0);
 
@@ -47,6 +52,8 @@ function CustomerProvider({ children }) {
     return (
         <CustomerContext.Provider
             value={{
+                isShouldSubmitCustomerRegistration,
+                handleShowCustomerUserRegister,
                 customerIdToUpdate,
                 handleCustomerIdStatusCleanupToUpdate,
                 handleCustomerIdToUpdate,
