@@ -11,7 +11,7 @@ export const initialStateLegalEntityRegistrationForm = {
         companyTypesDataList: [
             { id: "0", text: "EI" },
             { id: "1", text: "MEI" },
-            { id: "2", text: "Ltda" },
+            { id: "2", text: "LTDA" },
             { id: "3", text: "SLU" },
             { id: "4", text: "SS" },
             { id: "5", text: "S/A" },
@@ -51,6 +51,7 @@ export const initialStateLegalEntityRegistrationForm = {
         companyCountry: '',
         companyCountryState: null,
         isCustomerCompanyFormValidated: false,
+        isCustomerCompanyAddressFormValidated: false,
         isClientCompanySaved: false,
         isCompanyAddressSaved: false,
         customerUserIdToCreateAddress: '',
@@ -400,6 +401,14 @@ export const legalEntityRegistrationFormReducer = (state, action) => {
                 legalEntityRegistrationData: {
                     ...state.legalEntityRegistrationData,
                     isCustomerCompanyFormValidated: action.payload,
+                },
+            };
+        case 'SET_IS_CUSTOMER_COMPANY_ADDRESS_FORM_VALIDATED':
+            return {
+                ...state,
+                legalEntityRegistrationData: {
+                    ...state.legalEntityRegistrationData,
+                    isCustomerCompanyAddressFormValidated: action.payload,
                 },
             };
         case 'SET_IS_CLIENT_COMPANY_SAVED':

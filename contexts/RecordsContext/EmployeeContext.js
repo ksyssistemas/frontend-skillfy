@@ -5,6 +5,12 @@ export const EmployeeContext = createContext({});
 
 function EmployeeProvider({ children }) {
 
+    const [isShouldRenderEmployeeView, setIsShouldRenderEmployeeView] = useState('employeeList');
+    
+    function handleShowDynamicEmployeeComponent(view) {
+        setIsShouldRenderEmployeeView(view);
+    }
+
     const [customerIdToLinkToEmployee, setCustomerIdToLinkToEmployee] = useState(0);
 
     function handleCustomerIdStatusCleanup() {
@@ -48,6 +54,8 @@ function EmployeeProvider({ children }) {
     return (
         <EmployeeContext.Provider
             value={{
+                isShouldRenderEmployeeView,
+                handleShowDynamicEmployeeComponent,
                 customerIdToLinkToEmployee,
                 handleCustomerIdStatusCleanup,
                 handleCustomerIdToLinkToEmployee,

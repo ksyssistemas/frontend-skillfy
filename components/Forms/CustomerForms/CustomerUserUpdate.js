@@ -43,9 +43,9 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
     } = useUpdateClientCompany();
 
     const {
-        handleValidateAddClientCompanyForm,
+        handleValidateAddCustomerCompanyForm,
         handleFormFieldsAutocomplete,
-        validateAddClientCompanyForm,
+        validateAddCustomerCompanyForm,
         validatePhoneNumber,
         validateWebSite,
         validateCompanyEmail,
@@ -244,9 +244,9 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                 type: 'SET_HAS_VALUES_CHANGED_WITH_CNPJ_API_DATA',
                 payload: false
             });
-            validateAddClientCompanyForm(stateCNPJ, dispatchCNPJ, state, dispatch);
+            validateAddCustomerCompanyForm(stateCNPJ, dispatchCNPJ, state, dispatch);
         }
-    }, [stateCNPJ.cnpjData.hasValuesChangedWithCNPJAPIData, validateAddClientCompanyForm]);
+    }, [stateCNPJ.cnpjData.hasValuesChangedWithCNPJAPIData, validateAddCustomerCompanyForm]);
 
     useEffect(() => {
         if (stateCEP.cepData.brasilAPICEPData !== null) {

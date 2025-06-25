@@ -392,18 +392,18 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
         };
     }, [state.collaboratorData]);
 
-    useEffect(() => {
-        let isMounted = true;
+    // useEffect(() => {
+    //     let isMounted = true;
 
-        if (brasilAPICEPData !== null && isMounted) {
-            handleCEPValidationLoading();
-            handleFormFieldsAutocomplete(brasilAPICEPData);
-        }
+    //     if (brasilAPICEPData !== null && isMounted) {
+    //         handleCEPValidationLoading();
+    //         handleFormFieldsAutocomplete(brasilAPICEPData);
+    //     }
 
-        return () => {
-            isMounted = false;
-        };
-    }, [brasilAPICEPData]);
+    //     return () => {
+    //         isMounted = false;
+    //     };
+    // }, [brasilAPICEPData]);
 
     useEffect(() => {
         let isMounted = true;
