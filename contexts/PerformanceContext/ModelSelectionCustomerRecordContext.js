@@ -78,6 +78,8 @@ function ModelSelectionCustomerRecordProvider({ children }) {
       handleValidateAddCustomerCompanyForm(
         stateGlobalCustomerRegisterReducer,
         dispatchGlobalCustomerRegisterReducer,
+        stateIndividualRegistration,
+        dispatchIndividualRegistration,
         stateLegalEntityRegistration,
         dispatchLegalEntityRegistration,
         stateCNPJ,
@@ -85,6 +87,8 @@ function ModelSelectionCustomerRecordProvider({ children }) {
         stateCEP,
         dispatchCEP
       );
+      handleClearStepIndex();
+      handleClearCurrentForm();
     }
   }
 

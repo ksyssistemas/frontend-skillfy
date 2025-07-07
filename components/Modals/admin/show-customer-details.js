@@ -11,9 +11,9 @@ import {
 } from "reactstrap";
 import { useFindClientCompany } from "../../../hooks/RecordsHooks/customer/useFindClientCompany";
 import { useFindEmployeeAddress } from "../../../hooks/RecordsHooks/customer/useFindClientCompanyAddress";
-import useCreateClientCompany from "../../../hooks/RecordsHooks/customer/useCreateClientCompany";
 import CustomerUserUpdate from "../../Forms/CustomerForms/CustomerUserUpdate";
 import { CustomerContext } from "../../../contexts/RecordsContext/CustomerContext";
+import { ModelSelectionCustomerRecordContext } from "../../../contexts/PerformanceContext/ModelSelectionCustomerRecordContext";
 
 function ShowCustomerDetailsModal(
   {
@@ -25,6 +25,11 @@ function ShowCustomerDetailsModal(
     companyName,
     handleCleaningCompanyNameStatus,
   }) {
+
+  const {
+    stateLegalEntityRegistration,
+    dispatchLegalEntityRegistration,
+  } = useContext(ModelSelectionCustomerRecordContext);
 
   const {
     handleIsShouldUpdateClientCompany,
@@ -84,6 +89,20 @@ function ShowCustomerDetailsModal(
 
   function handleUpdateCustomerUserUpdate() {
     handleIsShouldUpdateClientCompany();
+  }
+
+  const getSelectionOptionNameOnList = (listName, selectedId) => {
+    if (!listName || !selectedId) return '';
+    if(listName === 'companyTypes') {
+      const companyTypeList = stateLegalEntityRegistration.legalEntityRegistrationData.companyTypesDataList;
+      const selectedItem = companyTypeList.find(item => item.id === selectedId);
+      return selectedItem ? selectedItem.text : '';
+    }
+    if(listName === 'sectors') {
+      const sectorList = stateLegalEntityRegistration.legalEntityRegistrationData.companySectorDataList;
+      const selectedItem = sectorList.find(item => item.id === selectedId);
+      return selectedItem ? selectedItem.text : '';
+    }
   }
 
   const commonProps = {
@@ -218,7 +237,7 @@ function ShowCustomerDetailsModal(
                       </label>
                       <div className="mt-1 mb-3">
                         <span className="name text-sm">
-                          {userCustomerAccountData.phone ? userCustomerAccountData.phone : "N/A"}
+                          {userCustomerAccountData.phone ? userCustomerAccountData.phone : "Não informado"}
                         </span>
                       </div>
                       <div className="invalid-feedback">
@@ -236,7 +255,7 @@ function ShowCustomerDetailsModal(
                       </label>
                       <div className="mt-1 mb-3">
                         <span className="name text-sm">
-                          {userCustomerAccountData.type}
+                          {getSelectionOptionNameOnList('companyTypes', userCustomerAccountData.type)}
                         </span>
                       </div>
                       <div className="valid-feedback">Looks good!</div>
@@ -250,7 +269,7 @@ function ShowCustomerDetailsModal(
                       </label>
                       <div className="mt-1 mb-3">
                         <span className="name text-sm">
-                          {userCustomerAccountData.sector}
+                          {getSelectionOptionNameOnList('sectors', userCustomerAccountData.sector)}
                         </span>
                       </div>
                       <div className="valid-feedback">Looks good!</div>
@@ -264,7 +283,7 @@ function ShowCustomerDetailsModal(
                       </label>
                       <div className="mt-1 mb-3">
                         <span className="name text-sm">
-                          {userCustomerAccountData.webSite ? userCustomerAccountData.webSite : "N/A"}
+                          {userCustomerAccountData.webSite ? userCustomerAccountData.webSite : "Não informado"}
                         </span>
                       </div>
                       <div className="valid-feedback">Looks good!</div>

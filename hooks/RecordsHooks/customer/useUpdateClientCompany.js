@@ -6,8 +6,6 @@ const useUpdateClientCompany = () => {
 
   const { handleUpdatedCustomerRecordStatusChange } = useContext(CustomerContext);
 
-  const { resetCreateCustomerAddress } = useCreateClientCompany();
-
   // const validateAddDepartmentForm = () => {
   //   if (departmentName === "") {
   //     setDepartmentNameState("invalid");
@@ -69,7 +67,6 @@ const useUpdateClientCompany = () => {
   function goBackToCustomerUserList(handleOpenCustomerModal, handleCustomerIdToUpdate, handleCustomerIdStatusCleanupToUpdate) {
     handleOpenCustomerModal();
     handleCustomerIdStatusCleanupToUpdate();
-    resetCreateCustomerAddress();
     handleUpdatedCustomerRecordStatusChange();
   }
 

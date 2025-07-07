@@ -12,9 +12,21 @@ import { employmentContractDataSearchAndProcess } from "../../../util/employment
 import { useFindAllClientCompany } from "../../../hooks/RecordsHooks/customer/useFindAllClientCompany";
 import useUpdateContactPerson from "../../../hooks/RecordsHooks/contactPerson/useUpdateContactPerson";
 import useCreateCustomerAccountHolder from '../../../hooks/RecordsHooks/customer/useCreateCustomerAccountHolder';
-import { handleSelectionEmploymentContractData } from '../../../util/handleSelectionEmploymentContractData';
+import { selectedListItemToUpdate } from '../../../util/selectedListItemToUpdate';
+import { handleSelectionEmploymentContractDataWithReducer } from '../../../util/handleSelectionEmploymentContractDataWithReducer';
+import { ModelSelectionCustomerRecordContext } from "../../../contexts/PerformanceContext/ModelSelectionCustomerRecordContext";
+import useCreateClientCompany from "../../../hooks/RecordsHooks/customer/useCreateClientCompany";
 
 function ContactPersonUpdate({ handleOpenContactModal }) {
+
+    const {
+        stateIndividualRegistration,
+        dispatchIndividualRegistration,
+        stateGlobalCustomerRegisterReducer,
+        dispatchGlobalCustomerRegisterReducer
+    } = useContext(ModelSelectionCustomerRecordContext);
+
+    const { validatePhoneNumber, validateCompanyEmail } = useCreateClientCompany();
 
     const {
         contactPersonIdToUpdate,
@@ -23,26 +35,6 @@ function ContactPersonUpdate({ handleOpenContactModal }) {
         isShouldUpdateContactPerson,
         handleIsShouldUpdateContactPerson,
     } = useContext(ContactPersonContext);
-
-    const {
-        taxIdentificationNumber,
-        setTaxIdentificationNumber,
-        taxIdentificationNumberState,
-        birthdate,
-        setBirthdate,
-        setContactStatus,
-        setContactStatusState,
-        handleBirthdateChange,
-        handleChangeCPF,
-        validateEmail,
-        contactPersonOccupation,
-        setContactPersonOccupation,
-        contactPersonOccupationState,
-        setContactPersonOccupationState,
-        contactPersonBelongsToClientCompany,
-        setContactPersonBelongsToClientCompany,
-        setContactPersonBelongsToClientCompanyState,
-    } = useCreateCustomerAccountHolder();
 
     const { handleValidateUpdateClientCompanyForm } = useUpdateContactPerson();
 
@@ -61,7 +53,6 @@ function ContactPersonUpdate({ handleOpenContactModal }) {
 
     });
 
-    const [selectedBelongingToClientCompany, setSelectedBelongingToClientCompany] = useState(null);
     const [clientCompanyDataList, setClientCompanyDataList] = useState([]);
     const handleClientCompanyDataList = (customerUser) => {
         setClientCompanyDataList(customerUser);
@@ -85,7 +76,7 @@ function ContactPersonUpdate({ handleOpenContactModal }) {
             if (field.includes('Phone')) {
                 isValid = validatePhoneNumber(value, type);
             } else if (field.includes('Email')) {
-                isValid = validateEmail(value);
+                isValid = validateCompanyEmail(value);
             }
         } else {
             isValid = value !== "";
@@ -114,35 +105,12 @@ function ContactPersonUpdate({ handleOpenContactModal }) {
         }));
     };
 
-    const selectedListItemToUpdate = (item, list, setSelectedItem, setItem, setItemState) => {
-        const selectedItem = list.find(p => p.id === String(item));
-        if (selectedItem) {
-            setSelectedItem(selectedItem.id);
-            handleSelectionEmploymentContractData(
-                selectedItem.id,
-                list,
-                setSelectedItem,
-                setItem,
-                setItemState,
-                null,
-                null,
-                'id'
-            );
-        }
+    const handleSelectedBelongingToClientCompany = (e) => {
+        const value = e.target.value;
+        dispatchLegalEntityRegistration({ type: 'SET_SELECTED_BELONGING_TO_CLIENT_COMPANY', payload: value });
     };
 
     const [formattedBirthdate, setFormattedBirthdate] = useState('');
-
-    const handleCheckboxChange = (e) => {
-        const isChecked = e.target.checked;
-        setContactStatus(isChecked);
-
-        if (isChecked) {
-            setContactStatusState("valid");
-        } else {
-            setContactStatusState("invalid");
-        }
-    };
 
     useEffect(() => {
         if (clientCompanyDataList.length === 0) {
@@ -160,28 +128,35 @@ function ContactPersonUpdate({ handleOpenContactModal }) {
             if (!detailedContactPersonData.length) {
                 const foundContact = await useFindContactPerson(contactPersonIdToUpdate);
                 setDetailedContactPersonData(foundContact);
-
                 setFieldTouchStatus((prev) => ({
                     ...prev,
+                    taxIdentificationNumber: { ...prev.taxIdentificationNumber, value: foundContact.cpf },
                     emailAddress: { ...prev.email, value: foundContact.email },
-                    lastName: { ...prev.lastname, value: foundContact.lastname },
+                    lastName: { ...prev.lastName, value: foundContact.lastname },
                     firstName: { ...prev.name, value: foundContact.name },
                     contactPersonOccupation: { ...prev.occupation, value: foundContact.occupation },
                     phoneNumber: { ...prev.phone, value: foundContact.phone },
                     contactStatus: { ...prev.status, value: foundContact.status },
                 }));
-                setTaxIdentificationNumber(foundContact.cpf);
-                selectedListItemToUpdate(foundContact.customerId, clientCompanyDataList, setSelectedBelongingToClientCompany, setContactPersonBelongsToClientCompany, setContactPersonBelongsToClientCompanyState);
-                setBirthdate(new Date(foundContact.birthdate));
+                if (clientCompanyDataList.length > 0) {
+                    selectedListItemToUpdate(
+                        dispatchIndividualRegistration,
+                        foundContact.customerId,
+                        clientCompanyDataList,
+                        'SET_SELECTED_BELONGING_TO_CLIENT_COMPANY',
+                        'SET_CONTACT_PERSON_BELONGS_TO_CLIENT_COMPANY',
+                        'SET_CONTACT_PERSON_BELONGS_TO_CLIENT_COMPANY_STATE'
+                    );
+                }
+                dispatchIndividualRegistration({ type: 'SET_BIRTHDATE', payload: new Date(foundCustomer.birthdate) });
                 setFormattedBirthdate(foundContact.birthdate);
             }
         };
 
-        console.log("Selecionado: ", selectedBelongingToClientCompany);
         if (contactPersonIdToUpdate && !selectedBelongingToClientCompany) {
             fetchAppraisalCycleById(contactPersonIdToUpdate);
         }
-    }, [contactPersonIdToUpdate, selectedBelongingToClientCompany]);
+    }, [contactPersonIdToUpdate, selectedBelongingToClientCompany, clientCompanyDataList]);
 
     useEffect(() => {
         if (isShouldUpdateContactPerson) {
@@ -222,7 +197,7 @@ function ContactPersonUpdate({ handleOpenContactModal }) {
                                 type="text"
                                 valid={fieldTouchStatus.firstName.touched && fieldTouchStatus.firstName.state === "valid"}
                                 invalid={fieldTouchStatus.firstName.touched && fieldTouchStatus.firstName.state === "invalid"}
-                                value={fieldTouchStatus.firstName.value}
+                                value={fieldTouchStatus.firstName.value || ''}
                                 onChange={(e) => handleChange(e, "firstName")}
                                 onTouchStart={() => handleTouchStart("firstName")}
                             />
@@ -243,7 +218,7 @@ function ContactPersonUpdate({ handleOpenContactModal }) {
                                 type="text"
                                 valid={fieldTouchStatus.lastName.touched && fieldTouchStatus.lastName.state === "valid"}
                                 invalid={fieldTouchStatus.lastName.touched && fieldTouchStatus.lastName.state === "invalid"}
-                                value={fieldTouchStatus.lastName.value}
+                                value={fieldTouchStatus.lastName.value || ''}
                                 onChange={(e) => handleChange(e, "lastName")}
                                 onTouchStart={() => handleTouchStart("lastName")}
                             />
@@ -259,20 +234,23 @@ function ContactPersonUpdate({ handleOpenContactModal }) {
                                 CPF
                             </label>
                             <InputMask
+                                disabled
                                 placeholder='999.999.999-99'
                                 mask="999.999.999-99"
                                 maskChar="_"
-                                value={taxIdentificationNumber}
-                                onChange={handleChangeCPF}
+                                value={fieldTouchStatus.taxIdentificationNumber.value || ''}
+                                onChange={(e) => handleChange(e, "taxIdentificationNumber")}
+                                onTouchStart={() => handleTouchStart("taxIdentificationNumber")}
                             >
                                 {(inputProps) => <Input {...inputProps}
+                                    disabled
                                     id="validationContactPersonTaxIdNumber"
-                                    valid={taxIdentificationNumberState === "valid"}
-                                    invalid={taxIdentificationNumberState === "invalid"}
+                                    valid={fieldTouchStatus.taxIdentificationNumber.touched && fieldTouchStatus.taxIdentificationNumber.state === "valid"}
+                                    invalid={fieldTouchStatus.taxIdentificationNumber.touched && fieldTouchStatus.taxIdentificationNumber.state === "invalid"}
                                 />}
                             </InputMask>
                             <div className="invalid-feedback">
-                                {taxIdentificationNumberState === "invalid" && "Forneça um número de CPF válido."}
+                                {fieldTouchStatus.taxIdentificationNumber.state === "invalid" && "Forneça um número de CPF válido."}
                             </div>
                         </Col>
                     </div>
@@ -289,9 +267,15 @@ function ContactPersonUpdate({ handleOpenContactModal }) {
                                     placeholder: "__/__/__",
                                 }}
                                 timeFormat={false}
-                                value={birthdate}
-                                onChange={handleBirthdateChange}
-
+                                dateFormat="DD/MM/YYYY"
+                                value={stateIndividualRegistration.individualRegistrationData.birthdate || ''}
+                                onChange={(e) => handleDateFormatting(
+                                    dispatchIndividualRegistration,
+                                    e,
+                                    'SET_CUSTOMER_ACCESSION_DATE',
+                                    'SET_CUSTOMER_ACCESSION_DATE_STATE',
+                                    setFormattedBirthdate
+                                )}
                             />
                         </Col>
                         <Col className="mb-3" md="4">
@@ -305,7 +289,7 @@ function ContactPersonUpdate({ handleOpenContactModal }) {
                                 placeholder='+55 (99) 9 9999-9999'
                                 mask="+55 (99) 9 9999-9999"
                                 maskChar=" "
-                                value={fieldTouchStatus.phoneNumber.value}
+                                value={fieldTouchStatus.phoneNumber.value || ''}
                                 onChange={(e) => handleChange(e, 'phoneNumber', 'personal')}
                                 onBlur={() => handleTouchStart('phoneNumber')}
                             >
@@ -333,7 +317,7 @@ function ContactPersonUpdate({ handleOpenContactModal }) {
                                 type="text"
                                 valid={fieldTouchStatus.contactPersonOccupation.touched && fieldTouchStatus.contactPersonOccupation.state === "valid"}
                                 invalid={fieldTouchStatus.contactPersonOccupation.touched && fieldTouchStatus.contactPersonOccupation.state === "invalid"}
-                                value={fieldTouchStatus.contactPersonOccupation.value}
+                                value={fieldTouchStatus.contactPersonOccupation.value || ''}
                                 onChange={(e) => handleChange(e, "contactPersonOccupation")}
                                 onTouchStart={() => handleTouchStart("contactPersonOccupation")}
                             />
@@ -346,7 +330,7 @@ function ContactPersonUpdate({ handleOpenContactModal }) {
                         <Col className="mb-4" md="6">
                             <label
                                 className="form-control-label"
-                                htmlFor="validationContactPersoncontactPersonOccupation"
+                                htmlFor="validationContactPersonEmailAddress"
                             >
                                 E-mail
                             </label>
@@ -357,7 +341,7 @@ function ContactPersonUpdate({ handleOpenContactModal }) {
                                 type="email"
                                 valid={fieldTouchStatus.emailAddress.touched && fieldTouchStatus.emailAddress.state === "valid"}
                                 invalid={fieldTouchStatus.emailAddress.touched && fieldTouchStatus.emailAddress.state === "invalid"}
-                                value={fieldTouchStatus.emailAddress.value}
+                                value={fieldTouchStatus.emailAddress.value || ''}
                                 onChange={(e) => handleChange(e, "emailAddress")}
                                 onTouchStart={() => handleTouchStart("emailAddress")}
                             />
@@ -379,19 +363,24 @@ function ContactPersonUpdate({ handleOpenContactModal }) {
                                 options={{
                                     placeholder: "Selecione um cliente",
                                 }}
-                                value={selectedBelongingToClientCompany}
-                                onChange={(e) => setSelectedBelongingToClientCompany(e.target.value)}
+                                value={stateIndividualRegistration.individualRegistrationData.selectedBelongingToClientCompany}
+                                onChange={handleSelectedBelongingToClientCompany}
                                 data={clientCompanyDataList}
-                                onSelect={(e) => handleSelectionEmploymentContractData(
-                                    e.target.value,
-                                    clientCompanyDataList,
-                                    setSelectedBelongingToClientCompany,
-                                    setContactPersonBelongsToClientCompany,
-                                    setContactPersonBelongsToClientCompanyState,
-                                    null,
-                                    null,
-                                    'id'
-                                )}
+                                onSelect={(e) => {
+                                    const selectedValue = e.target.value;
+                                    handleSelectionEmploymentContractDataWithReducer(
+                                        selectedValue,
+                                        Array.isArray(clientCompanyDataList)
+                                            ? clientCompanyDataList
+                                            : [],
+                                        'SET_SELECTED_BELONGING_TO_CLIENT_COMPANY',
+                                        'SET_CONTACT_PERSON_BELONGS_TO_CLIENT_COMPANY',
+                                        'SET_CONTACT_PERSON_BELONGS_TO_CLIENT_COMPANY_STATE',
+                                        null,
+                                        null,
+                                        'id'
+                                    );
+                                }}
                             />
                         </Col>
                         <Col className="mb-3" md="2">
@@ -404,7 +393,7 @@ function ContactPersonUpdate({ handleOpenContactModal }) {
                                 <label className="custom-toggle ml-auto">
                                     <input
                                         type="checkbox"
-                                        checked={fieldTouchStatus.contactStatus.value}
+                                        checked={fieldTouchStatus.contactStatus.value || ''}
                                         onChange={handleToggleChange}
                                     />
                                     <span

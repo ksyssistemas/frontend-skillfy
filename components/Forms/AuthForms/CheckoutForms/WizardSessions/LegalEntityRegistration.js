@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useReducer, useRef, useContext } from 'react';
 // nodejs library that concatenates classes
-import classnames from "classnames";
 import InputMask from 'react-input-mask';
 import useCreateClientCompany from 'hooks/RecordsHooks/customer/useCreateClientCompany.js';
 import dynamic from "next/dynamic";

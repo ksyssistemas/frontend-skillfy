@@ -4,13 +4,10 @@ export async function useDeleteContactPerson(contactId) {
       method: 'DELETE',
     });
 
-    console.log(response);
-
     if (!response.ok) {
       throw new Error('Failed to delete contact.');
     }
     const data = await response.json();
-    console.log(data);
 
     return data;
 

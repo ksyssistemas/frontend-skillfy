@@ -275,6 +275,8 @@ const useCreateClientCompany = () => {
   async function handleValidateAddCustomerCompanyForm(
     stateGlobalCustomerRegisterReducer,
     dispatchGlobalCustomerRegisterReducer,
+    stateIndividualRegistration,
+    dispatchIndividualRegistration,
     stateLegalEntityRegistration,
     dispatchLegalEntityRegistration,
     stateCNPJ,
@@ -342,6 +344,9 @@ const useCreateClientCompany = () => {
         await handleLinkingAccountHolderToCustomer(customerUserIdCreated);
         goBackToCustomerUserList(
           handleShowCustomerUserRegister,
+          dispatchGlobalCustomerRegisterReducer,
+          dispatchIndividualRegistration,
+          dispatchLegalEntityRegistration,
           stateCNPJ,
           dispatchCNPJ,
           stateCEP,
@@ -353,13 +358,21 @@ const useCreateClientCompany = () => {
 
   function goBackToCustomerUserList(
     handleShowCustomerUserRegister,
+    dispatchGlobalCustomerRegisterReducer,
+    dispatchIndividualRegistration,
+    dispatchLegalEntityRegistration,
     stateCNPJ,
     dispatchCNPJ,
     stateCEP,
     dispatchCEP
   ) {
-    dispatchCNPJ({ type: 'SET_HAS_VALUES_CHANGED_WITH_CNPJ_API_DATA', payload: false });
-    dispatchCEP({ type: 'SET_HAS_VALUES_CHANGED_WITH_CEP_API_DATA', payload: false });
+    dispatchIndividualRegistration({ type: 'INDIVIDUAL_RESET_INDIVIDUAL_REGISTRATION_DATA' });
+    dispatchLegalEntityRegistration({ type: 'LEGAL_ENTITY_RESET_LEGAL_ENTITY_REGISTRATION_DATA' });
+    dispatchGlobalCustomerRegisterReducer({ type: 'RESET_ALL' });
+    dispatchCNPJ({ type: 'RESET_CNPJ_DATA' });
+    dispatchCEP({ type: 'RESET_CEP_DATA' });
+    localStorage.removeItem('individualRegistrationData');
+    localStorage.removeItem('legalEntityRegistrationData');
     handleShowCustomerUserRegister();
   }
 

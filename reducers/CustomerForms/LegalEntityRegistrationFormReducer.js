@@ -34,6 +34,7 @@ export const initialStateLegalEntityRegistrationForm = {
         customerWebSiteState: null,
         customerStatus: false,
         customerAccessionDate: '',
+        customerAccessionDateState: null,
         idHeadOfficeBranch: '',
         idHeadOfficeBranchState: null,
         federatedUnit: '',
@@ -265,6 +266,14 @@ export const legalEntityRegistrationFormReducer = (state, action) => {
                 legalEntityRegistrationData: {
                     ...state.legalEntityRegistrationData,
                     customerAccessionDate: action.payload,
+                },
+            };
+        case 'SET_CUSTOMER_ACCESSION_DATE_STATE':
+            return {
+                ...state,
+                legalEntityRegistrationData: {
+                    ...state.legalEntityRegistrationData,
+                    customerAccessionDateState: action.payload,
                 },
             };
         case 'SET_ID_HEAD_OFFICE_BRANCH':

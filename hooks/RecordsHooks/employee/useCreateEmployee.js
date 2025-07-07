@@ -4,6 +4,8 @@ import { EmployeeContext } from '../../../contexts/RecordsContext/EmployeeContex
 
 const useCreateEmployee = (state, dispatch) => {
 
+    const { handleShowDynamicEmployeeComponent } = useContext(EmployeeContext);
+
     const {
         firstName,
         lastName,
@@ -57,7 +59,7 @@ const useCreateEmployee = (state, dispatch) => {
             dispatch({ type: 'SET_SHOW_ERROR_FEEDBACK_EMPLOYEE_LEADER_COMPONENT', payload: true });
             dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME_STATE', payload: 'invalid' });
         } else if (!isEmployeeLeader && hasEmployeeLeader && !employeeLeaderName) {
-            dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME_STATE', payload: 'invalid' });
+            dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME_STATE', payload: '' });
         } else if (!isEmployeeLeader && hasEmployeeLeader && employeeLeaderName) {
             dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME_STATE', payload: 'valid' });
         } else if (isEmployeeLeader && !hasEmployeeLeader && !employeeLeaderName) {
@@ -221,7 +223,7 @@ const useCreateEmployee = (state, dispatch) => {
         handleValuesChangedWithAPIData();
     }
 
-    async function handleValidateAddEmployeeForm(handleShowEmployeeUserRegister) {
+    async function handleValidateAddEmployeeForm() {
         validateAddEmployeeForm();
         validateSelection();
         //validateAddEmployeeAddressForm();
@@ -280,13 +282,13 @@ const useCreateEmployee = (state, dispatch) => {
             //         userIdCreated
             //     );
             // }
-            goBackToEmployeeUserList(handleShowEmployeeUserRegister);
+            goBackToEmployeeUserList();
         }
     }
 
-    function goBackToEmployeeUserList(handleShowEmployeeUserRegister) {
+    function goBackToEmployeeUserList() {
         dispatch({ type: 'RESET_COLLABORATOR_DATA' });
-        handleShowEmployeeUserRegister();
+        handleShowDynamicEmployeeComponent('employeeList');
     }
 
     const handleSubmit = async (
@@ -323,6 +325,7 @@ const useCreateEmployee = (state, dispatch) => {
             employeeDepartment,
             employeeRole
         ) {
+            console.log("CustomerIdToLinkToEmployee: ", customerIdToLinkToEmployee);
             try {
 
                 const payload = {

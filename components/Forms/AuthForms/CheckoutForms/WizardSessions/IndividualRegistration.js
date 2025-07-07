@@ -18,6 +18,7 @@ import {
 import PageChange from '../../../../PageChange/PageChange';
 
 export function IndividualRegistration() {
+  
   const {
     clearStepIndex,
     handleClearStepIndex,

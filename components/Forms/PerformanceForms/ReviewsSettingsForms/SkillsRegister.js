@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import dynamic from "next/dynamic";
 const Select2 = dynamic(() => import("react-select2-wrapper"));
 import { Button, CardBody, Input, Row, Col } from "reactstrap";
-import useCreateSkillClassificaiton from '../../../../hooks/PerformanceAppraisalRecordsHooks/SkillsClassifications/useCreateSkillClassificaiton';
-import { useFindAllSkillClassifications } from '../../../../hooks/PerformanceAppraisalRecordsHooks/SkillsClassifications/useFindAllSkillClassifications';
 import { employmentContractDataSearchAndProcess } from '../../../../util/employmentContractDataSearchAndProcess';
-import useCreateOccupationalGroup from '../../../../hooks/PerformanceAppraisalRecordsHooks/OccupationalGroups/useCreateOccupationalGroup';
-import { useFindAllOccupationalGroups } from '../../../../hooks/PerformanceAppraisalRecordsHooks/OccupationalGroups/useFindAllSkillClassifications';
-import useCreateSkillType from '../../../../hooks/PerformanceAppraisalRecordsHooks/SkillsTypes/useCreateSkillType';
-import { useFindAllSkillTypes } from '../../../../hooks/PerformanceAppraisalRecordsHooks/SkillsTypes/useFindAllSkillTypes';
+import { useFindAllOccupationalGroups } from '../../../../hooks/DefinitionOptionsReview/OccupationalGroups/useFindAllSkillClassifications';
+import { useFindAllSkillTypes } from '../../../../hooks/DefinitionOptionsReview/SkillsTypes/useFindAllSkillTypes';
 import { handleSelectionEmploymentContractData } from '../../../../util/handleSelectionEmploymentContractData';
+import useCreateSkillType from '../../../../hooks/DefinitionOptionsReview/SkillsTypes/useCreateSkillType';
+import useCreateOccupationalGroup from '../../../../hooks/DefinitionOptionsReview/OccupationalGroups/useCreateOccupationalGroup';
+import useCreateSkillClassificaiton from '../../../../hooks/DefinitionOptionsReview/SkillsClassifications/useCreateSkillClassificaiton';
 
 function SkillsRegister() {
 

@@ -149,6 +149,7 @@ const EmployeeUserList = () => {
         employees.map(async (employee) => {
           try {
             const companyData = await useFindClientCompany(employee.customerId);
+            console.log("Id do employee: ", employee.id);
             const foundEmployeeContract = await useFindEmployeeContractDetails(employee.id);
             const foundRoleName = await useFindRole(foundEmployeeContract.rolesId);
             return {
@@ -161,15 +162,14 @@ const EmployeeUserList = () => {
             console.error(`Error fetching employee data for customerId ${employee.customerId}:`, error);
             return {
               ...employee,
-              companyName: 'Unknown',
-              roleName: 'Unknown',
+              companyName: 'Desconhecida',
+              roleName: 'Desconhecida',
               adimissionDate: 'N/A'
             };
           }
         })
       );
       setDetailedEmployeeData(updatedEmployees);
-      console.log(updatedEmployees);
     };
 
 

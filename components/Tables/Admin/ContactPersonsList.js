@@ -76,7 +76,6 @@ function ContactPersonsList() {
     if (contactId) {
       try {
         const deleteResponse = await useDeleteContactPerson(contactId);
-        console.log('DeleteResponse: ', deleteResponse);
         if (deleteResponse !== null) {
           handleDeletedContactRecordStatusChange();
         } else {

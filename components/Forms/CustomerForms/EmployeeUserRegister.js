@@ -28,7 +28,7 @@ import { handleSelectionEmploymentContractData } from '../../../util/handleSelec
 import { initialState, formReducer } from '../../../reducers/employeeFormReducer';
 import { handleDateFormatting } from "../../../util/handleDateFormatting";
 
-function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
+function EmployeeUserRegister() {
 
     const [state, dispatch] = useReducer(formReducer, initialState);
 
@@ -940,9 +940,7 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
                                 color="success"
                                 size="lg"
                                 type="button"
-                                onClick={() =>
-                                    handleValidateAddEmployeeForm(handleShowEmployeeUserRegister)
-                                }
+                                onClick={handleValidateAddEmployeeForm}
                             >
                                 <span className="btn-inner--text">Adicionar Colaborador</span>
                             </Button>
