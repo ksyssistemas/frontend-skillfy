@@ -26,7 +26,10 @@ function ContactPersonUpdate({ handleOpenContactModal }) {
         dispatchGlobalCustomerRegisterReducer
     } = useContext(ModelSelectionCustomerRecordContext);
 
-    const { validatePhoneNumber, validateCompanyEmail } = useCreateClientCompany();
+    const {
+        validatePhoneNumber,
+        validateCompanyEmail
+    } = useCreateClientCompany();
 
     const {
         contactPersonIdToUpdate,
@@ -36,7 +39,9 @@ function ContactPersonUpdate({ handleOpenContactModal }) {
         handleIsShouldUpdateContactPerson,
     } = useContext(ContactPersonContext);
 
-    const { handleValidateUpdateClientCompanyForm } = useUpdateContactPerson();
+    const {
+        handleValidateUpdateClientCompanyForm
+    } = useUpdateContactPerson();
 
     const [fieldTouchStatus, setFieldTouchStatus] = useState({
 
@@ -107,14 +112,20 @@ function ContactPersonUpdate({ handleOpenContactModal }) {
 
     const handleSelectedBelongingToClientCompany = (e) => {
         const value = e.target.value;
-        dispatchLegalEntityRegistration({ type: 'SET_SELECTED_BELONGING_TO_CLIENT_COMPANY', payload: value });
+        dispatchIndividualRegistration({ type: 'SET_SELECTED_BELONGING_TO_CLIENT_COMPANY', payload: value });
+        dispatchIndividualRegistration({ type: 'SET_SELECTED_BELONGING_TO_CLIENT_COMPANY_STATE', payload: value !== "" ? 'valid' : 'invalid' });
     };
 
     const [formattedBirthdate, setFormattedBirthdate] = useState('');
 
     useEffect(() => {
         if (clientCompanyDataList.length === 0) {
-            employmentContractDataSearchAndProcess(useFindAllClientCompany, handleClientCompanyDataList, 'client-company', 'EmployeeUserRegister');
+            employmentContractDataSearchAndProcess(
+                useFindAllClientCompany,
+                handleClientCompanyDataList,
+                'client-company',
+                'EmployeeUserRegister'
+            );
         }
     }, []);
 
@@ -125,59 +136,68 @@ function ContactPersonUpdate({ handleOpenContactModal }) {
 
     useEffect(() => {
         const fetchAppraisalCycleById = async () => {
-            if (!detailedContactPersonData.length) {
-                const foundContact = await useFindContactPerson(contactPersonIdToUpdate);
-                setDetailedContactPersonData(foundContact);
-                setFieldTouchStatus((prev) => ({
-                    ...prev,
-                    taxIdentificationNumber: { ...prev.taxIdentificationNumber, value: foundContact.cpf },
-                    emailAddress: { ...prev.email, value: foundContact.email },
-                    lastName: { ...prev.lastName, value: foundContact.lastname },
-                    firstName: { ...prev.name, value: foundContact.name },
-                    contactPersonOccupation: { ...prev.occupation, value: foundContact.occupation },
-                    phoneNumber: { ...prev.phone, value: foundContact.phone },
-                    contactStatus: { ...prev.status, value: foundContact.status },
-                }));
-                if (clientCompanyDataList.length > 0) {
-                    selectedListItemToUpdate(
-                        dispatchIndividualRegistration,
-                        foundContact.customerId,
-                        clientCompanyDataList,
-                        'SET_SELECTED_BELONGING_TO_CLIENT_COMPANY',
-                        'SET_CONTACT_PERSON_BELONGS_TO_CLIENT_COMPANY',
-                        'SET_CONTACT_PERSON_BELONGS_TO_CLIENT_COMPANY_STATE'
-                    );
+            if (contactPersonIdToUpdate && contactPersonIdToUpdate !== null) {
+                if (!detailedContactPersonData.length) {
+                    const foundContact = await useFindContactPerson(contactPersonIdToUpdate);
+                    setDetailedContactPersonData(foundContact);
+                    setFieldTouchStatus((prev) => ({
+                        ...prev,
+                        taxIdentificationNumber: { ...prev.taxIdentificationNumber, value: foundContact.cpf },
+                        emailAddress: { ...prev.email, value: foundContact.email },
+                        lastName: { ...prev.lastName, value: foundContact.lastname },
+                        firstName: { ...prev.name, value: foundContact.name },
+                        contactPersonOccupation: { ...prev.occupation, value: foundContact.occupation },
+                        phoneNumber: { ...prev.phone, value: foundContact.phone },
+                        contactStatus: { ...prev.status, value: foundContact.status },
+                    }));
+                    if (clientCompanyDataList.length > 0) {
+                        selectedListItemToUpdate(
+                            dispatchIndividualRegistration,
+                            String(foundContact.customerId),
+                            clientCompanyDataList,
+                            'SET_SELECTED_BELONGING_TO_CLIENT_COMPANY',
+                            'SET_CONTACT_PERSON_BELONGS_TO_CLIENT_COMPANY',
+                            'SET_CONTACT_PERSON_BELONGS_TO_CLIENT_COMPANY_STATE'
+                        );
+                    }
+                    dispatchIndividualRegistration({ type: 'SET_BIRTHDATE', payload: new Date(foundContact.birthdate) });
+                    setFormattedBirthdate(foundContact.birthdate);
                 }
-                dispatchIndividualRegistration({ type: 'SET_BIRTHDATE', payload: new Date(foundCustomer.birthdate) });
-                setFormattedBirthdate(foundContact.birthdate);
             }
         };
 
-        if (contactPersonIdToUpdate && !selectedBelongingToClientCompany) {
-            fetchAppraisalCycleById(contactPersonIdToUpdate);
-        }
-    }, [contactPersonIdToUpdate, selectedBelongingToClientCompany, clientCompanyDataList]);
+        fetchAppraisalCycleById(contactPersonIdToUpdate);
+
+    }, [
+        contactPersonIdToUpdate,
+        clientCompanyDataList
+    ]);
 
     useEffect(() => {
         if (isShouldUpdateContactPerson) {
             handleValidateUpdateClientCompanyForm(
                 handleOpenContactModal,
                 contactPersonIdToUpdate,
-                taxIdentificationNumber,
+                fieldTouchStatus.taxIdentificationNumber.value,
                 fieldTouchStatus.firstName.value,
                 fieldTouchStatus.lastName.value,
                 fieldTouchStatus.emailAddress.value,
                 formattedBirthdate,
                 fieldTouchStatus.phoneNumber.value,
                 fieldTouchStatus.contactStatus.value,
-                contactPersonBelongsToClientCompany,
+                stateIndividualRegistration.individualRegistrationData.contactPersonBelongsToClientCompany,
                 fieldTouchStatus.contactPersonOccupation.value,
                 handleContactPersonIdToUpdate,
                 handleContactIdStatusCleanupToUpdate
             );
             handleIsShouldUpdateContactPerson();
         }
-    }, [isShouldUpdateContactPerson, fieldTouchStatus, formattedBirthdate]);
+    }, [
+        isShouldUpdateContactPerson,
+        fieldTouchStatus,
+        formattedBirthdate,
+        stateIndividualRegistration.individualRegistrationData
+    ]);
 
     return (
         <Form className="needs-validation" noValidate>
@@ -349,40 +369,43 @@ function ContactPersonUpdate({ handleOpenContactModal }) {
                                 {fieldTouchStatus.emailAddress.state === "invalid" && "Forneça um endereço de e-mail válido."}
                             </div>
                         </Col>
-                        <Col className="mb-3" md="4">
-                            <label
-                                className="form-control-label"
-                                htmlFor="validationContactPersonBelonging"
-                            >
-                                Cliente
-                            </label>
-                            <Select2
-                                id="validationContactPersonBelonging"
-                                className="form-control"
-                                data-minimum-results-for-search="Infinity"
-                                options={{
-                                    placeholder: "Selecione um cliente",
-                                }}
-                                value={stateIndividualRegistration.individualRegistrationData.selectedBelongingToClientCompany}
-                                onChange={handleSelectedBelongingToClientCompany}
-                                data={clientCompanyDataList}
-                                onSelect={(e) => {
-                                    const selectedValue = e.target.value;
-                                    handleSelectionEmploymentContractDataWithReducer(
-                                        selectedValue,
-                                        Array.isArray(clientCompanyDataList)
-                                            ? clientCompanyDataList
-                                            : [],
-                                        'SET_SELECTED_BELONGING_TO_CLIENT_COMPANY',
-                                        'SET_CONTACT_PERSON_BELONGS_TO_CLIENT_COMPANY',
-                                        'SET_CONTACT_PERSON_BELONGS_TO_CLIENT_COMPANY_STATE',
-                                        null,
-                                        null,
-                                        'id'
-                                    );
-                                }}
-                            />
-                        </Col>
+                        {clientCompanyDataList.length > 0 && (
+                            <Col className="mb-3" md="4">
+                                <label
+                                    className="form-control-label"
+                                    htmlFor="validationContactPersonBelonging"
+                                >
+                                    Cliente
+                                </label>
+                                <Select2
+                                    id="validationContactPersonBelonging"
+                                    className="form-control"
+                                    data-minimum-results-for-search="Infinity"
+                                    options={{
+                                        placeholder: "Selecione um cliente",
+                                    }}
+                                    value={stateIndividualRegistration.individualRegistrationData.selectedBelongingToClientCompany}
+                                    onChange={handleSelectedBelongingToClientCompany}
+                                    data={clientCompanyDataList}
+                                    onSelect={(e) => {
+                                        const selectedValue = e.target.value;
+                                        handleSelectionEmploymentContractDataWithReducer(
+                                            dispatchIndividualRegistration,
+                                            selectedValue,
+                                            Array.isArray(clientCompanyDataList)
+                                                ? clientCompanyDataList
+                                                : [],
+                                            'SET_SELECTED_BELONGING_TO_CLIENT_COMPANY',
+                                            'SET_CONTACT_PERSON_BELONGS_TO_CLIENT_COMPANY',
+                                            'SET_CONTACT_PERSON_BELONGS_TO_CLIENT_COMPANY_STATE',
+                                            null,
+                                            null,
+                                            'id'
+                                        );
+                                    }}
+                                />
+                            </Col>
+                        )}
                         <Col className="mb-3" md="2">
                             <div className="d-flex flex-column w-100">
                                 <span

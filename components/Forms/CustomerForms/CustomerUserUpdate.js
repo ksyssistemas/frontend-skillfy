@@ -18,6 +18,7 @@ import useUpdateClientCompany from '../../../hooks/RecordsHooks/customer/useUpda
 import { selectedListItemToUpdate } from '../../../util/selectedListItemToUpdate';
 import { handleDateFormatting } from "../../../util/handleDateFormatting";
 import { ModelSelectionCustomerRecordContext } from "../../../contexts/PerformanceContext/ModelSelectionCustomerRecordContext";
+import { handleSelectionEmploymentContractDataWithReducer } from "../../../util/handleSelectionEmploymentContractDataWithReducer";
 
 function CustomerUserUpdate({ handleOpenCustomerModal }) {
 
@@ -320,7 +321,8 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
         };
 
         fetchClientCompanyAndAddressById();
-    }, [customerIdToUpdate,
+    }, [
+        customerIdToUpdate,
         stateLegalEntityRegistration.legalEntityRegistrationData.companyTypesDataList,
         stateLegalEntityRegistration.legalEntityRegistrationData.companySectorDataList,
     ]);
@@ -356,8 +358,8 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
             handleIsShouldUpdateClientCompany();
         }
     }, [
-        isShouldUpdateClientCompany, 
-        fieldTouchStatus, 
+        isShouldUpdateClientCompany,
+        fieldTouchStatus,
         formattedAccessionDate,
         stateLegalEntityRegistration.legalEntityRegistrationData
     ]);
@@ -545,7 +547,8 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                     data={stateLegalEntityRegistration.legalEntityRegistrationData.companyTypesDataList}
                                     onSelect={(e) => {
                                         const selectedValue = e.target.value;
-                                        handleSelectionEmploymentContractDataWrapper(
+                                        handleSelectionEmploymentContractDataWithReducer(
+                                            dispatchLegalEntityRegistration,
                                             selectedValue,
                                             Array.isArray(stateLegalEntityRegistration.legalEntityRegistrationData.companyTypesDataList)
                                                 ? stateLegalEntityRegistration.legalEntityRegistrationData.companyTypesDataList
@@ -578,7 +581,8 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 data={stateLegalEntityRegistration.legalEntityRegistrationData.companySectorDataList}
                                 onSelect={(e) => {
                                     const selectedValue = e.target.value;
-                                    handleSelectionEmploymentContractDataWrapper(
+                                    handleSelectionEmploymentContractDataWithReducer(
+                                        dispatchLegalEntityRegistration,
                                         selectedValue,
                                         Array.isArray(stateLegalEntityRegistration.legalEntityRegistrationData.companySectorDataList)
                                             ? stateLegalEntityRegistration.legalEntityRegistrationData.companySectorDataList

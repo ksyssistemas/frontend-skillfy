@@ -33,6 +33,7 @@ import { useFindAllFunctions } from "../../../hooks/RecordsHooks/employeeFunctio
 import { employmentContractDataSearchAndProcess } from "../../../util/employmentContractDataSearchAndProcess";
 import useUpdateEmployee from "../../../hooks/RecordsHooks/employee/useUpdateEmployee";
 import { initialState, formReducer } from '../../../reducers/employeeFormReducer';
+import PageChange from "../../PageChange/PageChange";
 
 function EmployeeUserUpdate(
     {
@@ -66,6 +67,7 @@ function EmployeeUserUpdate(
     } = useUpdateEmployee();
 
     const [dataLoaded, setDataLoaded] = useState(false);
+    const [isLoadingDetailsSelectedEmployeeData, setIsLoadingDetailsSelectedEmployeeData] = useState(false);
 
     const [cepTouched, setCepTouched] = useState(false);
 
@@ -412,51 +414,64 @@ function EmployeeUserUpdate(
         };
 
         const fetchEmployeeById = async () => {
-            const foundEmployee = await useFindEmployee(employeeIdToUpdate);
-            const employeeCompanyName = await fetchCompanyNames(foundEmployee);
+            try {
+                if (employeeIdToUpdate !== '' && employeeIdToUpdate !== null && employeeIdToUpdate !== undefined) {
+                    console.log(typeof employeeIdToUpdate, employeeIdToUpdate);
+                    const foundEmployee = await useFindEmployee(employeeIdToUpdate);
+                    const employeeCompanyName = await fetchCompanyNames(foundEmployee);
 
-            dispatch({ type: 'SET_EMPLOYEE_COMPANY_NAME', payload: employeeCompanyName });
+                    dispatch({ type: 'SET_EMPLOYEE_COMPANY_NAME', payload: employeeCompanyName });
 
-            dispatch({ type: 'SET_FIRST_NAME', payload: foundEmployee.name });
-            dispatch({ type: 'SET_LAST_NAME', payload: foundEmployee.lastName });
-            dispatch({ type: 'SET_EMAIL_ADDRESS', payload: foundEmployee.email });
-            dispatch({ type: 'SET_PHONE_NUMBER', payload: foundEmployee.phoneNumber });
-            dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME', payload: foundEmployee.LeaderName });
-            dispatch({ type: 'SET_EMPLOYEE_STATUS', payload: foundEmployee.status });
+                    dispatch({ type: 'SET_FIRST_NAME', payload: foundEmployee.name });
+                    dispatch({ type: 'SET_LAST_NAME', payload: foundEmployee.lastName });
+                    dispatch({ type: 'SET_EMAIL_ADDRESS', payload: foundEmployee.email });
+                    dispatch({ type: 'SET_PHONE_NUMBER', payload: foundEmployee.phoneNumber });
+                    dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME', payload: foundEmployee.LeaderName });
+                    dispatch({ type: 'SET_EMPLOYEE_STATUS', payload: foundEmployee.status });
 
-            if (foundEmployee.isLead === true) {
-                dispatch({ type: 'SET_IS_EMPLOYEE_LEADER', payload: true });
-                dispatch({ type: 'SET_HAS_EMPLOYEE_LEADER', payload: false });
-            } else if (foundEmployee.isLead === false) {
-                dispatch({ type: 'SET_IS_EMPLOYEE_LEADER', payload: false });
-                dispatch({ type: 'SET_HAS_EMPLOYEE_LEADER', payload: true });
+                    if (foundEmployee.isLead === true) {
+                        dispatch({ type: 'SET_IS_EMPLOYEE_LEADER', payload: true });
+                        dispatch({ type: 'SET_HAS_EMPLOYEE_LEADER', payload: false });
+                    } else if (foundEmployee.isLead === false) {
+                        dispatch({ type: 'SET_IS_EMPLOYEE_LEADER', payload: false });
+                        dispatch({ type: 'SET_HAS_EMPLOYEE_LEADER', payload: true });
+                    }
+
+                    dispatch({ type: 'SET_BIRTHDATE', payload: new Date(foundEmployee.birthdate) });
+                    dispatch({ type: 'SET_FORMATTED_BIRTHDATE', payload: foundEmployee.birthdate });
+                }
+            } catch (error) {
+                console.error(`Error fetching employee data for ID ${employeeIdToUpdate}:`, error);
             }
-
-            dispatch({ type: 'SET_BIRTHDATE', payload: new Date(foundEmployee.birthdate) });
-            dispatch({ type: 'SET_FORMATTED_BIRTHDATE', payload: foundEmployee.birthdate });
         }
 
         const fetchEmployeeAndContractDetailsById = async () => {
-            const foundContractDetails = await useFindEmployeeContractDetails(employeeIdToUpdate);
+            try {
+                const foundContractDetails = await useFindEmployeeContractDetails(employeeIdToUpdate);
 
-            dispatch({ type: 'SET_EMPLOYEE_ENTRY_TIME', payload: foundContractDetails.entryTime });
-            dispatch({ type: 'SET_EMPLOYEE_START_BREAK_TIME', payload: foundContractDetails.startBreakTime });
-            dispatch({ type: 'SET_EMPLOYEE_STOP_BREAK_TIME', payload: foundContractDetails.endBreakTime });
-            dispatch({ type: 'SET_EMPLOYEE_DEPARTURE_TIME', payload: foundContractDetails.departureTime });
+                dispatch({ type: 'SET_EMPLOYEE_ENTRY_TIME', payload: foundContractDetails.entryTime });
+                dispatch({ type: 'SET_EMPLOYEE_START_BREAK_TIME', payload: foundContractDetails.startBreakTime });
+                dispatch({ type: 'SET_EMPLOYEE_STOP_BREAK_TIME', payload: foundContractDetails.endBreakTime });
+                dispatch({ type: 'SET_EMPLOYEE_DEPARTURE_TIME', payload: foundContractDetails.departureTime });
 
-            handleSelectedItemOnSelectComponent(foundContractDetails.departmentId, state.collaboratorData.departmentDataList, 'SET_SELECTED_DEPARTMENT', 'SET_EMPLOYEE_DEPARTMENT', 'SET_EMPLOYEE_DEPARTMENT_STATE');
-            handleSelectedItemOnSelectComponent(foundContractDetails.rolesId, state.collaboratorData.roleDataList, 'SET_SELECTED_ROLE', 'SET_EMPLOYEE_ROLE', 'SET_EMPLOYEE_ROLE_STATE');
-            handleSelectedItemOnSelectComponent(foundContractDetails.employeeFunctionId, state.collaboratorData.functionDataList, 'SET_SELECTED_FUNCTION', 'SET_EMPLOYEE_FUNCTION', 'SET_EMPLOYEE_FUNCTION_STATE');
-            handleSelectedItemOnSelectComponent(foundContractDetails.contractTypeId, state.collaboratorData.contractTypeDataList, 'SET_SELECTED_CONTRACT_TYPE', 'SET_EMPLOYEE_CONTRACT_TYPE', 'SET_EMPLOYEE_CONTRACT_TYPE_STATE');
-            handleSelectedItemOnSelectComponent(foundContractDetails.contractModelId, state.collaboratorData.workModelDataList, 'SET_SELECTED_WORK_MODEL', 'SET_EMPLOYEE_WORK_MODEL', 'SET_EMPLOYEE_WORK_MODEL_STATE');
-            handleSelectedItemOnSelectComponent(foundContractDetails.workplaceId, state.collaboratorData.workplaceDataList, 'SET_SELECTED_WORKPLACE', 'SET_EMPLOYEE_WORKPLACE', 'SET_EMPLOYEE_WORKPLACE_STATE');
-            dispatch({ type: 'SET_EMPLOYEE_ADMISSION_DATE', payload: new Date(foundContractDetails.admissionDate) });
-            dispatch({ type: 'SET_FORMATTED_ADMISSION_DATE', payload: foundContractDetails.admissionDate });
+                handleSelectedItemOnSelectComponent(foundContractDetails.departmentId, state.collaboratorData.departmentDataList, 'SET_SELECTED_DEPARTMENT', 'SET_EMPLOYEE_DEPARTMENT', 'SET_EMPLOYEE_DEPARTMENT_STATE');
+                handleSelectedItemOnSelectComponent(foundContractDetails.rolesId, state.collaboratorData.roleDataList, 'SET_SELECTED_ROLE', 'SET_EMPLOYEE_ROLE', 'SET_EMPLOYEE_ROLE_STATE');
+                handleSelectedItemOnSelectComponent(foundContractDetails.employeeFunctionId, state.collaboratorData.functionDataList, 'SET_SELECTED_FUNCTION', 'SET_EMPLOYEE_FUNCTION', 'SET_EMPLOYEE_FUNCTION_STATE');
+                handleSelectedItemOnSelectComponent(foundContractDetails.contractTypeId, state.collaboratorData.contractTypeDataList, 'SET_SELECTED_CONTRACT_TYPE', 'SET_EMPLOYEE_CONTRACT_TYPE', 'SET_EMPLOYEE_CONTRACT_TYPE_STATE');
+                handleSelectedItemOnSelectComponent(foundContractDetails.contractModelId, state.collaboratorData.workModelDataList, 'SET_SELECTED_WORK_MODEL', 'SET_EMPLOYEE_WORK_MODEL', 'SET_EMPLOYEE_WORK_MODEL_STATE');
+                handleSelectedItemOnSelectComponent(foundContractDetails.workplaceId, state.collaboratorData.workplaceDataList, 'SET_SELECTED_WORKPLACE', 'SET_EMPLOYEE_WORKPLACE', 'SET_EMPLOYEE_WORKPLACE_STATE');
+                dispatch({ type: 'SET_EMPLOYEE_ADMISSION_DATE', payload: new Date(foundContractDetails.admissionDate) });
+                dispatch({ type: 'SET_FORMATTED_ADMISSION_DATE', payload: foundContractDetails.admissionDate });
+            } catch (error) {
+                console.error(`Error fetching employee contract details for ID ${employeeIdToUpdate}:`, error);
+            }
         }
 
         if (dataLoaded && employeeIdToUpdate) {
+            setIsLoadingDetailsSelectedEmployeeData(true);
             fetchEmployeeById();
             fetchEmployeeAndContractDetailsById();
+            setIsLoadingDetailsSelectedEmployeeData(false);
         }
 
     }, [dataLoaded, employeeIdToUpdate, dispatch]);
@@ -494,8 +509,13 @@ function EmployeeUserUpdate(
         }
     }, [isShouldUpdateEmployee, state.collaboratorData]);
 
-    return (
+    if (!dataLoaded || isLoadingDetailsSelectedEmployeeData) {
+        return (
+            <PageChange />
+        );
+    }
 
+    return (
         <Row>
             <div className="col">
                 <div className="card-wrapper">

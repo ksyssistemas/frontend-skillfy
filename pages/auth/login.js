@@ -26,15 +26,12 @@ import Auth from "layouts/Auth.js";
 // import AuthHeader from "components/Headers/AuthHeader.js";
 import { useAuth } from '../../hooks/useAuth';
 import { useRouter } from 'next/router';
-import { EmployeeContext } from "../../contexts/RecordsContext/EmployeeContext";
 import "assets/css/styles/login.css"
 import useEmailValidation from '../../hooks/RecordsHooks/useEmailValidation';
 import useChangePassword from '../../hooks/RecordsHooks/useChangePassword';
 import { useAlert } from '../../contexts/AlertContext';
 
 function Login() {
-
-  const { handleCustomerIdToLinkToEmployee } = useContext(EmployeeContext);
 
   const router = useRouter();
 
@@ -179,7 +176,6 @@ function Login() {
       if (response.ok) {
         const data = await response.json();
         handleSaveAuthenticationDataLoggedInUser(data);
-        handleCustomerIdToLinkToEmployee(data.data.id);
         let redirectUrl = `${process.env.NEXT_PUBLIC_HOME_PAGE}`;
 
         switch (data.role) {

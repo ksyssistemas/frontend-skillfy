@@ -1,13 +1,13 @@
 import React, { useContext, useState } from 'react';
 import { CustomerContext } from '../../../contexts/RecordsContext/CustomerContext';
 
-const useCreateCustomer = () => {
+const useCreateCustomer = (handleShowContactPersonsUserRegister) => {
 
   const {
     handleIdAccountHolderToLinkToCustomer,
   } = useContext(CustomerContext);
 
-  const validateAddCustomerAccountHolderForm = (state, dispatch) => {
+  const validateAddCustomerAccountHolderForm = (state, dispatch, isContactPersonInside = false) => {
     const data = state.individualRegistrationData;
 
     const fieldsToValidate = [
@@ -16,11 +16,20 @@ const useCreateCustomer = () => {
       { name: 'TAX_IDENTIFICATION_NUMBER', value: data.taxIdentificationNumber },
       { name: 'EMAIL_ADDRESS', value: data.emailAddress },
       { name: 'BIRTHDATE', value: data.birthdate },
-      { name: 'PASSWORD', value: data.password },
-      { name: 'CONFIRM_PASSWORD', value: data.confirmPassword },
-      { name: 'PHONE_NUMBER', value: data.phoneNumber },
-      //{ name: 'CONTACT_PERSON_OCCUPATION', value: data.contactPersonOccupation },
+      { name: 'PHONE_NUMBER', value: data.phoneNumber }
     ];
+
+    if (isContactPersonInside) {
+      fieldsToValidate.push(
+        { name: 'CONTACT_PERSON_OCCUPATION', value: data.contactPersonOccupation },
+        { name: 'CONTACT_PERSON_BELONGS_TO_CLIENT_COMPANY', value: data.contactPersonBelongsToClientCompany }
+      );
+    } else {
+      fieldsToValidate.push(
+        { name: 'PASSWORD', value: data.password },
+        { name: 'CONFIRM_PASSWORD', value: data.confirmPassword },
+      );
+    }
 
     let isFormValid = true;
 
@@ -49,8 +58,9 @@ const useCreateCustomer = () => {
     dispatchIndividual,
     isContactPerson = false
   ) {
-    const isValid = validateAddCustomerAccountHolderForm(stateIndividual, dispatchIndividual);
-
+    const isValid = isContactPerson ?
+      validateAddCustomerAccountHolderForm(stateIndividual, dispatchIndividual, true) :
+      validateAddCustomerAccountHolderForm(stateIndividual, dispatchIndividual);
     const stateGlobalIndividualRegistrationData = stateGlobalCustomerRegisterReducer.individualRegistrationData;
     if (isValid) {
       if (isContactPerson && stateGlobalIndividualRegistrationData.contactPersonOccupationState === "valid") {
@@ -61,9 +71,10 @@ const useCreateCustomer = () => {
           stateGlobalIndividualRegistrationData.birthdate,
           stateGlobalIndividualRegistrationData.emailAddress,
           stateGlobalIndividualRegistrationData.phoneNumber,
-          stateGlobalIndividualRegistrationData.password,
           stateGlobalIndividualRegistrationData.contactPersonOccupation,
-          stateGlobalIndividualRegistrationData.contactPersonBelongsToClientCompany
+          stateGlobalIndividualRegistrationData.contactPersonBelongsToClientCompany,
+          dispatchGlobalCustomerRegisterReducer,
+          dispatchIndividual
         );
       } else if (stateGlobalIndividualRegistrationData.checkboxState === "valid") {
         handleSubmit(
@@ -77,6 +88,13 @@ const useCreateCustomer = () => {
         );
       }
     }
+  }
+
+  function goBackToContractPersonList(dispatchGlobalCustomerRegisterReducer, dispatchIndividual) {
+    dispatchIndividual({ type: 'INDIVIDUAL_RESET_INDIVIDUAL_REGISTRATION_DATA' });
+    dispatchGlobalCustomerRegisterReducer({ type: 'RESET_ALL' });
+    localStorage.removeItem('individualRegistrationDataInside');
+    handleShowContactPersonsUserRegister();
   }
 
   const handleSubmit = async (firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, password, terms = true) => {
@@ -114,9 +132,23 @@ const useCreateCustomer = () => {
     }
   };
 
-  const handleSubmitContractPerson = async (firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, password, contactPersonOccupation, contactPersonBelongsToClientCompany, terms = true) => {
-    if (firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, password, terms) {
+  const handleSubmitContractPerson = async (
+    firstName,
+    lastName,
+    taxIdentificationNumber,
+    birthdate,
+    emailAddress,
+    phoneNumber,
+    contactPersonOccupation,
+    contactPersonBelongsToClientCompany,
+    dispatchGlobalCustomerRegisterReducer,
+    dispatchIndividual,
+    terms = true
+  ) => {
+    if (firstName, lastName, taxIdentificationNumber, birthdate, emailAddress, phoneNumber, terms) {
       try {
+        const [day, month, year] = birthdate.split('/');
+        const formattedDate = `${year}-${month}-${day}`;
         const response = await fetch(`${process.env.NEXT_PUBLIC_CONTACT_PERSON}`, {
           method: 'POST',
           headers: {
@@ -126,10 +158,10 @@ const useCreateCustomer = () => {
             name: firstName,
             lastname: lastName,
             cpf: taxIdentificationNumber,
-            birthdate,
+            birthdate: formattedDate,
             email: emailAddress,
             phone: phoneNumber,
-            password,
+            password: "123",
             occupation: contactPersonOccupation,
             customerId: Number(contactPersonBelongsToClientCompany),
             terms
@@ -138,7 +170,7 @@ const useCreateCustomer = () => {
 
         if (response.ok) {
           console.log('Contract Person data OUT sent successfully!');
-          handleShowContactPersonsUserRegister();
+          goBackToContractPersonList(dispatchGlobalCustomerRegisterReducer, dispatchIndividual);
         } else {
           console.error('Error in response:', response.status);
         }

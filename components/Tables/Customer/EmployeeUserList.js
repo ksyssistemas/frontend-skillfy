@@ -102,7 +102,7 @@ const EmployeeUserList = () => {
     (idSelectedToShowEmployeeDetails && idSelectedToShowEmployeeDetails !== 0) ||
     (employeeIdToUpdate && employeeIdToUpdate !== 0);
 
-  const handleDeleteClientEmployee = async (employeeId, employeeName, employeeLastName) => {
+  const handleDeleteClientEmployee = async (employeeId, employeeName, employeeLastName, handleDeletedEmployeeRecordStatusChange) => {
     try {
       const deleteEmployee = await useDeleteEmployee(employeeId);
       const deleteContract = await useDeleteEmployeeContract(employeeId);
@@ -131,7 +131,7 @@ const EmployeeUserList = () => {
       "Deletar",
       `Você deseja realmente excluir ${name}?`,
       "lg",
-      () => handleDeleteClientEmployee(employeeId, employeeName, employeeLastName)
+      () => handleDeleteClientEmployee(employeeId, employeeName, employeeLastName, handleDeletedEmployeeRecordStatusChange)
     );
   };
 
@@ -149,7 +149,6 @@ const EmployeeUserList = () => {
         employees.map(async (employee) => {
           try {
             const companyData = await useFindClientCompany(employee.customerId);
-            console.log("Id do employee: ", employee.id);
             const foundEmployeeContract = await useFindEmployeeContractDetails(employee.id);
             const foundRoleName = await useFindRole(foundEmployeeContract.rolesId);
             return {

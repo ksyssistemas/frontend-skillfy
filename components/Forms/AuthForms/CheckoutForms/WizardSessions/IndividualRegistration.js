@@ -16,9 +16,10 @@ import {
   Col,
 } from "reactstrap";
 import PageChange from '../../../../PageChange/PageChange';
+import useCreateClientCompany from '../../../../../hooks/RecordsHooks/customer/useCreateClientCompany';
 
 export function IndividualRegistration() {
-  
+
   const {
     clearStepIndex,
     handleClearStepIndex,
@@ -38,6 +39,10 @@ export function IndividualRegistration() {
   const {
     validateCPF
   } = useCPF();
+
+  const {
+    validatePhoneNumber,
+  } = useCreateClientCompany();
 
   const handleCheckboxChange = (e) => {
     const isChecked = e.target.checked;
@@ -86,9 +91,9 @@ export function IndividualRegistration() {
 
   const handlePhoneNumberChange = (e) => {
     const value = e.target.value;
-    const filteredValue = value.replace(/\D/g, '');
-    dispatchIndividualRegistration({ type: 'SET_PHONE_NUMBER', payload: filteredValue });
-    dispatchIndividualRegistration({ type: 'SET_PHONE_NUMBER_STATE', payload: filteredValue.length === 13 || filteredValue.length === 12 ? 'valid' : 'invalid' });
+    dispatchIndividualRegistration({ type: 'SET_PHONE_NUMBER', payload: value });
+    const isValid = value === '' ? null : validatePhoneNumber(value, 'personal') ? 'valid' : 'invalid';
+    dispatchIndividualRegistration({ type: 'SET_PHONE_NUMBER_STATE', payload: isValid });
   };
 
   const handleTaxIdentificationNumberChange = (e) => {
@@ -218,10 +223,10 @@ export function IndividualRegistration() {
                 Nome
               </label>
               <Input
-                value={stateIndividualRegistration.individualRegistrationData.firstName || ''}
                 id="validationContactPersonFirstName"
                 placeholder="Nome"
                 type="text"
+                value={stateIndividualRegistration.individualRegistrationData.firstName || ''}
                 valid={stateIndividualRegistration.individualRegistrationData.firstNameState === "valid"}
                 invalid={stateIndividualRegistration.individualRegistrationData.firstNameState === "invalid"}
                 onChange={handleFirstNameChange}
@@ -239,10 +244,10 @@ export function IndividualRegistration() {
                 Sobrenome
               </label>
               <Input
-                value={stateIndividualRegistration.individualRegistrationData.lastName || ''}
                 id="validationContactPersonLastName"
                 placeholder="Sobrenome"
                 type="text"
+                value={stateIndividualRegistration.individualRegistrationData.lastName || ''}
                 valid={stateIndividualRegistration.individualRegistrationData.lastNameState === "valid"}
                 invalid={stateIndividualRegistration.individualRegistrationData.lastNameState === "invalid"}
                 onChange={handleLastNameChange}
@@ -255,14 +260,17 @@ export function IndividualRegistration() {
           </div>
           <div className="form-row">
             <Col className="mb-3" md="6">
-              <label className="form-control-label" htmlFor="validationPersonCPF">
+              <label
+                className="form-control-label"
+                htmlFor="validationPersonCPF"
+              >
                 CPF
               </label>
               <InputMask
-                value={stateIndividualRegistration.individualRegistrationData.taxIdentificationNumber || ''}
                 placeholder='999.999.999-99'
                 mask="999.999.999-99"
                 maskChar="_"
+                value={stateIndividualRegistration.individualRegistrationData.taxIdentificationNumber || ''}
                 valid={stateIndividualRegistration.individualRegistrationData.taxIdentificationNumberState === "valid"}
                 invalid={stateIndividualRegistration.individualRegistrationData.taxIdentificationNumberState === "invalid"}
                 onChange={handleTaxIdentificationNumberChange}
@@ -275,7 +283,10 @@ export function IndividualRegistration() {
               <div className="valid-feedback">Parece bom!</div>
             </Col>
             <Col className="mb-3" md="6">
-              <label className="form-control-label" htmlFor="validationPersonBirthDate">
+              <label
+                className="form-control-label"
+                htmlFor="validationPersonBirthDate"
+              >
                 Data de Nascimento
               </label>
               <ReactDatetime
@@ -301,7 +312,7 @@ export function IndividualRegistration() {
                 className="form-control-label"
                 htmlFor="validationPersonPhoneNumber"
               >
-                Telefone
+                Celular
               </label>
               <InputMask
                 placeholder='+55 (99) 9 9999-9999'

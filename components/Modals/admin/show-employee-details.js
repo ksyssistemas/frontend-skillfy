@@ -21,6 +21,7 @@ import { useFindEmployeeContractDetails } from "../../../hooks/RecordsHooks/feat
 import { useFindContractType } from "../../../hooks/RecordsHooks/featuresEmploymentContract/useFindContractType";
 import { useFindWorkModels } from "../../../hooks/RecordsHooks/featuresEmploymentContract/useFindWorkModels";
 import { useFindWorkplaces } from "../../../hooks/RecordsHooks/featuresEmploymentContract/useFindWorkplaces";
+import PageChange from "../../PageChange/PageChange";
 
 function ShowEmployeeDetailsModal(
   {
@@ -52,6 +53,8 @@ function ShowEmployeeDetailsModal(
   const [detailsSelectedEmployee, setDetailsSelectedEmployee] = useState([]);
   // const [addressDetailsSelectedEmployee, setAddressDetailsSelectedEmployee] = useState([]);
   const [contractDetailsSelectedEmployee, setContractDetailsSelectedEmployee] = useState([]);
+
+  const [isLoadingDetailsSelectedEmployeeData, setIsLoadingDetailsSelectedEmployeeData] = useState(false);
 
   function formatDate(dateString) {
     const date = new Date(dateString);
@@ -102,46 +105,49 @@ function ShowEmployeeDetailsModal(
     };
 
     const fetchData = async () => {
+      setIsLoadingDetailsSelectedEmployeeData(true);
       try {
         if (detailsSelectedEmployee.length <= 0) {
           const foundEmployee = await useFindEmployee(idSelectedToShowEmployeeDetails);
-          const updatedEmployee = await fetchCompanyNames(foundEmployee)
-          setDetailsSelectedEmployee(updatedEmployee);
-          // const foundEmployeeAddress = await useFindEmployeeAddress(idSelectedToShowEmployeeDetails);
-          // setAddressDetailsSelectedEmployee(foundEmployeeAddress.data[0] || []);
+          if (foundEmployee && foundEmployee.customerId) {
+            const updatedEmployee = await fetchCompanyNames(foundEmployee);
+            setDetailsSelectedEmployee(updatedEmployee);
+            // const foundEmployeeAddress = await useFindEmployeeAddress(idSelectedToShowEmployeeDetails);
+            // setAddressDetailsSelectedEmployee(foundEmployeeAddress.data[0] || []);
 
-          const foundEmployeeContractDetails = await useFindEmployeeContractDetails(idSelectedToShowEmployeeDetails);
-          setContractDetailsSelectedEmployee(foundEmployeeContractDetails);
-          console.log(foundEmployeeContractDetails);
-          if (foundEmployeeContractDetails) {
-            const foundDepartmentName = await useFindDepartment(foundEmployeeContractDetails.departmentId);
-            setDepartmentName(foundDepartmentName.departmentName);
-            const foundRoleName = await useFindRole(foundEmployeeContractDetails.rolesId);
-            setRoleName(foundRoleName.roleName);
-            const foundFunctionName = await useFindEmployeeFunction(foundEmployeeContractDetails.departmentId);
-            if (foundFunctionName && foundFunctionName.name) {
-              setFunctionName(foundFunctionName.name);
-            }
-            const foundEmployeeContract = await useFindEmployeeContractDetails(idSelectedToShowEmployeeDetails);
-            if (foundEmployeeContract) {
-              const foundContractType = await useFindContractType(foundEmployeeContract.contractTypeId);
-              const foundWorkModels = await useFindWorkModels(foundEmployeeContract.contractModelId);
-              const foundWorkplaces = await useFindWorkplaces(foundEmployeeContract.workplaceId);
-              if (foundContractType) {
-                setContractTypeName(foundContractType.name);
+            const foundEmployeeContractDetails = await useFindEmployeeContractDetails(idSelectedToShowEmployeeDetails);
+            setContractDetailsSelectedEmployee(foundEmployeeContractDetails);
+            if (foundEmployeeContractDetails) {
+              const foundDepartmentName = await useFindDepartment(foundEmployeeContractDetails.departmentId);
+              setDepartmentName(foundDepartmentName.departmentName);
+              const foundRoleName = await useFindRole(foundEmployeeContractDetails.rolesId);
+              setRoleName(foundRoleName.roleName);
+              const foundFunctionName = await useFindEmployeeFunction(foundEmployeeContractDetails.departmentId);
+              if (foundFunctionName && foundFunctionName.name) {
+                setFunctionName(foundFunctionName.name);
               }
-              if (foundWorkModels) {
-                setWorkModelName(foundWorkModels.name);
-              }
-              if (foundWorkplaces) {
-                setWorkplaceName(foundWorkplaces.name);
+              const foundEmployeeContract = await useFindEmployeeContractDetails(idSelectedToShowEmployeeDetails);
+              if (foundEmployeeContract) {
+                const foundContractType = await useFindContractType(foundEmployeeContract.contractTypeId);
+                const foundWorkModels = await useFindWorkModels(foundEmployeeContract.contractModelId);
+                const foundWorkplaces = await useFindWorkplaces(foundEmployeeContract.workplaceId);
+                if (foundContractType) {
+                  setContractTypeName(foundContractType.name);
+                }
+                if (foundWorkModels) {
+                  setWorkModelName(foundWorkModels.name);
+                }
+                if (foundWorkplaces) {
+                  setWorkplaceName(foundWorkplaces.name);
+                }
               }
             }
           }
-
         }
       } catch (error) {
         console.error('Error fetching data:', error);
+      } finally {
+        setIsLoadingDetailsSelectedEmployeeData(false);
       }
     };
 
@@ -166,7 +172,13 @@ function ShowEmployeeDetailsModal(
     companyNameToModalDetails
   };
 
-  const MODAL_HEADER_TITLE = employeeIdToUpdate && employeeName ? `Informações de ${employeeName}` : 'Informações'
+  const MODAL_HEADER_TITLE = employeeIdToUpdate && employeeName ? `Informações de ${employeeName}` : 'Informações';
+
+  if (isLoadingDetailsSelectedEmployeeData) {
+    return (
+      <PageChange />
+    );
+  }
 
   return (
     <Modal
@@ -192,7 +204,7 @@ function ShowEmployeeDetailsModal(
       </div>
       <ModalBody>
         {
-          detailsSelectedEmployee && detailsSelectedEmployee.id ? (
+          detailsSelectedEmployee && detailsSelectedEmployee.id && detailsSelectedEmployee.companyName ? (
             <Row>
               <div className="col">
                 <div className="card-wrapper">

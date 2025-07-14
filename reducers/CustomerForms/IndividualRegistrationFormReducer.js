@@ -25,7 +25,8 @@ export const initialStateIndividualRegistrationForm = {
         contactPersonOccupationState: null,
         contactPersonBelongsToClientCompany: '',
         contactPersonBelongsToClientCompanyState: null,
-        selectedBelongingToClientCompany: null,
+        selectedBelongingToClientCompany: '',
+        selectedBelongingToClientCompanyState: null,
     }
 }
 
@@ -262,6 +263,14 @@ export const individualRegistrationFormReducer = (state, action) => {
                 individualRegistrationData: {
                     ...state.individualRegistrationData,
                     selectedBelongingToClientCompany: action.payload,
+                },
+            };
+        case 'SET_SELECTED_BELONGING_TO_CLIENT_COMPANY_STATE':
+            return {
+                ...state,
+                individualRegistrationData: {
+                    ...state.individualRegistrationData,
+                    selectedBelongingToClientCompanyState: action.payload,
                 },
             };
         default:

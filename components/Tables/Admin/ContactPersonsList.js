@@ -149,7 +149,6 @@ function ContactPersonsList() {
 
     fetchData();
     if (hasUpdatedContactRecord) {
-      console.log("Update: ", hasUpdatedContactRecord);
       handleUpdatedContactRecordStatusChange();
     }
     if (hasDeletedContactRecord) {

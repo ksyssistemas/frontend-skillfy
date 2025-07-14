@@ -11,16 +11,6 @@ function EmployeeProvider({ children }) {
         setIsShouldRenderEmployeeView(view);
     }
 
-    const [customerIdToLinkToEmployee, setCustomerIdToLinkToEmployee] = useState(0);
-
-    function handleCustomerIdStatusCleanup() {
-        setCustomerIdToLinkToEmployee(0);
-    }
-
-    function handleCustomerIdToLinkToEmployee(customerId) {
-        setCustomerIdToLinkToEmployee(customerId);
-    }
-
     const [employeeIdToUpdate, setEmployeeIdToUpdate] = useState(0);
 
     function handleEmployeeIdStatusCleanupToUpdate() {
@@ -56,9 +46,6 @@ function EmployeeProvider({ children }) {
             value={{
                 isShouldRenderEmployeeView,
                 handleShowDynamicEmployeeComponent,
-                customerIdToLinkToEmployee,
-                handleCustomerIdStatusCleanup,
-                handleCustomerIdToLinkToEmployee,
                 employeeIdToUpdate,
                 handleEmployeeIdStatusCleanupToUpdate,
                 handleEmployeeIdToUpdate,
