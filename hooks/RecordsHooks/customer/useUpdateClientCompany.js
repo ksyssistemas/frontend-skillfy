@@ -139,7 +139,7 @@ const useUpdateClientCompany = () => {
           complement: companyAddressComplement,
           // customerId: customerIdToUpdate
         };
-        const response = await fetch(`${process.env.NEXT_PUBLIC_CUSTOMER}-address/${customerIdToUpdate}/address`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_CUSTOMER}-address/customer/${customerIdToUpdate}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',

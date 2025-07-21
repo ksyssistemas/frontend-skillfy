@@ -8,12 +8,10 @@ const Select2 = dynamic(() => import("react-select2-wrapper"));
 import ReactDatetime from "react-datetime";
 import InputMask from 'react-input-mask';
 import {
-    Button,
     Col,
     Input,
     Row
 } from "reactstrap";
-import { handleSelectionEmploymentContractData } from '../../../util/handleSelectionEmploymentContractData';
 import { EmployeeContext } from "../../../contexts/RecordsContext/EmployeeContext";
 import useCreateEmployee from "../../../hooks/RecordsHooks/employee/useCreateEmployee";
 import useCreateTypeContract from "../../../hooks/RecordsHooks/featuresEmploymentContract/useCreateTypeContract";
@@ -34,6 +32,8 @@ import { employmentContractDataSearchAndProcess } from "../../../util/employment
 import useUpdateEmployee from "../../../hooks/RecordsHooks/employee/useUpdateEmployee";
 import { initialState, formReducer } from '../../../reducers/employeeFormReducer';
 import PageChange from "../../PageChange/PageChange";
+import { handleSelectionEmploymentContractDataWithReducer } from "../../../util/handleSelectionEmploymentContractDataWithReducer";
+import { selectedListItemToUpdate } from "../../../util/selectedListItemToUpdate";
 
 function EmployeeUserUpdate(
     {
@@ -59,17 +59,23 @@ function EmployeeUserUpdate(
         isShouldUpdateEmployee,
         handleIsShouldUpdateEmployee,
         hasDeletedEmployeeRecord,
-        handleDeletedEmployeeRecordStatusChange
+        handleDeletedEmployeeRecordStatusChange,
+        isLoadingContractDetailsEmployeeToUpdateData,
+        handleIsLoadingContractDetailsEmployeeToUpdateData,
+        isLoadingDetailsSelectedEmployeeData,
+        handleIsLoadingDetailsSelectedEmployeeData
     } = useContext(EmployeeContext);
 
     const {
         handleValidateUpdateEmployeeForm
     } = useUpdateEmployee();
 
-    const [dataLoaded, setDataLoaded] = useState(false);
-    const [isLoadingDetailsSelectedEmployeeData, setIsLoadingDetailsSelectedEmployeeData] = useState(false);
-
     const [cepTouched, setCepTouched] = useState(false);
+
+    const [formattedBirthdate, setFormattedBirthdate] = useState('');
+    const [formattedEmployeeAdmission, setFormattedEmployeeAdmission] = useState('');
+
+    const [isPreloadingSelection, setIsPreloadingSelection] = useState(true);
 
     const handleFirstNameChange = (e) => {
         dispatch({ type: 'SET_FIRST_NAME', payload: e.target.value });
@@ -124,31 +130,40 @@ function EmployeeUserUpdate(
         dispatch({ type: 'SET_PHONE_NUMBER_STATE', payload: isValid ? 'valid' : 'invalid' });
     };
 
-    const handleSelectedItemOnSelectComponent = (
-        selectedId,
-        dataList,
-        setSelectedAction,
-        setFieldAction,
-        setStateAction,
-        setSelectedDepartmentIdAction = null,
-        setHasDepartmentSelectedAction = null,
-        savedDataType = 'id'
-    ) => {
-        // Despache o estado 'valid' antes de iniciar o processo de seleção
-        if (setStateAction) dispatch({ type: setStateAction, payload: 'valid' });
-        if (setHasDepartmentSelectedAction) dispatch({ type: setHasDepartmentSelectedAction, payload: true });
+    const handleSelectedDepartmentChange = (e) => {
+        const value = e.target.value;
+        dispatch({ type: 'SET_SELECTED_DEPARTMENT', payload: value });
+        dispatch({ type: 'SET_SELECTED_DEPARTMENT_STATE', payload: value !== "" ? 'valid' : 'invalid' });
+    };
 
-        // Chama a função de processamento de seleção de dados
-        handleSelectionEmploymentContractData(
-            selectedId,
-            dataList,
-            (value) => dispatch({ type: setSelectedAction, payload: value }),
-            (value) => dispatch({ type: setFieldAction, payload: value }), // Agora definirá o valor correto
-            (state) => dispatch({ type: setStateAction, payload: state }),
-            (id) => dispatch({ type: setSelectedDepartmentIdAction, payload: id }),
-            () => dispatch({ type: setHasDepartmentSelectedAction, payload: true }),
-            savedDataType
-        );
+    const handleSelectedRoleChange = (e) => {
+        const value = e.target.value;
+        dispatch({ type: 'SET_SELECTED_ROLE', payload: value });
+        dispatch({ type: 'SET_SELECTED_ROLE_STATE', payload: value !== "" ? 'valid' : 'invalid' });
+    };
+
+    const handleSelectedFunctionChange = (e) => {
+        const value = e.target.value;
+        dispatch({ type: 'SET_SELECTED_FUNCTION', payload: value });
+        dispatch({ type: 'SET_SELECTED_FUNCTION_STATE', payload: value !== "" ? 'valid' : 'invalid' });
+    };
+
+    const handleSelectedContractTypeChange = (e) => {
+        const value = e.target.value;
+        dispatch({ type: 'SET_SELECTED_CONTRACT_TYPE', payload: value });
+        dispatch({ type: 'SET_SELECTED_CONTRACT_TYPE_STATE', payload: value !== "" ? 'valid' : 'invalid' });
+    };
+
+    const handleSelectedWorkModelChange = (e) => {
+        const value = e.target.value;
+        dispatch({ type: 'SET_SELECTED_WORK_MODEL', payload: value });
+        dispatch({ type: 'SET_SELECTED_WORK_MODEL_STATE', payload: value !== "" ? 'valid' : 'invalid' });
+    };
+
+    const handleSelectedWorkplaceChange = (e) => {
+        const value = e.target.value;
+        dispatch({ type: 'SET_SELECTED_WORKPLACE', payload: value });
+        dispatch({ type: 'SET_SELECTED_WORKPLACE_STATE', payload: value !== "" ? 'valid' : 'invalid' });
     };
 
     const handleEmployeeLeaderNameChange = (e) => {
@@ -180,47 +195,11 @@ function EmployeeUserUpdate(
         dispatch({ type: 'SET_SHOW_ERROR_FEEDBACK_EMPLOYEE_LEADER_COMPONENT', payload: false });
     };
 
-    // Função para converter string em Date e garantir validade
-    const parseDateFromString = (dateString) => {
-        const [year, month, day] = dateString.split('-').map(Number);
-        return new Date(Date.UTC(year, month - 1, day)); // Mês é zero-indexado no JavaScript
-    };
-
-    // Função para formatar uma data (Date) em uma string ISO (yyyy-MM-dd)
-    const formatDate = (date) => {
-        if (date instanceof Date && !isNaN(date)) {
-            const year = date.getUTCFullYear();
-            const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-            const day = String(date.getUTCDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-        return '';
-    };
-
-    // Função para manipular e despachar ações de data
-    const handleDateChange = (dispatch, value, dateAction, stateAction) => {
-        if (value && value._d && !isNaN(value._d)) {
-            const dateObj = value._d;
-            dispatch({ type: dateAction, payload: dateObj });
-            dispatch({ type: stateAction, payload: 'valid' });
-        } else {
-            dispatch({ type: stateAction, payload: 'invalid' });
-        }
-    };
-
-    const handleBirthdateTouch = () => {
-        dispatch({ type: 'TOUCH_BIRTHDATE' });
-    };
-
-    const handleEmployeeAdmissionDateTouch = () => {
-        dispatch({ type: 'TOUCH_EMPLOYEE_ADMISSION_DATE' });
-    };
-
     const handleClear = () => {
         dispatch({ type: 'RESET_COLLABORATOR_DATA' });
         localStorage.removeItem('collaboratorData');
         setCepTouched(false);
-        setDataLoaded(false);
+        handleIsLoadingContractDetailsEmployeeToUpdateData(false);
     };
 
     const handleTimeChange = (typeTime, typeTimeState) => (e) => {
@@ -272,6 +251,18 @@ function EmployeeUserUpdate(
             }));
         }
     };
+
+    const isDataLoaded =
+        employeeIdToUpdate &&
+        isLoadingContractDetailsEmployeeToUpdateData &&
+        !isLoadingDetailsSelectedEmployeeData &&
+        state.collaboratorData.departmentDataList.length > 0 &&
+        state.collaboratorData.roleDataList.length > 0 &&
+        state.collaboratorData.functionDataList.length > 0 &&
+        state.collaboratorData.contractTypeDataList.length > 0 &&
+        state.collaboratorData.workModelDataList.length > 0 &&
+        state.collaboratorData.workplaceDataList.length > 0;
+
 
     useEffect(() => {
         if (!state || !state.collaboratorData) return;
@@ -388,7 +379,7 @@ function EmployeeUserUpdate(
             fetchDepartmentData();
             fetchRoleData();
             fetchFunctionData();
-            setDataLoaded(true);
+            handleIsLoadingContractDetailsEmployeeToUpdateData(true);
         };
 
         fetchAllData();
@@ -401,11 +392,22 @@ function EmployeeUserUpdate(
     }, [dispatch, state.collaboratorData]);
 
     useEffect(() => {
+        if (!employeeIdToUpdate) return;
+        if (
+            state.collaboratorData.departmentDataList.length === 0 ||
+            state.collaboratorData.roleDataList.length === 0 ||
+            state.collaboratorData.functionDataList.length === 0 ||
+            state.collaboratorData.contractTypeDataList.length === 0 ||
+            state.collaboratorData.workModelDataList.length === 0 ||
+            state.collaboratorData.workplaceDataList.length === 0
+        ) {
+            return;
+        }
+
 
         const fetchCompanyNames = async (employee) => {
             try {
                 const companyData = await useFindClientCompany(employee.customerId);
-                console.log(companyData.companyName);
                 return companyData.companyName;
             } catch (error) {
                 console.error(`Error fetching employee data for customerId ${employee.customerId}:`, error);
@@ -415,31 +417,28 @@ function EmployeeUserUpdate(
 
         const fetchEmployeeById = async () => {
             try {
-                if (employeeIdToUpdate !== '' && employeeIdToUpdate !== null && employeeIdToUpdate !== undefined) {
-                    console.log(typeof employeeIdToUpdate, employeeIdToUpdate);
-                    const foundEmployee = await useFindEmployee(employeeIdToUpdate);
-                    const employeeCompanyName = await fetchCompanyNames(foundEmployee);
+                const foundEmployee = await useFindEmployee(employeeIdToUpdate);
+                const employeeCompanyName = await fetchCompanyNames(foundEmployee);
 
-                    dispatch({ type: 'SET_EMPLOYEE_COMPANY_NAME', payload: employeeCompanyName });
+                dispatch({ type: 'SET_EMPLOYEE_COMPANY_NAME', payload: employeeCompanyName });
 
-                    dispatch({ type: 'SET_FIRST_NAME', payload: foundEmployee.name });
-                    dispatch({ type: 'SET_LAST_NAME', payload: foundEmployee.lastName });
-                    dispatch({ type: 'SET_EMAIL_ADDRESS', payload: foundEmployee.email });
-                    dispatch({ type: 'SET_PHONE_NUMBER', payload: foundEmployee.phoneNumber });
-                    dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME', payload: foundEmployee.LeaderName });
-                    dispatch({ type: 'SET_EMPLOYEE_STATUS', payload: foundEmployee.status });
+                dispatch({ type: 'SET_FIRST_NAME', payload: foundEmployee.name });
+                dispatch({ type: 'SET_LAST_NAME', payload: foundEmployee.lastName });
+                dispatch({ type: 'SET_EMAIL_ADDRESS', payload: foundEmployee.email });
+                dispatch({ type: 'SET_PHONE_NUMBER', payload: foundEmployee.phoneNumber });
+                dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME', payload: foundEmployee.LeaderName });
+                dispatch({ type: 'SET_EMPLOYEE_STATUS', payload: foundEmployee.status });
 
-                    if (foundEmployee.isLead === true) {
-                        dispatch({ type: 'SET_IS_EMPLOYEE_LEADER', payload: true });
-                        dispatch({ type: 'SET_HAS_EMPLOYEE_LEADER', payload: false });
-                    } else if (foundEmployee.isLead === false) {
-                        dispatch({ type: 'SET_IS_EMPLOYEE_LEADER', payload: false });
-                        dispatch({ type: 'SET_HAS_EMPLOYEE_LEADER', payload: true });
-                    }
-
-                    dispatch({ type: 'SET_BIRTHDATE', payload: new Date(foundEmployee.birthdate) });
-                    dispatch({ type: 'SET_FORMATTED_BIRTHDATE', payload: foundEmployee.birthdate });
+                if (foundEmployee.isLead === true) {
+                    dispatch({ type: 'SET_IS_EMPLOYEE_LEADER', payload: true });
+                    dispatch({ type: 'SET_HAS_EMPLOYEE_LEADER', payload: false });
+                } else if (foundEmployee.isLead === false) {
+                    dispatch({ type: 'SET_IS_EMPLOYEE_LEADER', payload: false });
+                    dispatch({ type: 'SET_HAS_EMPLOYEE_LEADER', payload: true });
                 }
+
+                dispatch({ type: 'SET_BIRTHDATE', payload: new Date(foundEmployee.birthdate) });
+                setFormattedBirthdate(foundEmployee.birthdate);
             } catch (error) {
                 console.error(`Error fetching employee data for ID ${employeeIdToUpdate}:`, error);
             }
@@ -454,27 +453,117 @@ function EmployeeUserUpdate(
                 dispatch({ type: 'SET_EMPLOYEE_STOP_BREAK_TIME', payload: foundContractDetails.endBreakTime });
                 dispatch({ type: 'SET_EMPLOYEE_DEPARTURE_TIME', payload: foundContractDetails.departureTime });
 
-                handleSelectedItemOnSelectComponent(foundContractDetails.departmentId, state.collaboratorData.departmentDataList, 'SET_SELECTED_DEPARTMENT', 'SET_EMPLOYEE_DEPARTMENT', 'SET_EMPLOYEE_DEPARTMENT_STATE');
-                handleSelectedItemOnSelectComponent(foundContractDetails.rolesId, state.collaboratorData.roleDataList, 'SET_SELECTED_ROLE', 'SET_EMPLOYEE_ROLE', 'SET_EMPLOYEE_ROLE_STATE');
-                handleSelectedItemOnSelectComponent(foundContractDetails.employeeFunctionId, state.collaboratorData.functionDataList, 'SET_SELECTED_FUNCTION', 'SET_EMPLOYEE_FUNCTION', 'SET_EMPLOYEE_FUNCTION_STATE');
-                handleSelectedItemOnSelectComponent(foundContractDetails.contractTypeId, state.collaboratorData.contractTypeDataList, 'SET_SELECTED_CONTRACT_TYPE', 'SET_EMPLOYEE_CONTRACT_TYPE', 'SET_EMPLOYEE_CONTRACT_TYPE_STATE');
-                handleSelectedItemOnSelectComponent(foundContractDetails.contractModelId, state.collaboratorData.workModelDataList, 'SET_SELECTED_WORK_MODEL', 'SET_EMPLOYEE_WORK_MODEL', 'SET_EMPLOYEE_WORK_MODEL_STATE');
-                handleSelectedItemOnSelectComponent(foundContractDetails.workplaceId, state.collaboratorData.workplaceDataList, 'SET_SELECTED_WORKPLACE', 'SET_EMPLOYEE_WORKPLACE', 'SET_EMPLOYEE_WORKPLACE_STATE');
-                dispatch({ type: 'SET_EMPLOYEE_ADMISSION_DATE', payload: new Date(foundContractDetails.admissionDate) });
-                dispatch({ type: 'SET_FORMATTED_ADMISSION_DATE', payload: foundContractDetails.admissionDate });
+                if (state.collaboratorData.departmentDataList.length > 0) {
+                    selectedListItemToUpdate(
+                        dispatch,
+                        String(foundContractDetails.departmentId),
+                        state.collaboratorData.departmentDataList,
+                        'SET_SELECTED_DEPARTMENT',
+                        'SET_EMPLOYEE_DEPARTMENT',
+                        'SET_EMPLOYEE_DEPARTMENT_STATE',
+                        'SET_SELECTED_DEPARTMENT_ID',
+                        'SET_HAS_DEPARTMENT_SELECTED',
+                        'id',
+                    );
+                }
+                if (state.collaboratorData.roleDataList.length > 0) {
+                    selectedListItemToUpdate(
+                        dispatch,
+                        String(foundContractDetails.rolesId),
+                        state.collaboratorData.roleDataList,
+                        'SET_SELECTED_ROLE',
+                        'SET_EMPLOYEE_ROLE',
+                        'SET_EMPLOYEE_ROLE_STATE'
+                    );
+                }
+                if (state.collaboratorData.functionDataList.length > 0) {
+                    selectedListItemToUpdate(
+                        dispatch,
+                        String(foundContractDetails.employeeFunctionId),
+                        state.collaboratorData.functionDataList,
+                        'SET_SELECTED_FUNCTION',
+                        'SET_EMPLOYEE_FUNCTION',
+                        'SET_EMPLOYEE_FUNCTION_STATE'
+                    );
+                }
+                if (state.collaboratorData.contractTypeDataList.length > 0) {
+                    selectedListItemToUpdate(
+                        dispatch,
+                        String(foundContractDetails.contractTypeId),
+                        state.collaboratorData.contractTypeDataList,
+                        'SET_SELECTED_CONTRACT_TYPE',
+                        'SET_EMPLOYEE_CONTRACT_TYPE',
+                        'SET_EMPLOYEE_CONTRACT_TYPE_STATE'
+                    );
+                }
+                if (state.collaboratorData.workModelDataList.length > 0) {
+                    selectedListItemToUpdate(
+                        dispatch,
+                        String(foundContractDetails.contractModelId),
+                        state.collaboratorData.workModelDataList,
+                        'SET_SELECTED_WORK_MODEL',
+                        'SET_EMPLOYEE_WORK_MODEL',
+                        'SET_EMPLOYEE_WORK_MODEL_STATE'
+                    );
+                }
+                if (state.collaboratorData.workplaceDataList.length > 0) {
+                    selectedListItemToUpdate(
+                        dispatch,
+                        String(foundContractDetails.workplaceId),
+                        state.collaboratorData.workplaceDataList,
+                        'SET_SELECTED_WORKPLACE',
+                        'SET_EMPLOYEE_WORKPLACE',
+                        'SET_EMPLOYEE_WORKPLACE_STATE'
+                    );
+                }
+                console.log("FoundContractDetails: ", foundContractDetails);
+                dispatch({ type: 'SET_EMPLOYEE_ADMISSION_DATE', payload: new Date(foundContractDetails.adimissionDate) });
+                setFormattedEmployeeAdmission(foundContractDetails.adimissionDate);
+                setIsPreloadingSelection(false);
             } catch (error) {
                 console.error(`Error fetching employee contract details for ID ${employeeIdToUpdate}:`, error);
             }
         }
 
-        if (dataLoaded && employeeIdToUpdate) {
-            setIsLoadingDetailsSelectedEmployeeData(true);
-            fetchEmployeeById();
-            fetchEmployeeAndContractDetailsById();
-            setIsLoadingDetailsSelectedEmployeeData(false);
+        const loadData = async () => {
+            handleIsLoadingDetailsSelectedEmployeeData(true);
+            await fetchEmployeeById();
+            await fetchEmployeeAndContractDetailsById();
+            handleIsLoadingDetailsSelectedEmployeeData(false);
         }
 
-    }, [dataLoaded, employeeIdToUpdate, dispatch]);
+        loadData();
+
+    }, [
+        dispatch,
+        employeeIdToUpdate,
+        state.collaboratorData.departmentDataList,
+        state.collaboratorData.roleDataList,
+        state.collaboratorData.functionDataList,
+        state.collaboratorData.contractTypeDataList,
+        state.collaboratorData.workModelDataList,
+        state.collaboratorData.workplaceDataList,
+    ]);
+
+    useEffect(() => {
+        if (
+            state.collaboratorData.selectedDepartment &&
+            state.collaboratorData.selectedRole &&
+            state.collaboratorData.selectedFunction &&
+            state.collaboratorData.selectedContractType &&
+            state.collaboratorData.selectedWorkModel &&
+            state.collaboratorData.selectedWorkplace
+        ) {
+            setIsPreloadingSelection(false);
+        }
+    }, [
+        state.collaboratorData.selectedDepartment,
+        state.collaboratorData.selectedRole,
+        state.collaboratorData.selectedFunction,
+        state.collaboratorData.selectedContractType,
+        state.collaboratorData.selectedWorkModel,
+        state.collaboratorData.selectedWorkplace
+    ]);
 
     useEffect(() => {
         if (isShouldUpdateEmployee) {
@@ -482,21 +571,20 @@ function EmployeeUserUpdate(
                 handleOpenEmployeeModal,
                 state.collaboratorData.firstName,
                 state.collaboratorData.lastName,
-                state.collaboratorData.birthdate,
+                formattedBirthdate,
                 state.collaboratorData.emailAddress,
                 state.collaboratorData.phoneNumber,
                 state.collaboratorData.employeeLeaderName,
                 state.collaboratorData.isEmployeeLeader,
                 state.collaboratorData.hasEmployeeLeader,
                 state.collaboratorData.employeeStatus,
-
                 state.collaboratorData.employeeDepartment,
                 state.collaboratorData.employeeRole,
                 state.collaboratorData.employeeFunction,
                 state.collaboratorData.employeeContractType,
                 state.collaboratorData.employeeWorkModel,
                 state.collaboratorData.employeeWorkplace,
-                state.collaboratorData.admissionDate,
+                formattedEmployeeAdmission,
                 state.collaboratorData.employeeEntryTime,
                 state.collaboratorData.employeeStartBreakTime,
                 state.collaboratorData.employeeStopBreakTime,
@@ -509,9 +597,15 @@ function EmployeeUserUpdate(
         }
     }, [isShouldUpdateEmployee, state.collaboratorData]);
 
-    if (!dataLoaded || isLoadingDetailsSelectedEmployeeData) {
+    if (!isDataLoaded || isPreloadingSelection) {
         return (
-            <PageChange />
+            <Row className="justify-content-center align-items-center">
+                <div className="col">
+                    <div className="card-wrapper">
+                        <h3>Carregando...</h3>
+                    </div>
+                </div>
+            </Row>
         );
     }
 
@@ -593,13 +687,14 @@ function EmployeeUserUpdate(
                                 timeFormat={false}
                                 dateFormat="DD/MM/YYYY"
                                 value={state.collaboratorData.birthdate || ''}
-                                onChange={(value) => handleDateChange(dispatch, value, 'SET_BIRTHDATE', 'SET_BIRTHDATE_STATE')}
-                                onFocus={handleBirthdateTouch}
-                                className={state.collaboratorData.birthdateState === 'invalid' ? 'is-invalid' : ''}
+                                onChange={(e) => handleDateFormatting(
+                                    dispatch,
+                                    e,
+                                    'SET_BIRTHDATE',
+                                    'SET_BIRTHDATE_STATE',
+                                    setFormattedBirthdate
+                                )}
                             />
-                            {state.collaboratorData.birthdateState === 'invalid' && (
-                                <div className="invalid-feedback">Data de nascimento inválida.</div>
-                            )}
                         </Col>
                         <Col className="mb-3" md="4">
                             <label
@@ -652,91 +747,118 @@ function EmployeeUserUpdate(
                     </div>
                     <hr />
                     <div className="form-row">
-                        <Col className="mb-3" md="4">
-                            <label
-                                className="form-control-label"
-                                htmlFor="validationFromDepartmentWhichEmployeeReports"
-                            >
-                                Departamento
-                            </label>
-                            <Select2
-                                id="validationFromDepartmentWhichEmployeeReports"
-                                className="form-control"
-                                data-minimum-results-for-search="Infinity"
-                                options={{
-                                    placeholder: "Selecione o departamento",
-                                }}
+                        {state.collaboratorData.departmentDataList.length > 0 &&
+                            state.collaboratorData.roleDataList.length > 0 &&
+                            state.collaboratorData.functionDataList.length > 0 && (
+                                <>
+                                    <Col className="mb-3" md="4">
+                                        <label
+                                            className="form-control-label"
+                                            htmlFor="validationFromDepartmentWhichEmployeeReports"
+                                        >
+                                            Departamento
+                                        </label>
+                                        <Select2
+                                            id="validationFromDepartmentWhichEmployeeReports"
+                                            className="form-control"
+                                            data-minimum-results-for-search="Infinity"
+                                            options={{
+                                                placeholder: "Selecione o departamento",
+                                            }}
 
-                                value={state.collaboratorData.selectedDepartment}
-                                data={state.collaboratorData.departmentDataList || []}
-                                onSelect={(e) => handleSelectedItemOnSelectComponent(
-                                    e.target.value,
-                                    Array.isArray(state.collaboratorData.departmentDataList) ? state.collaboratorData.departmentDataList : [],
-                                    'SET_SELECTED_DEPARTMENT',
-                                    'SET_EMPLOYEE_DEPARTMENT',
-                                    'SET_EMPLOYEE_DEPARTMENT_STATE',
-                                    'SET_SELECTED_DEPARTMENT_ID',
-                                    'SET_HAS_DEPARTMENT_SELECTED',
-                                    'id',
-                                )}
-                            />
-                        </Col>
-                        <Col className="mb-3" md="4">
-                            <label
-                                className="form-control-label"
-                                htmlFor="validationEmployeeRole"
-                            >
-                                Cargo
-                            </label>
-                            <Select2
-                                id="validationEmployeeRole"
-                                data-minimum-results-for-search="Infinity"
-                                className="form-control"
-                                options={{
-                                    placeholder: "Selecione o cargo",
-                                }}
-                                value={state.collaboratorData.selectedRole}
-                                data={state.collaboratorData.roleDataList}
-                                onSelect={(e) => handleSelectedItemOnSelectComponent(
-                                    e.target.value,
-                                    state.collaboratorData.roleDataList,
-                                    'SET_SELECTED_ROLE',
-                                    'SET_EMPLOYEE_ROLE',
-                                    'SET_EMPLOYEE_ROLE_STATE',
-                                    null,
-                                    null,
-                                    'id',
-                                )}
-                            />
-                        </Col>
-                        <Col className="mb-3" md="4">
-                            <label
-                                className="form-control-label"
-                                htmlFor="validationEmployeeFunction"
-                            >
-                                Função
-                            </label>
-                            <Select2
-                                id="validationEmployeeFunction"
-                                data-minimum-results-for-search="Infinity"
-                                className="form-control"
-                                options={{
-                                    placeholder: "Selecione o função",
-                                }}
-                                value={state.collaboratorData.selectedFunction}
-                                data={state.collaboratorData.functionDataList}
-                                onSelect={(e) => handleSelectedItemOnSelectComponent(
-                                    e.target.value,
-                                    state.collaboratorData.functionDataList,
-                                    'SET_SELECTED_FUNCTION',
-                                    'SET_EMPLOYEE_FUNCTION',
-                                    'SET_EMPLOYEE_FUNCTION_STATE',
-                                    null,
-                                    null,
-                                    'id',
-                                )}
-                            />
-                        </Col>
+                                            value={state.collaboratorData.selectedDepartment || ''}
+                                            onChange={handleSelectedDepartmentChange}
+                                            data={state.collaboratorData.departmentDataList}
+                                            onSelect={(e) => {
+                                                const selectedValue = e.target.value;
+                                                handleSelectionEmploymentContractDataWithReducer(
+                                                    dispatch,
+                                                    selectedValue,
+                                                    Array.isArray(state.collaboratorData.departmentDataList)
+                                                        ? state.collaboratorData.departmentDataList
+                                                        : [],
+                                                    'SET_SELECTED_DEPARTMENT',
+                                                    'SET_EMPLOYEE_DEPARTMENT',
+                                                    'SET_EMPLOYEE_DEPARTMENT_STATE',
+                                                    'SET_SELECTED_DEPARTMENT_ID',
+                                                    'SET_HAS_DEPARTMENT_SELECTED',
+                                                    'id',
+                                                );
+                                            }}
+                                        />
+                                    </Col>
+                                    <Col className="mb-3" md="4">
+                                        <label
+                                            className="form-control-label"
+                                            htmlFor="validationEmployeeRole"
+                                        >
+                                            Cargo
+                                        </label>
+                                        <Select2
+                                            id="validationEmployeeRole"
+                                            data-minimum-results-for-search="Infinity"
+                                            className="form-control"
+                                            options={{
+                                                placeholder: "Selecione o cargo",
+                                            }}
+                                            value={state.collaboratorData.selectedRole || ''}
+                                            onChange={handleSelectedRoleChange}
+                                            data={state.collaboratorData.roleDataList}
+                                            onSelect={(e) => {
+                                                const selectedValue = e.target.value;
+                                                handleSelectionEmploymentContractDataWithReducer(
+                                                    dispatch,
+                                                    selectedValue,
+                                                    Array.isArray(state.collaboratorData.roleDataList)
+                                                        ? state.collaboratorData.roleDataList
+                                                        : [],
+                                                    'SET_SELECTED_ROLE',
+                                                    'SET_EMPLOYEE_ROLE',
+                                                    'SET_EMPLOYEE_ROLE_STATE',
+                                                    null,
+                                                    null,
+                                                    'id',
+                                                );
+                                            }}
+                                        />
+                                    </Col>
+                                    <Col className="mb-3" md="4">
+                                        <label
+                                            className="form-control-label"
+                                            htmlFor="validationEmployeeFunction"
+                                        >
+                                            Função
+                                        </label>
+                                        <Select2
+                                            id="validationEmployeeFunction"
+                                            data-minimum-results-for-search="Infinity"
+                                            className="form-control"
+                                            options={{
+                                                placeholder: "Selecione o função",
+                                            }}
+                                            value={state.collaboratorData.selectedFunction || ''}
+                                            onChange={handleSelectedFunctionChange}
+                                            data={state.collaboratorData.functionDataList}
+                                            onSelect={(e) => {
+                                                const selectedValue = e.target.value;
+                                                handleSelectionEmploymentContractDataWithReducer(
+                                                    dispatch,
+                                                    selectedValue,
+                                                    Array.isArray(state.collaboratorData.functionDataList)
+                                                        ? state.collaboratorData.functionDataList
+                                                        : [],
+                                                    'SET_SELECTED_FUNCTION',
+                                                    'SET_EMPLOYEE_FUNCTION',
+                                                    'SET_EMPLOYEE_FUNCTION_STATE',
+                                                    null,
+                                                    null,
+                                                    'id',
+                                                );
+                                            }}
+                                        />
+                                    </Col>
+                                </>
+                            )}
                     </div>
                     <div className="form-row">
                         <Col className="mb-3" md="6">
@@ -744,7 +866,7 @@ function EmployeeUserUpdate(
                                 className="form-control-label"
                                 htmlFor="validationLeader"
                             >
-                                Exerce líderança
+                                Exerce liderança
                             </label>
                             <Row className="mt-3">
                                 <Col md="6">
@@ -815,245 +937,274 @@ function EmployeeUserUpdate(
                         </Col>
                     </div>
                     <hr />
-                    <div className="form-row">
-                        <Col className="mb-3" md="4">
-                            <label
-                                className="form-control-label"
-                                htmlFor="validationContractType"
-                            >
-                                Tipo de Contrato
-                            </label>
-                            <Select2
-                                id="validationContractType"
-                                className="form-control"
-                                data-minimum-results-for-search="Infinity"
-                                options={{
-                                    placeholder: "Selecione o tipo de contrato",
-                                }}
-                                value={state.collaboratorData.selectedContractType}
-                                data={state.collaboratorData.contractTypeDataList}
-                                onSelect={(e) => handleSelectedItemOnSelectComponent(
-                                    e.target.value,
-                                    state.collaboratorData.contractTypeDataList,
-                                    'SET_SELECTED_CONTRACT_TYPE',
-                                    'SET_EMPLOYEE_CONTRACT_TYPE',
-                                    'SET_EMPLOYEE_CONTRACT_TYPE_STATE',
-                                    null,
-                                    null,
-                                    'id',
-                                )}
-                            />
-                        </Col>
-                        <Col className="mb-3" md="4">
-                            <label
-                                className="form-control-label"
-                                htmlFor="validationWorkModel"
-                            >
-                                Modelo de Trabalho
-                            </label>
-                            <Select2
-                                id="validationWorkModel"
-                                className="form-control"
-                                data-minimum-results-for-search="Infinity"
-                                options={{
-                                    placeholder: "Selecione o modelo de trabalho",
-                                }}
-                                value={state.collaboratorData.selectedWorkModel}
-                                data={state.collaboratorData.workModelDataList}
-                                onSelect={(e) => handleSelectedItemOnSelectComponent(
-                                    e.target.value,
-                                    state.collaboratorData.workModelDataList,
-                                    'SET_SELECTED_WORK_MODEL',
-                                    'SET_EMPLOYEE_WORK_MODEL',
-                                    'SET_EMPLOYEE_WORK_MODEL_STATE',
-                                    null,
-                                    null,
-                                    'id',
-                                )}
-                            />
-                        </Col>
-                        <Col className="mb-3" md="4">
-                            <label
-                                className="form-control-label"
-                                htmlFor="validationAdmissionDate"
-                            >
-                                Data de Admissão
-                            </label>
-                            <ReactDatetime
-                                inputProps={{ placeholder: "__/__/__" }}
-                                timeFormat={false}
-                                dateFormat="DD/MM/YYYY"
-                                value={state.collaboratorData.employeeAdmissionDate || ''}
-                                onChange={(value) => handleDateChange(dispatch, value, 'SET_EMPLOYEE_ADMISSION_DATE', 'SET_EMPLOYEE_ADMISSION_DATE_STATE')}
-                                onFocus={handleEmployeeAdmissionDateTouch}
-                                className={state.collaboratorData.employeeAdmissionDateState === 'invalid' ? 'is-invalid' : ''}
-                            />
-                            {state.collaboratorData.employeeAdmissionDateState === 'invalid' && (
-                                <div className="invalid-feedback">Data de admissão inválida.</div>
-                            )}
-                        </Col>
-                    </div>
-                    <div className="form-row">
-                        <Col className="mb-3" md="4">
-                            <label
-                                className="form-control-label"
-                                htmlFor="validationWorkplace"
-                            >
-                                Local de Trabalho
-                            </label>
-                            <Select2
-                                id="validatingWorkplace"
-                                className="form-control"
-                                data-minimum-results-for-search="Infinity"
-                                options={{
-                                    placeholder: "Selecione o local de trabalho",
-                                }}
-                                value={state.collaboratorData.selectedWorkplace}
-                                data={state.collaboratorData.workplaceDataList}
-                                onSelect={(e) => handleSelectedItemOnSelectComponent(
-                                    e.target.value,
-                                    state.collaboratorData.workplaceDataList,
-                                    'SET_SELECTED_WORKPLACE',
-                                    'SET_EMPLOYEE_WORKPLACE',
-                                    'SET_EMPLOYEE_WORKPLACE_STATE',
-                                    null,
-                                    null,
-                                    'id',
-                                )}
-                            />
-                        </Col>
-                        <Col className="mb-3" md="2">
-                            <label
-                                className="form-control-label"
-                                htmlFor="validationEntryTime"
-                            >
-                                Hora de Entrada
-                            </label>
-                            <InputMask
-                                mask="99:99:99"
-                                placeholder="08:00:00"
-                                value={state.collaboratorData.employeeEntryTime}
-                                onChange={handleTimeChange('SET_EMPLOYEE_ENTRY_TIME', 'SET_EMPLOYEE_ENTRY_TIME_STATE')}
-                                onFocus={handleEmployeeEntryTimeTouch}
-                            >
-                                {(inputProps) => <Input {...inputProps}
-                                    id="validationEntryTime"
-                                    type="text"
-                                    valid={state.collaboratorData.employeeEntryTimeState === "valid"}
-                                    invalid={state.collaboratorData.employeeEntryTimeState === "invalid"}
-                                />}
-                            </InputMask>
-                            <div className="invalid-feedback">
-                                {state.collaboratorData.employeeEntryTimeState === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
-                            </div>
-                        </Col>
-                        <Col className="mb-3" md="2">
-                            <label
-                                className="form-control-label"
-                                htmlFor="validationStartBreakTime"
-                            >
-                                Intervalo
-                            </label>
-                            <InputMask
-                                mask="99:99:99"
-                                placeholder="12:00:00"
-                                value={state.collaboratorData.employeeStartBreakTime}
-                                onChange={handleTimeChange('SET_EMPLOYEE_START_BREAK_TIME', 'SET_EMPLOYEE_START_BREAK_TIME_STATE')}
-                                onFocus={handleEmployeeStartBreakTimeTouch}
-                            >
-                                {(inputProps) => (
-                                    <Input
-                                        {...inputProps}
-                                        id="validationStartBreakTime"
-                                        type="text"
-                                        valid={state.collaboratorData.employeeStartBreakTimeState === "valid"}
-                                        invalid={state.collaboratorData.employeeStartBreakTimeState === "invalid"}
-                                    />
-                                )}
-                            </InputMask>
-                            <div className="invalid-feedback">
-                                {state.collaboratorData.employeeStartBreakTime === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
-                            </div>
-                        </Col>
-                        <Col className="mb-3" md="2">
-                            <label
-                                className="form-control-label"
-                                htmlFor="validationStopBreakTime"
-                            >
-                                Fim do Intervalo
-                            </label>
-                            <InputMask
-                                mask="99:99:99"
-                                placeholder="13:00:00"
-                                value={state.collaboratorData.employeeStopBreakTime}
-                                onChange={handleTimeChange('SET_EMPLOYEE_STOP_BREAK_TIME', 'SET_EMPLOYEE_STOP_BREAK_TIME_STATE')}
-                                onFocus={handleEmployeeStopBreakTimeTouch}
-                            >
-                                {(inputProps) => (
-                                    <Input
-                                        {...inputProps}
-                                        id="validationStopBreakTime"
-                                        type="text"
-                                        valid={state.collaboratorData.employeeStopBreakTimeState === "valid"}
-                                        invalid={state.collaboratorData.employeeStopBreakTimeState === "invalid"}
-                                    />
-                                )}
-                            </InputMask>
-                            <div className="invalid-feedback">
-                                {state.collaboratorData.employeeStopBreakTimeState === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
-                            </div>
-                        </Col>
-                        <Col className="mb-3" md="2">
-                            <label
-                                className="form-control-label"
-                                htmlFor="validationDepartureTime"
-                            >
-                                Horário de Saída
-                            </label>
-                            <InputMask
-                                mask="99:99:99"
-                                placeholder="18:00:00"
-                                value={state.collaboratorData.employeeDepartureTime}
-                                onChange={handleTimeChange('SET_EMPLOYEE_DEPARTURE_TIME', 'SET_EMPLOYEE_DEPARTURE_TIME_STATE')}
-                                onFocus={handleEmployeeDepartureTimeTouch}
-                            >
-                                {(inputProps) => (
-                                    <Input
-                                        {...inputProps}
-                                        id="validationDepartureTime"
-                                        type="text"
-                                        valid={state.collaboratorData.employeeDepartureTimeState === "valid"}
-                                        invalid={state.collaboratorData.employeeDepartureTimeState === "invalid"}
-                                    />
-                                )}
-                            </InputMask>
-                            <div className="invalid-feedback">
-                                {state.collaboratorData.employeeDepartureTimeState === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
-                            </div>
-                        </Col>
-                        <Col className="mb-3" md="2">
-                            <div className="d-flex flex-column w-100">
-                                <span
-                                    className="form-control-label mb-4 mr-auto"
-                                >
-                                    Estado Ativo
-                                </span>
-                                <label className="custom-toggle ml-auto">
-                                    <input
-                                        type="checkbox"
-                                        checked={state.collaboratorData.employeeStatus}
-                                        onChange={handleToggleChange}
-                                        onFocus={handleEmployeeStatusTouch}
-                                    />
-                                    <span
-                                        className="custom-toggle-slider rounded-circle"
-                                        data-label-off="Não"
-                                        data-label-on="Sim"
-                                    />
-                                </label>
-                            </div>
-                        </Col>
-                    </div>
+                    {state.collaboratorData.contractTypeDataList.length > 0 &&
+                        state.collaboratorData.workModelDataList.length > 0 &&
+                        state.collaboratorData.workplaceDataList.length > 0 && (
+                            <>
+                                <div className="form-row">
+                                    <Col className="mb-3" md="4">
+                                        <label
+                                            className="form-control-label"
+                                            htmlFor="validationContractType"
+                                        >
+                                            Tipo de Contrato
+                                        </label>
+                                        <Select2
+                                            id="validationContractType"
+                                            className="form-control"
+                                            data-minimum-results-for-search="Infinity"
+                                            options={{
+                                                placeholder: "Selecione o tipo de contrato",
+                                            }}
+                                            value={state.collaboratorData.selectedContractType || ''}
+                                            onChange={handleSelectedContractTypeChange}
+                                            data={state.collaboratorData.contractTypeDataList}
+                                            onSelect={(e) => {
+                                                const selectedValue = e.target.value;
+                                                handleSelectionEmploymentContractDataWithReducer(
+                                                    dispatch,
+                                                    selectedValue,
+                                                    Array.isArray(
+                                                        state.collaboratorData.contractTypeDataList)
+                                                        ? state.collaboratorData.contractTypeDataList
+                                                        : [],
+                                                    'SET_SELECTED_CONTRACT_TYPE',
+                                                    'SET_EMPLOYEE_CONTRACT_TYPE',
+                                                    'SET_EMPLOYEE_CONTRACT_TYPE_STATE',
+                                                    null,
+                                                    null,
+                                                    'id',
+                                                );
+                                            }}
+                                        />
+                                    </Col>
+                                    <Col className="mb-3" md="4">
+                                        <label
+                                            className="form-control-label"
+                                            htmlFor="validationWorkModel"
+                                        >
+                                            Modelo de Trabalho
+                                        </label>
+                                        <Select2
+                                            id="validationWorkModel"
+                                            className="form-control"
+                                            data-minimum-results-for-search="Infinity"
+                                            options={{
+                                                placeholder: "Selecione o modelo de trabalho",
+                                            }}
+                                            value={state.collaboratorData.selectedWorkModel || ''}
+                                            onChange={handleSelectedWorkModelChange}
+                                            data={state.collaboratorData.workModelDataList}
+                                            onSelect={(e) => {
+                                                const selectedValue = e.target.value;
+                                                handleSelectionEmploymentContractDataWithReducer(
+                                                    dispatch,
+                                                    selectedValue,
+                                                    Array.isArray(state.collaboratorData.workModelDataList)
+                                                        ? state.collaboratorData.workModelDataList
+                                                        : [],
+                                                    'SET_SELECTED_WORK_MODEL',
+                                                    'SET_EMPLOYEE_WORK_MODEL',
+                                                    'SET_EMPLOYEE_WORK_MODEL_STATE',
+                                                    null,
+                                                    null,
+                                                    'id',
+                                                );
+                                            }}
+                                        />
+                                    </Col>
+                                    <Col className="mb-3" md="4">
+                                        <label
+                                            className="form-control-label"
+                                            htmlFor="validationAdmissionDate"
+                                        >
+                                            Data de Admissão
+                                        </label>
+                                        <ReactDatetime
+                                            inputProps={{ placeholder: "__/__/__" }}
+                                            timeFormat={false}
+                                            dateFormat="DD/MM/YYYY"
+                                            value={state.collaboratorData.employeeAdmissionDate || ''}
+                                            onChange={(e) => handleDateFormatting(
+                                                dispatch,
+                                                e,
+                                                'SET_EMPLOYEE_ADMISSION_DATE',
+                                                'SET_EMPLOYEE_ADMISSION_DATE_STATE',
+                                                setFormattedEmployeeAdmission
+                                            )}
+                                        />
+                                    </Col>
+                                </div>
+                                <div className="form-row">
+                                    <Col className="mb-3" md="4">
+                                        <label
+                                            className="form-control-label"
+                                            htmlFor="validationWorkplace"
+                                        >
+                                            Local de Trabalho
+                                        </label>
+                                        <Select2
+                                            id="validatingWorkplace"
+                                            className="form-control"
+                                            data-minimum-results-for-search="Infinity"
+                                            options={{
+                                                placeholder: "Selecione o local de trabalho",
+                                            }}
+                                            value={state.collaboratorData.selectedWorkplace || ''}
+                                            onChange={handleSelectedWorkplaceChange}
+                                            data={state.collaboratorData.workplaceDataList}
+                                            onSelect={(e) => {
+                                                const selectedValue = e.target.value;
+                                                handleSelectionEmploymentContractDataWithReducer(
+                                                    dispatch,
+                                                    selectedValue,
+                                                    Array.isArray(state.collaboratorData.workplaceDataList)
+                                                        ? stateLegalEntityRegistration.legalEntityRegistrationData.companyTypesDataList
+                                                        : [],
+                                                    'SET_SELECTED_WORKPLACE',
+                                                    'SET_EMPLOYEE_WORKPLACE',
+                                                    'SET_EMPLOYEE_WORKPLACE_STATE',
+                                                    null,
+                                                    null,
+                                                    'id',
+                                                );
+                                            }}
+                                        />
+                                    </Col>
+                                    <Col className="mb-3" md="2">
+                                        <label
+                                            className="form-control-label"
+                                            htmlFor="validationEntryTime"
+                                        >
+                                            Hora de Entrada
+                                        </label>
+                                        <InputMask
+                                            mask="99:99:99"
+                                            placeholder="00:00:00"
+                                            value={state.collaboratorData.employeeEntryTime || ''}
+                                            onChange={handleTimeChange('SET_EMPLOYEE_ENTRY_TIME', 'SET_EMPLOYEE_ENTRY_TIME_STATE')}
+                                            onFocus={handleEmployeeEntryTimeTouch}
+                                        >
+                                            {(inputProps) => <Input {...inputProps}
+                                                id="validationEntryTime"
+                                                type="text"
+                                                valid={state.collaboratorData.employeeEntryTimeState === "valid"}
+                                                invalid={state.collaboratorData.employeeEntryTimeState === "invalid"}
+                                            />}
+                                        </InputMask>
+                                        <div className="invalid-feedback">
+                                            {state.collaboratorData.employeeEntryTimeState === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
+                                        </div>
+                                    </Col>
+                                    <Col className="mb-3" md="2">
+                                        <label
+                                            className="form-control-label"
+                                            htmlFor="validationStartBreakTime"
+                                        >
+                                            Intervalo
+                                        </label>
+                                        <InputMask
+                                            mask="99:99:99"
+                                            placeholder="00:00:00"
+                                            value={state.collaboratorData.employeeStartBreakTime || ''}
+                                            onChange={handleTimeChange('SET_EMPLOYEE_START_BREAK_TIME', 'SET_EMPLOYEE_START_BREAK_TIME_STATE')}
+                                            onFocus={handleEmployeeStartBreakTimeTouch}
+                                        >
+                                            {(inputProps) => (
+                                                <Input
+                                                    {...inputProps}
+                                                    id="validationStartBreakTime"
+                                                    type="text"
+                                                    valid={state.collaboratorData.employeeStartBreakTimeState === "valid"}
+                                                    invalid={state.collaboratorData.employeeStartBreakTimeState === "invalid"}
+                                                />
+                                            )}
+                                        </InputMask>
+                                        <div className="invalid-feedback">
+                                            {state.collaboratorData.employeeStartBreakTime === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
+                                        </div>
+                                    </Col>
+                                    <Col className="mb-3" md="2">
+                                        <label
+                                            className="form-control-label"
+                                            htmlFor="validationStopBreakTime"
+                                        >
+                                            Fim do Intervalo
+                                        </label>
+                                        <InputMask
+                                            mask="99:99:99"
+                                            placeholder="00:00:00"
+                                            value={state.collaboratorData.employeeStopBreakTime || ''}
+                                            onChange={handleTimeChange('SET_EMPLOYEE_STOP_BREAK_TIME', 'SET_EMPLOYEE_STOP_BREAK_TIME_STATE')}
+                                            onFocus={handleEmployeeStopBreakTimeTouch}
+                                        >
+                                            {(inputProps) => (
+                                                <Input
+                                                    {...inputProps}
+                                                    id="validationStopBreakTime"
+                                                    type="text"
+                                                    valid={state.collaboratorData.employeeStopBreakTimeState === "valid"}
+                                                    invalid={state.collaboratorData.employeeStopBreakTimeState === "invalid"}
+                                                />
+                                            )}
+                                        </InputMask>
+                                        <div className="invalid-feedback">
+                                            {state.collaboratorData.employeeStopBreakTimeState === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
+                                        </div>
+                                    </Col>
+                                    <Col className="mb-3" md="2">
+                                        <label
+                                            className="form-control-label"
+                                            htmlFor="validationDepartureTime"
+                                        >
+                                            Horário de Saída
+                                        </label>
+                                        <InputMask
+                                            mask="99:99:99"
+                                            placeholder="00:00:00"
+                                            value={state.collaboratorData.employeeDepartureTime || ''}
+                                            onChange={handleTimeChange('SET_EMPLOYEE_DEPARTURE_TIME', 'SET_EMPLOYEE_DEPARTURE_TIME_STATE')}
+                                            onFocus={handleEmployeeDepartureTimeTouch}
+                                        >
+                                            {(inputProps) => (
+                                                <Input
+                                                    {...inputProps}
+                                                    id="validationDepartureTime"
+                                                    type="text"
+                                                    valid={state.collaboratorData.employeeDepartureTimeState === "valid"}
+                                                    invalid={state.collaboratorData.employeeDepartureTimeState === "invalid"}
+                                                />
+                                            )}
+                                        </InputMask>
+                                        <div className="invalid-feedback">
+                                            {state.collaboratorData.employeeDepartureTimeState === "invalid" && "Forneça uma hora válida no formato HH:MM:SS."}
+                                        </div>
+                                    </Col>
+                                    <Col className="mb-3" md="2">
+                                        <div className="d-flex flex-column w-100">
+                                            <span
+                                                className="form-control-label mb-4 mr-auto"
+                                            >
+                                                Estado Ativo
+                                            </span>
+                                            <label className="custom-toggle ml-auto">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={state.collaboratorData.employeeStatus || ''}
+                                                    onChange={handleToggleChange}
+                                                    onFocus={handleEmployeeStatusTouch}
+                                                />
+                                                <span
+                                                    className="custom-toggle-slider rounded-circle"
+                                                    data-label-off="Não"
+                                                    data-label-on="Sim"
+                                                />
+                                            </label>
+                                        </div>
+                                    </Col>
+                                </div>
+                            </>
+                        )}
                 </div>
             </div>
         </Row >

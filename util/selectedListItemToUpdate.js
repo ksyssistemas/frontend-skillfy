@@ -7,6 +7,9 @@ export function selectedListItemToUpdate(
   setSelectedItem,
   setItem,
   setItemState,
+  setSelectedDepartmentIdAction = null,
+  setHasDepartmentSelectedAction = null,
+  savedDataType = 'id'
 ) {
   const selectedItem = list.find(p => p.id === itemLabel);
   if (selectedItem) {
@@ -17,9 +20,9 @@ export function selectedListItemToUpdate(
       setSelectedItem,
       setItem,
       setItemState,
-      null,
-      null,
-      'id'
+      setSelectedDepartmentIdAction,
+      setHasDepartmentSelectedAction,
+      savedDataType
     );
   }
 };

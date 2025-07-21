@@ -161,7 +161,6 @@ const useCreateCustomer = (handleShowContactPersonsUserRegister) => {
             birthdate: formattedDate,
             email: emailAddress,
             phone: phoneNumber,
-            password: "123",
             occupation: contactPersonOccupation,
             customerId: Number(contactPersonBelongsToClientCompany),
             terms

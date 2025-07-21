@@ -6,7 +6,7 @@ export const EmployeeContext = createContext({});
 function EmployeeProvider({ children }) {
 
     const [isShouldRenderEmployeeView, setIsShouldRenderEmployeeView] = useState('employeeList');
-    
+
     function handleShowDynamicEmployeeComponent(view) {
         setIsShouldRenderEmployeeView(view);
     }
@@ -41,6 +41,15 @@ function EmployeeProvider({ children }) {
         setHasDeletedEmployeeRecord(!hasDeletedEmployeeRecord);
     }
 
+    const [isLoadingContractDetailsEmployeeToUpdateData, setIsLoadingContractDetailsEmployeeToUpdateData] = useState(false);
+    function handleIsLoadingContractDetailsEmployeeToUpdateData(status) {
+        setIsLoadingContractDetailsEmployeeToUpdateData(status);
+    }
+    const [isLoadingDetailsSelectedEmployeeData, setIsLoadingDetailsSelectedEmployeeData] = useState(false);
+    function handleIsLoadingDetailsSelectedEmployeeData(status) {
+        setIsLoadingDetailsSelectedEmployeeData(status);
+    }
+
     return (
         <EmployeeContext.Provider
             value={{
@@ -57,6 +66,10 @@ function EmployeeProvider({ children }) {
                 handleIsShouldUpdateEmployee,
                 hasDeletedEmployeeRecord,
                 handleDeletedEmployeeRecordStatusChange,
+                isLoadingContractDetailsEmployeeToUpdateData,
+                handleIsLoadingContractDetailsEmployeeToUpdateData,
+                isLoadingDetailsSelectedEmployeeData,
+                handleIsLoadingDetailsSelectedEmployeeData
             }}>
             {children}
         </EmployeeContext.Provider>

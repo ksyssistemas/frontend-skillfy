@@ -25,6 +25,7 @@ import { useFindClientCompany } from '../../../hooks/RecordsHooks/customer/useFi
 import { useFindEmployeeContractDetails } from '../../../hooks/RecordsHooks/featuresEmploymentContract/useFindEmployeeContractDetails';
 import { useFindRole } from '../../../hooks/RecordsHooks/role/useFindRole';
 import { useDeleteEmployeeContract } from '../../../hooks/RecordsHooks/featuresEmploymentContract/useDeleteEmployeeContract';
+import PageChange from '../../PageChange/PageChange';
 
 const EmployeeUserList = () => {
 
@@ -38,6 +39,7 @@ const EmployeeUserList = () => {
     handleUpdatedEmployeeRecordStatusChange,
     hasDeletedEmployeeRecord,
     handleDeletedEmployeeRecordStatusChange,
+    isLoadingContractDetailsEmployeeToUpdateData
   } = useContext(EmployeeContext);
 
   const { warningAlert } = useSweetAlert();
