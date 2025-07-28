@@ -16,9 +16,9 @@ import {
 import { employmentContractDataSearchAndProcess } from "../../../util/employmentContractDataSearchAndProcess";
 import { handleSelectionEmploymentContractData } from "../../../util/handleSelectionEmploymentContractData";
 import { useFindAppraisalCycle } from "../../../hooks/DefinitionOptionsReview/Cycles/useFindAppraisalCycle";
-import useCreateSkillClassificaiton from "../../../hooks/DefinitionOptionsReview/SkillsClassifications/useCreateSkillClassificaiton";
+import useCreateSkillClassification from "../../../hooks/DefinitionOptionsReview/SkillsClassifications/useCreateSkillClassification";
 import { useFindAllSkillClassifications } from "../../../hooks/DefinitionOptionsReview/SkillsClassifications/useFindAllSkillClassifications";
-import useUpdateSkillClassificaiton from "../../../hooks/DefinitionOptionsReview/SkillsClassifications/useUpdateSkillClassification";
+import useUpdateSkillClassification from "../../../hooks/DefinitionOptionsReview/SkillsClassifications/useUpdateSkillClassification";
 import { useFindSkillClassification } from "../../../hooks/DefinitionOptionsReview/SkillsClassifications/useFindSkillClassification";
 
 function SkillClassificationModal(
@@ -30,22 +30,22 @@ function SkillClassificationModal(
     }) {
 
     const {
-        skilClassificationName,
-        setSkilClassificationName,
-        skilClassificationNameState,
-        setSkilClassificationNameState,
+        skillClassificationName,
+        setSkillClassificationName,
+        skillClassificationNameState,
+        setSkillClassificationNameState,
         skillClassificationDescription,
         setSkillClassificationDescription,
         skillClassificationDescriptionState,
         setSkillClassificationDescriptionState,
-        skilClassificationDataList,
-        setSkilClassificationDataList,
-        handleSkilClassificationDataList,
+        skillClassificationDataList,
+        setSkillClassificationDataList,
+        handleSkillClassificationDataList,
         handleValidateAddSkillClassificationForm,
         reset
-    } = useCreateSkillClassificaiton();
+    } = useCreateSkillClassification();
 
-    const { handleValidateUpdateAppraisalSkillClassificationForm } = useUpdateSkillClassificaiton();
+    const { handleValidateUpdateAppraisalSkillClassificationForm } = useUpdateSkillClassification();
 
     const [hasSkillRegisterRecorded, setHasSkillRegisterRecorded] = useState(false);
     const handleHasSkillRegisterRecorded = () => {
@@ -55,13 +55,14 @@ function SkillClassificationModal(
     const handleCloseAddSkillClassificationModal = () => {
         handleOpenAddSkillClassificationModal();
         reset();
+        handleSkillClassificationIdToUpdate('');
     };
 
     const updateSelectedPeriod = (periodText) => {
         const period = cyclePeriodDataListMook.find(p => p.text === periodText);
         if (period) {
-            setSelectePeriod(period.id);
-            handleSelectionEmploymentContractData(period.id, cyclePeriodDataListMook, setSelectePeriod, setCyclePeriod, setCyclePeriodState);
+            setSelectPeriod(period.id);
+            handleSelectionEmploymentContractData(period.id, cyclePeriodDataListMook, setSelectPeriod, setCyclePeriod, setCyclePeriodState);
         }
     };
 
@@ -69,7 +70,7 @@ function SkillClassificationModal(
         handleValidateUpdateAppraisalSkillClassificationForm(
             handleCloseAddSkillClassificationModal,
             skillClassificationIdToUpdate,
-            skilClassificationName,
+            skillClassificationName,
             skillClassificationDescription,
             handleSkillClassificationIdToUpdate,
             handleCleanDetailedSkillClassificationsData
@@ -78,8 +79,13 @@ function SkillClassificationModal(
 
     useEffect(() => {
         const fetchData = async () => {
-            if (skilClassificationDataList.length === 0 || hasSkillRegisterRecorded) {
-                await employmentContractDataSearchAndProcess(useFindAllSkillClassifications, handleSkilClassificationDataList, 'skillClassification', 'EmployeeUserRegister');
+            if (skillClassificationDataList.length === 0 || hasSkillRegisterRecorded) {
+                await employmentContractDataSearchAndProcess(
+                    useFindAllSkillClassifications,
+                    handleSkillClassificationDataList,
+                    'skillClassification',
+                    'EmployeeUserRegister'
+                );
             }
         }
 
@@ -98,11 +104,11 @@ function SkillClassificationModal(
                 const foundSkillClassification = await useFindSkillClassification(skillClassificationIdToUpdate);
                 console.log(foundSkillClassification);
                 setDetailedSkillClassificationsData(foundSkillClassification);
-                setSkilClassificationName(foundSkillClassification.competenceClassificationName)
+                setSkillClassificationName(foundSkillClassification.competenceClassificationName)
                 setSkillClassificationDescription(foundSkillClassification.description)
             }
         };
-        if (skillClassificationIdToUpdate) {
+        if (skillClassificationIdToUpdate && skillClassificationIdToUpdate !== null) {
             fetchData(skillClassificationIdToUpdate);
         }
     }, [skillClassificationIdToUpdate]);
@@ -133,7 +139,30 @@ function SkillClassificationModal(
                 <Card>
                     <CardBody>
                         <div className="form-row">
-                            <Col className="mb-3" md={skillClassificationIdToUpdate ? "12" : "6"}>
+                            {
+                                !skillClassificationIdToUpdate && (
+                                    <Col className="mb-3" md="12">
+                                        <label
+                                            className="form-control-label"
+                                            htmlFor="listSkillClassificationRecorded"
+                                        >
+                                            Classificações Cadastradas
+                                        </label>
+                                        <Select2
+                                            id="listSkillClassificationRecorded"
+                                            className="form-control"
+                                            data-minimum-results-for-search="Infinity"
+                                            options={{ placeholder: "Clique para visualizar", }}
+                                            data={skillClassificationDataList}
+                                        />
+                                    </Col>
+
+                                )
+                            }
+                        </div>
+                        <hr />
+                        <div className="form-row">
+                            <Col className="mb-3" md="12">
                                 <label
                                     className="form-control-label"
                                     htmlFor="validationSkillClassification"
@@ -146,9 +175,9 @@ function SkillClassificationModal(
                                     type="text"
                                     // valid={departmentNameState === "valid"}
                                     // invalid={departmentNameState === "invalid"}
-                                    value={skilClassificationName}
+                                    value={skillClassificationName}
                                     onChange={(e) => {
-                                        setSkilClassificationName(e.target.value);
+                                        setSkillClassificationName(e.target.value);
                                         //     if (e.target.value === "") {
                                         //         setDepartmentNameState("invalid");
                                         //     } else {
@@ -160,25 +189,6 @@ function SkillClassificationModal(
                                                     É necessário preencher este campo.
                                                 </div> */}
                             </Col>
-                            {
-                                !skillClassificationIdToUpdate && (
-                                    <Col className="mb-3" md="6">
-                                        <label
-                                            className="form-control-label"
-                                            htmlFor="listSkillClassificationRecorded"
-                                        >
-                                            Classificações Cadastradas
-                                        </label>
-                                        <Select2
-                                            id="listSkillClassificationRecorded"
-                                            className="form-control"
-                                            options={{ placeholder: "Clique para visualizar", }}
-                                            data={skilClassificationDataList}
-                                        />
-                                    </Col>
-
-                                )
-                            }
                             <Col className="mb-3" md="12">
                                 <label
                                     className="form-control-label"
@@ -192,7 +202,7 @@ function SkillClassificationModal(
                                     type="textarea"
                                     // valid={departmentDescriptionState === "valid"}
                                     // invalid={departmentDescriptionState === "invalid"}
-                                    value={skillClassificationDescription}
+                                    value={skillClassificationDescription || ""}
                                     onChange={(e) => {
                                         setSkillClassificationDescription(e.target.value);
                                         //     if (e.target.value === "") {

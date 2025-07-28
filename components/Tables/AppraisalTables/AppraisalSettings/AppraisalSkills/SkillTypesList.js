@@ -94,47 +94,61 @@ function SkillsList() {
 
     useEffect(() => {
         const fetchCompanyNamesAndRoles = async (skillTypes) => {
-            const updatedSkillTypes = await Promise.all(
-                skillTypes.map(async (skillType) => {
-                    try {
-                        if (!skillType.skillClassificationId || !skillType.occupationalGroupId) {
-                            return {
-                                ...skillType,
-                                skilClassificationName: 'Sem Classificação',
-                                occupationalGroupName: 'Nenhum Grupo',
-                            };
+            try {
+                const updatedSkillTypes = await Promise.all(
+                    skillTypes.map(async (skillType) => {
+                        const updated = { ...skillType };
+
+                        try {
+                            // Buscar skillClassificationName se houver ID
+                            if (skillType.skillClassificationId) {
+                                const classification = await useFindSkillClassification(Number(skillType.skillClassificationId));
+                                updated.skillClassificationName = classification?.competenceClassificationName || 'Sem Classificação';
+                            } else {
+                                updated.skillClassificationName = 'Sem Classificação';
+                            }
+
+                            // Buscar occupationalGroupName se houver ID
+                            if (skillType.occupationalGroupId) {
+                                const group = await useFindOccupationalGroup(Number(skillType.occupationalGroupId));
+                                updated.occupationalGroupName = group?.competencieName || 'Nenhum Grupo';
+                            } else {
+                                updated.occupationalGroupName = 'Nenhum Grupo';
+                            }
+
+                        } catch (innerError) {
+                            console.error(
+                                `Erro ao buscar dados para skillTypeId ${skillType.id}:`,
+                                innerError
+                            );
+                            // Atribui valores padrão em caso de erro individual
+                            updated.skillClassificationName = 'Sem Classificação';
+                            updated.occupationalGroupName = 'Nenhum Grupo';
                         }
-                        const skilClassificationData = await useFindSkillClassification(Number(skillType.skillClassificationId));
-                        const occupationalGroupData = await useFindOccupationalGroup(Number(skillType.occupationalGroupId));
-                        console.log(skilClassificationData);
-                        console.log(occupationalGroupData);
-                        return {
-                            ...skillType,
-                            skilClassificationName: skilClassificationData.competenceClassificationName,
-                            occupationalGroupName: occupationalGroupData.competencieName,
-                        };
-                    } catch (error) {
-                        console.error(`Error fetching Skill Classification and Occupational Group data for skillTypeId ${skillType.id}:`, error);
-                        return {
-                            ...skillType,
-                            skilClassificationName: 'Sem Classificação',
-                            occupationalGroupName: 'Nenhum Grupo',
-                        };
-                    }
-                })
-            );
-            setDetailedSkillTypeData(updatedSkillTypes);
+
+                        return updated;
+                    })
+                );
+
+                setDetailedSkillTypeData(updatedSkillTypes);
+            } catch (error) {
+                console.error('Erro geral ao processar os skillTypes:', error);
+                // Pode adicionar fallback aqui se necessário
+            }
         };
 
+
         const fetchSkillTypes = async () => {
-            if (!detailedSkillTypeData.lenght ||
+            if (!detailedSkillTypeData.length ||
                 hasNewAppraisalSkillTypeCreated ||
                 hasUpdatedAppraisalSkillType ||
                 hasDeletedAppraisalSkillType
             ) {
                 try {
                     const foundTypes = await useFindAllSkillTypes();
-                    await fetchCompanyNamesAndRoles(foundTypes);
+                    if (foundTypes && foundTypes.length > 0) {
+                        await fetchCompanyNamesAndRoles(foundTypes);
+                    }
                 } catch (error) {
                     console.error('Error fetching types:', error);
                 }
@@ -211,7 +225,7 @@ function SkillsList() {
                                             </span>
                                         </td>
                                         <td className="table-user">
-                                            <b>{skillType.skilClassificationName}</b>
+                                            <b>{skillType.skillClassificationName}</b>
                                         </td>
                                         <td className="table-user">
                                             <b>{skillType.occupationalGroupName}</b>
@@ -276,7 +290,7 @@ function SkillsList() {
             <SkillTypesModal
                 handleOpenSkillTypeModal={handleOpenSkillTypeModal}
                 skillTypeModalOpen={skillTypeModalOpen}
-                skillTypeIdToUpdate={skillTypeIdToUpdate}
+                skillTypeIdToUpdate={String(skillTypeIdToUpdate)}
                 handleSkillTypeIdToUpdate={handleSkillTypeIdToUpdate}
             />
         </>

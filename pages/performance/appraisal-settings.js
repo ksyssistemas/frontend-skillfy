@@ -17,6 +17,7 @@ import SkillsManagement from "../../components/Tables/AppraisalTables/AppraisalS
 import { AppraisalSkillsContext } from "../../contexts/PerformanceContext/AppraisalSkillsContext";
 import { AppraisalCaptionsContext } from "../../contexts/PerformanceContext/AprraisalCaptionsContext";
 import CaptionsManagement from "../../components/Tables/AppraisalTables/AppraisalSettings/AppraisalCaptions/CaptionsManagement";
+import DynamicLayout from "../../layouts/DynamicLayout";
 
 function AppraisalSettings() {
 
@@ -215,6 +216,6 @@ function AppraisalSettings() {
     );
 }
 
-AppraisalSettings.layout = Performance;
+AppraisalSettings.getLayout = (page) => <DynamicLayout>{page}</DynamicLayout>;
 
 export default AppraisalSettings;

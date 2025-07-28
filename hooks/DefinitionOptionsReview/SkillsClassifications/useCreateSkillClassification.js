@@ -1,18 +1,17 @@
 import React, { useContext, useState } from 'react';
 import { AppraisalSkillsContext } from '../../../contexts/PerformanceContext/AppraisalSkillsContext';
 
-const useCreateSkillClassificaiton = () => {
+const useCreateSkillClassification = () => {
 
-  const { hasNewAppraisalSkillClassificationCreated, handleCreatedAppraisalSkillClassificaitonStatusChange } = useContext(AppraisalSkillsContext);
+  const { hasNewAppraisalSkillClassificationCreated, handleCreatedAppraisalSkillClassificationStatusChange } = useContext(AppraisalSkillsContext);
 
-
-  const [skilClassificationName, setSkilClassificationName] = useState("");
-  const [skilClassificationNameState, setSkilClassificationNameState] = useState(null);
+  const [skillClassificationName, setSkillClassificationName] = useState("");
+  const [skillClassificationNameState, setSkillClassificationNameState] = useState(null);
   const [skillClassificationDescription, setSkillClassificationDescription] = useState("");
   const [skillClassificationDescriptionState, setSkillClassificationDescriptionState] = useState(null);
-  const [skilClassificationDataList, setSkilClassificationDataList] = useState([]);
-  const handleSkilClassificationDataList = (skilClassificationData) => {
-    setSkilClassificationDataList(skilClassificationData);
+  const [skillClassificationDataList, setSkillClassificationDataList] = useState([]);
+  const handleSkillClassificationDataList = (skillClassificationData) => {
+    setSkillClassificationDataList(skillClassificationData);
   }
 
   const validateAddDepartmentForm = () => {
@@ -43,22 +42,21 @@ const useCreateSkillClassificaiton = () => {
     // } else {
     //   return null;
     // }
-    handleSubmit(skilClassificationName, skillClassificationDescription);
+    handleSubmit(skillClassificationName, skillClassificationDescription);
     goBackToAppraisalCycleList(handleCloseAddSkillClassificationModal);
   }
 
   function goBackToAppraisalCycleList(handleCloseAddSkillClassificationModal) {
     reset();
     handleCloseAddSkillClassificationModal();
-    handleCreatedAppraisalSkillClassificaitonStatusChange();
+    handleCreatedAppraisalSkillClassificationStatusChange();
   }
 
-  const handleSubmit = async (skilClassificationName, skillClassificationDescription) => {
-    console.log(skilClassificationName, skillClassificationDescription);
-    if (skilClassificationName && skillClassificationDescription) {
+  const handleSubmit = async (skillClassificationName, skillClassificationDescription) => {
+    if (skillClassificationName && skillClassificationName !== "") {
       try {
         const payload = {
-          competenceClassificationName: skilClassificationName,
+          competenceClassificationName: skillClassificationName,
           status: true
         };
 
@@ -86,28 +84,28 @@ const useCreateSkillClassificaiton = () => {
   };
 
   function reset() {
-    setSkilClassificationName('');
-    setSkilClassificationNameState(null);
+    setSkillClassificationName('');
+    setSkillClassificationNameState(null);
     setSkillClassificationDescription('');
     setSkillClassificationDescriptionState(null);
-    setSkilClassificationDataList([]);
+    setSkillClassificationDataList([]);
   }
 
   return {
-    skilClassificationName,
-    setSkilClassificationName,
-    skilClassificationNameState,
-    setSkilClassificationNameState,
+    skillClassificationName,
+    setSkillClassificationName,
+    skillClassificationNameState,
+    setSkillClassificationNameState,
     skillClassificationDescription,
     setSkillClassificationDescription,
     skillClassificationDescriptionState,
     setSkillClassificationDescriptionState,
-    skilClassificationDataList,
-    setSkilClassificationDataList,
-    handleSkilClassificationDataList,
+    skillClassificationDataList,
+    setSkillClassificationDataList,
+    handleSkillClassificationDataList,
     handleValidateAddSkillClassificationForm,
     reset
   };
 };
 
-export default useCreateSkillClassificaiton;
+export default useCreateSkillClassification;

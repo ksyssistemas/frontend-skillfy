@@ -11,8 +11,8 @@ const useCreateSkillType = () => {
     const [skillTypeDescriptionState, setSkillTypeDescriptionState] = useState(null);
     const [classificationOfSkillType, setClassificationOfSkillType] = useState("");
     const [classificationOfSkillTypeState, setClassificationOfSkillTypeState] = useState(null);
-    const [skillTypeOccupationalGroup, setskillTypeOccupationalGroup] = useState("");
-    const [skillTypeOccupationalGroupState, setskillTypeOccupationalGroupState] = useState(null);
+    const [skillTypeOccupationalGroup, setSkillTypeOccupationalGroup] = useState("");
+    const [skillTypeOccupationalGroupState, setSkillTypeOccupationalGroupState] = useState(null);
     const [skillTypeDataList, setSkillTypeDataList] = useState([]);
     const handleSkillTypeDataList = (skillTypeData) => {
         setSkillTypeDataList(skillTypeData);
@@ -67,7 +67,6 @@ const useCreateSkillType = () => {
     }
 
     const handleSubmit = async (skillTypeName, skillTypeDescription, classificationOfSkillType, skillTypeOccupationalGroup) => {
-        console.log(skillTypeName, skillTypeDescription, classificationOfSkillType, skillTypeOccupationalGroup);
         if (skillTypeName && skillTypeName !== '') {
             try {
                 const payload = {
@@ -80,11 +79,11 @@ const useCreateSkillType = () => {
                 }
 
                 if (classificationOfSkillType && classificationOfSkillType !== "") {
-                    payload.occupationalGroupId = Number(classificationOfSkillType);
+                    payload.skillClassificationId = Number(classificationOfSkillType);
                 }
 
-                if (skillTypeOccupationalGroup && skillTypeOccupationalGroup !== "" && skillTypeOccupationalGroup !== "1") {
-                    payload.skillClassificationId = Number(skillTypeOccupationalGroup);
+                if (skillTypeOccupationalGroup && skillTypeOccupationalGroup !== "") {
+                    payload.occupationalGroupId = Number(skillTypeOccupationalGroup);
                 }
 
                 const response = await fetch(`${process.env.NEXT_PUBLIC_COMPETENCE_TYPE}`, {
@@ -113,8 +112,8 @@ const useCreateSkillType = () => {
         setSkillTypeDescriptionState(null);
         setClassificationOfSkillType('');
         setClassificationOfSkillTypeState(null);
-        setskillTypeOccupationalGroup('');
-        setskillTypeOccupationalGroupState(null);
+        setSkillTypeOccupationalGroup('');
+        setSkillTypeOccupationalGroupState(null);
         setSkillTypeDataList([]);
     }
 
@@ -132,9 +131,9 @@ const useCreateSkillType = () => {
         classificationOfSkillTypeState,
         setClassificationOfSkillTypeState,
         skillTypeOccupationalGroup,
-        setskillTypeOccupationalGroup,
+        setSkillTypeOccupationalGroup,
         skillTypeOccupationalGroupState,
-        setskillTypeOccupationalGroupState,
+        setSkillTypeOccupationalGroupState,
         skillTypeDataList,
         setSkillTypeDataList,
         handleSkillTypeDataList,

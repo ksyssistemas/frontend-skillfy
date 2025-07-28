@@ -3,7 +3,10 @@ import { AppraisalSkillsContext } from '../../../contexts/PerformanceContext/App
 
 const useCreateOccupationalGroup = () => {
 
-    const { hasNewAppraisalOccupationalGroupCreated, handleCreatedAppraisalOccupationalGroupStatusChange } = useContext(AppraisalSkillsContext);
+    const { 
+        hasNewAppraisalOccupationalGroupCreated, 
+        handleCreatedAppraisalOccupationalGroupStatusChange 
+    } = useContext(AppraisalSkillsContext);
 
     const [occupationalGroupName, setOccupationalGroupName] = useState("");
     const [occupationalGroupNameState, setOccupationalGroupNameState] = useState(null);
@@ -53,8 +56,7 @@ const useCreateOccupationalGroup = () => {
     }
 
     const handleSubmit = async (occupationalGroupName, occupationalGroupDescription) => {
-        console.log(occupationalGroupName, occupationalGroupDescription);
-        if (occupationalGroupName && occupationalGroupDescription) {
+        if (occupationalGroupName && occupationalGroupName !== "") {
             try {
                 const payload = {
                     competencieName: occupationalGroupName,

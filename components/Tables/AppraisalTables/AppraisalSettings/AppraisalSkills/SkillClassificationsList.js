@@ -25,9 +25,9 @@ function SkillClassificationList() {
 
     const {
         hasNewAppraisalSkillClassificationCreated,
-        handleCreatedAppraisalSkillClassificaitonStatusChange,
-        hasUpdatedAppraisalSkillClassificaiton,
-        handleUpdatedAppraisalSkillClassificaitonStatusChange,
+        handleCreatedAppraisalSkillClassificationStatusChange,
+        hasUpdatedAppraisalSkillClassification,
+        handleUpdatedAppraisalSkillClassificationStatusChange,
         hasDeletedAppraisalSkillClassification,
         handleDeletedAppraisalSkillClassificationStatusChange
     } = useContext(AppraisalSkillsContext);
@@ -104,10 +104,10 @@ function SkillClassificationList() {
 
         fetchSkillClassifications();
         if (hasNewAppraisalSkillClassificationCreated) {
-            handleCreatedAppraisalSkillClassificaitonStatusChange();
+            handleCreatedAppraisalSkillClassificationStatusChange();
         }
-        if (hasUpdatedAppraisalSkillClassificaiton) {
-            handleUpdatedAppraisalSkillClassificaitonStatusChange();
+        if (hasUpdatedAppraisalSkillClassification) {
+            handleUpdatedAppraisalSkillClassificationStatusChange();
         }
         if (hasDeletedAppraisalSkillClassification) {
             handleDeletedAppraisalSkillClassificationStatusChange();
@@ -115,7 +115,7 @@ function SkillClassificationList() {
 
     }, [
         hasNewAppraisalSkillClassificationCreated,
-        hasUpdatedAppraisalSkillClassificaiton,
+        hasUpdatedAppraisalSkillClassification,
         hasDeletedAppraisalSkillClassification,
     ]);
 
@@ -126,7 +126,7 @@ function SkillClassificationList() {
                     <CardHeader className="bg-white border-0">
                         <Row>
                             <Col xs="6">
-                                <h3 className="mb-0">Classificaçôes de Competência</h3>
+                                <h3 className="mb-0">Classificações de Competência</h3>
                             </Col>
                             <Col className="text-right" xs="6">
                                 <Button
