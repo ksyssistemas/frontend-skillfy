@@ -1,5 +1,5 @@
 import { initialStateIndividualRegistrationForm, individualRegistrationFormReducer } from '../CustomerForms/IndividualRegistrationFormReducer';
-import { initialStateLegalEntityRegistrationForm } from '../CustomerForms/LegalEntityRegistrationFormReducer';
+import { initialStateLegalEntityRegistrationForm, legalEntityRegistrationFormReducer } from '../CustomerForms/LegalEntityRegistrationFormReducer';
 import { initialStateCNPJForm } from '../cnpjFormReducer';
 import { initialStateCEPForm } from '../cepFormReducer';
 import { initialStateReviewScaleAndCriteriaForm } from '../ReviewForms/ReviewScaleAndCriteriaFormReducer';

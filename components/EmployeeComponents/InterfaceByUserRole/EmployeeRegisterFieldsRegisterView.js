@@ -1,12 +1,18 @@
 // nodejs library to set properties for components
-import PropTypes from "prop-types";
 import { Container } from "reactstrap";
 import AdminHeader from "../../Headers/AdminHeader"
 import CustomerHeader from "../../Headers/CustomerHeader"
 import EmployeeRegisterFieldsRegister from "../../Forms/CustomerForms/EmployeeRegisterFieldsRegister"
+import { useAuth } from "../../../hooks/useAuth";
+import { useContext } from "react";
+import { EmployeeContext } from "../../../contexts/RecordsContext/EmployeeContext";
 
 
-const EmployeeRegisterFieldsRegisterView = ({ authenticationDataLoggedInUser, handleShowEmployeeRecordEntrySettings }) => {
+const EmployeeRegisterFieldsRegisterView = () => {
+    const { authenticationDataLoggedInUser } = useAuth();
+
+    const { handleShowDynamicEmployeeComponent } = useContext(EmployeeContext);
+
     return (
         <>
             {
@@ -14,14 +20,28 @@ const EmployeeRegisterFieldsRegisterView = ({ authenticationDataLoggedInUser, ha
                     authenticationDataLoggedInUser.role === 'administrator'
                     ? (
                         <>
-                            <AdminHeader name="Colaboradores" parentName="Definição dos Campos" employeeRecordEntrySettingsButtonName="Retornar ao Cadastro" handleShowEmployeeRecordEntrySettings={handleShowEmployeeRecordEntrySettings} />
+                            <AdminHeader
+                                name="Colaboradores"
+                                parentName="Definição dos Campos"
+                                newRegistrationButtonText="Retornar à Lista"
+                                handleShowEmployeeUserRegister={() => handleShowDynamicEmployeeComponent('employeeList')}
+                                employeeRecordEntrySettingsButtonName="Retornar ao Cadastro"
+                                handleShowEmployeeRecordEntrySettings={() => handleShowDynamicEmployeeComponent('employeeRegister')}
+                            />
                             <Container className="mt--6" fluid>
                                 <EmployeeRegisterFieldsRegister />
                             </Container>
                         </>
                     ) : (
                         <>
-                            <CustomerHeader name="Colaboradores" parentName="Definição dos Campos" employeeRecordEntrySettingsButtonName="Retornar ao Cadastro" handleShowEmployeeRecordEntrySettings={handleShowEmployeeRecordEntrySettings} />
+                            <CustomerHeader
+                                name="Colaboradores"
+                                parentName="Definição dos Campos"
+                                newRegistrationButtonText="Retornar à Lista"
+                                handleShowEmployeeUserRegister={() => handleShowDynamicEmployeeComponent('employeeList')}
+                                employeeRecordEntrySettingsButtonName="Retornar ao Cadastro"
+                                handleShowEmployeeRecordEntrySettings={() => handleShowDynamicEmployeeComponent('employeeRegister')}
+                            />
                             <Container className="mt--6" fluid>
                                 <EmployeeRegisterFieldsRegister />
                             </Container>
@@ -31,9 +51,5 @@ const EmployeeRegisterFieldsRegisterView = ({ authenticationDataLoggedInUser, ha
         </>
     );
 }
-
-EmployeeRegisterFieldsRegisterView.propTypes = {
-    authenticationDataLoggedInUser: PropTypes.object,
-};
 
 export default EmployeeRegisterFieldsRegisterView;

@@ -76,7 +76,6 @@ function ContactPersonsList() {
     if (contactId) {
       try {
         const deleteResponse = await useDeleteContactPerson(contactId);
-        console.log('DeleteResponse: ', deleteResponse);
         if (deleteResponse !== null) {
           handleDeletedContactRecordStatusChange();
         } else {
@@ -150,7 +149,6 @@ function ContactPersonsList() {
 
     fetchData();
     if (hasUpdatedContactRecord) {
-      console.log("Update: ", hasUpdatedContactRecord);
       handleUpdatedContactRecordStatusChange();
     }
     if (hasDeletedContactRecord) {

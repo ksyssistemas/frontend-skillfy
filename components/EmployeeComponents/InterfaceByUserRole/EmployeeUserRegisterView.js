@@ -1,12 +1,19 @@
 // nodejs library to set properties for components
-import PropTypes from "prop-types";
 import { Container } from "reactstrap";
 import AdminHeader from "../../Headers/AdminHeader"
 import CustomerHeader from "../../Headers/CustomerHeader"
 import EmployeeUserRegister from "../../Forms/CustomerForms/EmployeeUserRegister"
+import { useAuth } from "../../../hooks/useAuth";
+import { useContext } from "react";
+import { EmployeeContext } from "../../../contexts/RecordsContext/EmployeeContext";
 
 
-const EmployeeUserRegisterView = ({ handleShowEmployeeUserRegister, authenticationDataLoggedInUser, handleShowEmployeeRecordEntrySettings }) => {
+const EmployeeUserRegisterView = () => {
+
+    const { authenticationDataLoggedInUser } = useAuth();
+
+    const { handleShowDynamicEmployeeComponent } = useContext(EmployeeContext);
+
     return (
         <>
             {
@@ -14,9 +21,16 @@ const EmployeeUserRegisterView = ({ handleShowEmployeeUserRegister, authenticati
                     authenticationDataLoggedInUser.role === 'administrator'
                     ? (
                         <>
-                            <AdminHeader name="Colaboradores" parentName="Cadastros" newRegistrationButtonText="Voltar" handleShowEmployeeUserRegister={handleShowEmployeeUserRegister} employeeRecordEntrySettingsButtonName="Configurações" handleShowEmployeeRecordEntrySettings={handleShowEmployeeRecordEntrySettings} />
+                            <AdminHeader
+                                name="Colaboradores"
+                                parentName="Cadastros"
+                                newRegistrationButtonText="Voltar"
+                                handleShowEmployeeUserRegister={() => handleShowDynamicEmployeeComponent('employeeList')}
+                                employeeRecordEntrySettingsButtonName="Configurações"
+                                handleShowEmployeeRecordEntrySettings={() => handleShowDynamicEmployeeComponent('employeeRegisterSettings')}
+                            />
                             <Container className="mt--6" fluid>
-                                <EmployeeUserRegister handleShowEmployeeUserRegister={handleShowEmployeeUserRegister} />
+                                <EmployeeUserRegister />
                             </Container>
                         </>
                     )
@@ -24,9 +38,16 @@ const EmployeeUserRegisterView = ({ handleShowEmployeeUserRegister, authenticati
                         authenticationDataLoggedInUser &&
                         authenticationDataLoggedInUser.role === 'customer' &&
                         <>
-                            <CustomerHeader name="Colaboradores" parentName="Cadastros" newRegistrationButtonText="Voltar" handleShowEmployeeUserRegister={handleShowEmployeeUserRegister} employeeRecordEntrySettingsButtonName="Configurações" handleShowEmployeeRecordEntrySettings={handleShowEmployeeRecordEntrySettings} />
+                            <CustomerHeader
+                                name="Colaboradores"
+                                parentName="Cadastros"
+                                newRegistrationButtonText="Voltar"
+                                handleShowEmployeeUserRegister={() => handleShowDynamicEmployeeComponent('employeeList')}
+                                employeeRecordEntrySettingsButtonName="Configurações"
+                                handleShowEmployeeRecordEntrySettings={() => handleShowDynamicEmployeeComponent('employeeRegisterSettings')}
+                            />
                             <Container className="mt--6" fluid>
-                                <EmployeeUserRegister handleShowEmployeeUserRegister={handleShowEmployeeUserRegister} />
+                                <EmployeeUserRegister />
                             </Container>
                         </>
                     )
@@ -35,13 +56,4 @@ const EmployeeUserRegisterView = ({ handleShowEmployeeUserRegister, authenticati
     );
 }
 
-
-EmployeeUserRegisterView.propTypes = {
-    handleShowEmployeeRecordEntrySettings: () => { },
-}
-
-EmployeeUserRegisterView.propTypes = {
-    authenticationDataLoggedInUser: PropTypes.object,
-    handleShowEmployeeRecordEntrySettings: PropTypes.func,
-};
 export default EmployeeUserRegisterView;

@@ -7,9 +7,11 @@ export const initialState = {
         birthdate: null,
         phoneNumber: '',
         selectedDepartment: '',
+        selectedDepartmentState: null,
         selectedRole: '',
         selectedFunction: '',
         selectedContractType: '',
+        selectedContractTypeState: null,
         selectedWorkModel: '',
         selectedWorkplace: '',
         selectedEmployeeAndRole: '',
@@ -158,6 +160,14 @@ export const formReducer = (state, action) => {
                     selectedDepartment: action.payload
                 },
             };
+        case 'SET_SELECTED_DEPARTMENT_STATE':
+            return {
+                ...state,
+                collaboratorData: {
+                    ...state.collaboratorData,
+                    selectedDepartmentState: action.payload
+                },
+            };
         case 'SET_SELECTED_ROLE':
             return {
                 ...state,
@@ -180,6 +190,14 @@ export const formReducer = (state, action) => {
                 collaboratorData: {
                     ...state.collaboratorData,
                     selectedContractType: action.payload
+                },
+            };
+        case 'SET_SELECTED_CONTRACT_TYPE_STATE':
+            return {
+                ...state,
+                collaboratorData: {
+                    ...state.collaboratorData,
+                    selectedContractTypeState: action.payload
                 },
             };
         case 'SET_SELECTED_WORK_MODEL':

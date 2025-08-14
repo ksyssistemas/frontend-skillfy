@@ -1,8 +1,8 @@
 // hooks/useFindValidCNPJ.js
 export async function useFindValidCNPJ(cnpj) {
+  console.log(`Rota: ${process.env.NEXT_PUBLIC_BRASIL_API_CNPJ_V1}/${cnpj}`);
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_BRASIL_API_CNPJ_V1}/${cnpj}`);
-
     const result = await response.json();
 
     // Quando a API retorna um erro, ela ainda envia status 200 e objeto com "message" + "type"

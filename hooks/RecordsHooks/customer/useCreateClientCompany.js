@@ -4,6 +4,7 @@ import useFindValidCNPJ from '../useFindValidCNPJ';
 import useCreateCustomer from './useCreateCustomerAccountHolder';
 import { CustomerContext } from '../../../contexts/RecordsContext/CustomerContext';
 import { employmentContractDataSearchAndProcess } from '../../../util/employmentContractDataSearchAndProcess';
+import { validateFieldWithReducer } from '../../../util/validateFieldWithReducer';
 
 const useCreateClientCompany = () => {
 
@@ -15,116 +16,140 @@ const useCreateClientCompany = () => {
 
   const { resetCreateCustomer } = useCreateCustomer();
 
-  const validateAddClientCompanyForm = (stateCNPJ, dispatchCNPJ, state, dispatch) => {
-    const stateCNPJData = stateCNPJ.cnpjData;
-    const stateData = state.legalEntityRegistrationData;
+  const validateAddCustomerCompanyForm = (stateCNPJ, dispatchCNPJ, state, dispatch) => {
+    const cnpj = stateCNPJ.cnpjData;
+    const data = state.legalEntityRegistrationData;
 
-    dispatchCNPJ({
-      type: 'SET_INDIVIDUAL_EMPLOYER_ID_NUMBER_STATE',
-      payload: stateCNPJData.individualEmployerIdNumber !== "" ? 'invalid' : 'valid'
-    });
-    dispatch({
-      type: 'SET_COMPANY_NAME_STATE',
-      payload: stateData.companyName === "" ? 'invalid' : 'valid'
-    });
-    dispatch({
-      type: 'SET_REGISTRATION_NAME_STATE',
-      payload: stateData.registrationName === "" ? 'invalid' : 'valid'
-    });
-    dispatch({
-      type: 'SET_COMPANY_TYPES_STATE',
-      payload: stateData.companyTypes === "" ? 'invalid' : 'valid'
-    });
-    dispatch({
-      type: 'SET_CUSTOMER_BUSINESS_PHONE_NUMBER_STATE',
-      payload: stateData.customerBusinessPhoneNumber === ""
-        || !validatePhoneNumber(stateData.customerBusinessPhoneNumber, 'business')
-        ? 'invalid' : 'valid'
-    });
+    let isFormValid = true;
 
-    let validationCustomerPhoneNumberState;
+    const fieldsToValidate = [
+      {
+        dispatch,
+        name: "COMPANY_NAME",
+        value: data.companyName,
+      },
+      {
+        dispatch,
+        name: "REGISTRATION_NAME",
+        value: data.registrationName,
+      },
+      {
+        dispatch,
+        name: "COMPANY_TYPES",
+        value: data.companyTypes,
+      },
+      {
+        dispatch,
+        name: "CUSTOMER_BUSINESS_PHONE_NUMBER",
+        value: data.customerBusinessPhoneNumber,
+        validate: (v) => v !== "" && validatePhoneNumber(v, "business"),
+      },
+      {
+        dispatch,
+        name: "COMPANY_EMAIL_ADDRESS",
+        value: data.companyEmailAddress,
+      },
+      {
+        dispatch,
+        name: "CUSTOMER_BUSINESS_SECTOR",
+        value: data.customerBusinessSector,
+      },
+      {
+        dispatch,
+        name: "ID_HEAD_OFFICE_BRANCH",
+        value: data.customerBusinessSector,
+      },
+      {
+        dispatch: dispatchCNPJ,
+        name: "INDIVIDUAL_EMPLOYER_ID_NUMBER",
+        value: cnpj.individualEmployerIdNumber,
+      },
+      {
+        dispatch,
+        name: "CUSTOMER_PHONE_NUMBER",
+        value: data.customerPhoneNumber,
+        validate: (v) => validatePhoneNumber(v, "personal"),
+        allowNull: true,
+      },
+      {
+        dispatch,
+        name: "CUSTOMER_WEBSITE",
+        value: data.customerWebSite,
+        validate: (v) => validateWebSite(v),
+        allowNull: true,
+      },
+    ];
 
-    if (stateData.customerPhoneNumber === "") {
-      validationCustomerPhoneNumberState = null;
-    } else if (!validatePhoneNumber(stateData.customerPhoneNumber, 'personal')) {
-      validationCustomerPhoneNumberState = 'invalid';
-    } else {
-      validationCustomerPhoneNumberState = 'valid';
+    for (const field of fieldsToValidate) {
+      const isValid = validateFieldWithReducer(field);
+      if (!isValid) isFormValid = false;
     }
+
     dispatch({
-      type: 'SET_CUSTOMER_PHONE_NUMBER_STATE',
-      payload: validationCustomerPhoneNumberState
-    });
-    dispatch({
-      type: 'SET_COMPANY_EMAIL_ADDRESS_STATE',
-      payload: stateData.companyEmailAddress === "" ? 'invalid' : 'valid'
-    });
-    dispatch({
-      type: 'SET_CUSTOMER_BUSINESS_SECTOR_STATE',
-      payload: stateData.customerBusinessSector === "" ? 'invalid' : 'valid'
+      type: "SET_IS_CUSTOMER_COMPANY_FORM_VALIDATED",
+      payload: isFormValid,
     });
 
-    let validationCustomerWebSiteState;
-
-    if (stateData.customerWebSite === "") {
-      validationCustomerWebSiteState = null;
-    } else if (!validateWebSite(stateData.customerWebSite)) {
-      validationCustomerWebSiteState = 'invalid';
-    } else {
-      validationCustomerWebSiteState = 'valid';
-    }
-    dispatch({
-      type: 'SET_CUSTOMER_WEBSITE_STATE',
-      payload: validationCustomerWebSiteState
-    });
-    dispatch({
-      type: 'SET_ID_HEAD_OFFICE_BRANCH_STATE',
-      payload: stateData.customerBusinessSector === "" ? 'invalid' : 'valid'
-    });
-  }
+    return isFormValid;
+  };
 
   function validateAddCustomerAddressForm(stateCEP, dispatchCEP, state, dispatch) {
-    const stateCEPData = stateCEP.cepData;
-    const stateData = state.legalEntityRegistrationData;
+    const cep = stateCEP.cepData;
+    const data = state.legalEntityRegistrationData;
 
-    dispatchCEP({
-      type: 'SET_ZIP_CODE_STATE',
-      payload: stateCEPData.zipCode === "" ? 'invalid' : 'valid'
-    });
-    dispatch({
-      type: 'SET_FEDERATED_UNIT_STATE',
-      payload: stateData.federatedUnit === "" ? 'invalid' : 'valid'
-    });
-    dispatch({
-      type: 'SET_COMPANY_CITY_STATE',
-      payload: stateData.companyCity === "" ? 'invalid' : 'valid'
-    });
-    dispatch({
-      type: 'SET_COMPANY_ADDRESS_STATE',
-      payload: stateData.companyAddress === "" ? 'invalid' : 'valid'
-    });
-    dispatch({
-      type: 'SET_COMPANY_ADDRESS_NUMBER_STATE',
-      payload: stateData.companyAddressNumber === "" ? 'invalid' : 'valid'
-    });
-    dispatch({
-      type: 'SET_COMPANY_DISTRICT_STATE',
-      payload: stateData.companyDistrict === "" ? 'invalid' : 'valid'
-    });
-    let validationCompanyAddressComplementState;
+    let isFormValid = true;
 
-    if (stateData.companyAddressComplement === "") {
-      validationCompanyAddressComplementState = null;
-    } else if (stateData.companyAddressComplementState === null) {
-      validationCompanyAddressComplementState = 'invalid';
-    } else {
-      validationCompanyAddressComplementState = 'valid';
+    const fieldsToValidate = [
+      {
+        dispatch: dispatchCEP,
+        name: "ZIP_CODE",
+        value: cep.zipCode,
+      },
+      {
+        dispatch,
+        name: "FEDERATED_UNIT",
+        value: data.federatedUnit,
+      },
+      {
+        dispatch,
+        name: "COMPANY_CITY",
+        value: data.companyCity,
+      },
+      {
+        dispatch,
+        name: "COMPANY_ADDRESS",
+        value: data.companyAddress,
+      },
+      {
+        dispatch,
+        name: "COMPANY_ADDRESS_NUMBER",
+        value: data.companyAddressNumber,
+      },
+      {
+        dispatch,
+        name: "COMPANY_DISTRICT",
+        value: data.companyDistrict,
+      },
+      {
+        dispatch,
+        name: "COMPANY_ADDRESS_COMPLEMENT",
+        value: data.companyAddressComplement,
+        allowNull: true,
+      },
+    ];
+
+    for (const field of fieldsToValidate) {
+      const isValid = validateFieldWithReducer(field);
+      if (!isValid) isFormValid = false;
     }
+
     dispatch({
-      type: 'SET_COMPANY_ADDRESS_COMPLEMENT_STATE',
-      payload: validationCompanyAddressComplementState
+      type: "SET_IS_CUSTOMER_COMPANY_ADDRESS_FORM_VALIDATED",
+      payload: isFormValid,
     });
-  };
+
+    return isFormValid;
+  }
 
   function handleFormFieldsAutocomplete(stateCNPJ, dispatchCNPJ, state, dispatch, stateCEP, dispatchCEP,) {
     const apiData = stateCNPJ.cnpjData.brasilAPICNPJData;
@@ -133,42 +158,56 @@ const useCreateClientCompany = () => {
     }
     if (apiData.nome_fantasia) {
       dispatch({ type: 'SET_COMPANY_NAME', payload: apiData.nome_fantasia });
+      dispatch({ type: 'SET_COMPANY_NAME_STATE', payload: 'valid' });
     }
     if (apiData.razao_social) {
       dispatch({ type: 'SET_REGISTRATION_NAME', payload: apiData.razao_social });
+      dispatch({ type: 'SET_REGISTRATION_NAME_STATE', payload: 'valid' });
     }
     if (apiData.ddd_telefone_1) {
-      dispatch({ type: 'SET_CUSTOMER_BUSINESS_PHONE_NUMBER', payload: formatPhoneNumber(apiData.ddd_telefone_1, 'business') });
+      dispatch({
+        type: 'SET_CUSTOMER_BUSINESS_PHONE_NUMBER',
+        payload: formatPhoneNumber(apiData.ddd_telefone_1, 'business')
+      });
+      dispatch({
+        type: 'SET_CUSTOMER_BUSINESS_PHONE_NUMBER_STATE',
+        payload: validatePhoneNumber(formatPhoneNumber(apiData.ddd_telefone_1, 'business'), 'business') ? 'valid' : 'invalid'
+      });
     }
     if (apiData.descricao_identificador_matriz_filial) {
-      if (apiData.descricao_identificador_matriz_filial === "MATRIZ"
-        || apiData.descricao_identificador_matriz_filial === "Matriz"
-      ) {
-        dispatch({ type: 'SET_ID_HEAD_OFFICE_BRANCH', payload: "Matriz" });
-      } else {
-        dispatch({ type: 'SET_ID_HEAD_OFFICE_BRANCH', payload: "Filial" });
-      }
+      const valor = apiData.descricao_identificador_matriz_filial.toLowerCase().includes('matriz') ? 'Matriz' : 'Filial';
+      dispatch({ type: 'SET_ID_HEAD_OFFICE_BRANCH', payload: valor });
+      dispatch({ type: 'SET_ID_HEAD_OFFICE_BRANCH_STATE', payload: 'valid' });
     }
     if (apiData.cep) {
       dispatchCEP({ type: 'SET_ZIP_CODE', payload: apiData.cep });
     }
     if (apiData.uf) {
       dispatch({ type: 'SET_FEDERATED_UNIT', payload: apiData.uf });
+      dispatch({ type: 'SET_FEDERATED_UNIT_STATE', payload: 'valid' });
     }
     if (apiData.municipio) {
       dispatch({ type: 'SET_COMPANY_CITY', payload: apiData.municipio });
+      dispatch({ type: 'SET_COMPANY_CITY_STATE', payload: 'valid' });
     }
     if (apiData.logradouro && apiData.descricao_tipo_de_logradouro) {
-      dispatch({ type: 'SET_COMPANY_ADDRESS', payload: `${apiData.descricao_tipo_de_logradouro} ${apiData.logradouro}` });
+      dispatch({
+        type: 'SET_COMPANY_ADDRESS',
+        payload: `${apiData.descricao_tipo_de_logradouro} ${apiData.logradouro}`
+      });
+      dispatch({ type: 'SET_COMPANY_ADDRESS_STATE', payload: 'valid' });
     }
     if (apiData.numero) {
       dispatch({ type: 'SET_COMPANY_ADDRESS_NUMBER', payload: apiData.numero });
+      dispatch({ type: 'SET_COMPANY_ADDRESS_NUMBER_STATE', payload: 'valid' });
     }
     if (apiData.complemento) {
       dispatch({ type: 'SET_COMPANY_ADDRESS_COMPLEMENT', payload: apiData.complemento });
+      dispatch({ type: 'SET_COMPANY_ADDRESS_COMPLEMENT_STATE', payload: 'valid' });
     }
     if (apiData.bairro) {
       dispatch({ type: 'SET_COMPANY_DISTRICT', payload: apiData.bairro });
+      dispatch({ type: 'SET_COMPANY_DISTRICT_STATE', payload: 'valid' });
     }
 
     dispatchCNPJ({ type: 'SET_HAS_VALUES_CHANGED_WITH_CNPJ_API_DATA', payload: true });
@@ -181,15 +220,19 @@ const useCreateClientCompany = () => {
     }
     if (apiData.state) {
       dispatch({ type: 'SET_FEDERATED_UNIT', payload: apiData.state });
+      dispatch({ type: 'SET_FEDERATED_UNIT_STATE', payload: 'valid' });
     }
     if (apiData.city) {
       dispatch({ type: 'SET_COMPANY_CITY', payload: apiData.city });
+      dispatch({ type: 'SET_COMPANY_CITY_STATE', payload: 'valid' });
     }
     if (apiData.neighborhood) {
       dispatch({ type: 'SET_COMPANY_DISTRICT', payload: apiData.neighborhood });
+      dispatch({ type: 'SET_COMPANY_DISTRICT_STATE', payload: 'valid' });
     }
     if (apiData.street) {
       dispatch({ type: 'SET_COMPANY_ADDRESS', payload: apiData.street });
+      dispatch({ type: 'SET_COMPANY_ADDRESS_COMPLEMENT_STATE', payload: 'valid' });
     }
 
     dispatchCEP({ type: 'SET_HAS_VALUES_CHANGED_WITH_CEP_API_DATA', payload: true });
@@ -229,13 +272,22 @@ const useCreateClientCompany = () => {
     }
   };
 
-  async function handleValidateAddClientCompanyForm(state, dispatch) {
-    const stateLegalEntityData = state.legalEntityRegistrationData;
-    const stateCNPJData = state.cnpjData;
-    const stateCEPData = state.cepData;
+  async function handleValidateAddCustomerCompanyForm(
+    stateGlobalCustomerRegisterReducer,
+    dispatchGlobalCustomerRegisterReducer,
+    stateIndividualRegistration,
+    dispatchIndividualRegistration,
+    stateLegalEntityRegistration,
+    dispatchLegalEntityRegistration,
+    stateCNPJ,
+    dispatchCNPJ,
+    stateCEP,
+    dispatchCEP
+  ) {
+    const stateLegalEntityData = stateLegalEntityRegistration.legalEntityRegistrationData;
+    const stateCNPJData = stateCNPJ.cnpjData;
+    const stateCEPData = stateCEP.cepData;
 
-    validateAddClientCompanyForm();
-    validateAddCustomerAddressForm();
     if (
       stateCNPJData.individualEmployerIdNumberState === "valid" &&
       stateLegalEntityData.companyNameState === "valid" &&
@@ -245,7 +297,7 @@ const useCreateClientCompany = () => {
       stateLegalEntityData.customerBusinessSectorState === "valid" &&
       stateLegalEntityData.companyEmailAddressState === "valid"
     ) {
-      dispatch({
+      dispatchGlobalCustomerRegisterReducer({
         type: 'LEGAL_ENTITY_SET_IS_CUSTOMER_COMPANY_FORM_VALIDATED',
         payload: true
       });
@@ -260,7 +312,7 @@ const useCreateClientCompany = () => {
         stateLegalEntityData.customerBusinessSector,
         stateLegalEntityData.customerWebSite
       );
-      dispatch({
+      dispatchGlobalCustomerRegisterReducer({
         type: 'LEGAL_ENTITY_SET_IS_CLIENT_COMPANY_SAVED',
         payload: true
       });
@@ -285,19 +337,42 @@ const useCreateClientCompany = () => {
           stateLegalEntityData.companyDistrict,
           customerUserIdCreated
         );
-        dispatch({
+        dispatchGlobalCustomerRegisterReducer({
           type: 'LEGAL_ENTITY_SET_IS_COMPANY_ADDRESS_SAVED',
           payload: true
         });
         await handleLinkingAccountHolderToCustomer(customerUserIdCreated);
-        goBackToCustomerUserList(handleShowCustomerUserRegister);
+        goBackToCustomerUserList(
+          handleShowCustomerUserRegister,
+          dispatchGlobalCustomerRegisterReducer,
+          dispatchIndividualRegistration,
+          dispatchLegalEntityRegistration,
+          stateCNPJ,
+          dispatchCNPJ,
+          stateCEP,
+          dispatchCEP
+        );
       }
     }
   }
 
-  function goBackToCustomerUserList(handleShowCustomerUserRegister) {
-    dispatchCNPJ({ type: 'SET_HAS_VALUES_CHANGED_WITH_CNPJ_API_DATA', payload: false });
-    dispatchCEP({ type: 'SET_HAS_VALUES_CHANGED_WITH_CEP_API_DATA', payload: false });
+  function goBackToCustomerUserList(
+    handleShowCustomerUserRegister,
+    dispatchGlobalCustomerRegisterReducer,
+    dispatchIndividualRegistration,
+    dispatchLegalEntityRegistration,
+    stateCNPJ,
+    dispatchCNPJ,
+    stateCEP,
+    dispatchCEP
+  ) {
+    dispatchIndividualRegistration({ type: 'INDIVIDUAL_RESET_INDIVIDUAL_REGISTRATION_DATA' });
+    dispatchLegalEntityRegistration({ type: 'LEGAL_ENTITY_RESET_LEGAL_ENTITY_REGISTRATION_DATA' });
+    dispatchGlobalCustomerRegisterReducer({ type: 'RESET_ALL' });
+    dispatchCNPJ({ type: 'RESET_CNPJ_DATA' });
+    dispatchCEP({ type: 'RESET_CEP_DATA' });
+    localStorage.removeItem('individualRegistrationData');
+    localStorage.removeItem('legalEntityRegistrationData');
     handleShowCustomerUserRegister();
   }
 
@@ -312,7 +387,8 @@ const useCreateClientCompany = () => {
           email: companyEmailAddress,
           type: companyTypes,
           sector: customerBusinessSector,
-          status: true
+          status: true,
+          paper: 'EMPRESA'
         };
 
         if (customerPhoneNumber) {
@@ -405,7 +481,7 @@ const useCreateClientCompany = () => {
         if (response.ok) {
           const data = await response.json();
           handleCleaningIdAccountHolderToLinkToCustomer();
-          console.log('O titular da conta pertence a uma pessoa jurídica agora!\n', data);
+          console.log('O titular da conta pertence a uma pessoa jurídica agora!');
 
           return data.id;
         } else {
@@ -418,9 +494,9 @@ const useCreateClientCompany = () => {
   };
 
   return {
-    handleValidateAddClientCompanyForm,
+    handleValidateAddCustomerCompanyForm,
     handleFormFieldsAutocomplete,
-    validateAddClientCompanyForm,
+    validateAddCustomerCompanyForm,
     validatePhoneNumber,
     validateWebSite,
     validateCompanyEmail,

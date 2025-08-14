@@ -256,7 +256,7 @@ function ModalAdmin({ handleOpenAdminUpdateModal, handleCleanDetailedAdminAccoun
                       }}
                       timeFormat={false}
                       value={adminIdToUpdate ? birthdate : null}
-                      onChange={(e) => adminIdToUpdate ? handleDateFormatting(e, setBirthdate, setBirthdateState, setFormattedBirthdate) : handleDateFormatting(e, setBirthdate, setBirthdateState)}
+                      onChange={(e) => adminIdToUpdate ? handleDateFormatting(false, e, setBirthdate, setBirthdateState, setFormattedBirthdate) : handleDateFormatting(false, e, setBirthdate, setBirthdateState, false)}
                     />
                     {/* <div className="invalid-feedback">
                                     É necessário selecionar uma data.

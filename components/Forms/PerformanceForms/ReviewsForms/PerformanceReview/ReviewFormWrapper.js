@@ -63,7 +63,7 @@ export function ReviewFormWrapper() {
                             stepsNumber={STEPS_NUMBER_FOR_WIZARD_COMPONENT}
                             currentStep={currentStep}
                             stepTitles={WIZARD_COMPONENT_STEP_TITLES}
-                            hasWizartStyleOfReviewCreation={true}
+                            hasWizardStyleOfReviewCreation={true}
                         />
                         <CardBody>
                             {renderReviewComponent()}

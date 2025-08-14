@@ -1,7 +1,12 @@
 import React, { useState, useContext } from 'react';
 import { useAlert } from '../../../contexts/AlertContext';
+import { EmployeeSettingsContext } from '../../../contexts/RecordsContext/EmployeeSettingsContext';
 
 const useCreateTypeContract = () => {
+
+  const {
+    handleCreatedEmployeeContractTypeStatusChange
+  } = useContext(EmployeeSettingsContext);
 
   const { showAlert } = useAlert();
 
@@ -58,6 +63,7 @@ const useCreateTypeContract = () => {
             "Sucesso!",
             "Contrato de trabalho adicionado!",
           );
+          handleCreatedEmployeeContractTypeStatusChange();
           console.log('Data sent successfully!');
         } else {
           console.error('Erro na resposta:', response.status);

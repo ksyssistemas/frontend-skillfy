@@ -382,7 +382,7 @@ ModalContactPerson.defaultProps = {
 
 ModalContactPerson.propTypes = {
   handleShowContactPersonDetailsModal: PropTypes.func,
-  selectedIdToShowContactPersonDetails: PropTypes.string,
+  selectedIdToShowContactPersonDetails: PropTypes.number,
   handleCleaningSelectedIdToShowContactPersonDetails: PropTypes.func,
   handleOpenContactModal: PropTypes.func,
   modalOpen: PropTypes.bool,

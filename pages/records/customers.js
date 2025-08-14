@@ -18,7 +18,12 @@ function CustomerRecords() {
         !isShouldSubmitCustomerRegistration
           ? (
             <>
-              <AdminHeader name="Cliente" parentName="Registros" newRegistrationButtonText="Adicionar Cliente" handleShowCustomerUserRegister={handleShowCustomerUserRegister} />
+              <AdminHeader
+                name="Cliente"
+                parentName="Registros"
+                newRegistrationButtonText="Adicionar Cliente"
+                handleShowCustomerUserRegister={handleShowCustomerUserRegister}
+              />
               <Container className="mt--6" fluid>
                 <CustomersUserList />
               </Container>
@@ -26,7 +31,12 @@ function CustomerRecords() {
           )
           : (
             <>
-              <AdminHeader name="Cliente" parentName="Cadastros" newRegistrationButtonText="Voltar" handleShowAdminUserRegister={handleShowCustomerUserRegister} />
+              <AdminHeader
+                name="Cliente"
+                parentName="Cadastros"
+                newRegistrationButtonText="Voltar"
+                handleShowAdminUserRegister={handleShowCustomerUserRegister}
+              />
               <Container className="mt--6" fluid>
                 <CustomerUserRegister />
               </Container>

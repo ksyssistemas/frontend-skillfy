@@ -1,8 +1,14 @@
 // Hook para gerenciar o formulário
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { EmployeeContext } from '../../../contexts/RecordsContext/EmployeeContext';
 
 const useCreateEmployee = (state, dispatch) => {
+
+    const legalEntityIdToLinkToEmployee = sessionStorage.getItem('userAuthData') ?
+     JSON.parse(sessionStorage.getItem('userAuthData')).data.id 
+     : 0;
+
+    const { handleShowDynamicEmployeeComponent } = useContext(EmployeeContext);
 
     const {
         firstName,
@@ -42,13 +48,7 @@ const useCreateEmployee = (state, dispatch) => {
         employeeDepartureTimeState,
     } = state.collaboratorData;
 
-    const {
-        customerIdToLinkToEmployee,
-        handleCustomerIdStatusCleanup,
-        handleCustomerIdToLinkToEmployee,
-    } = useContext(EmployeeContext);
-
-    const [hasValuesChangedWithAPIData, setHasValuesChangedWithAPIData] = React.useState(false);
+    const [hasValuesChangedWithAPIData, setHasValuesChangedWithAPIData] = useState(false);
     const handleValuesChangedWithAPIData = () => setHasValuesChangedWithAPIData(!hasValuesChangedWithAPIData);
 
     const validateSelection = () => {
@@ -57,7 +57,7 @@ const useCreateEmployee = (state, dispatch) => {
             dispatch({ type: 'SET_SHOW_ERROR_FEEDBACK_EMPLOYEE_LEADER_COMPONENT', payload: true });
             dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME_STATE', payload: 'invalid' });
         } else if (!isEmployeeLeader && hasEmployeeLeader && !employeeLeaderName) {
-            dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME_STATE', payload: 'invalid' });
+            dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME_STATE', payload: '' });
         } else if (!isEmployeeLeader && hasEmployeeLeader && employeeLeaderName) {
             dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME_STATE', payload: 'valid' });
         } else if (isEmployeeLeader && !hasEmployeeLeader && !employeeLeaderName) {
@@ -221,7 +221,7 @@ const useCreateEmployee = (state, dispatch) => {
         handleValuesChangedWithAPIData();
     }
 
-    async function handleValidateAddEmployeeForm(handleShowEmployeeUserRegister) {
+    async function handleValidateAddEmployeeForm() {
         validateAddEmployeeForm();
         validateSelection();
         //validateAddEmployeeAddressForm();
@@ -237,7 +237,7 @@ const useCreateEmployee = (state, dispatch) => {
                 phoneNumber,
                 isLead,
                 employeeLeaderName,
-                customerIdToLinkToEmployee,
+                legalEntityIdToLinkToEmployee,
                 employeeDepartment,
                 employeeRole,
                 employeeFunction
@@ -280,13 +280,13 @@ const useCreateEmployee = (state, dispatch) => {
             //         userIdCreated
             //     );
             // }
-            goBackToEmployeeUserList(handleShowEmployeeUserRegister);
+            goBackToEmployeeUserList();
         }
     }
 
-    function goBackToEmployeeUserList(handleShowEmployeeUserRegister) {
+    function goBackToEmployeeUserList() {
         dispatch({ type: 'RESET_COLLABORATOR_DATA' });
-        handleShowEmployeeUserRegister();
+        handleShowDynamicEmployeeComponent('employeeList');
     }
 
     const handleSubmit = async (
@@ -297,7 +297,7 @@ const useCreateEmployee = (state, dispatch) => {
         phoneNumber,
         isLead,
         employeeLeaderName,
-        customerIdToLinkToEmployee,
+        legalEntityIdToLinkToEmployee,
         employeeDepartment,
         employeeRole,
         employeeFunction
@@ -309,7 +309,7 @@ const useCreateEmployee = (state, dispatch) => {
             phoneNumber,
             isLead,
             employeeLeaderName,
-            customerIdToLinkToEmployee,
+            legalEntityIdToLinkToEmployee,
             employeeDepartment,
             employeeRole,
             employeeFunction
@@ -319,10 +319,11 @@ const useCreateEmployee = (state, dispatch) => {
             emailAddress,
             birthdate,
             phoneNumber,
-            customerIdToLinkToEmployee,
+            legalEntityIdToLinkToEmployee,
             employeeDepartment,
             employeeRole
         ) {
+            console.log("legalEntityIdToLinkToEmployee: ", legalEntityIdToLinkToEmployee);
             try {
 
                 const payload = {
@@ -334,7 +335,7 @@ const useCreateEmployee = (state, dispatch) => {
                     status: true,
                     isLead: isLead,
                     LeaderName: employeeLeaderName,
-                    customerId: customerIdToLinkToEmployee,
+                    customerId: legalEntityIdToLinkToEmployee,
                     departmentId: Number(employeeDepartment),
                     rolesId: Number(employeeRole),
                 };

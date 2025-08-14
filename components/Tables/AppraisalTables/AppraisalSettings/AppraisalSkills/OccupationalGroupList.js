@@ -4,10 +4,6 @@ import {
     CardHeader,
     Form,
     Table,
-    Nav,
-    NavItem,
-    NavLink,
-    CardBody,
     UncontrolledDropdown,
     DropdownToggle,
     DropdownItem,
@@ -17,14 +13,7 @@ import {
     Col,
     Button,
 } from "reactstrap";
-import PropTypes from "prop-types";
-import { useFindAllFunctions } from "../../../../../hooks/RecordsHooks/employeeFunction/useFindAllFunctions";
-import { useFindAllRoles } from "../../../../../hooks/RecordsHooks/role/useFindAllRoles";
-import { useFindAllSkillClassifications } from "../../../../../hooks/DefinitionOptionsReview/SkillsClassifications/useFindAllSkillClassifications";
 import { useFindAllOccupationalGroups } from "../../../../../hooks/DefinitionOptionsReview/OccupationalGroups/useFindAllSkillClassifications";
-import ShowRoleDescriptionsModal from "../../../../Modals/admin/show-role-descriptions";
-import ShowFunctionsDescriptionsModal from "../../../../Modals/admin/show-functions-descriptions";
-import { useFindAllSkillTypes } from "../../../../../hooks/DefinitionOptionsReview/SkillsTypes/useFindAllSkillTypes";
 import { AppraisalSkillsContext } from "../../../../../contexts/PerformanceContext/AppraisalSkillsContext";
 import { useSweetAlert } from "../../../../../contexts/SweetAlertContext";
 import OccupationalGroupModal from "../../../../Modals/AppraisalModal/OccupationalGroupModal";
@@ -236,7 +225,7 @@ function OccupationalGroupList() {
             <OccupationalGroupModal
                 handleOpenOccupationalGroupModal={handleOpenOccupationalGroupModal}
                 occupationalGroupModalOpen={occupationalGroupModalOpen}
-                occupationalGroupIdToUpdate={occupationalGroupIdToUpdate}
+                occupationalGroupIdToUpdate={String(occupationalGroupIdToUpdate)}
                 handleOccupationalGroupIdToUpdate={handleOccupationalGroupIdToUpdate}
             />
         </>

@@ -5,14 +5,10 @@ export const EmployeeContext = createContext({});
 
 function EmployeeProvider({ children }) {
 
-    const [customerIdToLinkToEmployee, setCustomerIdToLinkToEmployee] = useState(0);
+    const [isShouldRenderEmployeeView, setIsShouldRenderEmployeeView] = useState('employeeList');
 
-    function handleCustomerIdStatusCleanup() {
-        setCustomerIdToLinkToEmployee(0);
-    }
-
-    function handleCustomerIdToLinkToEmployee(customerId) {
-        setCustomerIdToLinkToEmployee(customerId);
+    function handleShowDynamicEmployeeComponent(view) {
+        setIsShouldRenderEmployeeView(view);
     }
 
     const [employeeIdToUpdate, setEmployeeIdToUpdate] = useState(0);
@@ -45,12 +41,20 @@ function EmployeeProvider({ children }) {
         setHasDeletedEmployeeRecord(!hasDeletedEmployeeRecord);
     }
 
+    const [isLoadingContractDetailsEmployeeToUpdateData, setIsLoadingContractDetailsEmployeeToUpdateData] = useState(false);
+    function handleIsLoadingContractDetailsEmployeeToUpdateData(status) {
+        setIsLoadingContractDetailsEmployeeToUpdateData(status);
+    }
+    const [isLoadingDetailsSelectedEmployeeData, setIsLoadingDetailsSelectedEmployeeData] = useState(false);
+    function handleIsLoadingDetailsSelectedEmployeeData(status) {
+        setIsLoadingDetailsSelectedEmployeeData(status);
+    }
+
     return (
         <EmployeeContext.Provider
             value={{
-                customerIdToLinkToEmployee,
-                handleCustomerIdStatusCleanup,
-                handleCustomerIdToLinkToEmployee,
+                isShouldRenderEmployeeView,
+                handleShowDynamicEmployeeComponent,
                 employeeIdToUpdate,
                 handleEmployeeIdStatusCleanupToUpdate,
                 handleEmployeeIdToUpdate,
@@ -62,6 +66,10 @@ function EmployeeProvider({ children }) {
                 handleIsShouldUpdateEmployee,
                 hasDeletedEmployeeRecord,
                 handleDeletedEmployeeRecordStatusChange,
+                isLoadingContractDetailsEmployeeToUpdateData,
+                handleIsLoadingContractDetailsEmployeeToUpdateData,
+                isLoadingDetailsSelectedEmployeeData,
+                handleIsLoadingDetailsSelectedEmployeeData
             }}>
             {children}
         </EmployeeContext.Provider>

@@ -5,7 +5,7 @@ import {
     Progress
 } from "reactstrap";
 
-function SimpleWizard({ stepsNumber, currentStep, stepTitles, hasWizartStyleOfReviewCreation }) {
+function SimpleWizard({ stepsNumber, currentStep, stepTitles, hasWizardStyleOfReviewCreation }) {
     const progressBarNumber = stepsNumber - 1;
 
     const steps = Array.from({ length: stepsNumber }).map((_, index) => {
@@ -34,22 +34,20 @@ function SimpleWizard({ stepsNumber, currentStep, stepTitles, hasWizartStyleOfRe
                                             href="#"
                                             className="d-flex flex-column align-items-center justify-content-center p-1 text-decoration-none"
                                             style={{
-                                                color: hasWizartStyleOfReviewCreation
+                                                color: hasWizardStyleOfReviewCreation
                                                     ? (step.status === 'isDone' ? '#ff623f' : '#6c757d')
                                                     : (step.status === 'isDone' ? '#562f9f' : '#6c757d')
                                             }}
                                         >
                                             {step.status === 'isDone' ? (
                                                 <span
-                                                    className="d-inline-flex align-items-center justify-content-center rounded-circle text-md"
+                                                    className="d-inline-flex align-items-center justify-content-center rounded-circle"
                                                     style={{
                                                         width: '2rem',
                                                         height: '2rem',
                                                         fontSize: '2rem',
-                                                        color: hasWizartStyleOfReviewCreation
-                                                            ? (step.status === 'isDone' ? '#ffeeef' : '#6c757d')
-                                                            : (step.status === 'isDone' ? '#ffeeef' : '#6c757d'),
-                                                        backgroundColor: hasWizartStyleOfReviewCreation
+                                                        color: step.status === 'isDone' ? '#ffeeef' : '#6c757d',
+                                                        backgroundColor: hasWizardStyleOfReviewCreation
                                                             ? (step.status === 'isDone' ? '#ff623f' : '#e9ecef')
                                                             : (step.status === 'isDone' ? '#57249F' : '#e9ecef'),
                                                     }}
@@ -63,10 +61,10 @@ function SimpleWizard({ stepsNumber, currentStep, stepTitles, hasWizartStyleOfRe
                                                         width: '2rem',
                                                         height: '2rem',
                                                         fontSize: undefined,
-                                                        color: hasWizartStyleOfReviewCreation
+                                                        color: hasWizardStyleOfReviewCreation
                                                             ? (step.status === 'isDone' ? '#ffeeef' : '#6c757d')
                                                             : (step.status === 'isDone' ? '#ffeeef' : '#6c757d'),
-                                                        backgroundColor: hasWizartStyleOfReviewCreation
+                                                        backgroundColor: hasWizardStyleOfReviewCreation
                                                             ? (step.status === 'isDone' ? '#ff623f' : '#e9ecef')
                                                             : (step.status === 'isDone' ? '#57249F' : '#e9ecef'),
                                                     }}
@@ -90,7 +88,7 @@ function SimpleWizard({ stepsNumber, currentStep, stepTitles, hasWizartStyleOfRe
                                         >
                                             <Progress
                                                 color={
-                                                    hasWizartStyleOfReviewCreation
+                                                    hasWizardStyleOfReviewCreation
                                                         ? (step.status === 'isDone' ? 'warning' : 'light')
                                                         : (step.status === 'isDone' ? 'primary' : 'light')
                                                 }
@@ -122,7 +120,7 @@ SimpleWizard.propTypes = {
     stepsNumber: PropTypes.number,
     currentStep: PropTypes.number,
     stepTitles: PropTypes.array,
-    hasWizartStyleOfReviewCreation: PropTypes.bool,
+    hasWizardStyleOfReviewCreation: PropTypes.bool,
 };
 
 export default SimpleWizard;

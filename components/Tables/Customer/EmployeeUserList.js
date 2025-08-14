@@ -25,6 +25,7 @@ import { useFindClientCompany } from '../../../hooks/RecordsHooks/customer/useFi
 import { useFindEmployeeContractDetails } from '../../../hooks/RecordsHooks/featuresEmploymentContract/useFindEmployeeContractDetails';
 import { useFindRole } from '../../../hooks/RecordsHooks/role/useFindRole';
 import { useDeleteEmployeeContract } from '../../../hooks/RecordsHooks/featuresEmploymentContract/useDeleteEmployeeContract';
+import PageChange from '../../PageChange/PageChange';
 
 const EmployeeUserList = () => {
 
@@ -38,6 +39,7 @@ const EmployeeUserList = () => {
     handleUpdatedEmployeeRecordStatusChange,
     hasDeletedEmployeeRecord,
     handleDeletedEmployeeRecordStatusChange,
+    isLoadingContractDetailsEmployeeToUpdateData
   } = useContext(EmployeeContext);
 
   const { warningAlert } = useSweetAlert();
@@ -102,7 +104,7 @@ const EmployeeUserList = () => {
     (idSelectedToShowEmployeeDetails && idSelectedToShowEmployeeDetails !== 0) ||
     (employeeIdToUpdate && employeeIdToUpdate !== 0);
 
-  const handleDeleteClientEmployee = async (employeeId, employeeName, employeeLastName) => {
+  const handleDeleteClientEmployee = async (employeeId, employeeName, employeeLastName, handleDeletedEmployeeRecordStatusChange) => {
     try {
       const deleteEmployee = await useDeleteEmployee(employeeId);
       const deleteContract = await useDeleteEmployeeContract(employeeId);
@@ -131,7 +133,7 @@ const EmployeeUserList = () => {
       "Deletar",
       `Você deseja realmente excluir ${name}?`,
       "lg",
-      () => handleDeleteClientEmployee(employeeId, employeeName, employeeLastName)
+      () => handleDeleteClientEmployee(employeeId, employeeName, employeeLastName, handleDeletedEmployeeRecordStatusChange)
     );
   };
 
@@ -161,15 +163,14 @@ const EmployeeUserList = () => {
             console.error(`Error fetching employee data for customerId ${employee.customerId}:`, error);
             return {
               ...employee,
-              companyName: 'Unknown',
-              roleName: 'Unknown',
+              companyName: 'Desconhecida',
+              roleName: 'Desconhecida',
               adimissionDate: 'N/A'
             };
           }
         })
       );
       setDetailedEmployeeData(updatedEmployees);
-      console.log(updatedEmployees);
     };
 
 

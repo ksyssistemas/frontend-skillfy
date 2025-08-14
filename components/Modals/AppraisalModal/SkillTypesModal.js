@@ -21,6 +21,7 @@ import { useFindAllOccupationalGroups } from "../../../hooks/DefinitionOptionsRe
 import { useFindSkillType } from "../../../hooks/DefinitionOptionsReview/SkillsTypes/useFindSkillType";
 import useCreateSkillType from "../../../hooks/DefinitionOptionsReview/SkillsTypes/useCreateSkillType";
 import useUpdateSkillType from "../../../hooks/DefinitionOptionsReview/SkillsTypes/useUpdateSkillType";
+import { selectedListItemToUpdate } from "../../../util/selectedListItemToUpdate";
 
 function SkillTypesModal(
     {
@@ -44,9 +45,9 @@ function SkillTypesModal(
         classificationOfSkillTypeState,
         setClassificationOfSkillTypeState,
         skillTypeOccupationalGroup,
-        setskillTypeOccupationalGroup,
+        setSkillTypeOccupationalGroup,
         skillTypeOccupationalGroupState,
-        setskillTypeOccupationalGroupState,
+        setSkillTypeOccupationalGroupState,
         skillTypeDataList,
         setSkillTypeDataList,
         handleSkillTypeDataList,
@@ -77,24 +78,19 @@ function SkillTypesModal(
     }
 
     const handleCloseSkillTipeModal = () => {
-        // Limpa os campos de entrada
-        setSkillTypeName('');
-        setSkillTypeDescription('');
+        reset();
+        handleSkillTypeIdToUpdate();
+        handleCleanDetailedSkillTypesData();
         setSelectedClassificationOfSkillType('');
         setSelectedSkillTypeOccupationalGroup('');
-        setClassificationOfSkillType(null);
-        setClassificationOfSkillTypeState(null);
-        setskillTypeOccupationalGroup(null);
-        setskillTypeOccupationalGroupState(null);
-        reset();
         handleOpenSkillTypeModal();
     };
 
     const updateSelectedPeriod = (periodText) => {
         const period = cyclePeriodDataListMook.find(p => p.text === periodText);
         if (period) {
-            setSelectePeriod(period.id);
-            handleSelectionEmploymentContractData(period.id, cyclePeriodDataListMook, setSelectePeriod, setCyclePeriod, setCyclePeriodState);
+            setSelectedPeriod(period.id);
+            handleSelectionEmploymentContractData(period.id, cyclePeriodDataListMook, setSelectedPeriod, setCyclePeriod, setCyclePeriodState);
         }
     };
 
@@ -111,24 +107,71 @@ function SkillTypesModal(
         )
     }
 
-    useEffect(() => {
-        if (!skillTypeIdToUpdate) {
-            setDetailedSkillTypesData([]);
-            setSkillTypeName('');
-            setSkillTypeDescription('');
+    const handleSelectionEmploymentContractDataWrapper = (
+        selectedId,
+        dataList,
+        setSelectedAction,
+        setFieldAction,
+        setStateAction,
+        setSelectedDepartmentIdAction = null,
+        setHasDepartmentSelectedAction = null,
+        savedDataType = 'id'
+    ) => {
+        // Despache o estado 'valid' antes de iniciar o processo de seleção
+        if (setStateAction) setStateAction('valid');
+        if (typeof setHasDepartmentSelectedAction === 'function') {
+            setHasDepartmentSelectedAction(true);
         }
-    }, [skillTypeIdToUpdate]);
-    
+        // Chama a função de processamento de seleção de dados
+        handleSelectionEmploymentContractData(
+            selectedId,
+            dataList,
+            (value) => setSelectedAction(value),
+            (value) => setFieldAction(value),
+            (state) => setStateAction(state),
+            (id) => {
+                if (typeof setSelectedDepartmentIdAction === 'function') {
+                    setSelectedDepartmentIdAction(id);
+                }
+            },
+            () => {
+                if (typeof setHasDepartmentSelectedAction === 'function') {
+                    setHasDepartmentSelectedAction(true);
+                }
+            },
+            savedDataType
+        );
+    };
+
+    const selectedListItemToUpdate = (item, list, setSelectedItem, setItem, setItemState) => {
+        const selectedItem = list.find(p => p.id === item);
+        if (selectedItem) {
+            setSelectedItem(selectedItem.id);
+            handleSelectionEmploymentContractDataWrapper(
+                selectedItem.id,
+                list,
+                setSelectedItem,
+                setItem,
+                setItemState,
+                null,
+                null,
+                'id'
+            );
+        }
+    };
 
     useEffect(() => {
         const fetchData = async () => {
-            if (skillTypeDataList.length === 0) {
-                await employmentContractDataSearchAndProcess(useFindAllSkillTypes, handleSkillTypeDataList, 'skillTypes', 'EmployeeUserRegister');
+            if (skillTypeModalOpen && classificationOfSkillTypeDataList.length === 0) {
+                await employmentContractDataSearchAndProcess(
+                    useFindAllSkillClassifications,
+                    handleClassificationOfSkillTypeDataList,
+                    'skillClassification',
+                    'EmployeeUserRegister'
+                );
             }
-            if (classificationOfSkillTypeDataList.length === 0) {
-                await employmentContractDataSearchAndProcess(useFindAllSkillClassifications, handleClassificationOfSkillTypeDataList, 'skillClassification', 'EmployeeUserRegister');
-            }
-            if (skillTypeOccupationalGroupDataList.length === 0) {
+
+            if (skillTypeModalOpen && skillTypeOccupationalGroupDataList.length === 0) {
                 await employmentContractDataSearchAndProcess(
                     useFindAllOccupationalGroups,
                     handleSkillTypeOccupationalGroupDataList,
@@ -136,39 +179,66 @@ function SkillTypesModal(
                     'EmployeeUserRegister'
                 );
             }
-        }
+
+            if (skillTypeModalOpen && skillTypeDataList.length === 0) {
+                await employmentContractDataSearchAndProcess(
+                    useFindAllSkillTypes,
+                    handleSkillTypeDataList,
+                    'skillTypes',
+                    'EmployeeUserRegister'
+                );
+            }
+        };
 
         fetchData();
-    }, []);
+    }, [skillTypeModalOpen, skillTypeIdToUpdate]);
 
     const [detailedSkillTypesData, setDetailedSkillTypesData] = useState([]);
     function handleCleanDetailedSkillTypesData() {
         setDetailedSkillTypesData([]);
     };
 
-
     useEffect(() => {
+        const shouldLoad =
+            skillTypeIdToUpdate &&
+            classificationOfSkillTypeDataList.length > 0 &&
+            skillTypeOccupationalGroupDataList.length > 0;
+
+        if (!shouldLoad || detailedSkillTypesData.length > 0) return;
+
         const fetchData = async (skillTypeIdToUpdate) => {
-            if (!detailedSkillTypesData.length) {
-                const foundSkillClassification = await useFindSkillType(skillTypeIdToUpdate);
-                setDetailedSkillTypesData(foundSkillClassification);
-                setSkillTypeName(foundSkillClassification.competencieTypeName)
-                setSkillTypeDescription(foundSkillClassification.description)
-                setSelectedClassificationOfSkillType(foundSkillClassification.skillClassificationId)
-                setSelectedSkillTypeOccupationalGroup(foundSkillClassification.occupationalGroupId)
-            }
+            const foundSkillClassification = await useFindSkillType(skillTypeIdToUpdate);
+            setDetailedSkillTypesData(foundSkillClassification);
+            setSkillTypeName(foundSkillClassification.competencieTypeName)
+            setSkillTypeDescription(foundSkillClassification.description)
+            selectedListItemToUpdate(
+                String(foundSkillClassification.skillClassificationId),
+                classificationOfSkillTypeDataList,
+                setSelectedClassificationOfSkillType,
+                setClassificationOfSkillType,
+                setClassificationOfSkillTypeState
+            );
+            selectedListItemToUpdate(
+                String(foundSkillClassification.occupationalGroupId),
+                skillTypeOccupationalGroupDataList,
+                setSelectedSkillTypeOccupationalGroup,
+                setSkillTypeOccupationalGroup,
+                setSkillTypeOccupationalGroupState
+            );
         };
-        if (skillTypeIdToUpdate) {
-            fetchData(skillTypeIdToUpdate);
-        }
-    }, [skillTypeIdToUpdate]);
+
+        fetchData(skillTypeIdToUpdate);
+    }, [
+        skillTypeIdToUpdate,
+        classificationOfSkillTypeDataList,
+        skillTypeOccupationalGroupDataList,
+    ]);
 
     return (
         <Modal
             toggle={handleOpenSkillTypeModal}
             isOpen={skillTypeModalOpen}
             size="xl"
-        //fullscreen
         >
             <div className=" modal-header">
                 <h5 className=" modal-title" id="exampleModalLabel">
@@ -273,7 +343,7 @@ function SkillTypesModal(
                                     id="validationSelectSkillClassification"
                                     className="form-control"
                                     data-minimum-results-for-search="Infinity"
-                                    options={{ placeholder: "Selecione uma classsificação" }}
+                                    options={{ placeholder: "Selecione uma classificação" }}
                                     value={selectedClassificationOfSkillType}
                                     onChange={(e) => setSelectedClassificationOfSkillType(e.target.value)}
                                     data={classificationOfSkillTypeDataList}
@@ -308,8 +378,8 @@ function SkillTypesModal(
                                         e.target.value,
                                         skillTypeOccupationalGroupDataList,
                                         setSelectedSkillTypeOccupationalGroup,
-                                        setskillTypeOccupationalGroup,
-                                        setskillTypeOccupationalGroupState,
+                                        setSkillTypeOccupationalGroup,
+                                        setSkillTypeOccupationalGroupState,
                                         null,
                                         null,
                                         'id'

@@ -11,13 +11,13 @@ function AppraisalSkillsProvider({ children }) {
         setSkillClassificationViewComponents(listType);
     };
 
-    const [hasUpdatedAppraisalSkillClassificaiton, setHasUpdatedAppraisalSkillClassificaiton] = useState(false);
-    function handleUpdatedAppraisalSkillClassificaitonStatusChange() {
-        setHasUpdatedAppraisalSkillClassificaiton(!hasUpdatedAppraisalSkillClassificaiton);
+    const [hasUpdatedAppraisalSkillClassification, setHasUpdatedAppraisalSkillClassification] = useState(false);
+    function handleUpdatedAppraisalSkillClassificationStatusChange() {
+        setHasUpdatedAppraisalSkillClassification(!hasUpdatedAppraisalSkillClassification);
     }
 
     const [hasNewAppraisalSkillClassificationCreated, setHasNewAppraisalSkillClassificationCreated] = useState(false);
-    function handleCreatedAppraisalSkillClassificaitonStatusChange() {
+    function handleCreatedAppraisalSkillClassificationStatusChange() {
         setHasNewAppraisalSkillClassificationCreated(!hasNewAppraisalSkillClassificationCreated);
     }
 
@@ -59,10 +59,10 @@ function AppraisalSkillsProvider({ children }) {
     return (
         <AppraisalSkillsContext.Provider
             value={{
-                hasUpdatedAppraisalSkillClassificaiton,
-                handleUpdatedAppraisalSkillClassificaitonStatusChange,
+                hasUpdatedAppraisalSkillClassification,
+                handleUpdatedAppraisalSkillClassificationStatusChange,
                 hasNewAppraisalSkillClassificationCreated,
-                handleCreatedAppraisalSkillClassificaitonStatusChange,
+                handleCreatedAppraisalSkillClassificationStatusChange,
                 hasDeletedAppraisalSkillClassification,
                 handleDeletedAppraisalSkillClassificationStatusChange,
                 skillClassificationViewComponents,

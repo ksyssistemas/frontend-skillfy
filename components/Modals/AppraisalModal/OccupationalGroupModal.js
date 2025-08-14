@@ -54,13 +54,15 @@ function OccupationalGroupModal(
     const handleCloseOccupationalGroupModal = () => {
         handleOpenOccupationalGroupModal();
         reset();
+        handleOccupationalGroupIdToUpdate('');
+        handleCleanDetailedOccupationalGroupsData();
     };
 
     const updateSelectedPeriod = (periodText) => {
         const period = cyclePeriodDataListMook.find(p => p.text === periodText);
         if (period) {
-            setSelectePeriod(period.id);
-            handleSelectionEmploymentContractData(period.id, cyclePeriodDataListMook, setSelectePeriod, setCyclePeriod, setCyclePeriodState);
+            setSelectedPeriod(period.id);
+            handleSelectionEmploymentContractData(period.id, cyclePeriodDataListMook, setSelectedPeriod, setCyclePeriod, setCyclePeriodState);
         }
     };
 
@@ -77,12 +79,21 @@ function OccupationalGroupModal(
 
     useEffect(() => {
         const fetchData = async () => {
-            if (occupationalGroupDataList.length === 0) {
-                await employmentContractDataSearchAndProcess(useFindAllOccupationalGroups, handleOccupationalGroupDataList, 'occupationalGroup', 'EmployeeUserRegister');
+            if (
+            !occupationalGroupIdToUpdate &&
+            occupationalGroupModalOpen &&
+            occupationalGroupDataList.length === 0
+        ) {
+                await employmentContractDataSearchAndProcess(
+                    useFindAllOccupationalGroups, 
+                    handleOccupationalGroupDataList, 
+                    'occupationalGroup', 
+                    'EmployeeUserRegister'
+                );
             }
         }
         fetchData();
-    }, []);
+    }, [occupationalGroupModalOpen, occupationalGroupIdToUpdate]);
 
     const [detailedOccupationalGroupsData, setDetailedOccupationalGroupsData] = useState([]);
     function handleCleanDetailedOccupationalGroupsData() {
@@ -94,13 +105,12 @@ function OccupationalGroupModal(
         const fetchData = async (occupationalGroupIdToUpdate) => {
             if (!detailedOccupationalGroupsData.length) {
                 const foundSkillClassification = await useFindOccupationalGroup(occupationalGroupIdToUpdate);
-                console.log(foundSkillClassification);
                 setDetailedOccupationalGroupsData(foundSkillClassification);
                 setOccupationalGroupName(foundSkillClassification.competencieName)
                 setOccupationalGroupDescription(foundSkillClassification.description)
             }
         };
-        if (occupationalGroupIdToUpdate) {
+        if (occupationalGroupIdToUpdate && occupationalGroupIdToUpdate !== null) {
             fetchData(occupationalGroupIdToUpdate);
         }
     }, [occupationalGroupIdToUpdate]);
@@ -130,8 +140,32 @@ function OccupationalGroupModal(
             <ModalBody>
                 <Card>
                     <CardBody>
+                        {
+                            !occupationalGroupIdToUpdate && (
+                                <>
+                                    <div className="form-row">
+                                        <Col className="mb-3" md="12">
+                                            <label
+                                                className="form-control-label"
+                                                htmlFor="listOccupationalGroupsRecorded"
+                                            >
+                                                Grupos Cadastrados
+                                            </label>
+                                            <Select2
+                                                id="listOccupationalGroupsRecorded"
+                                                className="form-control"
+                                                data-minimum-results-for-search="Infinity"
+                                                options={{ placeholder: "Clique para visualizar", }}
+                                                data={occupationalGroupDataList}
+                                            />
+                                        </Col>
+                                    </div>
+                                    <hr />
+                                </>
+                            )
+                        }
                         <div className="form-row">
-                            <Col className="mb-3" md={occupationalGroupIdToUpdate ? "12" : "6"}>
+                            <Col className="mb-3" md="12">
                                 <label
                                     className="form-control-label"
                                     htmlFor="validationOccupationalGroup"
@@ -158,24 +192,6 @@ function OccupationalGroupModal(
                                                     É necessário preencher este campo.
                                                 </div> */}
                             </Col>
-                            {
-                                !occupationalGroupIdToUpdate && (
-                                    <Col className="mb-3" md="6">
-                                        <label
-                                            className="form-control-label"
-                                            htmlFor="listOccupationalGroupsRecorded"
-                                        >
-                                            Grupos Cadastrados
-                                        </label>
-                                        <Select2
-                                            id="listOccupationalGroupsRecorded"
-                                            className="form-control"
-                                            options={{ placeholder: "Clique para visualizar", }}
-                                            data={occupationalGroupDataList}
-                                        />
-                                    </Col>
-                                )
-                            }
                             <Col className="mb-3" md="12">
                                 <label
                                     className="form-control-label"
@@ -189,7 +205,7 @@ function OccupationalGroupModal(
                                     type="textarea"
                                     // valid={departmentDescriptionState === "valid"}
                                     // invalid={departmentDescriptionState === "invalid"}
-                                    value={occupationalGroupDescription}
+                                    value={occupationalGroupDescription || ''}
                                     onChange={(e) => {
                                         setOccupationalGroupDescription(e.target.value);
                                         //     if (e.target.value === "") {

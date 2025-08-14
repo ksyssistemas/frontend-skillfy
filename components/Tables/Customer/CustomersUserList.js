@@ -44,7 +44,7 @@ function CustomersUserList() {
   }
 
   function handleShowCustomerDetailsModal(companyId, customerName) {
-    setSelectedIdToShowCompanyDetails(companyId);
+    setSelectedIdToShowCompanyDetails(String(companyId));
     setCompanyName(customerName);
     handleOpenCustomerModal();
   }

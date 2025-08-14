@@ -146,7 +146,6 @@ AdminHeader.propTypes = {
   handleShowDepartmentsUserRegister: () => { },
   handleShowRolesUserRegister: () => { },
   handleShowContactPersonsUserRegister: () => { },
-  handleShowEmployeeUserRegister: () => { },
   handleShowEmployeeRecordEntrySettings: () => { }
 };
 
@@ -156,7 +155,6 @@ AdminHeader.propTypes = {
   newRegistrationButtonText: PropTypes.string,
   handleShowAdminUserRegister: PropTypes.func,
   handleShowCustomerUserRegister: PropTypes.func,
-  handleShowEmployeeUserRegister: PropTypes.func,
   handleShowPlansUserRegister: PropTypes.func,
   handleShowDepartmentsUserRegister: PropTypes.func,
   handleShowRolesUserRegister: PropTypes.func,

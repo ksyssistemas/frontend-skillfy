@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useReducer, useRef } from "react";
+import React, { useCallback, useContext, useEffect, useReducer, useRef } from "react";
 import dynamic from "next/dynamic";
 // react plugin used to create datetimepicker
 import ReactDatetime from "react-datetime";
@@ -27,12 +27,23 @@ import { employmentContractDataSearchAndProcess } from '../../../util/employment
 import { handleSelectionEmploymentContractData } from '../../../util/handleSelectionEmploymentContractData';
 import { initialState, formReducer } from '../../../reducers/employeeFormReducer';
 import { handleDateFormatting } from "../../../util/handleDateFormatting";
+import { EmployeeSettingsContext } from "../../../contexts/RecordsContext/EmployeeSettingsContext";
+import moment from "moment";
 
-function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
+function EmployeeUserRegister() {
 
     const [state, dispatch] = useReducer(formReducer, initialState);
 
     const latestCollaboratorData = useRef(state.collaboratorData);
+
+    const {
+        hasNewEmployeeContractTypeCreated,
+        handleCreatedEmployeeContractTypeStatusChange,
+        hasNewEmployeeWorkModelCreated,
+        handleCreatedEmployeeWorkModelStatusChange,
+        hasNewEmployeeWorkplaceCreated,
+        handleCreatedEmployeeWorkplaceStatusChange
+    } = useContext(EmployeeSettingsContext);
 
     const {
         handleValidateAddEmployeeForm,
@@ -182,7 +193,7 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
     // Função para converter string em Date e garantir validade
     const parseDateFromString = (dateString) => {
         const [year, month, day] = dateString.split('-').map(Number);
-        return new Date(Date.UTC(year, month - 1, day)); // Mês é zero-indexado no JavaScript
+        return new Date(year, month - 1, day);
     };
 
     // Função para formatar uma data (Date) em uma string ISO (yyyy-MM-dd)
@@ -222,127 +233,125 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
         localStorage.setItem('collaboratorData', JSON.stringify(dataToSave));
     };
 
+    const dataRefreshConfigs = [
+        {
+            label: "contractType",
+            dataKey: "contractTypeDataList",
+            fetchFn: useFindAllTypeContract,
+            dispatchType: "SET_CONTRACT_TYPE_DATA_LIST",
+            shouldUpdate: hasNewEmployeeContractTypeCreated,
+            resetTrigger: handleCreatedEmployeeContractTypeStatusChange,
+        },
+        {
+            label: "workModel",
+            dataKey: "workModelDataList",
+            fetchFn: useFindAllWorkModels,
+            dispatchType: "SET_WORK_MODEL_DATA_LIST",
+            shouldUpdate: hasNewEmployeeWorkModelCreated,
+            resetTrigger: handleCreatedEmployeeWorkModelStatusChange,
+        },
+        {
+            label: "workplace",
+            dataKey: "workplaceDataList",
+            fetchFn: useFindAllWorkplaces,
+            dispatchType: "SET_WORKPLACE_DATA_LIST",
+            shouldUpdate: hasNewEmployeeWorkplaceCreated,
+            resetTrigger: handleCreatedEmployeeWorkplaceStatusChange,
+        },
+        {
+            label: "department",
+            dataKey: "departmentDataList",
+            fetchFn: useFindAllDepartments,
+            dispatchType: "SET_DEPARTMENT_DATA_LIST",
+        },
+        {
+            label: "role",
+            dataKey: "roleDataList",
+            fetchFn: useFindAllRoles,
+            dispatchType: "SET_ROLE_DATA_LIST",
+        },
+        {
+            label: "employeeFunction",
+            dataKey: "functionDataList",
+            fetchFn: useFindAllFunctions,
+            dispatchType: "SET_FUNCTION_DATA_LIST",
+        },
+    ];
+
     useEffect(() => {
-        if (!state || !state.collaboratorData) return;
+        if (!state?.collaboratorData) return;
 
-        let isMounted = true;
+        const controllers = Object.fromEntries(
+            dataRefreshConfigs.map((cfg) => [cfg.label, new AbortController()])
+        );
 
-        const controllers = {
-            //employeeAndRoleData: new AbortController(),
-            contractType: new AbortController(),
-            workModel: new AbortController(),
-            workplace: new AbortController(),
-            department: new AbortController(),
-            role: new AbortController(),
-            functionData: new AbortController(),
+        const safeDispatch = (type, payload) => dispatch?.({ type, payload });
+
+        const fetchInitialData = async () => {
+            await Promise.all(
+                dataRefreshConfigs.map(async ({ label, dataKey, fetchFn, dispatchType }) => {
+                    if (state.collaboratorData[dataKey]?.length === 0) {
+                        await employmentContractDataSearchAndProcess(
+                            fetchFn,
+                            (data) => safeDispatch(dispatchType, data),
+                            label,
+                            "EmployeeUserRegister",
+                            { signal: controllers[label].signal }
+                        );
+                    }
+                })
+            );
         };
 
-        const safeDispatch = (type, payload) => {
-            if (isMounted && dispatch) {
-                dispatch({ type, payload });
-            }
-        };
-
-        // const fetchEmployeeAndRoleData = async () => {
-        //     if (state.collaboratorData.employeeAndRoleDataList.length === 0 || state.collaboratorData.hasDepartmentSelected) {
-        //         await employeeAndRoleDataSearchAndProcess(
-        //             useFindAllEmployeeAndRole,
-        //             (data) => safeDispatch('SET_EMPLOYEE_AND_ROLE_DATA_LIST', data),
-        //             state.collaboratorData.selectedDepartmentId,
-        //             (status) => safeDispatch('SET_HAS_DEPARTMENT_SELECTED', status),
-        //             (id) => safeDispatch('SET_SELECTED_DEPARTMENT_ID', id),
-        //             { signal: controllers.employeeAndRoleData.signal },
-        //             dispatch
-        //         );
-        //     }
-        // }
-
-        const fetchContractTypeData = async () => {
-            if (state.collaboratorData.contractTypeDataList.length === 0) {
-                await employmentContractDataSearchAndProcess(
-                    useFindAllTypeContract,
-                    (data) => safeDispatch('SET_CONTRACT_TYPE_DATA_LIST', data),
-                    'contractType',
-                    'EmployeeUserRegister',
-                    { signal: controllers.contractType.signal },
-                );
-            }
-        }
-
-        const fetchWorkModelData = async () => {
-            if (state.collaboratorData.workModelDataList.length === 0) {
-                await employmentContractDataSearchAndProcess(
-                    useFindAllWorkModels,
-                    (data) => safeDispatch('SET_WORK_MODEL_DATA_LIST', data),
-                    'workModel',
-                    'EmployeeUserRegister',
-                    { signal: controllers.workModel.signal },
-                );
-            }
-        }
-
-        const fetchWorkplaceData = async () => {
-            if (state.collaboratorData.workplaceDataList.length === 0) {
-                await employmentContractDataSearchAndProcess(
-                    useFindAllWorkplaces,
-                    (data) => safeDispatch('SET_WORKPLACE_DATA_LIST', data),
-                    'workplace',
-                    'EmployeeUserRegister',
-                    { signal: controllers.workplace.signal },
-                );
-            }
-        }
-
-        const fetchDepartmentData = async () => {
-            if (state.collaboratorData.departmentDataList.length === 0) {
-                await employmentContractDataSearchAndProcess(
-                    useFindAllDepartments,
-                    (data) => safeDispatch('SET_DEPARTMENT_DATA_LIST', data),
-                    'department',
-                    'EmployeeUserRegister',
-                    { signal: controllers.department.signal },
-                );
-            }
-        }
-
-        const fetchRoleData = async () => {
-            if (state.collaboratorData.roleDataList.length === 0) {
-                await employmentContractDataSearchAndProcess(
-                    useFindAllRoles,
-                    (data) => safeDispatch('SET_ROLE_DATA_LIST', data),
-                    'role',
-                    'EmployeeUserRegister',
-                    { signal: controllers.role.signal },
-                );
-            }
-        }
-
-        const fetchFunctionData = async () => {
-            if (state.collaboratorData.functionDataList.length === 0) {
-                await employmentContractDataSearchAndProcess(
-                    useFindAllFunctions,
-                    (data) => safeDispatch('SET_FUNCTION_DATA_LIST', data),
-                    'function',
-                    'EmployeeUserRegister',
-                    { signal: controllers.functionData.signal },
-                );
-            }
-        }
-
-        //fetchEmployeeAndRoleData();
-        fetchContractTypeData();
-        fetchWorkModelData();
-        fetchWorkplaceData();
-        fetchDepartmentData();
-        fetchRoleData();
-        fetchFunctionData();
+        fetchInitialData();
 
         return () => {
-            isMounted = false;
-            Object.values(controllers).forEach((controller) => controller.abort());
+            Object.values(controllers).forEach((c) => c.abort());
+        };
+    }, [dispatch, state?.collaboratorData]);
+
+    useEffect(() => {
+        const controllers = Object.fromEntries(
+            dataRefreshConfigs.map((cfg) => [cfg.label, new AbortController()])
+        );
+
+        const fetchAndUpdate = async () => {
+            for (const config of dataRefreshConfigs) {
+                const { shouldUpdate, resetTrigger, fetchFn, dispatchType, label, dataKey } = config;
+
+                if (shouldUpdate) {
+                    await employmentContractDataSearchAndProcess(
+                        fetchFn,
+                        (data) => {
+                            dispatch({ type: dispatchType, payload: data });
+
+                            const updatedData = {
+                                ...state.collaboratorData,
+                                [dataKey]: data,
+                            };
+                            saveDataToLocalStorage(updatedData);
+                            latestCollaboratorData.current = updatedData;
+                        },
+                        label,
+                        "EmployeeUserRegister",
+                        { signal: controllers[label].signal }
+                    );
+
+                    resetTrigger?.(); // só chama se existir
+                }
+            }
         };
 
-    }, [dispatch, state.collaboratorData]);
+        fetchAndUpdate();
+
+        return () => {
+            Object.values(controllers).forEach((c) => c.abort());
+        };
+    }, [
+        hasNewEmployeeContractTypeCreated,
+        hasNewEmployeeWorkModelCreated,
+        hasNewEmployeeWorkplaceCreated,
+    ]);
 
     // Carrega os dados do localStorage ao montar o componente
     useEffect(() => {
@@ -353,8 +362,19 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
             const parsedData = JSON.parse(savedData);
 
             // Garantir que as datas são objetos Date válidos
-            const parsedBirthdate = parseDateFromString(parsedData.birthdate);
-            const parsedAdmissionDate = parseDateFromString(parsedData.employeeAdmissionDate);
+            const parsedBirthdate = parsedData.birthdate
+                ? (() => {
+                    const [year, month, day] = parsedData.birthdate.split('-').map(Number);
+                    return new Date(year, month - 1, day);
+                })()
+                : null;
+
+            const parsedAdmissionDate = parsedData.employeeAdmissionDate
+                ? (() => {
+                    const [year, month, day] = parsedData.employeeAdmissionDate.split('-').map(Number);
+                    return new Date(year, month - 1, day);
+                })()
+                : null;
 
             // Atualizar o payload com objetos Date válidos
             if (isMounted) {
@@ -392,18 +412,18 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
         };
     }, [state.collaboratorData]);
 
-    useEffect(() => {
-        let isMounted = true;
+    // useEffect(() => {
+    //     let isMounted = true;
 
-        if (brasilAPICEPData !== null && isMounted) {
-            handleCEPValidationLoading();
-            handleFormFieldsAutocomplete(brasilAPICEPData);
-        }
+    //     if (brasilAPICEPData !== null && isMounted) {
+    //         handleCEPValidationLoading();
+    //         handleFormFieldsAutocomplete(brasilAPICEPData);
+    //     }
 
-        return () => {
-            isMounted = false;
-        };
-    }, [brasilAPICEPData]);
+    //     return () => {
+    //         isMounted = false;
+    //     };
+    // }, [brasilAPICEPData]);
 
     useEffect(() => {
         let isMounted = true;
@@ -940,9 +960,7 @@ function EmployeeUserRegister({ handleShowEmployeeUserRegister }) {
                                 color="success"
                                 size="lg"
                                 type="button"
-                                onClick={() =>
-                                    handleValidateAddEmployeeForm(handleShowEmployeeUserRegister)
-                                }
+                                onClick={handleValidateAddEmployeeForm}
                             >
                                 <span className="btn-inner--text">Adicionar Colaborador</span>
                             </Button>

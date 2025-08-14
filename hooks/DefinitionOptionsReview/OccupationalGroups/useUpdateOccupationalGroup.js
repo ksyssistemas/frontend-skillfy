@@ -57,13 +57,16 @@ const useUpdateOccupationalGroup = () => {
 
   const handleSubmit = async (occupationalGroupIdToUpdate, occupationalGroupName, occupationalGroupDescription) => {
     if (occupationalGroupIdToUpdate && occupationalGroupIdToUpdate !== ""
-      && occupationalGroupName && occupationalGroupName !== ""
-      && occupationalGroupDescription && occupationalGroupDescription !== "") {
+      && occupationalGroupName && occupationalGroupName !== "") {
       try {
         const payload = {
           competencieName: occupationalGroupName,
           description: occupationalGroupDescription
         };
+
+        if (occupationalGroupDescription && occupationalGroupDescription !== "") {
+          payload.description = occupationalGroupDescription;
+        }
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_OCCUPATIONAL_GROUP}/${occupationalGroupIdToUpdate}`, {
           method: 'PATCH',

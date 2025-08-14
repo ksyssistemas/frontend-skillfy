@@ -1,7 +1,6 @@
 import dynamic from "next/dynamic";
 import PropTypes from "prop-types";
-import { useContext, useEffect, useReducer, useState } from 'react';
-// nodejs library that concatenates classes
+import { useContext, useEffect, useReducer, useRef, useState } from 'react';
 // react plugin used to create DropdownMenu for selecting items
 const Select2 = dynamic(() => import("react-select2-wrapper"));
 // react plugin used to create datetimepicker
@@ -12,23 +11,27 @@ import useCreateClientCompany from '../../../hooks/RecordsHooks/customer/useCrea
 import {
     Col, Input, Row
 } from "reactstrap";
-import { initialStateLegalEntityRegistrationForm, legalEntityRegistrationFormReducer } from '../../../reducers/CustomerForms/LegalEntityRegistrationFormReducer';
-import { initialStateCNPJForm, cnpjFormReducer } from '../../../reducers/cnpjFormReducer';
-import { initialStateCEPForm, cepFormReducer } from '../../../reducers/cepFormReducer';
 import { CustomerContext } from '../../../contexts/RecordsContext/CustomerContext';
 import { useFindClientCompany } from "../../../hooks/RecordsHooks/customer/useFindClientCompany";
 import { useFindEmployeeAddress } from "../../../hooks/RecordsHooks/customer/useFindClientCompanyAddress";
 import useUpdateClientCompany from '../../../hooks/RecordsHooks/customer/useUpdateClientCompany';
-import { handleSelectionEmploymentContractData } from '../../../util/handleSelectionEmploymentContractData';
+import { selectedListItemToUpdate } from '../../../util/selectedListItemToUpdate';
 import { handleDateFormatting } from "../../../util/handleDateFormatting";
+import { ModelSelectionCustomerRecordContext } from "../../../contexts/PerformanceContext/ModelSelectionCustomerRecordContext";
+import { handleSelectionEmploymentContractDataWithReducer } from "../../../util/handleSelectionEmploymentContractDataWithReducer";
 
 function CustomerUserUpdate({ handleOpenCustomerModal }) {
 
-    const [state, dispatch] = useReducer(legalEntityRegistrationFormReducer, initialStateLegalEntityRegistrationForm);
-
-    const [stateCNPJ, dispatchCNPJ] = useReducer(cnpjFormReducer, initialStateCNPJForm);
-
-    const [stateCEP, dispatchCEP] = useReducer(cepFormReducer, initialStateCEPForm);
+    const {
+        stateLegalEntityRegistration,
+        dispatchLegalEntityRegistration,
+        stateCNPJ,
+        dispatchCNPJ,
+        stateCEP,
+        dispatchCEP,
+        stateGlobalCustomerRegisterReducer,
+        dispatchGlobalCustomerRegisterReducer
+    } = useContext(ModelSelectionCustomerRecordContext);
 
     const {
         isShouldUpdateClientCompany,
@@ -43,11 +46,10 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
     } = useUpdateClientCompany();
 
     const {
-        handleValidateAddClientCompanyForm,
+        handleValidateAddCustomerCompanyForm,
         handleFormFieldsAutocomplete,
-        validateAddClientCompanyForm,
+        validateAddCustomerCompanyForm,
         validatePhoneNumber,
-        validateWebSite,
         validateCompanyEmail,
         validateAddCustomerAddressForm,
         handleFormFieldsAutocompleteCEP,
@@ -125,6 +127,18 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
         }));
     };
 
+    const handleSelectedCompanyTypesChange = (e) => {
+        const value = e.target.value;
+        dispatchLegalEntityRegistration({ type: 'SET_SELECTED_COMPANY_TYPES', payload: value });
+        dispatchLegalEntityRegistration({ type: 'SET_SELECTED_COMPANY_TYPES_STATE', payload: value !== "" ? 'valid' : 'invalid' });
+    };
+
+    const handleSelectedCompanySectorChange = (e) => {
+        const value = e.target.value;
+        dispatchLegalEntityRegistration({ type: 'SET_SELECTED_COMPANY_SECTOR', payload: value });
+        dispatchLegalEntityRegistration({ type: 'SET_SELECTED_COMPANY_SECTOR_STATE', payload: value !== "" ? 'valid' : 'invalid' });
+    };
+
     const handleToggleChange = () => {
         setFieldTouchStatus((prev) => ({
             ...prev,
@@ -156,59 +170,6 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
         });
     };
 
-    // const [companyPrivileges, setCompanyPrivileges] = useState('');
-    // const [companyPrivilegesState, setCompanyPrivilegesState] = useState(null);
-
-    // const [selectedCompanyPrivileges, setSelectedCompanyPrivileges] = useState('');
-    // const [companyPrivilegesDataList, setCompanyPrivilegesDataList] = useState([
-    //     { id: "0", text: "Todos" },
-    //     { id: "1", text: "Titular da Conta" },
-    //     { id: "2", text: "Administrador" },
-    //     { id: "3", text: "Finanças" },
-    //     { id: "4", text: "Acesso a Relátorios" },
-    //     { id: "5", text: "Vendas" },
-    //     { id: "6", text: "Desenvolvedor" },
-    //     { id: "7", text: "Suporte ao Cliente" },
-    //     { id: "8", text: "Marketing" },
-    // ]);
-    // const handleCompanyPrivilegesDataList = (companyPrivileges) => {
-    //     setCompanyPrivilegesDataList(companyPrivileges);
-    // }
-
-    const handleSelectionEmploymentContractDataWrapper = (
-        selectedId,
-        dataList,
-        setSelectedAction,
-        setFieldAction,
-        setStateAction,
-        setSelectedDepartmentIdAction = null,
-        setHasDepartmentSelectedAction = null,
-        savedDataType = 'id'
-    ) => {
-        // Despache o estado 'valid' antes de iniciar o processo de seleção
-        if (setStateAction) dispatch({ type: setStateAction, payload: 'valid' });
-        if (setHasDepartmentSelectedAction) dispatch({ type: setHasDepartmentSelectedAction, payload: true });
-        // Chama a função de processamento de seleção de dados
-        handleSelectionEmploymentContractData(
-            selectedId,
-            dataList,
-            (value) => dispatch({ type: setSelectedAction, payload: value }),
-            (value) => dispatch({ type: setFieldAction, payload: value }), // Agora definirá o valor correto
-            (state) => dispatch({ type: setStateAction, payload: state }),
-            (id) => dispatch({ type: setSelectedDepartmentIdAction, payload: id }),
-            () => dispatch({ type: setHasDepartmentSelectedAction, payload: true }),
-            savedDataType
-        );
-    };
-
-    const selectedListItemToUpdate = (item, list, setSelectedItem, setItem, setItemState) => {
-        const selectedItem = list.find(p => p.text === item);
-        if (selectedItem) {
-            setSelectedItem(selectedItem.id);
-            handleSelectionEmploymentContractDataWrapper(selectedItem.id, list, setSelectedItem, setItem, setItemState, null, null, 'id');
-        }
-    };
-
     // Lista para armazenar dados da Entidade Legal cadastrada
     const [detailedClientCompanyData, setDetailedClientCompanyData] = useState([]);
     function handleCleanDetailedClientCompanyData() {
@@ -233,7 +194,14 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                     type: 'SET_LOADING_CNPJ_VALIDATION',
                     payload: false
                 });
-                handleFormFieldsAutocomplete(stateCNPJ, dispatchCNPJ, state, dispatch, stateCEP, dispatchCEP,);
+                handleFormFieldsAutocomplete(
+                    stateCNPJ,
+                    dispatchCNPJ,
+                    stateLegalEntityRegistration,
+                    dispatchLegalEntityRegistration,
+                    stateCEP,
+                    dispatchCEP
+                );
             }
         }
     }, [stateCNPJ.cnpjData.brasilAPICNPJData])
@@ -244,13 +212,18 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                 type: 'SET_HAS_VALUES_CHANGED_WITH_CNPJ_API_DATA',
                 payload: false
             });
-            validateAddClientCompanyForm(stateCNPJ, dispatchCNPJ, state, dispatch);
+            validateAddCustomerCompanyForm(
+                stateCNPJ,
+                dispatchCNPJ,
+                stateLegalEntityRegistration,
+                dispatchLegalEntityRegistration
+            );
         }
-    }, [stateCNPJ.cnpjData.hasValuesChangedWithCNPJAPIData, validateAddClientCompanyForm]);
+    }, [stateCNPJ.cnpjData.hasValuesChangedWithCNPJAPIData, validateAddCustomerCompanyForm]);
 
     useEffect(() => {
         if (stateCEP.cepData.brasilAPICEPData !== null) {
-            handleFormFieldsAutocompleteCEP(stateCEP, dispatchCEP, state, dispatch);
+            handleFormFieldsAutocompleteCEP(stateCEP, dispatchCEP, stateLegalEntityRegistration, dispatchLegalEntityRegistration);
             dispatchCEP({
                 type: 'SET_LOADING_CEP_VALIDATION',
                 payload: false
@@ -289,60 +262,84 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
 
     useEffect(() => {
         const fetchClientCompanyAndAddressById = async () => {
-            if (!detailedClientCompanyData.length) {
-                const foundCustomer = await useFindClientCompany(customerIdToUpdate);
-                setDetailedClientCompanyData(foundCustomer);
-                setFieldTouchStatus((prev) => ({
-                    ...prev,
-                    companyName: { ...prev.companyName, value: foundCustomer.companyName },
-                    registrationName: { ...prev.registrationName, value: foundCustomer.brandName },
-                    customerBusinessPhoneNumber: { ...prev.customerBusinessPhoneNumber, value: foundCustomer.phoneNumber },
-                    companyEmailAddress: { ...prev.companyEmailAddress, value: foundCustomer.email },
-                    customerPhoneNumber: { ...prev.customerPhoneNumber, value: foundCustomer.phone },
-                    customerWebSite: { ...prev.customerWebSite, value: foundCustomer.webSite },
-                    customerStatus: { ...prev.customerStatus, value: foundCustomer.status },
-                    privileges: { ...prev.privileges, value: foundCustomer.privileges },
-                }));
-                dispatchCNPJ({ type: 'SET_INDIVIDUAL_EMPLOYER_ID_NUMBER', payload: foundCustomer.identificationNumber });
-                selectedListItemToUpdate(foundCustomer.type, companyTypesDataList, setSelectedCompanyTypes, setCompanyTypes, setCompanyTypesState);
-                selectedListItemToUpdate(foundCustomer.sector, companySectorDataList, setSelectedCompanySector, setCustomerBusinessSector, setCustomerBusinessSectorState);
-                setCustomerAccessionDate(new Date(foundCustomer.createdAt));
-                setFormattedAccessionDate(foundCustomer.createdAt);
-            }
-            if (!detailedClientCompanyAddressData.length) {
-                const foundCustomerAddress = await useFindEmployeeAddress(customerIdToUpdate);
-                setDetailedClientCompanyAddressData(foundCustomerAddress[0]);
-                setFieldTouchStatus((prev) => ({
-                    ...prev,
-                    companyCountry: { ...prev.companyCountry, value: foundCustomerAddress[0].country },
-                    federatedUnit: { ...prev.federatedUnit, value: foundCustomerAddress[0].state },
-                    companyCity: { ...prev.companyCity, value: foundCustomerAddress[0].city },
-                    companyAddress: { ...prev.companyAddress, value: foundCustomerAddress[0].address },
-                    companyDistrict: { ...prev.companyDistrict, value: foundCustomerAddress[0].neighborhood },
-                    customerZipCode: { ...prev.customerZipCode, value: foundCustomerAddress[0].zipCode },
-                    companyAddressNumber: { ...prev.companyAddressNumber, value: foundCustomerAddress[0].addressNumber },
-                    idHeadOfficeBranch: { ...prev.idHeadOfficeBranch, value: foundCustomerAddress[0].isBranche ? "Filial" : "Matriz" },
-                    companyAddressComplement: { ...prev.companyAddressComplement, value: foundCustomerAddress[0].complement },
-                }));
+            if (customerIdToUpdate && customerIdToUpdate !== null) {
+                if (!detailedClientCompanyData.length) {
+                    const foundCustomer = await useFindClientCompany(customerIdToUpdate);
+                    setDetailedClientCompanyData(foundCustomer);
+                    setFieldTouchStatus((prev) => ({
+                        ...prev,
+                        companyName: { ...prev.companyName, value: foundCustomer.companyName },
+                        registrationName: { ...prev.registrationName, value: foundCustomer.brandName },
+                        customerBusinessPhoneNumber: { ...prev.customerBusinessPhoneNumber, value: foundCustomer.phoneNumber },
+                        companyEmailAddress: { ...prev.companyEmailAddress, value: foundCustomer.email },
+                        customerPhoneNumber: { ...prev.customerPhoneNumber, value: foundCustomer.phone },
+                        customerWebSite: { ...prev.customerWebSite, value: foundCustomer.webSite },
+                        customerStatus: { ...prev.customerStatus, value: foundCustomer.status },
+                        privileges: { ...prev.privileges, value: foundCustomer.privileges },
+                    }));
+                    dispatchCNPJ({ type: 'SET_INDIVIDUAL_EMPLOYER_ID_NUMBER', payload: foundCustomer.identificationNumber });
+                    if (stateLegalEntityRegistration.legalEntityRegistrationData.companyTypesDataList.length > 0) {
+                        selectedListItemToUpdate(
+                            dispatchLegalEntityRegistration,
+                            foundCustomer.type,
+                            stateLegalEntityRegistration.legalEntityRegistrationData.companyTypesDataList,
+                            'SET_SELECTED_COMPANY_TYPES',
+                            'SET_COMPANY_TYPES',
+                            'SET_COMPANY_TYPES_STATE'
+                        );
+                    }
+                    if (stateLegalEntityRegistration.legalEntityRegistrationData.companySectorDataList.length > 0) {
+                        selectedListItemToUpdate(
+                            dispatchLegalEntityRegistration,
+                            foundCustomer.sector,
+                            stateLegalEntityRegistration.legalEntityRegistrationData.companySectorDataList,
+                            'SET_SELECTED_COMPANY_SECTOR',
+                            'SET_CUSTOMER_BUSINESS_SECTOR',
+                            'SET_CUSTOMER_BUSINESS_SECTOR_STATE'
+                        );
+                    }
+                    dispatchLegalEntityRegistration({ type: 'SET_CUSTOMER_ACCESSION_DATE', payload: new Date(foundCustomer.createdAt) });
+                    setFormattedAccessionDate(foundCustomer.createdAt);
+                }
+                if (!detailedClientCompanyAddressData.length) {
+                    const foundCustomerAddress = await useFindEmployeeAddress(customerIdToUpdate);
+                    setDetailedClientCompanyAddressData(foundCustomerAddress[0]);
+                    setFieldTouchStatus((prev) => ({
+                        ...prev,
+                        companyCountry: { ...prev.companyCountry, value: foundCustomerAddress[0].country },
+                        federatedUnit: { ...prev.federatedUnit, value: foundCustomerAddress[0].state },
+                        companyCity: { ...prev.companyCity, value: foundCustomerAddress[0].city },
+                        companyAddress: { ...prev.companyAddress, value: foundCustomerAddress[0].address },
+                        companyDistrict: { ...prev.companyDistrict, value: foundCustomerAddress[0].neighborhood },
+                        zipCode: { ...prev.zipCode, value: foundCustomerAddress[0].zipCode },
+                        companyAddressNumber: { ...prev.companyAddressNumber, value: foundCustomerAddress[0].addressNumber },
+                        idHeadOfficeBranch: { ...prev.idHeadOfficeBranch, value: foundCustomerAddress[0].isBranche ? "Filial" : "Matriz" },
+                        companyAddressComplement: { ...prev.companyAddressComplement, value: foundCustomerAddress[0].complement },
+                    }));
+                }
             }
         };
 
         fetchClientCompanyAndAddressById();
-    }, [customerIdToUpdate]);
+    }, [
+        customerIdToUpdate,
+        stateLegalEntityRegistration.legalEntityRegistrationData.companyTypesDataList,
+        stateLegalEntityRegistration.legalEntityRegistrationData.companySectorDataList,
+    ]);
 
     useEffect(() => {
         if (isShouldUpdateClientCompany) {
             handleValidateUpdateClientCompanyForm(
                 handleOpenCustomerModal,
                 customerIdToUpdate,
-                individualEmployerIdNumber,
+                stateLegalEntityRegistration.legalEntityRegistrationData.individualEmployerIdNumber,
                 fieldTouchStatus.companyName.value,
                 fieldTouchStatus.registrationName.value,
-                companyTypes,
+                stateLegalEntityRegistration.legalEntityRegistrationData.companyTypes,
                 fieldTouchStatus.customerBusinessPhoneNumber.value,
                 fieldTouchStatus.customerPhoneNumber.value,
                 fieldTouchStatus.companyEmailAddress.value,
-                customerBusinessSector,
+                stateLegalEntityRegistration.legalEntityRegistrationData.customerBusinessSector,
                 fieldTouchStatus.customerWebSite.value,
                 fieldTouchStatus.customerStatus.value,
                 formattedAccessionDate,
@@ -360,10 +357,14 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
             )
             handleIsShouldUpdateClientCompany();
         }
-    }, [isShouldUpdateClientCompany, fieldTouchStatus, formattedAccessionDate]);
+    }, [
+        isShouldUpdateClientCompany,
+        fieldTouchStatus,
+        formattedAccessionDate,
+        stateLegalEntityRegistration.legalEntityRegistrationData
+    ]);
 
     return (
-
         <Row>
             <div className="col">
                 <div className="card-wrapper">
@@ -384,7 +385,7 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 type="text"
                                 valid={fieldTouchStatus.companyName.touched && fieldTouchStatus.companyName.state === "valid"}
                                 invalid={fieldTouchStatus.companyName.touched && fieldTouchStatus.companyName.state === "invalid"}
-                                value={fieldTouchStatus.companyName.value}
+                                value={fieldTouchStatus.companyName.value || ''}
                                 onChange={(e) => handleChange(e, "companyName")}
                                 onTouchStart={() => handleTouchStart("companyName")}
                             />
@@ -400,13 +401,12 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 Razão Social
                             </label>
                             <Input
-                                defaultValue="Nome ou termo de registro"
                                 id="validationCustomerRegistrationName"
                                 placeholder="Nome ou termo de registro"
                                 type="text"
                                 valid={fieldTouchStatus.registrationName.touched && fieldTouchStatus.registrationName.state === "valid"}
                                 invalid={fieldTouchStatus.registrationName.touched && fieldTouchStatus.registrationName.state === "invalid"}
-                                value={fieldTouchStatus.registrationName.value}
+                                value={fieldTouchStatus.registrationName.value || ''}
                                 onChange={(e) => handleChange(e, "registrationName")}
                                 onTouchStart={() => handleTouchStart("registrationName")}
                             />
@@ -465,7 +465,7 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 type="email"
                                 valid={fieldTouchStatus.companyEmailAddress.touched && fieldTouchStatus.companyEmailAddress.state === "valid"}
                                 invalid={fieldTouchStatus.companyEmailAddress.touched && fieldTouchStatus.companyEmailAddress.state === "invalid"}
-                                value={fieldTouchStatus.companyEmailAddress.value}
+                                value={fieldTouchStatus.companyEmailAddress.value || ''}
                                 onChange={(e) => handleChange(e, "companyEmailAddress")}
                                 onTouchStart={() => handleTouchStart("companyEmailAddress")}
                             />
@@ -484,7 +484,7 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 placeholder="+55 (99) 9999-9999"
                                 mask="+55 (99) 9999-9999"
                                 maskChar=" "
-                                value={fieldTouchStatus.customerBusinessPhoneNumber.value}
+                                value={fieldTouchStatus.customerBusinessPhoneNumber.value || ''}
                                 onChange={(e) => handleChange(e, 'customerBusinessPhoneNumber', 'business')}
                                 onBlur={() => handleTouchStart('customerBusinessPhoneNumber')}
                             >
@@ -510,7 +510,7 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 placeholder="+55 (99) 9 9999-9999"
                                 mask="+55 (99) 9 9999-9999"
                                 maskChar=" "
-                                value={fieldTouchStatus.customerPhoneNumber.value}
+                                value={fieldTouchStatus.customerPhoneNumber.value || ''}
                                 onChange={(e) => handleChange(e, 'customerPhoneNumber', 'personal')}
                                 onBlur={() => handleTouchStart('customerPhoneNumber')}
                             >
@@ -527,33 +527,43 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                         </Col>
                     </div>
                     <div className="form-row">
-                        <Col className="mb-3" md="4">
-                            <label
-                                className="form-control-label"
-                                htmlFor="validationCustomerCompanyTypes"
-                            >
-                                Tipo de Empresa
-                            </label>
-                            <Select2
-                                id="validationCustomerCompanyTypes"
-                                className="form-control"
-                                data-minimum-results-for-search="Infinity"
-                                options={{
-                                    placeholder: "Selecione o tipo",
-                                }}
-                                value={selectedCompanyTypes}
-                                onChange={(e) => setSelectedCompanyTypes(e.target.value)}
-                                data={companyTypesDataList}
-                                onSelect={(e) => handleSelectionEmploymentContractData(
-                                    e.target.value,
-                                    companyTypesDataList,
-                                    setSelectedCompanyTypes,
-                                    setCompanyTypes,
-                                    setCompanyTypesState,
-                                    null
-                                )}
-                            />
-                        </Col>
+                        {stateLegalEntityRegistration.legalEntityRegistrationData.companyTypesDataList.length > 0 && (
+                            <Col className="mb-3" md="4">
+                                <label
+                                    className="form-control-label"
+                                    htmlFor="validationCustomerCompanyTypes"
+                                >
+                                    Segmento
+                                </label>
+                                <Select2
+                                    id="validationCustomerCompanyTypes"
+                                    className="form-control"
+                                    data-minimum-results-for-search="Infinity"
+                                    options={{
+                                        placeholder: "Selecione o tipo",
+                                    }}
+                                    value={stateLegalEntityRegistration.legalEntityRegistrationData.selectedCompanyTypes || ''}
+                                    onChange={handleSelectedCompanyTypesChange}
+                                    data={stateLegalEntityRegistration.legalEntityRegistrationData.companyTypesDataList}
+                                    onSelect={(e) => {
+                                        const selectedValue = e.target.value;
+                                        handleSelectionEmploymentContractDataWithReducer(
+                                            dispatchLegalEntityRegistration,
+                                            selectedValue,
+                                            Array.isArray(stateLegalEntityRegistration.legalEntityRegistrationData.companyTypesDataList)
+                                                ? stateLegalEntityRegistration.legalEntityRegistrationData.companyTypesDataList
+                                                : [],
+                                            'SET_SELECTED_COMPANY_TYPES',
+                                            'SET_COMPANY_TYPES',
+                                            'SET_COMPANY_TYPES_STATE',
+                                            null,
+                                            null,
+                                            'id'
+                                        );
+                                    }}
+                                />
+                            </Col>
+                        )}
                         <Col className="mb-3" md="4">
                             <label
                                 className="form-control-label"
@@ -565,13 +575,26 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 id="validationCustomerBusinessSector"
                                 className="form-control"
                                 data-minimum-results-for-search="Infinity"
-                                options={{
-                                    placeholder: "Selecione o setor",
+                                options={{ placeholder: "Selecione o setor" }}
+                                value={stateLegalEntityRegistration.legalEntityRegistrationData.selectedCompanySector || ''}
+                                onChange={handleSelectedCompanySectorChange}
+                                data={stateLegalEntityRegistration.legalEntityRegistrationData.companySectorDataList}
+                                onSelect={(e) => {
+                                    const selectedValue = e.target.value;
+                                    handleSelectionEmploymentContractDataWithReducer(
+                                        dispatchLegalEntityRegistration,
+                                        selectedValue,
+                                        Array.isArray(stateLegalEntityRegistration.legalEntityRegistrationData.companySectorDataList)
+                                            ? stateLegalEntityRegistration.legalEntityRegistrationData.companySectorDataList
+                                            : [],
+                                        'SET_SELECTED_COMPANY_SECTOR',
+                                        'SET_CUSTOMER_BUSINESS_SECTOR',
+                                        'SET_CUSTOMER_BUSINESS_SECTOR_STATE',
+                                        null,
+                                        null,
+                                        'id'
+                                    );
                                 }}
-                                value={selectedCompanySector}
-                                onChange={(e) => setSelectedCompanySector(e.target.value)}
-                                data={companySectorDataList}
-                                onSelect={(e) => handleSelectionEmploymentContractData(e.target.value, companySectorDataList, setSelectedCompanySector, setCustomerBusinessSector, setCustomerBusinessSectorState, null)}
                             />
                         </Col>
                         <Col className="mb-3" md="4">
@@ -587,7 +610,7 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 type="text"
                                 valid={fieldTouchStatus.customerWebSite.touched && fieldTouchStatus.customerWebSite.state === "valid"}
                                 invalid={fieldTouchStatus.customerWebSite.touched && fieldTouchStatus.customerWebSite.state === "invalid"}
-                                value={fieldTouchStatus.customerWebSite.value}
+                                value={fieldTouchStatus.customerWebSite.value || ''}
                                 onChange={(e) => handleChange(e, "customerWebSite")}
                                 onTouchStart={() => handleTouchStart("customerWebSite")}
                             />
@@ -604,7 +627,7 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                         <Col className="mb-3" md="4">
                             <label
                                 className="form-control-label"
-                                htmlFor="validationCustomerZipCode"
+                                htmlFor="validationZipCode"
                             >
                                 CEP
                             </label>
@@ -612,30 +635,34 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 placeholder="99999-999"
                                 mask="99999-999"
                                 maskChar=" "
-                                value={cepTouched ? zipCode : fieldTouchStatus.customerZipCode.value}
+                                value={cepTouched ? stateCEP.cepData.zipCode : fieldTouchStatus.zipCode.value || ''}
                                 onChange={handleCEPChange}
                                 onBlur={() => {
-                                    if (zipCode !== "") {
-                                        setZipCodeState("valid");
+                                    if (stateCEP.cepData.zipCode !== "") {
+                                        dispatchCEP({ type: 'SET_ZIP_CODE_STATE', payload: 'valid' });
                                     } else {
-                                        setZipCodeState("invalid");
+                                        dispatchCEP({ type: 'SET_ZIP_CODE_STATE', payload: 'invalid' });
                                     }
                                 }}
                             >
                                 {(inputProps) => <Input {...inputProps}
-                                    id="validationCustomerZipCode"
+                                    id="validationZipCode"
                                     type="text"
-                                    valid={fieldTouchStatus.customerZipCode.touched && fieldTouchStatus.customerZipCode.state === "valid"}
-                                    invalid={fieldTouchStatus.customerZipCode.touched && fieldTouchStatus.customerZipCode.state === "invalid"}
+                                    valid={fieldTouchStatus.zipCode.touched && fieldTouchStatus.zipCode.state === "valid"}
+                                    invalid={fieldTouchStatus.zipCode.touched && fieldTouchStatus.zipCode.state === "invalid"}
                                 />}
                             </InputMask>
-                            {
-                                loadingCEPValidation ? <div style={{ display: 'none', width: '100%', marginTop: '0.25rem', fontSize: '80%', color: '#5e72e4' }}>Validando CEP...</div> : (
-                                    errorCEPValidation ? <div className="invalid-feedback">{errorCEPValidation}</div> : (
-                                        brasilAPICEPData !== null ? <div className="valid-feedback">CEP válido!</div> : <div className="invalid-feedback">CEP inválido!</div>
-                                    )
-                                )
-                            }
+                            {stateCEP.cepData.zipCodeState === 'invalid' && (
+                                <div className="invalid-feedback">
+                                    {stateCEP.cepData.errorCEPValidation || 'CEP inválido!'}
+                                </div>
+                            )}
+                            {stateCEP.cepData.zipCodeState === 'valid' && (
+                                <div className="valid-feedback">CEP válido!</div>
+                            )}
+                            <div className="invalid-feedback">
+                                É necessário preencher este campo corretamente.
+                            </div>
                         </Col>
                         <Col className="mb-3" md="6">
                             <label
@@ -645,13 +672,12 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 Endereço
                             </label>
                             <Input
-                                defaultValue=""
                                 id="validationCustomerCompanyAddress"
                                 placeholder=""
                                 type="text"
                                 valid={fieldTouchStatus.companyAddress.touched && fieldTouchStatus.companyAddress.state === "valid"}
                                 invalid={fieldTouchStatus.companyAddress.touched && fieldTouchStatus.companyAddress.state === "invalid"}
-                                value={fieldTouchStatus.companyAddress.value}
+                                value={fieldTouchStatus.companyAddress.value || ''}
                                 onChange={(e) => handleChange(e, "companyAddress")}
                                 onTouchStart={() => handleTouchStart("companyAddress")}
                             />
@@ -667,13 +693,12 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 Número
                             </label>
                             <Input
-                                defaultValue="0000"
                                 id="validationCustomerCompanyAddressNumber"
                                 placeholder="0000"
                                 type="text"
                                 valid={fieldTouchStatus.companyAddressNumber.touched && fieldTouchStatus.companyAddressNumber.state === "valid"}
                                 invalid={fieldTouchStatus.companyAddressNumber.touched && fieldTouchStatus.companyAddressNumber.state === "invalid"}
-                                value={fieldTouchStatus.companyAddressNumber.value}
+                                value={fieldTouchStatus.companyAddressNumber.value || ''}
                                 onChange={(e) => handleChange(e, "companyAddressNumber")}
                                 onTouchStart={() => handleTouchStart("companyAddressNumber")}
                             />
@@ -696,7 +721,7 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 type="text"
                                 valid={fieldTouchStatus.companyAddressComplement.touched && fieldTouchStatus.companyAddressComplement.state === "valid"}
                                 invalid={fieldTouchStatus.companyAddressComplement.touched && fieldTouchStatus.companyAddressComplement.state === "invalid"}
-                                value={fieldTouchStatus.companyAddressComplement.value}
+                                value={fieldTouchStatus.companyAddressComplement.value || ''}
                                 onChange={(e) => handleChange(e, "companyAddressComplement")}
                                 onTouchStart={() => handleTouchStart("companyAddressComplement")}
                             />
@@ -717,7 +742,7 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 type="text"
                                 valid={fieldTouchStatus.idHeadOfficeBranch.touched && fieldTouchStatus.idHeadOfficeBranch.state === "valid"}
                                 invalid={fieldTouchStatus.idHeadOfficeBranch.touched && fieldTouchStatus.idHeadOfficeBranch.state === "invalid"}
-                                value={fieldTouchStatus.idHeadOfficeBranch.value}
+                                value={fieldTouchStatus.idHeadOfficeBranch.value || ''}
                                 onChange={(e) => handleChange(e, "idHeadOfficeBranch")}
                                 onFocus={() => handleTouchStart("idHeadOfficeBranch")}
                             />
@@ -733,13 +758,12 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 Bairro
                             </label>
                             <Input
-                                defaultValue=""
                                 id="validationCustomerCompanyDistrict"
                                 placeholder=""
                                 type="text"
                                 valid={fieldTouchStatus.companyDistrict.touched && fieldTouchStatus.companyDistrict.state === "valid"}
                                 invalid={fieldTouchStatus.companyDistrict.touched && fieldTouchStatus.companyDistrict.state === "invalid"}
-                                value={fieldTouchStatus.companyDistrict.value}
+                                value={fieldTouchStatus.companyDistrict.value || ''}
                                 onChange={(e) => handleChange(e, "companyDistrict")}
                                 onTouchStart={() => handleTouchStart("companyDistrict")}
                             />
@@ -757,13 +781,12 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 Cidade
                             </label>
                             <Input
-                                defaultValue=""
                                 id="validationCustomerCompanyCity"
                                 placeholder=""
                                 type="text"
                                 valid={fieldTouchStatus.companyCity.touched && fieldTouchStatus.companyCity.state === "valid"}
                                 invalid={fieldTouchStatus.companyCity.touched && fieldTouchStatus.companyCity.state === "invalid"}
-                                value={fieldTouchStatus.companyCity.value}
+                                value={fieldTouchStatus.companyCity.value || ''}
                                 onChange={(e) => handleChange(e, "companyCity")}
                                 onTouchStart={() => handleTouchStart("companyCity")}
                             />
@@ -779,13 +802,12 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 Estado
                             </label>
                             <Input
-                                defaultValue=""
                                 id="validationCustomerFederatedUnit"
                                 placeholder=""
                                 type="text"
                                 valid={fieldTouchStatus.federatedUnit.touched && fieldTouchStatus.federatedUnit.state === "valid"}
                                 invalid={fieldTouchStatus.federatedUnit.touched && fieldTouchStatus.federatedUnit.state === "invalid"}
-                                value={fieldTouchStatus.federatedUnit.value}
+                                value={fieldTouchStatus.federatedUnit.value || ''}
                                 onChange={(e) => handleChange(e, "federatedUnit")}
                                 onTouchStart={() => handleTouchStart("federatedUnit")}
                             />
@@ -802,13 +824,12 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 País
                             </label>
                             <Input
-                                defaultValue=""
                                 id="validationCompanyCountry"
                                 placeholder=""
                                 type="text"
                                 valid={fieldTouchStatus.companyCountry.touched && fieldTouchStatus.companyCountry.state === "valid"}
                                 invalid={fieldTouchStatus.companyCountry.touched && fieldTouchStatus.companyCountry.state === "invalid"}
-                                value={fieldTouchStatus.companyCountry.value}
+                                value={fieldTouchStatus.companyCountry.value || ''}
                                 onChange={(e) => handleChange(e, "companyCountry")}
                                 onTouchStart={() => handleTouchStart("companyCountry")}
                             />
@@ -835,7 +856,7 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 type="text"
                             // valid={fieldTouchStatus.companyName.touched && fieldTouchStatus.companyName.state === "valid"}
                             // invalid={fieldTouchStatus.companyName.touched && fieldTouchStatus.companyName.state === "invalid"}
-                            // value={fieldTouchStatus.companyName.value}
+                            // value={fieldTouchStatus.companyName.value || ''}
                             // onChange={(e) => handleChange(e, "companyName")}
                             // onTouchStart={() => handleTouchStart("companyName")}
                             />
@@ -856,8 +877,15 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                     disabled: true
                                 }}
                                 timeFormat={false}
-                                value={customerAccessionDate}
-                                onChange={(e) => handleDateFormatting(e, setCustomerAccessionDate, setCustomerAccessionDateState, setFormattedAccessionDate)}
+                                dateFormat="DD/MM/YYYY"
+                                value={stateLegalEntityRegistration.legalEntityRegistrationData.customerAccessionDate || ''}
+                                onChange={(e) => handleDateFormatting(
+                                    dispatchLegalEntityRegistration,
+                                    e,
+                                    'SET_CUSTOMER_ACCESSION_DATE',
+                                    'SET_CUSTOMER_ACCESSION_DATE_STATE',
+                                    setFormattedAccessionDate
+                                )}
                             />
                         </Col>
                         <Col className="mb-3" md="2">
@@ -870,7 +898,7 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 <label className="custom-toggle ml-auto">
                                     <input
                                         type="checkbox"
-                                        checked={fieldTouchStatus.customerStatus.value}
+                                        checked={fieldTouchStatus.customerStatus.value || ''}
                                         onChange={handleToggleChange}
                                     />
                                     <span
@@ -896,7 +924,7 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
                                 type="text"
                             // valid={fieldTouchStatus.companyName.touched && fieldTouchStatus.companyName.state === "valid"}
                             // invalid={fieldTouchStatus.companyName.touched && fieldTouchStatus.companyName.state === "invalid"}
-                            // value={fieldTouchStatus.companyName.value}
+                            // value={fieldTouchStatus.companyName.value || ''}
                             // onChange={(e) => handleChange(e, "companyName")}
                             // onTouchStart={() => handleTouchStart("companyName")}
                             />

@@ -1,4 +1,5 @@
 export async function useFindEmployee(employeeId) {
+  if (!employeeId) return null;
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE}/${employeeId}`);
     if (!response.ok) {

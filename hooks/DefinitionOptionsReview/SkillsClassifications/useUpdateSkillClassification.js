@@ -1,13 +1,12 @@
 import React, { useContext, useState } from 'react';
-import { CycleContext } from '../../../contexts/PerformanceContext/CycleContext';
-import useCreateSkillClassificaiton from './useCreateSkillClassificaiton';
+import useCreateSkillClassification from './useCreateSkillClassification';
 import { AppraisalSkillsContext } from '../../../contexts/PerformanceContext/AppraisalSkillsContext';
 
-const useUpdateSkillClassificaiton = () => {
+const useUpdateSkillClassification = () => {
 
-  const { hasUpdatedAppraisalSkillClassificaiton, handleUpdatedAppraisalSkillClassificaitonStatusChange } = useContext(AppraisalSkillsContext);
+  const { hasUpdatedAppraisalSkillClassification, handleUpdatedAppraisalSkillClassificationStatusChange } = useContext(AppraisalSkillsContext);
 
-  const { reset } = useCreateSkillClassificaiton();
+  const { reset } = useCreateSkillClassification();
 
   // const validateAddDepartmentForm = () => {
   //   if (departmentName === "") {
@@ -27,7 +26,7 @@ const useUpdateSkillClassificaiton = () => {
   async function handleValidateUpdateAppraisalSkillClassificationForm(
     handleCloseAddSkillClassificationModal,
     skillClassificationIdToUpdate,
-    skilClassificationName,
+    skillClassificationName,
     skillClassificationDescription,
     handleSkillClassificationIdToUpdate,
     handleCleanDetailedSkillClassificationsData
@@ -44,7 +43,7 @@ const useUpdateSkillClassificaiton = () => {
     // } else {
     //   return null;
     // }
-    await handleSubmit(skillClassificationIdToUpdate, skilClassificationName, skillClassificationDescription);
+    await handleSubmit(skillClassificationIdToUpdate, skillClassificationName, skillClassificationDescription);
     goBackToAppraisalCycleList(handleCloseAddSkillClassificationModal, handleSkillClassificationIdToUpdate, handleCleanDetailedSkillClassificationsData);
   }
 
@@ -53,18 +52,20 @@ const useUpdateSkillClassificaiton = () => {
     handleSkillClassificationIdToUpdate();
     handleCleanDetailedSkillClassificationsData();
     reset();
-    handleUpdatedAppraisalSkillClassificaitonStatusChange();
+    handleUpdatedAppraisalSkillClassificationStatusChange();
   }
 
-  const handleSubmit = async (skillClassificationIdToUpdate, skilClassificationName, skillClassificationDescription) => {
+  const handleSubmit = async (skillClassificationIdToUpdate, skillClassificationName, skillClassificationDescription) => {
     if (skillClassificationIdToUpdate && skillClassificationIdToUpdate !== ""
-      && skilClassificationName && skilClassificationName !== ""
-      && skillClassificationDescription && skillClassificationDescription !== "") {
+      && skillClassificationName && skillClassificationName !== "") {
       try {
         const payload = {
-          competenceClassificationName: skilClassificationName,
-          description: skillClassificationDescription
+          competenceClassificationName: skillClassificationName,
         };
+
+        if (skillClassificationDescription && skillClassificationDescription !== "") {
+          payload.description = skillClassificationDescription;
+        }
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_COMPETENCE_CLASSIFICATION}/${skillClassificationIdToUpdate}`, {
           method: 'PATCH',
@@ -90,4 +91,4 @@ const useUpdateSkillClassificaiton = () => {
   };
 };
 
-export default useUpdateSkillClassificaiton;
+export default useUpdateSkillClassification;

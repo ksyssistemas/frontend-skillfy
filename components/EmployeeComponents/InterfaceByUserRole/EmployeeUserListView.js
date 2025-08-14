@@ -1,11 +1,17 @@
 // nodejs library to set properties for components
-import PropTypes from "prop-types";
+import { useContext } from "react";
 import { Container } from "reactstrap";
 import AdminHeader from "../../Headers/AdminHeader"
 import CustomerHeader from "../../Headers/CustomerHeader"
 import EmployeeUserList from "../../Tables/Customer/EmployeeUserList"
+import { useAuth } from '../../../hooks/useAuth';
+import { EmployeeContext } from '../../../contexts/RecordsContext/EmployeeContext';
 
-const EmployeeUserListView = ({ authenticationDataLoggedInUser, handleShowEmployeeUserRegister }) => {
+const EmployeeUserListView = () => {
+    const { authenticationDataLoggedInUser } = useAuth();
+
+    const { handleShowDynamicEmployeeComponent } = useContext(EmployeeContext);
+
     return (
         <>
             {
@@ -13,7 +19,14 @@ const EmployeeUserListView = ({ authenticationDataLoggedInUser, handleShowEmploy
                     authenticationDataLoggedInUser.role === 'administrator'
                     ? (
                         <>
-                            <AdminHeader name="Colaboradores" parentName="Registros" newRegistrationButtonText="Adicionar Colaborador" handleShowEmployeeUserRegister={handleShowEmployeeUserRegister} />
+                            <AdminHeader
+                                name="Colaboradores"
+                                parentName="Registros"
+                                newRegistrationButtonText="Adicionar Colaborador"
+                                handleShowEmployeeUserRegister={() => handleShowDynamicEmployeeComponent('employeeRegister')}
+                                employeeRecordEntrySettingsButtonName="Configurações"
+                                handleShowEmployeeRecordEntrySettings={() => handleShowDynamicEmployeeComponent('employeeRegisterSettings')}
+                            />
                             <Container className="mt--6" fluid>
                                 <EmployeeUserList />
                             </Container>
@@ -23,7 +36,14 @@ const EmployeeUserListView = ({ authenticationDataLoggedInUser, handleShowEmploy
                         authenticationDataLoggedInUser &&
                         authenticationDataLoggedInUser.role === 'customer' &&
                         <>
-                            <CustomerHeader name="Colaboradores" parentName="Registros" newRegistrationButtonText="Adicionar Colaborador" handleShowEmployeeUserRegister={handleShowEmployeeUserRegister} />
+                            <CustomerHeader
+                                name="Colaboradores"
+                                parentName="Registros"
+                                newRegistrationButtonText="Adicionar Colaborador"
+                                handleShowEmployeeUserRegister={() => handleShowDynamicEmployeeComponent('employeeRegister')}
+                                employeeRecordEntrySettingsButtonName="Configurações"
+                                handleShowEmployeeRecordEntrySettings={() => handleShowDynamicEmployeeComponent('employeeRegisterSettings')}
+                            />
                             <Container className="mt--6" fluid>
                                 <EmployeeUserList />
                             </Container>
@@ -33,14 +53,5 @@ const EmployeeUserListView = ({ authenticationDataLoggedInUser, handleShowEmploy
         </>
     );
 }
-
-EmployeeUserListView.propTypes = {
-    handleShowEmployeeUserRegister: () => { },
-}
-
-EmployeeUserListView.propTypes = {
-    authenticationDataLoggedInUser: PropTypes.object,
-    handleShowEmployeeUserRegister: PropTypes.func,
-};
 
 export default EmployeeUserListView;

@@ -6,8 +6,6 @@ const useUpdateClientCompany = () => {
 
   const { handleUpdatedCustomerRecordStatusChange } = useContext(CustomerContext);
 
-  const { resetCreateCustomerAddress } = useCreateClientCompany();
-
   // const validateAddDepartmentForm = () => {
   //   if (departmentName === "") {
   //     setDepartmentNameState("invalid");
@@ -69,7 +67,6 @@ const useUpdateClientCompany = () => {
   function goBackToCustomerUserList(handleOpenCustomerModal, handleCustomerIdToUpdate, handleCustomerIdStatusCleanupToUpdate) {
     handleOpenCustomerModal();
     handleCustomerIdStatusCleanupToUpdate();
-    resetCreateCustomerAddress();
     handleUpdatedCustomerRecordStatusChange();
   }
 
@@ -142,7 +139,7 @@ const useUpdateClientCompany = () => {
           complement: companyAddressComplement,
           // customerId: customerIdToUpdate
         };
-        const response = await fetch(`${process.env.NEXT_PUBLIC_CUSTOMER}-address/${customerIdToUpdate}/address`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_CUSTOMER}-address/customer/${customerIdToUpdate}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',

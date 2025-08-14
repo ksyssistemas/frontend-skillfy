@@ -5,15 +5,25 @@ import { globalCustomerRegisterReducer, initialState } from '../../reducers/Cust
 import useCreateClientCompany from '../../hooks/RecordsHooks/customer/useCreateClientCompany';
 import useCreateCustomerAccountHolder from '../../hooks/RecordsHooks/customer/useCreateCustomerAccountHolder';
 import { initialStateIndividualRegistrationForm, individualRegistrationFormReducer } from '../../reducers/CustomerForms/IndividualRegistrationFormReducer';
+import { initialStateLegalEntityRegistrationForm, legalEntityRegistrationFormReducer } from '../../reducers/CustomerForms/LegalEntityRegistrationFormReducer';
+import { initialStateCNPJForm, cnpjFormReducer } from '../../reducers/cnpjFormReducer';
+import { initialStateCEPForm, cepFormReducer } from '../../reducers/cepFormReducer';
 
 export const ModelSelectionCustomerRecordContext = createContext({});
 
 function ModelSelectionCustomerRecordProvider({ children }) {
-
+  const [stateIndividualRegistration, dispatchIndividualRegistration] = useReducer(individualRegistrationFormReducer, initialStateIndividualRegistrationForm);
+  const [stateLegalEntityRegistration, dispatchLegalEntityRegistration] = useReducer(legalEntityRegistrationFormReducer, initialStateLegalEntityRegistrationForm);
+  const [stateCNPJ, dispatchCNPJ] = useReducer(cnpjFormReducer, initialStateCNPJForm);
+  const [stateCEP, dispatchCEP] = useReducer(cepFormReducer, initialStateCEPForm);
   const [stateGlobalCustomerRegisterReducer, dispatchGlobalCustomerRegisterReducer] = useReducer(globalCustomerRegisterReducer, initialState);
-  const { handleValidateAddCustomerAccountHolderForm } = useCreateCustomerAccountHolder();
-  const { handleValidateAddClientCompanyForm } = useCreateClientCompany();
-  
+  const { validateAddCustomerAccountHolderForm, handleValidateAddCustomerAccountHolderForm } = useCreateCustomerAccountHolder();
+  const {
+    handleValidateAddCustomerCompanyForm,
+    validateAddCustomerCompanyForm,
+    validateAddCustomerAddressForm
+  } = useCreateClientCompany();
+
   const {
     handleCreationPerformanceReviewSubmit,
     handleSetEvidenceAndRulerToPerformanceReview,
@@ -28,22 +38,59 @@ function ModelSelectionCustomerRecordProvider({ children }) {
   const handleClearStepIndex = () => setClearStepIndex(null);
 
   const handleNext = () => {
-    if (currentStep === 1
-      && stateGlobalCustomerRegisterReducer.individualRegistrationData.checkbox === false
-      && stateGlobalCustomerRegisterReducer.individualRegistrationData.checkboxState === null) {
-      dispatchGlobalCustomerRegisterReducer({ type: 'INDIVIDUAL_SET_CHECKBOX_STATE', payload: 'invalid' });
-    }
-    if (currentStep === 1
-      && stateGlobalCustomerRegisterReducer.individualRegistrationData.checkbox === true
-      && stateGlobalCustomerRegisterReducer.individualRegistrationData.checkboxState === "valid"
-    ) {
-      handleValidateAddCustomerAccountHolderForm(stateGlobalCustomerRegisterReducer, dispatchGlobalCustomerRegisterReducer);
-      setCurrentStep(currentStep + 1);
+    const data = stateIndividualRegistration.individualRegistrationData;
+    if (currentStep === 1) {
+      if (data.checkbox === null || data.checkboxState === null) {
+        dispatchIndividualRegistration({ type: 'SET_CHECKBOX_STATE', payload: 'invalid' });
+        return;
+      }
+
+      if (data.checkbox === false && data.checkboxState === 'invalid') {
+        return;
+      }
+
+      if (data.checkbox === true && data.checkboxState === 'valid') {
+        const isFormValid = validateAddCustomerAccountHolderForm(stateIndividualRegistration, dispatchIndividualRegistration);
+        if (isFormValid) {
+          handleValidateAddCustomerAccountHolderForm(
+            stateGlobalCustomerRegisterReducer,
+            dispatchGlobalCustomerRegisterReducer,
+            stateIndividualRegistration,
+            dispatchIndividualRegistration
+          );
+          setCurrentStep((prevStep) => prevStep + 1);
+        }
+      }
     }
     if (currentStep === 2) {
-      handleValidateAddClientCompanyForm(stateGlobalCustomerRegisterReducer, dispatchGlobalCustomerRegisterReducer);
+      validateAddCustomerCompanyForm(
+        stateCNPJ,
+        dispatchCNPJ,
+        stateLegalEntityRegistration,
+        dispatchLegalEntityRegistration
+      );
+      validateAddCustomerAddressForm(
+        stateCEP,
+        dispatchCEP,
+        stateLegalEntityRegistration,
+        dispatchLegalEntityRegistration
+      );
+      handleValidateAddCustomerCompanyForm(
+        stateGlobalCustomerRegisterReducer,
+        dispatchGlobalCustomerRegisterReducer,
+        stateIndividualRegistration,
+        dispatchIndividualRegistration,
+        stateLegalEntityRegistration,
+        dispatchLegalEntityRegistration,
+        stateCNPJ,
+        dispatchCNPJ,
+        stateCEP,
+        dispatchCEP
+      );
+      handleClearStepIndex();
+      handleClearCurrentForm();
     }
-  };
+  }
 
   const handlePrevious = () => {
     setCurrentStep(currentStep - 1);
@@ -78,6 +125,14 @@ function ModelSelectionCustomerRecordProvider({ children }) {
         handleClearCurrentForm,
         handleClearStepIndex,
         handleSubmit,
+        stateIndividualRegistration,
+        dispatchIndividualRegistration,
+        stateLegalEntityRegistration,
+        dispatchLegalEntityRegistration,
+        stateCNPJ,
+        dispatchCNPJ,
+        stateCEP,
+        dispatchCEP,
         stateGlobalCustomerRegisterReducer,
         dispatchGlobalCustomerRegisterReducer
       }}>

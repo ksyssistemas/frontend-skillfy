@@ -57,17 +57,25 @@ const useUpdateSkillType = () => {
     handleUpdatedAppraisalSkillTypeStatusChange();
   }
 
-  const handleSubmit = async (skillTypeIdToUpdate, skillTypeName, skillTypeDescription, selectedClassificationOfSkillType , selectedSkillTypeOccupationalGroup) => {
+  const handleSubmit = async (skillTypeIdToUpdate, skillTypeName, skillTypeDescription, selectedClassificationOfSkillType, selectedSkillTypeOccupationalGroup) => {
     if (skillTypeIdToUpdate && skillTypeIdToUpdate !== ""
-      && skillTypeName && skillTypeName !== ""
-      && skillTypeDescription && skillTypeDescription !== "") {
+      && skillTypeName && skillTypeName !== "") {
       try {
         const payload = {
           competencieTypeName: skillTypeName,
-          description: skillTypeDescription,
-          skillClassificationId: Number(selectedClassificationOfSkillType),
-          occupationalGroupId: Number(selectedSkillTypeOccupationalGroup)
         };
+
+        if (skillTypeDescription && skillTypeDescription !== "") {
+          payload.description = skillTypeDescription;
+        }
+
+        if (selectedClassificationOfSkillType && selectedClassificationOfSkillType !== "") {
+          payload.skillClassificationId = Number(selectedClassificationOfSkillType);
+        }
+
+        if (selectedSkillTypeOccupationalGroup && selectedSkillTypeOccupationalGroup !== "") {
+          payload.occupationalGroupId = Number(selectedSkillTypeOccupationalGroup);
+        }
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_COMPETENCE_TYPE}/${skillTypeIdToUpdate}`, {
           method: 'PATCH',
