@@ -36,12 +36,12 @@ function Dashboard() {
     setActiveNav(index);
     setChartExample1Data(chartExample1Data === "data1" ? "data2" : "data1");
   };
+  
   if (typeof window !== "undefined" && window.Chart) {
     parseOptions(Chart, chartOptions());
   }
 
   const { authenticationDataLoggedInUser } = useAuth();
-
   return (
     <>
       <CardsHeader name={authenticationDataLoggedInUser.data.companyName} parentName="Dashboard" />

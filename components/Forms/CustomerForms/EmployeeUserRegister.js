@@ -29,6 +29,10 @@ import { initialState, formReducer } from '../../../reducers/employeeFormReducer
 import { handleDateFormatting } from "../../../util/handleDateFormatting";
 import { EmployeeSettingsContext } from "../../../contexts/RecordsContext/EmployeeSettingsContext";
 import moment from "moment";
+import { mappingEmploymentContractItemName } from "../../../util/mappingEmploymentContractItemName";
+import TagsInput from "../../TagsInput/TagsInput";
+import { getSelect2Value } from "../../../util/select2Utils/getSelect2Value";
+import { parseSelect2Change } from "../../../util/select2Utils/parseSelect2Change";
 
 function EmployeeUserRegister() {
 
@@ -52,48 +56,6 @@ function EmployeeUserRegister() {
         hasValuesChangedWithAPIData,
         handleValuesChangedWithAPIData,
     } = useCreateEmployee(state, dispatch);
-
-    // async function employeeAndRoleDataSearchAndProcess(apiCall, departamentId, dispatch) {
-    //     if (!departamentId || departamentId === '') {
-    //         // Se o departamento não estiver selecionado, defina uma mensagem padrão
-    //         dispatch({
-    //             type: 'SET_EMPLOYEE_AND_ROLE_DATA_LIST',
-    //             payload: [{ id: "0", text: "Não há líderes, é necessário cadastrar colaboradores que exercem liderança." }]
-    //         });
-    //         dispatch({ type: 'SET_HAS_DEPARTMENT_SELECTED', payload: false });
-    //         dispatch({ type: 'SET_SELECTED_DEPARTMENT_ID', payload: '' });
-    //     } else {
-    //         try {
-    //             const response = await apiCall(departamentId);
-
-    //             if (response && response.length > 0) {
-    //                 const dataObject = response.map((employee, index) => {
-    //                     const nameAndRoleConcat = `${employee.EmployeeName} - ${employee.RoleName}`;
-    //                     return {
-    //                         id: index.toString(),
-    //                         text: nameAndRoleConcat
-    //                     };
-    //                 });
-    //                 console.log("dataObject: ", dataObject);
-
-    //                 dispatch({ type: 'SET_EMPLOYEE_AND_ROLE_DATA_LIST', payload: dataObject });
-    //                 dispatch({ type: 'SET_HAS_DEPARTMENT_SELECTED', payload: false });
-    //                 dispatch({ type: 'SET_SELECTED_DEPARTMENT_ID', payload: '' });
-    //             } else {
-    //                 dispatch({
-    //                     type: 'SET_EMPLOYEE_AND_ROLE_DATA_LIST',
-    //                     payload: [{ id: "0", text: "Não há líderes, é necessário cadastrar colaboradores que exercem liderança." }]
-    //                 });
-    //                 dispatch({ type: 'SET_HAS_DEPARTMENT_SELECTED', payload: false });
-    //                 dispatch({ type: 'SET_SELECTED_DEPARTMENT_ID', payload: '' });
-    //             }
-    //         } catch (error) {
-    //             console.error('Erro no pedido: ', error);
-    //             dispatch({ type: 'SET_HAS_DEPARTMENT_SELECTED', payload: false });
-    //             dispatch({ type: 'SET_SELECTED_DEPARTMENT_ID', payload: '' });
-    //         }
-    //     }
-    // }
 
     const handleFirstNameChange = (e) => {
         dispatch({ type: 'SET_FIRST_NAME', payload: e.target.value });
@@ -146,7 +108,7 @@ function EmployeeUserRegister() {
         if (setStateAction) dispatch({ type: setStateAction, payload: 'valid' });
         if (setHasDepartmentSelectedAction) dispatch({ type: setHasDepartmentSelectedAction, payload: true });
 
-        // Chama a função de processamento de seleção de dados
+        // Comportamento genérico para os demais selects
         handleSelectionEmploymentContractData(
             selectedId,
             dataList,
@@ -179,6 +141,11 @@ function EmployeeUserRegister() {
         dispatch({ type: 'SET_IS_INVALID_EMPLOYEE_LEADER_COMPONENT', payload: false });
         dispatch({ type: 'SET_SHOW_ERROR_FEEDBACK_EMPLOYEE_LEADER_COMPONENT', payload: false });
     };
+
+    function handleResetDepartmentSelectionState() {
+        dispatch({ type: 'SET_HAS_DEPARTMENT_SELECTED', payload: false });
+        dispatch({ type: 'SET_SELECTED_DEPARTMENT_ID', payload: '' });
+    }
 
     const handleTimeChange = (typeTime, typeTimeState) => (e) => {
         const value = e.target.value;
@@ -233,6 +200,15 @@ function EmployeeUserRegister() {
         localStorage.setItem('collaboratorData', JSON.stringify(dataToSave));
     };
 
+    /**
+     * Configurações para cada tipo de dado que precisa ser carregado:
+     * - label: Identificador do tipo de dado
+     * - dataKey: Chave no estado onde os dados serão armazenados
+     * - fetchFn: Função para buscar os dados da API
+     * - dispatchType: Tipo de ação para despachar os dados no estado
+     * - shouldUpdate: Condição para determinar se os dados precisam ser atualizados
+     * - resetTrigger: Função para reinicializar o estado relacionado ao tipo de dado (opcional)
+     */
     const dataRefreshConfigs = [
         {
             label: "contractType",
@@ -276,8 +252,21 @@ function EmployeeUserRegister() {
             fetchFn: useFindAllFunctions,
             dispatchType: "SET_FUNCTION_DATA_LIST",
         },
+        {
+            shouldUpdate: state.collaboratorData.hasDepartmentSelected,
+            resetTrigger: handleResetDepartmentSelectionState,
+            fetchFn: () =>
+                useFindAllEmployeeAndRole(state.collaboratorData.selectedDepartmentId),
+            dispatchType: 'SET_EMPLOYEE_AND_ROLE_DATA_LIST',
+            label: 'employeeAndRole',
+        }
     ];
 
+    const lastFetchedDepartmentId = useRef(null);
+
+    /**
+     * Efeito que gerencia automaticamente o carregamento de múltiplas listas de dados relacionados ao colaborador.
+     */
     useEffect(() => {
         if (!state?.collaboratorData) return;
 
@@ -285,12 +274,28 @@ function EmployeeUserRegister() {
             dataRefreshConfigs.map((cfg) => [cfg.label, new AbortController()])
         );
 
+        // Função para evitar erros de dispatch quando o componente é desmontado
         const safeDispatch = (type, payload) => dispatch?.({ type, payload });
 
         const fetchInitialData = async () => {
             await Promise.all(
                 dataRefreshConfigs.map(async ({ label, dataKey, fetchFn, dispatchType }) => {
-                    if (state.collaboratorData[dataKey]?.length === 0) {
+                    const shouldFetch = (() => {
+                        if (label === "employeeAndRole") {
+                            const { hasDepartmentSelected, selectedDepartmentId, employeeAndRoleDataList } =
+                                state.collaboratorData;
+
+                            if (!selectedDepartmentId) return false;
+
+                            // evita refetch se já buscou para o mesmo departamento
+                            if (lastFetchedDepartmentId.current === selectedDepartmentId) return false;
+
+                            return hasDepartmentSelected || !employeeAndRoleDataList?.length;
+                        }
+
+                        return state.collaboratorData[dataKey]?.length === 0;
+                    })();
+                    if (shouldFetch) {
                         await employmentContractDataSearchAndProcess(
                             fetchFn,
                             (data) => safeDispatch(dispatchType, data),
@@ -298,6 +303,11 @@ function EmployeeUserRegister() {
                             "EmployeeUserRegister",
                             { signal: controllers[label].signal }
                         );
+
+                        // marca o departmentId já buscado
+                        if (label === "employeeAndRole" && state.collaboratorData.selectedDepartmentId) {
+                            lastFetchedDepartmentId.current = state.collaboratorData.selectedDepartmentId;
+                        }
                     }
                 })
             );
@@ -310,6 +320,10 @@ function EmployeeUserRegister() {
         };
     }, [dispatch, state?.collaboratorData]);
 
+    /**
+     * Efeito para atualizar os dados do colaborador quando há novas criações de tipos de contrato, modelos de trabalho ou locais de trabalho.
+     * Os dados são mantidos sincronizados no estado do componente, localStorage e referência atual.
+     */
     useEffect(() => {
         const controllers = Object.fromEntries(
             dataRefreshConfigs.map((cfg) => [cfg.label, new AbortController()])
@@ -437,6 +451,9 @@ function EmployeeUserRegister() {
             isMounted = false;
         };
     }, [hasValuesChangedWithAPIData, validateAddEmployeeAddressForm]);
+
+    console.log('Result of selectEmployeeAndRole', state.collaboratorData.selectedEmployeeAndRole);
+    console.log('Result of employeeAndRoleDataList', state.collaboratorData.employeeAndRoleDataList);
 
     return (
         <Card className="mb-4">
@@ -629,7 +646,7 @@ function EmployeeUserRegister() {
                             <Select2
                                 id="validationEmployeeFunction"
                                 data-minimum-results-for-search="Infinity"
-                                className="form-control"
+                                className="form-control my-custom-select"
                                 options={{
                                     placeholder: "Selecione o função",
                                 }}
@@ -649,12 +666,12 @@ function EmployeeUserRegister() {
                         </Col>
                     </div>
                     <div className="form-row">
-                        <Col className="mb-3" md="6">
+                        <Col md="6">
                             <label
                                 className="form-control-label"
                                 htmlFor="validationLeader"
                             >
-                                Exerce líderança
+                                Exerce liderança
                             </label>
                             <Row className="mt-3">
                                 <Col md="6">
@@ -700,30 +717,50 @@ function EmployeeUserRegister() {
                                 </div>
                             )}
                         </Col>
-                        <Col className="mb-3" md="5">
+                        <Col md="6">
                             <label
                                 className="form-control-label"
                                 htmlFor="validationSelectLeader"
                             >
                                 Liderado por
                             </label>
-                            <Input
+                            <Select2
+                                multiple
                                 id="validationSelectLeader"
-                                placeholder="Nome do líder"
-                                type="text"
-                                value={state.collaboratorData.employeeLeaderName || ''}
-                                valid={state.collaboratorData.employeeLeaderNameState === "valid"}
-                                invalid={state.collaboratorData.employeeLeaderNameState === "invalid"}
-                                onChange={handleEmployeeLeaderNameChange}
+                                data-minimum-results-for-search="Infinity"
+                                options={{
+                                    placeholder: "Selecione um líder",
+                                    allowClear: true,
+                                    language: {
+                                        noResults: () =>
+                                            "Não há líderes, é necessário selecionar um departamento primeiro ou cadastrar colaboradores que exercem liderança."
+                                    }
+                                }}
+                                data={state.collaboratorData.employeeAndRoleDataList || []}
+                                value={getSelect2Value(state.collaboratorData.selectedEmployeeAndRole)}
+                                onSelect={(e) => {
+                                    const selectedItem = parseSelect2Change(
+                                        e,
+                                        state.collaboratorData.employeeAndRoleDataList
+                                    );
+                                    if (selectedItem) {
+                                        // move + marca disabled (MOVE_TO_HEADED_BY também atualiza selected)
+                                        dispatch({ type: "MOVE_TO_HEADED_BY", payload: selectedItem });
+                                    }
+                                }}
+                                onUnselect={(e) => {
+                                    const unselectedItem = parseSelect2Change(
+                                        e,
+                                        state.collaboratorData.employeeHeadedByList
+                                    );
+                                    if (unselectedItem) {
+                                        // remove e reabilita a opção
+                                        setTimeout(() => {
+                                            dispatch({ type: "REMOVE_FROM_HEADED_BY", payload: unselectedItem });
+                                        }, 1000);
+                                    }
+                                }}
                             />
-                            {state.collaboratorData.hasEmployeeLeader && !state.collaboratorData.employeeLeaderName?.value && (
-                                <div className="invalid-feedback">É necessário preencher este campo.</div>
-                            )}
-                        </Col>
-                        <Col className="d-flex align-items-center justify-content-center" md="1">
-                            <Button className="" color="primary" size="sm" type="button">
-                                <i className="fa fa-solid fa-plus" />
-                            </Button>
                         </Col>
                     </div>
                     <hr />
@@ -948,10 +985,7 @@ function EmployeeUserRegister() {
                         <Col md="4" />
                         <Col className="d-flex justify-content-end align-items-center" md="8" >
                             <Button className="px-5" color="primary" size="lg" type="button" onClick={handleClear}>
-                                <span
-                                    className="btn-inner--text"
-                                    onClick={handleClear}
-                                >
+                                <span className="btn-inner--text">
                                     Limpar
                                 </span>
                             </Button>
@@ -968,7 +1002,7 @@ function EmployeeUserRegister() {
                     </Row>
                 </Form>
             </CardBody>
-        </Card>
+        </Card >
     );
 }
 

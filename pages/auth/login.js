@@ -172,12 +172,11 @@ function Login() {
         },
         body: JSON.stringify(formData),
       });
-
       if (response.ok) {
         const data = await response.json();
         handleSaveAuthenticationDataLoggedInUser(data);
-        let redirectUrl = `${process.env.NEXT_PUBLIC_HOME_PAGE}`;
-
+        // let redirectUrl = `${process.env.NEXT_PUBLIC_HOME_PAGE}`;
+        let redirectUrl = '';
         switch (data.role) {
           case 'administrator':
             redirectUrl += '/dashboard/admin';
@@ -189,7 +188,8 @@ function Login() {
             redirectUrl += '/employee/profile';
             break;
           default:
-            redirectUrl = `${process.env.NEXT_PUBLIC_HOME_PAGE}/default`;
+            // redirectUrl = `${process.env.NEXT_PUBLIC_HOME_PAGE}/default`;
+            redirectUrl = '/default';
         }
 
         //redirectUrl += `?id=${data.data.id}&sector=${encodeURIComponent(data.data.sector)}`;

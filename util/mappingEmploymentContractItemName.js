@@ -27,6 +27,8 @@ export function mappingEmploymentContractItemName(item, employmentContractItemNa
                     return "Não há modelos de trabalho, use o botão 'Configurações'.";
                 case 'workplace':
                     return "Não há locais de trabalho, use o botão 'Configurações'.";
+                case 'employeeAndRole':
+                    return 'Não há líderes, é necessário selecionar um departamento primeiro ou cadastrar colaboradores que exercem liderança.';
                 case 'skillClassification':
                     return "Não há classificações, crie ao menos um.";
                 case 'occupationalGroup':
@@ -53,6 +55,8 @@ export function mappingEmploymentContractItemName(item, employmentContractItemNa
                 return item.name;
             case 'workplace':
                 return item.name;
+            case 'employeeAndRole':
+                return item?.text ?? '';
             case 'skillClassification':
                 return item.competenceClassificationName;
             case 'occupationalGroup':

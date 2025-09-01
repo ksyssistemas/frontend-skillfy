@@ -1,16 +1,19 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useContext } from "react";
 import { Container } from "reactstrap";
 import Performance from "../../layouts/Performance";
 import AddAppraisalHeader from "../../components/Headers/PerformanceHeader/AddAppraisalHeader"
 import { ModelSelectionReview } from "../../components/Forms/PerformanceForms/ReviewsForms/PerformanceReview/ModelSelectionReview";
 import { ReviewFormWrapper } from "../../components/Forms/PerformanceForms/ReviewsForms/PerformanceReview/ReviewFormWrapper";
 import { ModelSelectionReviewContext } from "../../contexts/PerformanceContext/ModelSelectionReviewContext";
+import DynamicLayout from "../../layouts/DynamicLayout";
 
 function AddAppraisal() {
 
-  const { selectedReview,
+  const {
+    selectedReview,
     handleSelectedReview,
-    handleCleanlinessReviewSelection } = useContext(ModelSelectionReviewContext);
+    handleCleanlinessReviewSelection
+  } = useContext(ModelSelectionReviewContext);
 
   return (
     <>
@@ -33,12 +36,11 @@ function AddAppraisal() {
             )
           )
         }
-
       </Container>
     </>
   );
 }
 
-AddAppraisal.layout = Performance;
+AddAppraisal.getLayout = (page) => <DynamicLayout>{page}</DynamicLayout>;
 
 export default AddAppraisal;
