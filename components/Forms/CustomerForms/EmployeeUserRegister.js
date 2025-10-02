@@ -127,17 +127,16 @@ function EmployeeUserRegister() {
     };
 
     const handleIsEmployeeLeader = () => {
-        dispatch({ type: 'SET_IS_EMPLOYEE_LEADER', payload: !state.isEmployeeLeader });
+        dispatch({ type: 'SET_IS_EMPLOYEE_LEADER', payload: true });
         dispatch({ type: 'SET_HAS_EMPLOYEE_LEADER', payload: false });
-        dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME_STATE', payload: null });
+        dispatch({ type: 'CLEAR_SELECTED_EMPLOYEE_AND_ROLE' });
         dispatch({ type: 'SET_IS_INVALID_EMPLOYEE_LEADER_COMPONENT', payload: false });
         dispatch({ type: 'SET_SHOW_ERROR_FEEDBACK_EMPLOYEE_LEADER_COMPONENT', payload: false });
     };
 
     const handleHasEmployeeLeader = () => {
-        dispatch({ type: 'SET_HAS_EMPLOYEE_LEADER', payload: !state.hasEmployeeLeader });
+        dispatch({ type: 'SET_HAS_EMPLOYEE_LEADER', payload: true });
         dispatch({ type: 'SET_IS_EMPLOYEE_LEADER', payload: false });
-        dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME_STATE', payload: null });
         dispatch({ type: 'SET_IS_INVALID_EMPLOYEE_LEADER_COMPONENT', payload: false });
         dispatch({ type: 'SET_SHOW_ERROR_FEEDBACK_EMPLOYEE_LEADER_COMPONENT', payload: false });
     };
@@ -155,12 +154,6 @@ function EmployeeUserRegister() {
         } else {
             dispatch({ type: typeTimeState, payload: "valid" });
         }
-    };
-
-    // Função para converter string em Date e garantir validade
-    const parseDateFromString = (dateString) => {
-        const [year, month, day] = dateString.split('-').map(Number);
-        return new Date(year, month - 1, day);
     };
 
     // Função para formatar uma data (Date) em uma string ISO (yyyy-MM-dd)
@@ -452,9 +445,6 @@ function EmployeeUserRegister() {
         };
     }, [hasValuesChangedWithAPIData, validateAddEmployeeAddressForm]);
 
-    console.log('Result of selectEmployeeAndRole', state.collaboratorData.selectedEmployeeAndRole);
-    console.log('Result of employeeAndRoleDataList', state.collaboratorData.employeeAndRoleDataList);
-
     return (
         <Card className="mb-4">
             <CardHeader>
@@ -646,7 +636,7 @@ function EmployeeUserRegister() {
                             <Select2
                                 id="validationEmployeeFunction"
                                 data-minimum-results-for-search="Infinity"
-                                className="form-control my-custom-select"
+                                className="form-control"
                                 options={{
                                     placeholder: "Selecione o função",
                                 }}
@@ -746,6 +736,9 @@ function EmployeeUserRegister() {
                                     if (selectedItem) {
                                         // move + marca disabled (MOVE_TO_HEADED_BY também atualiza selected)
                                         dispatch({ type: "MOVE_TO_HEADED_BY", payload: selectedItem });
+                                        
+                                        dispatch({ type: 'SET_IS_INVALID_EMPLOYEE_LEADER_COMPONENT', payload: false });
+                                        dispatch({ type: 'SET_SHOW_ERROR_FEEDBACK_EMPLOYEE_LEADER_COMPONENT', payload: false });
                                     }
                                 }}
                                 onUnselect={(e) => {
@@ -760,7 +753,17 @@ function EmployeeUserRegister() {
                                         }, 1000);
                                     }
                                 }}
+                                className={
+                                    state.collaboratorData.isInvalidEmployeeLeaderComponent
+                                        ? "is-invalid"
+                                        : ""
+                                }
                             />
+                            {state.collaboratorData.showErrorFeedbackEmployeeLeaderComponent && (
+                                <div className="invalid-feedback d-block">
+                                    É necessário selecionar pelo menos um líder.
+                                </div>
+                            )}
                         </Col>
                     </div>
                     <hr />

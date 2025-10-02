@@ -1,52 +1,20 @@
 export const initialStateReviewParticipantsSelectionForm = {
     reviewParticipantsSelectionData: {
-        isAllEmployeesSelectedToParticipate: false,
-        listAllEmployeesSelectedToReview: [],
-
-        listEmployeeDataToReview: [],
-
-        listLeaderEmployeeDataToReview: [],
-        listLeaderEmployeeDataToReviewState: '',
-
-        listLedEmployeeDataToReview: [],
-        listLedEmployeeDataToReviewState: '',
-
-        employeesSelectedAmount: 0,
-
-        isRandomSelectionParticipantsToReview: false,
-        isShouldPresentParticipantSelectionButtons: false,
-
-        isSholdPresentNamesSelectedLeaders: false,
-        isSholdPresentNamesSelectedSelfReview: false,
-        isSholdPresentNamesSelectedPairs: false,
-
-        leadersNumberToDrawn: 0,
-        selfReviewsNumberToDrawn: 0,
-        pairsNumberToDrawn: 0,
-
-        listLeaderEmployeeDataSelectedToReview: [],
-        listLeaderEmployeeDataSelectedToReviewState: '',
-        leaderTagsInput: [],
-        removedLeaderItems: [],
-
-        listEmployeeDataToSelfReview: [],
-        listEmployeeDataToSelfReviewState: '',
-        selfReviewTagsInput: [],
-        removedLedItems: [],
-
-        listRandomPairEmployeeDataToReview: {},
-        listRandomPairEmployeeDataToReviewState: '',
-        randomPairTagsInput: {},
-        removedRandomPairItems: {},
-
-        listPairEmployeeDataToReview: {},
-        listPairEmployeeDataToReviewState: '',
-        pairTagsInput: {},
-        removedPairItems: {},
-        listPairEmployeeDataToReviewDataSelect: {},
-
-        isHandPickedSelectionParticipantsToReview: false,
-
+        leaders: [],
+        selectedLeaders: [],
+        ledEmployees: {},
+        selectedLedEmployees: {},
+        leaderPeers: {},
+        isLoading: false,
+        page: 1,
+        hasMore: true,
+        searchTerm: "",
+        step: 1,
+        selectedPeers: {},
+        selectedLeaderPeers: {},
+        selectedDepartment: null,
+        search: "",
+        autoSelectCount: 1,
     },
 };
 
@@ -67,313 +35,247 @@ export const reviewParticipantsSelectionFormReducer = (state, action) => {
             };
         case 'RESET_REVIEW_DATA':
             return initialStateReviewParticipantsSelectionForm;
-        case 'SET_ALL_EMPLOYEE_SELECTED':
+        case 'SET_LEADERS':
             return {
                 ...state,
                 reviewParticipantsSelectionData: {
                     ...state.reviewParticipantsSelectionData,
-                    isAllEmployeesSelectedToParticipate: action.payload,
+                    leaders: action.payload,
                 },
             };
-        case 'SET_LIST_ALL_EMPLOYEE_SELECTED_TO_REVIEW':
+        case "SET_SELECTED_LEADERS": {
+            const selectedLeaders = action.payload;
+
+            // IDs dos líderes que permanecem selecionados
+            const remainingLeaderIds = selectedLeaders.map((l) => l.value);
+
+            // IDs dos líderes que foram removidos
+            const previousLeaderIds = state.reviewParticipantsSelectionData.selectedLeaders.map(l => l.value);
+            const removedLeaderIds = previousLeaderIds.filter(id => !remainingLeaderIds.includes(id));
+
+            // 1. Mantém apenas liderados dos líderes ainda selecionados
+            const newLedEmployees = Object.fromEntries(
+                Object.entries(state.reviewParticipantsSelectionData.ledEmployees)
+                    .filter(([leaderId]) => remainingLeaderIds.includes(Number(leaderId)))
+            );
+
+            // 2. Mantém apenas selectedLedEmployees dos líderes ainda selecionados
+            const newSelectedLedEmployees = Object.fromEntries(
+                Object.entries(state.reviewParticipantsSelectionData.selectedLedEmployees)
+                    .filter(([leaderId]) => remainingLeaderIds.includes(Number(leaderId)))
+            );
+
+            // 3. Pega IDs de todos os liderados que foram removidos
+            const removedLedEmployeeIds = removedLeaderIds.flatMap(leaderId => {
+                const employees = state.reviewParticipantsSelectionData.ledEmployees[leaderId] || [];
+                return employees.map(emp => emp.id);
+            });
+
+            // 4. Remove pares dos liderados que foram removidos
+            const newSelectedPeers = Object.fromEntries(
+                Object.entries(state.reviewParticipantsSelectionData.selectedPeers)
+                    .filter(([ledId]) => !removedLedEmployeeIds.includes(Number(ledId)))
+            );
+
+            // 5. Remove leaderPeers dos líderes removidos
+            const newLeaderPeers = Object.fromEntries(
+                Object.entries(state.reviewParticipantsSelectionData.leaderPeers)
+                    .filter(([leaderId]) => remainingLeaderIds.includes(Number(leaderId)))
+            );
+
+            // 6. Remove selectedLeaderPeers dos líderes removidos
+            const newSelectedLeaderPeers = Object.fromEntries(
+                Object.entries(state.reviewParticipantsSelectionData.selectedLeaderPeers)
+                    .filter(([leaderId]) => remainingLeaderIds.includes(Number(leaderId)))
+            );
+
             return {
                 ...state,
                 reviewParticipantsSelectionData: {
                     ...state.reviewParticipantsSelectionData,
-                    listAllEmployeesSelectedToReview: action.payload,
+                    selectedLeaders,
+                    ledEmployees: newLedEmployees,
+                    selectedLedEmployees: newSelectedLedEmployees,
+                    selectedPeers: newSelectedPeers,
+                    leaderPeers: newLeaderPeers,
+                    selectedLeaderPeers: newSelectedLeaderPeers,
                 },
             };
-        case 'SET_LIST_EMPLOYEE_DATA_TO_REVIEW':
+        }
+        case "SET_LED_EMPLOYEES": {
+            const { leaderId, employees } = action.payload;
+
+            // Pega os IDs dos funcionários que vêm com selected: true
+            const selectedIds = employees
+                .filter(emp => emp.selected === true)
+                .map(emp => emp.id);
+
             return {
                 ...state,
                 reviewParticipantsSelectionData: {
                     ...state.reviewParticipantsSelectionData,
-                    listEmployeeDataToReview: action.payload,
-                },
+                    ledEmployees: {
+                        ...state.reviewParticipantsSelectionData.ledEmployees,
+                        [leaderId]: employees
+                    },
+                    // 🔹 Automaticamente sincroniza selectedLedEmployees
+                    selectedLedEmployees: {
+                        ...state.reviewParticipantsSelectionData.selectedLedEmployees,
+                        [leaderId]: selectedIds
+                    }
+                }
             };
-        case 'SET_LIST_LEADER_EMPLOYEE_DATA_TO_REVIEW':
+        }
+        case "SET_SELECTED_LED_EMPLOYEES":
             return {
                 ...state,
                 reviewParticipantsSelectionData: {
                     ...state.reviewParticipantsSelectionData,
-                    listLeaderEmployeeDataToReview: Array.isArray(action.payload) ? action.payload : [],
-                },
-            };
-        case 'SET_LIST_LEADER_EMPLOYEE_DATA_TO_REVIEW_STATE':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    listLeaderEmployeeDataToReviewState: action.payload,
-                },
-            };
-        case 'SET_LIST_LED_EMPLOYEE_DATA_TO_REVIEW':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    listLedEmployeeDataToReview: Array.isArray(action.payload) ? action.payload : [],
-                },
-            };
-        case 'SET_EMPLOYEES_SELECTED_AMOUNT':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    employeesSelectedAmount: action.payload,
-                },
-            };
-        case 'SET_RANDOM_SELECTION_PARTICIPANTS':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    isRandomSelectionParticipantsToReview: action.payload,
-                },
-            };
-        case 'SET_SHOULD_PRESENT_PARTICIPANT_SELECTION_BUTTONS':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    isShouldPresentParticipantSelectionButtons: action.payload,
+                    selectedLedEmployees: {
+                        ...state.reviewParticipantsSelectionData.selectedLedEmployees,
+                        [action.payload.leaderId]: action.payload.employeeIds, // array de ids
+                    },
                 },
             };
 
-        case 'SET_SHOULD_PRESENT_NAMES_SELECTED_LEADERS':
+        case "CLEAR_SELECTED_LED_EMPLOYEES":
             return {
                 ...state,
                 reviewParticipantsSelectionData: {
                     ...state.reviewParticipantsSelectionData,
-                    isSholdPresentNamesSelectedLeaders: action.payload,
-                },
-            };
-        case 'SET_SHOULD_PRESENT_NAMES_SELECTED_SELF_REVIEW':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    isSholdPresentNamesSelectedSelfReview: action.payload,
-                },
-            };
-        case 'SET_SHOULD_PRESENT_NAMES_SELECTED_PAIRS':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    isSholdPresentNamesSelectedPairs: action.payload,
-                },
-            };
-        case 'SET_LEADERS_NUMBER_TO_DRAWN':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    leadersNumberToDrawn: action.payload,
-                },
-            };
-        case 'SET_SELF_REVIEW_NUMBER_TO_DRAWN':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    selfReviewsNumberToDrawn: action.payload,
-                },
-            };
-        case 'SET_PAIRS_NUMBER_TO_DRAWN':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    pairsNumberToDrawn: action.payload,
-                },
-            };
-        case 'SET_LIST_LEADER_EMPLOYEE_DATA_SELECTED_TO_REVIEW':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    listLeaderEmployeeDataSelectedToReview: Array.isArray(action.payload) ? action.payload : [],
-                },
-            };
-        case 'SET_LIST_LEADER_EMPLOYEE_DATA_SELECTED_TO_REVIEW_STATE_STATE':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    listLeaderEmployeeDataSelectedToReviewState: Array.isArray(action.payload) ? action.payload : [],
-                },
-            };
-        case 'SET_LEADER_TAGS_INPUT':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    leaderTagsInput: Array.isArray(action.payload) ? action.payload : [],
-                },
-            };
-        case 'SET_REMOVED_LEADER_ITEMS':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    removedLeaderItems: Array.isArray(action.payload) ? action.payload : [],
-                },
-            };
-        case 'SET_LIST_EMPLOYEE_DATA_TO_SELF_REVIEW':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    listEmployeeDataToSelfReview: Array.isArray(action.payload) ? action.payload : [],
-                },
-            };
-        case 'SET_LIST_EMPLOYEE_DATA_TO_SELF_REVIEW_STATE':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    listEmployeeDataToSelfReviewState: Array.isArray(action.payload) ? action.payload : [],
-                },
-            };
-        case 'SET_SELF_REVIEW_TAGS_INPUT':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    selfReviewTagsInput: Array.isArray(action.payload) ? action.payload : [],
-                },
-            };
-        case 'SET_REMOVED_LED_ITEMS':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    removedLedItems: Array.isArray(action.payload) ? action.payload : [],
-                },
-            };
-        case 'SET_LIST_RANDOM_PAIR_EMPLOYEE_DATA_TO_REVIEW':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    listRandomPairEmployeeDataToReview: action.payload,
-                },
-            };
-        case 'SET_LIST_RANDOM_PAIR_EMPLOYEE_DATA_TO_REVIEW_STATE':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    listRandomPairEmployeeDataToReviewState: action.payload,
-                },
-            };
-        case 'SET_RANDOM_PAIR_TAGS_INPUT':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    randomPairTagsInput: {
-                        ...state.reviewParticipantsSelectionData.pairTagsInput,
-                        ...action.payload,
+                    selectedLedEmployees: {
+                        ...state.reviewParticipantsSelectionData.selectedLedEmployees,
+                        [action.payload.leaderId]: [], // limpa array
                     },
-                },
-            };
-        case 'SET_REMOVED_RANDOM_PAIR_ITEMS':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    removedRandomPairItems: {
-                        ...state.reviewParticipantsSelectionData.removedPairItems,
-                        ...action.payload,
-                    },
-                },
-            };
-        case 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    listPairEmployeeDataToReview: {
-                        ...state.reviewParticipantsSelectionData.listPairEmployeeDataToReview,
-                        [action.payload.lideradoId]: action.payload.pairs,
-                    },
-                },
-            };
-        case 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_REVIEW_STATE':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    listPairEmployeeDataToReviewState: action.payload,
-                },
-            };
-        case 'SET_PAIR_TAGS_INPUT':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    pairTagsInput: {
-                        ...state.reviewParticipantsSelectionData.pairTagsInput,
-                        [action.payload.lideradoId]: action.payload.tags,
-                    },
-                },
-            };
-        case 'SET_REMOVED_PAIR_ITEMS':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    removedPairItems: {
-                        ...state.reviewParticipantsSelectionData.removedPairItems,
-                        [action.payload.lideradoId]: action.payload.items,
-                    },
-                },
-            };
-        case 'SET_HAND_PICKED_SELECTION_PARTICIPANTS_TO_REVIEW':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    isHandPickedSelectionParticipantsToReview: action.payload,
-                },
-            };
-        case 'SET_LIST_EMPLOYEE_DATA_TO_SELECT':
-            return {
-                ...state,
-                reviewParticipantsSelectionData: {
-                    ...state.reviewParticipantsSelectionData,
-                    listPairEmployeeDataToReviewDataSelect: action.payload,
                 },
             };
 
-        case 'SET_LIST_PAIR_EMPLOYEE_DATA_TO_SELECT':
+        case "TOGGLE_EMPLOYEE_SELECTION": {
+            const { leaderId, employeeId } = action.payload;
+
+            const current = state.reviewParticipantsSelectionData.selectedLedEmployees[leaderId] || [];
+            const isAlreadySelected = current.includes(employeeId);
+
+            const updated = isAlreadySelected
+                ? current.filter((id) => id !== employeeId)
+                : [...current, employeeId];
+
             return {
                 ...state,
                 reviewParticipantsSelectionData: {
                     ...state.reviewParticipantsSelectionData,
-                    listPairEmployeeDataToReviewDataSelect: {
-                        ...state.reviewParticipantsSelectionData.listPairEmployeeDataToReviewDataSelect,
-                        [action.payload.lideradoId]: action.payload.pairs,
+                    selectedLedEmployees: {
+                        ...state.reviewParticipantsSelectionData.selectedLedEmployees,
+                        [leaderId]: updated,
                     },
                 },
             };
-        case 'SET_ALL_PAIR_TAGS_INPUT':
+        }
+        case "SET_LEADER_PEERS":
             return {
                 ...state,
                 reviewParticipantsSelectionData: {
                     ...state.reviewParticipantsSelectionData,
-                    pairTagsInput: action.payload,
+                    leaderPeers: {
+                        ...state.reviewParticipantsSelectionData.leaderPeers,
+                        [action.leaderId]: action.peers,
+                    },
                 },
             };
+        case "SET_IS_LOADING":
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData, isLoading: action.payload
+                },
+            };
+        case "SET_PAGE":
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData, page: action.payload
+                },
+            };
+        case "SET_HAS_MORE":
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData, hasMore: action.payload
+                },
+            };
+        case "SET_SEARCH_TERM":
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData, searchTerm: action.payload
+                },
+            };
+        case "SET_STEP":
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData, step: action.payload
+                },
+            };
+        case "SET_SELECTED_PEERS": {
+            const update = action.payload;
 
-        case 'SET_ALL_REMOVED_PAIR_ITEMS':
+            if (typeof update === "function") {
+                return {
+                    ...state,
+                    reviewParticipantsSelectionData: {
+                        ...state.reviewParticipantsSelectionData,
+                        selectedPeers: update(state.reviewParticipantsSelectionData.selectedPeers),
+                    },
+                };
+            }
+
             return {
                 ...state,
                 reviewParticipantsSelectionData: {
                     ...state.reviewParticipantsSelectionData,
-                    removedPairItems: action.payload,
+                    selectedPeers: {
+                        ...state.reviewParticipantsSelectionData.selectedPeers,
+                        ...update,
+                    },
+                },
+            };
+        }
+        case "SET_SELECTED_LEADER_PEERS": {
+            const update = action.payload;
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData,
+                    selectedLeaderPeers:
+                        typeof update === "function"
+                            ? update(state.reviewParticipantsSelectionData.selectedLeaderPeers)
+                            : {
+                                ...state.reviewParticipantsSelectionData.selectedLeaderPeers,
+                                ...update,
+                            },
+                },
+            };
+        }
+        case "SET_SELECTED_DEPARTMENT":
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData, selectedDepartment: action.payload
+                },
+            };
+        case "SET_SEARCH":
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData, search: action.payload
+                },
+            };
+        case "SET_AUTO_SELECT_COUNT":
+            return {
+                ...state,
+                reviewParticipantsSelectionData: {
+                    ...state.reviewParticipantsSelectionData, autoSelectCount: action.payload
                 },
             };
         default:

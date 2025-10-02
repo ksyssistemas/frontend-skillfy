@@ -32,6 +32,7 @@ import { useFindAllEmployee } from '../../../../hooks/RecordsHooks/employee/useF
 import { useFindReviewParticipantsById } from '../../../../hooks/PerformanceReview/ReviewParticipants/useFindReviewParticipantsById';
 import _ from 'lodash';
 import { useFindReviewAnswersByReviewParticipantId } from '../../../../hooks/PerformanceReview/ReviewAnswer/useFindReviewAnswersByReviewParticipantId';
+import { useFindReviewParticipantsByPerformanceReviewId } from '../../../../hooks/PerformanceReview/ReviewParticipants/useFindReviewParticipantsByPerformanceReviewId';
 
 function AppraisalsListTableCompetencies() {
 
@@ -91,7 +92,6 @@ function AppraisalsListTableCompetencies() {
   useEffect(() => {
     const fetchPerformanceReviewAnswerData = async () => {
       const foundReviewAnswerData = await useFindReviewAnswersByReviewParticipantId(userLoggedId);
-
       if (foundReviewAnswerData &&
         Number(foundReviewAnswerData.performanceReview) === Number(userLoggedParticipationOnPerformanceReviewData.performanceReviewId)
       ) {
@@ -227,141 +227,174 @@ function AppraisalsListTableCompetencies() {
     return performanceReview;
   }
 
+  function mapEmployeeData(employee, reviewAs = null) {
+    return {
+      id: employee.id,
+      name: `${employee.name} ${employee.lastName}`,
+      roleId: employee.rolesId,
+      ...(reviewAs && { reviewAs })
+    };
+  }
+
   useEffect(() => {
     async function fetchReviewsToExecute() {
       try {
         let newReviewsList = [];
+        let createdKeys = new Set(); // <- controla duplicidade
 
-        await Promise.all(
-          userLoggedParticipationOnPerformanceReviewData.map(async (participant) => {
-            const { performanceReviewId } = participant;
-            const reviewData = performanceReviewDataById[performanceReviewId];
+        const buildReviewKey = (reviewerId, reviewedId) => `${reviewerId}-${reviewedId}`;
 
-            if (!reviewData) return;
+        for (const participant of userLoggedParticipationOnPerformanceReviewData) {
+          const { performanceReviewId } = participant;
 
-            // Buscar dados da avaliação
-            const performanceReview = await getPerformanceReview(performanceReviewId);
-            if (!performanceReview) return;
+          const performanceReview = await getPerformanceReview(performanceReviewId);
+          if (!performanceReview) continue;
 
-            // Verifica se o usuário logado participa como autoavaliação
-            if (reviewData.hasParticipation && reviewData.isParticipateAsSelfEvaluator) {
-              const selfReview = {
+          const allParticipants = await useFindReviewParticipantsByPerformanceReviewId(performanceReviewId);
+          const me = allParticipants.find(p => Number(p.reviewParticipantId) === Number(userLoggedId));
+          if (!me) continue;
 
+          // -------------------------
+          // 1) AUTOAVALIAÇÃO
+          // -------------------------
+          if (me.participatesAsSelfEvaluator) {
+            const key = buildReviewKey(me.reviewParticipantId, me.reviewParticipantId);
+            if (!createdKeys.has(key)) {
+              createdKeys.add(key);
+              newReviewsList.push({
                 id: _.uniqueId('selfReview_'),
                 performanceReviewToExecute: performanceReview,
-                reviewAs: onParticipantTypeOnReview(false, reviewData.isParticipateAsSelfEvaluator, false),
-                reviewerParticipant: {
-                  id: userLoggedData.id,
-                  name: `${userLoggedData.name} ${userLoggedData.lastName}`,
-                  roleId: userLoggedData.rolesId,
-                  reviewAs: onParticipantTypeOnReview(false, reviewData.isParticipateAsSelfEvaluator, false),
-                },
-                reviewedParticipant: {
-                  id: userLoggedData.id,
-                  name: `${userLoggedData.name} ${userLoggedData.lastName}`,
-                  roleId: userLoggedData.rolesId
-                },
-                performanceReviewParticipationData: reviewData,
-
-                // reviewName: performanceReview.reviewName,
-                // startDate: performanceReview.startDate,
-                // endDate: performanceReview.endDate,
-                // status: performanceReview.status,
-                // reviewModel: performanceReview.reviewModel,
-                // reviewRulerId: performanceReview.reviewRulerId,
-                // participatesAsSelfEvaluator: reviewData.isParticipateAsSelfEvaluator,
-                // participateAsPair: reviewData.isParticipateAsPair,
-                // participateAsLeader: reviewData.isParticipateAsLeader
-              };
-
-              newReviewsList.push(selfReview);
+                reviewAs: "Autoavaliação",
+                reviewerParticipant: mapEmployeeData(userLoggedData, "Autoavaliação"),
+                reviewedParticipant: mapEmployeeData(userLoggedData),
+                performanceReviewParticipationData: me
+              });
             }
+          }
 
-            // Verifica se o usuário logado participa como líder
-            if (reviewData.hasParticipation && reviewData.isParticipateAsLeader) {
-              employeesLedData.forEach((led) => {
-                const leaderReview = {
+          // -------------------------
+          // 2) LÍDER
+          // -------------------------
+          if (me.participateAsLeader) {
+            // eu avalio todos os liderados com selfEval
+            const ledParticipants = allParticipants.filter(p => p.participatesAsSelfEvaluator && p.reviewParticipantId !== me.reviewParticipantId);
+
+            for (const led of ledParticipants) {
+              const ledEmployee = employeesData.find(e => Number(e.id) === Number(led.reviewParticipantId));
+              if (!ledEmployee) continue;
+
+              const key = buildReviewKey(me.reviewParticipantId, led.reviewParticipantId);
+              if (!createdKeys.has(key)) {
+                createdKeys.add(key);
+                newReviewsList.push({
                   id: _.uniqueId('leaderReview_'),
                   performanceReviewToExecute: performanceReview,
-                  reviewAs: onParticipantTypeOnReview(reviewData.isParticipateAsLeader, false, false),
-                  reviewerParticipant: {
-                    id: userLoggedData.id,
-                    name: `${userLoggedData.name} ${userLoggedData.lastName}`,
-                    roleId: userLoggedData.rolesId,
-                    reviewAs: onParticipantTypeOnReview(reviewData.isParticipateAsLeader, false, false),
-                  },
-                  reviewedParticipant: {
-                    id: led.id,
-                    name: `${led.name} ${led.lastName}`,
-                    roleId: led.rolesId
-                  },
-                  performanceReviewParticipationData: reviewData,
-
-                  // reviewName: performanceReview.reviewName,
-                  // startDate: performanceReview.startDate,
-                  // endDate: performanceReview.endDate,
-                  // status: performanceReview.status,
-                  // reviewModel: performanceReview.reviewModel,
-                  // reviewRulerId: performanceReview.reviewRulerId,
-                  // participatesAsSelfEvaluator: reviewData.isParticipateAsSelfEvaluator,
-                  // participateAsPair: reviewData.isParticipateAsPair,
-                  // participateAsLeader: reviewData.isParticipateAsLeader
-                };
-
-                newReviewsList.push(leaderReview);
-              });
+                  reviewAs: "Líder",
+                  reviewerParticipant: mapEmployeeData(userLoggedData, "Líder"),
+                  reviewedParticipant: mapEmployeeData(ledEmployee),
+                  performanceReviewParticipationData: me
+                });
+              }
             }
+          } else {
+            // se não sou líder mas tenho selfEval, avalio meu(s) líder(es)
+            if (me.participatesAsSelfEvaluator) {
+              // pega o employee correspondente ao participante atual
+              const meEmployee = employeesData.find(e => Number(e.id) === Number(me.reviewParticipantId));
+              if (meEmployee?.headedBy?.length > 0) {
+                // busca todos os participantes que são líderes
+                const leaders = allParticipants.filter(p => p.participateAsLeader);
 
-            // Verifica se o usuário logado participa como par
-            if (reviewData.hasParticipation && reviewData.isParticipateAsPair && reviewData.employeeToWhomIsPaired.length > 0) {
-              reviewData.employeeToWhomIsPaired.forEach((employee) => {
-                const pairedEmployee = employeesData.find((emp) => Number(emp.id) === Number(employee.employeeToWhomIsPairedId));
-                if (pairedEmployee) {
-                  newReviewsList.push({
-                    id: _.uniqueId('pairReview_'),
-                    performanceReviewToExecute: performanceReview,
-                    reviewAs: onParticipantTypeOnReview(false, false, reviewData.isParticipateAsPair),
-                    reviewerParticipant: {
-                      id: userLoggedData.id,
-                      name: `${userLoggedData.name} ${userLoggedData.lastName}`,
-                      roleId: userLoggedData.rolesId,
-                      reviewAs: onParticipantTypeOnReview(false, false, reviewData.isParticipateAsPair),
-                    },
-                    reviewedParticipant: {
-                      id: pairedEmployee.id,
-                      name: `${pairedEmployee.name} ${pairedEmployee.lastName}`,
-                      roleId: pairedEmployee.rolesId
-                    },
-                    performanceReviewParticipationData: reviewData,
+                for (const leader of leaders) {
+                  // só considera se o líder está no headedBy do funcionário
+                  const isMyLeader = meEmployee.headedBy.some(h => Number(h.id) === Number(leader.reviewParticipantId));
+                  if (!isMyLeader) continue;
 
-                    // reviewName: performanceReview.reviewName,
-                    // startDate: performanceReview.startDate,
-                    // endDate: performanceReview.endDate,
-                    // status: performanceReview.status,
-                    // reviewModel: performanceReview.reviewModel,
-                    // reviewRulerId: performanceReview.reviewRulerId,
-                    // participatesAsSelfEvaluator: reviewData.isParticipateAsSelfEvaluator,
-                    // participateAsPair: reviewData.isParticipateAsPair,
-                    // participateAsLeader: reviewData.isParticipateAsLeader
-                  });
+                  const leaderEmployee = employeesData.find(e => Number(e.id) === Number(leader.reviewParticipantId));
+                  if (!leaderEmployee) continue;
+
+                  const key = buildReviewKey(me.reviewParticipantId, leader.reviewParticipantId);
+                  if (!createdKeys.has(key)) {
+                    createdKeys.add(key);
+                    newReviewsList.push({
+                      id: _.uniqueId('ledToLeaderReview_'),
+                      performanceReviewToExecute: performanceReview,
+                      reviewAs: "Líder",
+                      reviewerParticipant: mapEmployeeData(userLoggedData, "Líder"),
+                      reviewedParticipant: mapEmployeeData(leaderEmployee),
+                      performanceReviewParticipationData: me
+                    });
+                  }
                 }
+              }
+            }
+          }
+
+          // -------------------------
+          // 3) PARES (direto)
+          // -------------------------
+          if (me.participateAsPair && me.participateAsEmployeePeerTo?.length > 0) {
+            for (const { employeeToWhomIsPairedId } of me.participateAsEmployeePeerTo) {
+              const peerEmployee = employeesData.find(e => Number(e.id) === Number(employeeToWhomIsPairedId));
+              if (!peerEmployee) continue;
+
+              const key = buildReviewKey(me.reviewParticipantId, employeeToWhomIsPairedId);
+              if (!createdKeys.has(key)) {
+                createdKeys.add(key);
+                newReviewsList.push({
+                  id: _.uniqueId('pairReview_'),
+                  performanceReviewToExecute: performanceReview,
+                  reviewAs: "Par",
+                  reviewerParticipant: mapEmployeeData(userLoggedData, "Par"),
+                  reviewedParticipant: mapEmployeeData(peerEmployee),
+                  performanceReviewParticipationData: me
+                });
+              }
+            }
+          }
+
+          // -------------------------
+          // 3b) PARES RECÍPROCOS
+          // -------------------------
+          const peersThatChoseMe = allParticipants.filter(p =>
+            p.participateAsPair &&
+            p.participateAsEmployeePeerTo?.some(pt => Number(pt.employeeToWhomIsPairedId) === Number(me.reviewParticipantId))
+          );
+
+          for (const peer of peersThatChoseMe) {
+            const peerEmployee = employeesData.find(e => Number(e.id) === Number(peer.reviewParticipantId));
+            if (!peerEmployee) continue;
+
+            const key = buildReviewKey(me.reviewParticipantId, peer.reviewParticipantId);
+            if (!createdKeys.has(key)) {
+              createdKeys.add(key);
+              newReviewsList.push({
+                id: _.uniqueId('pairReview_'),
+                performanceReviewToExecute: performanceReview,
+                reviewAs: "Par",
+                reviewerParticipant: mapEmployeeData(userLoggedData, "Par"),
+                reviewedParticipant: mapEmployeeData(peerEmployee),
+                performanceReviewParticipationData: me
               });
             }
+          }
+        }
 
-          })
-        );
-        // Atualiza o estado apenas se os valores forem diferentes para evitar re-renderizações
+        // evitar renders desnecessários
         const newReviewsString = JSON.stringify(newReviewsList);
-        setReviewsToExecuteList((prev) => JSON.stringify(prev) !== newReviewsString ? newReviewsList : prev);
+        setReviewsToExecuteList(prev =>
+          JSON.stringify(prev) !== newReviewsString ? newReviewsList : prev
+        );
 
       } catch (error) {
         console.error("Error fetching reviews to execute:", error);
       }
     }
-    if (userLoggedParticipationOnPerformanceReviewData.length > 0 || employeesLedData.length > 0) {
+
+    if (userLoggedParticipationOnPerformanceReviewData.length > 0 && employeesData.length > 0) {
       fetchReviewsToExecute();
     }
-  }, [userLoggedParticipationOnPerformanceReviewData, employeesLedData, userLoggedData]);
+  }, [userLoggedParticipationOnPerformanceReviewData, employeesData, userLoggedData]);
 
   const {
     handlePerformanceReviewData,

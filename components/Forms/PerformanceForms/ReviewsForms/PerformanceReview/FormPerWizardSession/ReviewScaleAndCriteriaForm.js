@@ -581,18 +581,18 @@ export function ReviewScaleAndCriteriaForm() {
                                             competency ? ( // Garante que competency não seja undefined
                                                 <div key={competency.id}>
                                                     <p>
-                                                        <strong>Nome:</strong> {competency.competencieTypeName ?? "Carregando..."}
+                                                        <strong>Nome:</strong> {competency.competencieTypeName ?? "Não encontrada"}
                                                     </p>
                                                     <p>
-                                                        <strong>Descrição:</strong> {competency.description ?? "Carregando..."}
+                                                        <strong>Descrição:</strong> {competency.description ?? "Não encontrada"}
                                                     </p>
                                                     <p>
                                                         <strong>Grupo Ocupacional:</strong>{" "}
-                                                        {occupationalGroups[index]?.competencieName ?? "Carregando..."}
+                                                        {occupationalGroups[index]?.competencieName ?? "Não encontrada"}
                                                     </p>
                                                     <p>
                                                         <strong>Classificação da Habilidade:</strong>{" "}
-                                                        {skillClassifications[index]?.competenceClassificationName ?? "Carregando..."}
+                                                        {skillClassifications[index]?.competenceClassificationName ?? "Não encontrada"}
                                                     </p>
                                                     <h4>Evidências Relacionadas:</h4>
                                                     {Array.isArray(evidenceDataList) && evidenceDataList.length > 0 ? (

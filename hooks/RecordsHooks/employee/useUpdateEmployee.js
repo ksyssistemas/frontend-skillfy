@@ -6,245 +6,53 @@ const useUpdateEmployee = () => {
 
     const {
         employeeIdToUpdate,
-        handleEmployeeIdStatusCleanupToUpdate,
-        handleEmployeeIdToUpdate,
         handleUpdatedEmployeeRecordStatusChange,
     } = useContext(EmployeeContext);
 
-    // const validateSelection = () => {
-    //     if (!isEmployeeLeader && !hasEmployeeLeader && !employeeLeaderName) {
-    //         setIsInvalidEmployeeLeaderComponent(true);
-    //         setShowErrorFeedbackEmployeeLeaderComponent(true);
-    //         setEmployeeLeaderNameState("invalid");
-    //     } else if (!isEmployeeLeader && hasEmployeeLeader && !employeeLeaderName) {
-    //         setIsInvalidEmployeeLeaderComponent(false);
-    //         setShowErrorFeedbackEmployeeLeaderComponent(false);
-    //         setEmployeeLeaderNameState("invalid");
-    //     } else if (!isEmployeeLeader && hasEmployeeLeader && employeeLeaderName) {
-    //         setIsInvalidEmployeeLeaderComponent(false);
-    //         setShowErrorFeedbackEmployeeLeaderComponent(false);
-    //         setEmployeeLeaderNameState("valid");
-    //     } else if (isEmployeeLeader && !hasEmployeeLeader && !employeeLeaderName) {
-    //         setIsInvalidEmployeeLeaderComponent(false);
-    //         setShowErrorFeedbackEmployeeLeaderComponent(false);
-    //         setEmployeeLeaderNameState("");
-    //     }
-    // };
+    const validateLeaderSelection = (state, dispatch) => {
+        const list = state.collaboratorData.employeeHeadedByList || [];
 
-    // const validateAddEmployeeForm = () => {
-    //     if (employeeIdNumber === "") {
-    //         setEmployeeIdNumberState("invalid");
-    //     } else {
-    //         setEmployeeIdNumberState("valid");
-    //     }
-    //     if (firstName === "") {
-    //         setFirstNameState("invalid");
-    //     } else {
-    //         setFirstNameState("valid");
-    //     }
-    //     if (lastName === "") {
-    //         setLastNameState("invalid");
-    //     } else {
-    //         setLastNameState("valid");
-    //     }
-    //     if (emailAddress === "") {
-    //         setEmailAddressState("invalid");
-    //     } else {
-    //         setEmailAddressState("valid");
-    //     }
-    //     if (birthdate === "") {
-    //         setBirthdateState("invalid");
-    //     } else {
-    //         setBirthdateState("valid");
-    //     }
-    //     if (phoneNumber === "") {
-    //         setPhoneNumberState("invalid");
-    //     } else {
-    //         setPhoneNumberState("valid");
-    //     }
-    //     if (departmentWhichEmployeeReports === "") {
-    //         setDepartmentWhichEmployeeReportsState("invalid");
-    //     } else {
-    //         setDepartmentWhichEmployeeReportsState("valid");
-    //     }
-    //     if (employeeRole === "") {
-    //         setEmployeeRoleState("invalid");
-    //     } else {
-    //         setEmployeeRoleState("valid");
-    //     }
-    //     if (employeeFunction === "") {
-    //         setEmployeeFunctionState("invalid");
-    //     } else {
-    //         setEmployeeFunctionState("valid");
-    //     }
-    //     if (employeeContractType === "") {
-    //         setEmployeeContractTypeState("invalid");
-    //     } else {
-    //         setEmployeeContractTypeState("valid");
-    //     }
-    //     if (employeeWorkModel === "") {
-    //         setEmployeeWorkModelState("invalid");
-    //     } else {
-    //         setEmployeeWorkModelState("valid");
-    //     }
-    //     if (employeeWorkplace === "") {
-    //         setEmployeeWorkplaceState("invalid");
-    //     } else {
-    //         setEmployeeWorkplaceState("valid");
-    //     }
-    //     if (employeetAdmissionDate === "") {
-    //         setEmployeetAdmissionDateState("invalid");
-    //     } else {
-    //         setEmployeetAdmissionDateState("valid");
-    //     }
-    //     if (employeeEntryTime === "") {
-    //         setEmployeeEntryTimeState("invalid");
-    //     } else {
-    //         setEmployeeEntryTimeState("valid");
-    //     }
-    //     if (employeeBreakTime === "") {
-    //         setEmployeeBreakTimeState("invalid");
-    //     } else {
-    //         setEmployeeBreakTimeState("valid");
-    //     }
-    //     if (employeeDepartureTime === "") {
-    //         setEmployeeDepartureTimeState("invalid");
-    //     } else {
-    //         setEmployeeDepartureTimeState("valid");
-    //     }
-    // };
+        if (state.collaboratorData.hasEmployeeLeader && list.length === 0) {
+            dispatch({ type: "SET_IS_INVALID_EMPLOYEE_LEADER_COMPONENT", payload: true });
+            dispatch({ type: "SET_SHOW_ERROR_FEEDBACK_EMPLOYEE_LEADER_COMPONENT", payload: true });
+            return false;
+        }
 
-    // const validateAddEmployeeAddressForm = () => {
-    //     if (employeeZipCode === "") {
-    //         setEmployeeZipCodeState("invalid");
-    //     } else {
-    //         setEmployeeZipCodeState("valid");
-    //     }
-    //     if (employeeAddress === "") {
-    //         setEmployeeAddressState("invalid");
-    //     } else {
-    //         setEmployeeAddressState("valid");
-    //     }
-    //     if (employeeAddressNumber === "") {
-    //         setEmployeeAddressNumberState("invalid");
-    //     } else {
-    //         setEmployeeAddressNumberState("valid");
-    //     }
-    //     if (employeeAddressComplement === "") {
-    //         setEmployeeAddressComplementState("invalid");
-    //     } else {
-    //         setEmployeeAddressComplementState("valid");
-    //     }
-    //     if (employeeNeighborhood === "") {
-    //         setEmployeeNeighborhoodState("invalid");
-    //     } else {
-    //         setEmployeeNeighborhoodState("valid");
-    //     }
-    //     if (employeeCity === "") {
-    //         setEmployeeCityState("invalid");
-    //     } else {
-    //         setEmployeeCityState("valid");
-    //     }
-    //     if (federatedUnit === "") {
-    //         setFederatedUnitState("invalid");
-    //     } else {
-    //         setFederatedUnitState("valid");
-    //     }
-    // };
+        dispatch({ type: "SET_IS_INVALID_EMPLOYEE_LEADER_COMPONENT", payload: false });
+        dispatch({ type: "SET_SHOW_ERROR_FEEDBACK_EMPLOYEE_LEADER_COMPONENT", payload: false });
+        return true;
+    };
 
     async function handleValidateUpdateEmployeeForm(
-        handleOpenEmployeeModal,
-        firstName,
-        lastName,
+        state,
+        dispatch,
         formattedBirthdate,
-        emailAddress,
-        phoneNumber,
-        employeeLeaderName,
-        isEmployeeLeader,
-        hasEmployeeLeader,
-        employeeStatus,
-        departmentWhichEmployeeReports,
-        employeeRole,
-        employeeFunction,
-        employeeContractType,
-        employeeWorkModel,
-        employeeWorkplace,
-        formattedAdmissionDate,
-        employeeEntryTime,
-        employeeStartBreakTime,
-        employeeStopBreakTime,
-        employeeDepartureTime,
+        formattedEmployeeAdmission,
+        handleOpenEmployeeModal,
         handleEmployeeIdToUpdate,
         handleEmployeeIdStatusCleanupToUpdate,
         handleCloseEmployeeUpdateModal
     ) {
-        let isLead;
         //validateAddEmployeeForm();
         //validateSelection();
         //validateAddEmployeeAddressForm();
-        if (isEmployeeLeader && !hasEmployeeLeader) {
-            isLead = true;
-        } else if (!isEmployeeLeader && hasEmployeeLeader) {
-            isLead = false;
-        } else {
-            isLead = null;
-        }
-        // if (firstNameState === "valid" &&
-        //     lastNameState === "valid" &&
-        //     birthdateState === "valid" &&
-        //     emailAddressState === "valid" &&
-        //     phoneNumberState === "valid" && 
-        //     employeeLeaderNameState === "valid"
-        // ) {
-        await handleSubmit(
-            firstName,
-            lastName,
-            emailAddress,
-            formattedBirthdate,
-            phoneNumber,
-            isLead,
-            employeeLeaderName,
-            departmentWhichEmployeeReports,
-            employeeRole,
-            employeeFunction,
-            employeeStatus
-        );
-        // if (
-        // departmentWhichEmployeeReportsState === "valid" &&
-        // employeeRoleState === "valid" &&
-        // employeeFunctionState === "valid" &&
-        // employeeContractTypeState === "valid" &&
-        // employeeWorkModelState === "valid" &&
-        // employeeWorkplaceState === "valid" &&
-        // employeetAdmissionDateState === "valid" &&
-        // employeeEntryTimeState === "valid" &&
-        // employeeBreakTimeState === "valid" &&
-        // employeeDepartureTimeState === "valid" &&
-        //     userIdCreated
-        // ) {
-        await handleEmployeeContactDetails(
-            departmentWhichEmployeeReports,
-            employeeRole,
-            employeeFunction,
-            employeeContractType,
-            employeeWorkModel,
-            employeeWorkplace,
-            formattedAdmissionDate,
-            employeeEntryTime,
-            employeeStartBreakTime,
-            employeeStopBreakTime,
-            employeeDepartureTime
-        )
-        // }
-        // if (
-        //     employeeZipCodeState === "valid" &&
-        //     employeeAddressState === "valid" &&
-        //     employeeAddressNumberState === "valid" &&
-        //     employeeNeighborhoodState === "valid" &&
-        //     employeeCityState === "valid" &&
-        //     federatedUnitState === "valid" &&
-        //     userIdCreated
-        // ) {
+
+        const data = state.collaboratorData;
+
+        // Validação de líderes
+        const isLeaderSelectionValid = validateLeaderSelection(state, dispatch);
+        if (!isLeaderSelectionValid) return;
+
+        // Determina se é líder ou liderado
+        let isLead = null;
+        if (data.isEmployeeLeader && !data.hasEmployeeLeader) isLead = true;
+        else if (!data.isEmployeeLeader && data.hasEmployeeLeader) isLead = false;
+
+        // Envia atualização do colaborador
+        await handleSubmit({ data, formattedBirthdate });
+
+        await handleEmployeeContactDetails({ data, formattedEmployeeAdmission });
+
         //     await handleSubmitAddress(
         //         employeeZipCode,
         //         employeeAddress,
@@ -255,12 +63,21 @@ const useUpdateEmployee = () => {
         //         federatedUnit,
         //         userIdCreated
         //     );
-        // }
-        goBackToEmployeeUserList(handleOpenEmployeeModal, handleEmployeeIdToUpdate, handleEmployeeIdStatusCleanupToUpdate, handleCloseEmployeeUpdateModal);
+
+        goBackToEmployeeUserList(
+            handleOpenEmployeeModal,
+            handleEmployeeIdToUpdate,
+            handleEmployeeIdStatusCleanupToUpdate,
+            handleCloseEmployeeUpdateModal
+        );
     }
 
-
-    function goBackToEmployeeUserList(handleOpenEmployeeModal, handleEmployeeIdToUpdate, handleEmployeeIdStatusCleanupToUpdate, handleCloseEmployeeUpdateModal) {
+    function goBackToEmployeeUserList(
+        handleOpenEmployeeModal,
+        handleEmployeeIdToUpdate,
+        handleEmployeeIdStatusCleanupToUpdate,
+        handleCloseEmployeeUpdateModal
+    ) {
         handleOpenEmployeeModal();
         handleEmployeeIdToUpdate();
         handleEmployeeIdStatusCleanupToUpdate();
@@ -268,175 +85,151 @@ const useUpdateEmployee = () => {
         handleUpdatedEmployeeRecordStatusChange();
     };
 
-    const handleSubmit = async (
-        firstName,
-        lastName,
-        emailAddress,
-        formattedBirthdate,
-        phoneNumber,
-        isLead,
-        employeeLeaderName,
-        departmentWhichEmployeeReports,
-        employeeRole,
-        employeeFunction,
-        employeeStatus
-    ) => {
-        if (employeeIdToUpdate && employeeIdToUpdate !== "") {
-            try {
+    const handleSubmit = async ({ data, formattedBirthdate }) => {
+        if (!employeeIdToUpdate) return;
 
-                const payload = {
-                    isLead: isLead,
-                    status: employeeStatus,
-                    LeaderName: employeeLeaderName
-                };
+        const isLead = data.isEmployeeLeader && !data.hasEmployeeLeader
+            ? true
+            : !data.isEmployeeLeader && data.hasEmployeeLeader
+                ? false
+                : null;
 
-                if (firstName && firstName !== "") {
-                    payload.name = firstName;
-                }
+        const leaderIds = Array.isArray(data.employeeHeadedByList)
+            ? data.employeeHeadedByList.map(item => item.id)
+            : [];
 
+        try {
+            const payload = {
+                isLead,
+                status: data.employeeStatus,
+                leaderIds,
+            };
 
-                if (lastName && lastName !== "") {
-                    payload.lastName = lastName;
-                }
-
-
-                if (formattedBirthdate && formattedBirthdate !== "") {
-                    payload.birthdate = formattedBirthdate;
-                }
-
-
-                if (emailAddress && emailAddress !== "") {
-                    payload.email = emailAddress;
-                }
-
-
-                if (phoneNumber && phoneNumber !== "") {
-                    payload.phoneNumber = phoneNumber;
-                }
-
-                if (departmentWhichEmployeeReports && departmentWhichEmployeeReports !== "") {
-                    payload.departmentId = Number(departmentWhichEmployeeReports);
-                }
-
-
-                if (employeeRole && employeeRole !== "") {
-                    payload.rolesId = Number(employeeRole);
-                }
-
-
-                if (employeeFunction && employeeFunction !== "") {
-                    payload.functionId = Number(employeeFunction);
-                }
-
-                const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE}/${employeeIdToUpdate}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload),
-                });
-                if (response.ok) {
-                    console.log('Data sent successfully!');
-                    const data = await response.json();
-                    return data.id;
-                } else {
-                    console.error('Error in response:', response.status);
-                }
-            } catch (error) {
-                console.error('Error in request:', error);
+            if (data.firstName && data.firstName !== "") {
+                payload.name = data.firstName;
             }
+
+
+            if (data.lastName && data.lastName !== "") {
+                payload.lastName = data.lastName;
+            }
+
+
+            if (formattedBirthdate && formattedBirthdate !== "") {
+                payload.birthdate = formattedBirthdate;
+            }
+
+
+            if (data.emailAddress && data.emailAddress !== "") {
+                payload.email = data.emailAddress;
+            }
+
+
+            if (data.phoneNumber && data.phoneNumber !== "") {
+                payload.phoneNumber = data.phoneNumber;
+            }
+
+            if (data.departmentWhichEmployeeReports && data.departmentWhichEmployeeReports !== "") {
+                payload.departmentId = Number(data.departmentWhichEmployeeReports);
+            }
+
+
+            if (data.employeeRole && data.employeeRole !== "") {
+                payload.rolesId = Number(data.employeeRole);
+            }
+
+
+            if (data.employeeFunction && data.employeeFunction !== "") {
+                payload.functionId = Number(data.employeeFunction);
+            }
+
+            console.log('PAYLOAD PATCH:', payload);
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE}/updateEmployee/${employeeIdToUpdate}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (response.ok) {
+                console.log('Dados do colaborador atualizados com sucesso!');
+                const result = await response.json();
+                return result.id;
+            } else {
+                console.error('Erro ao atualizar colaborador:', response.status);
+            }
+        } catch (error) {
+            console.error('Erro na requisição de atualização de colaborador:', error);
         }
     };
 
-    const handleEmployeeContactDetails = async (
-        departmentWhichEmployeeReports,
-        employeeRole,
-        employeeFunction,
-        employeeContractType,
-        employeeWorkModel,
-        employeeWorkplace,
-        employeetAdmissionDate,
-        employeeEntryTime,
-        employeeStartBreakTime,
-        employeeStopBreakTime,
-        employeeDepartureTime
-    ) => {
-        if (departmentWhichEmployeeReports,
-            employeeRole,
-            employeeFunction,
-            employeeContractType,
-            employeeWorkModel,
-            employeeWorkplace,
-            employeetAdmissionDate,
-            employeeEntryTime,
-            employeeStartBreakTime,
-            employeeStopBreakTime,
-            employeeDepartureTime
-        ) {
-            try {
+    const handleEmployeeContactDetails = async ({ data, formattedEmployeeAdmission }) => {
+        try {
+            const payload = {};
 
-                const payload = {};
-
-                if (departmentWhichEmployeeReports && departmentWhichEmployeeReports !== "") {
-                    payload.departmentId = Number(departmentWhichEmployeeReports);
-                }
-
-                if (employeeRole && employeeRole !== "") {
-                    payload.rolesId = Number(employeeRole);
-                }
-
-                if (employeeFunction && employeeFunction !== "") {
-                    payload.employeeFunctionId = Number(employeeFunction);
-                }
-
-                if (employeeContractType && employeeContractType !== "") {
-                    payload.contractTypeId = Number(employeeContractType);
-                }
-
-                if (employeeWorkModel && employeeWorkModel !== "") {
-                    payload.contractModelId = Number(employeeWorkModel);
-                }
-
-                if (employeeWorkplace && employeeWorkplace !== "") {
-                    payload.workplaceId = Number(employeeWorkplace);
-                }
-
-                if (employeetAdmissionDate && employeetAdmissionDate !== "") {
-                    payload.adimissionDate = employeetAdmissionDate;
-                }
-
-                if (employeeEntryTime && employeeEntryTime !== "") {
-                    payload.entryTime = employeeEntryTime;
-                }
-
-                if (employeeStartBreakTime && employeeStartBreakTime !== "") {
-                    payload.startBreakTime = employeeStartBreakTime;
-                }
-
-                if (employeeStopBreakTime && employeeStopBreakTime !== "") {
-                    payload.endBreakTime = employeeStopBreakTime;
-                }
-
-                if (employeeDepartureTime && employeeDepartureTime !== "") {
-                    payload.departureTime = employeeDepartureTime;
-                }
-
-                const response = await fetch(`${process.env.NEXT_PUBLIC_CONTRACT_DETAILS}/employee/${employeeIdToUpdate}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload),
-                });
-
-                if (response.ok) {
-                    console.log('Data sent successfully!');
-                } else {
-                    console.error('Error in response:', response.status);
-                }
-            } catch (error) {
-                console.error('Error in request:', error);
+            if (data.departmentWhichEmployeeReports && data.departmentWhichEmployeeReports !== "") {
+                payload.departmentId = Number(data.departmentWhichEmployeeReports);
             }
+
+            if (data.employeeRole && data.employeeRole !== "") {
+                payload.rolesId = Number(data.employeeRole);
+            }
+
+            if (data.employeeFunction && data.employeeFunction !== "") {
+                payload.employeeFunctionId = Number(data.employeeFunction);
+            }
+
+            if (data.employeeContractType && data.employeeContractType !== "") {
+                payload.contractTypeId = Number(data.employeeContractType);
+            }
+
+            if (data.employeeWorkModel && data.employeeWorkModel !== "") {
+                payload.contractModelId = Number(data.employeeWorkModel);
+            }
+
+            if (data.employeeWorkplace && data.employeeWorkplace !== "") {
+                payload.workplaceId = Number(data.employeeWorkplace);
+            }
+
+            if (formattedEmployeeAdmission && formattedEmployeeAdmission !== "") {
+                payload.adimissionDate = formattedEmployeeAdmission;
+            }
+
+            if (data.employeeEntryTime && data.employeeEntryTime !== "") {
+                payload.entryTime = data.employeeEntryTime;
+            }
+
+            if (data.employeeStartBreakTime && data.employeeStartBreakTime !== "") {
+                payload.startBreakTime = data.employeeStartBreakTime;
+            }
+
+            if (data.employeeStopBreakTime && data.employeeStopBreakTime !== "") {
+                payload.endBreakTime = data.employeeStopBreakTime;
+            }
+
+            if (data.employeeDepartureTime && data.employeeDepartureTime !== "") {
+                payload.departureTime = data.employeeDepartureTime;
+            }
+
+            console.log('PAYLOAD PATCH CONTRATO:', payload);
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_CONTRACT_DETAILS}/employee/${employeeIdToUpdate}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (response.ok) {
+                console.log('Detalhes do contrato atualizados com sucesso!');
+            } else {
+                console.error('Erro ao atualizar detalhes do contrato:', response.status);
+            }
+        } catch (error) {
+            console.error('Erro na requisição de atualização de contrato:', error);
         }
     };
 

@@ -9,7 +9,7 @@ const path = require("path");
 // for transpiling all ESM @fullcalendar/* packages
 // also, for piping fullcalendar thru babel (to learn why, see babel.config.js)
 const withTM = require("next-transpile-modules")([
-  "@fullcalendar/core",
+  "@fullcalendar/core", "react-window",
 ]);
 
 module.exports = withPlugins(
@@ -29,47 +29,13 @@ module.exports = withPlugins(
         },
       });
 
-      config.resolve.modules.push(path.resolve("./"));
-
       // config.module.rules.push({
-      //   test: /\.m?js$/,
+      //   test: /\.cjs$/,
       //   include: /node_modules/,
-      //   type: 'javascript/auto',
-      //   use: {
-      //     loader: "babel-loader",
-      //     options: {
-      //       presets: [
-      //         [
-      //           'next/babel',
-      //           {
-      //             'preset-env': {
-      //               modules: false,
-      //               targets: {
-      //                 browsers: ['last 2 versions', 'ie >= 11'],
-      //               },
-      //             },
-      //           },
-      //         ],
-      //       ],
-      //     },
-      //   },
+      //   type: "javascript/auto",
       // });
 
-      // config.resolve.alias = {
-      //   ...(config.resolve.alias || {}),
-      //   pages: path.resolve(__dirname, 'pages'),
-      // };
-      // config.resolve.alias = {
-      //   ...(config.resolve.alias || {}),
-      //   variables: path.resolve(__dirname, './variables'),
-      //   components: path.resolve(__dirname, 'components'),
-      //   layouts: path.resolve(__dirname, './layouts'),
-      //   routes: path.resolve(__dirname, './routes'),
-      //   assets: path.resolve(__dirname, 'assets'),
-      //   'date-fns': path.resolve(__dirname, 'node_modules/date-fns'),
-      // };
-
-      // config.resolve.modules = [path.resolve(__dirname, 'src'), 'node_modules'];
+      config.resolve.modules.push(path.resolve("./"));
 
       return config;
     },
