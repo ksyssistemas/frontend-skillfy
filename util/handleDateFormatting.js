@@ -1,39 +1,67 @@
-export const handleDateFormatting = (dispatch, value, dateAction, stateAction, formattedDateAction) => {
+export const handleDateFormatting = (
+    dispatch,
+    value,
+    dateAction,
+    stateAction,
+    formattedDateAction
+) => {
+    // Função utilitária para converter em Date de forma segura
+    const normalizeToDate = (input) => {
+        if (!input) return null;
+
+        if (input instanceof Date) return input;
+
+        if (typeof input === "string") {
+            if (/^\d{4}-\d{2}-\d{2}$/.test(input)) {
+                const [year, month, day] = input.split("-").map(Number);
+                return new Date(year, month - 1, day); // Local timezone
+            }
+            return new Date(input); // Para ISO ou outros formatos
+        }
+
+        if (input._d instanceof Date) {
+            return input._d; // Caso venha do ReactDatetime
+        }
+
+        return null;
+    };
+
+    const date = normalizeToDate(value);
+
     if (dispatch) {
-        if (value._d && !isNaN(value._d)) {
-            const year = value._d.getUTCFullYear();
-            const month = String(value._d.getUTCMonth() + 1).padStart(2, '0');
-            const day = String(value._d.getUTCDate()).padStart(2, '0');
+        if (date && !isNaN(date)) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
 
             const formattedDate = `${year}-${month}-${day}`;
 
-            // Despacha ações para o Reducer
+            // Despacha para o reducer
             dispatch({ type: dateAction, payload: formattedDate });
-            dispatch({ type: stateAction, payload: 'valid' });
-            formattedDateAction(formattedDate);
+            dispatch({ type: stateAction, payload: "valid" });
+
+            if (formattedDateAction) formattedDateAction(formattedDate);
         } else {
-            dispatch({ type: stateAction, payload: 'invalid' });
+            dispatch({ type: stateAction, payload: "invalid" });
         }
     } else {
-        if (value._d && !isNaN(value._d)) {
-            const year = value._d.getUTCFullYear();
-            const month = String(value._d.getUTCMonth() + 1).padStart(2, '0');
-            const day = String(value._d.getUTCDate()).padStart(2, '0');
+        if (date && !isNaN(date)) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+
             const formattedDate = `${year}-${month}-${day}`;
-            
+
             if (formattedDateAction) {
-                dateAction(value._d);
+                dateAction(date); // Passa o objeto Date original
                 formattedDateAction(formattedDate);
             } else {
                 dateAction(formattedDate);
             }
         }
+
         if (stateAction) {
-            if (value === "") {
-                stateAction("invalid");
-            } else {
-                stateAction("valid");
-            }
+            stateAction(value ? "valid" : "invalid");
         }
-    };
+    }
 };

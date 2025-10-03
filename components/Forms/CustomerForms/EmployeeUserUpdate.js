@@ -34,6 +34,8 @@ import { initialState, formReducer } from '../../../reducers/employeeFormReducer
 import PageChange from "../../PageChange/PageChange";
 import { handleSelectionEmploymentContractDataWithReducer } from "../../../util/handleSelectionEmploymentContractDataWithReducer";
 import { selectedListItemToUpdate } from "../../../util/selectedListItemToUpdate";
+import { getSelect2Value } from "../../../util/select2Utils/getSelect2Value";
+import { parseSelect2Change } from "../../../util/select2Utils/parseSelect2Change";
 
 function EmployeeUserUpdate(
     {
@@ -70,11 +72,9 @@ function EmployeeUserUpdate(
         handleValidateUpdateEmployeeForm
     } = useUpdateEmployee();
 
-    const [cepTouched, setCepTouched] = useState(false);
-
+    // const [cepTouched, setCepTouched] = useState(false);
     const [formattedBirthdate, setFormattedBirthdate] = useState('');
     const [formattedEmployeeAdmission, setFormattedEmployeeAdmission] = useState('');
-
     const [isPreloadingSelection, setIsPreloadingSelection] = useState(true);
 
     const handleFirstNameChange = (e) => {
@@ -166,31 +166,35 @@ function EmployeeUserUpdate(
         dispatch({ type: 'SET_SELECTED_WORKPLACE_STATE', payload: value !== "" ? 'valid' : 'invalid' });
     };
 
-    const handleEmployeeLeaderNameChange = (e) => {
-        dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME', payload: e.target.value });
-        dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME_STATE', payload: e.target.value === '' ? 'invalid' : 'valid' });
-    };
-
-    const handleEmployeeLeaderNameTouch = () => {
-        dispatch({ type: 'TOUCH_EMPLOYEE_LEADER_NAME' });
-    };
-
     const handleIsEmployeeLeaderTouch = () => {
         dispatch({ type: 'TOUCH_IS_EMPLOYEE_LEADER' });
     };
 
     const handleIsEmployeeLeader = () => {
+        // Se o colaborador exerce liderança, limpamos a lista de "Liderado por"
         dispatch({ type: 'SET_IS_EMPLOYEE_LEADER', payload: !state.isEmployeeLeader });
         dispatch({ type: 'SET_HAS_EMPLOYEE_LEADER', payload: false });
-        dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME_STATE', payload: null });
+
+        // Limpamos a lista de líderes selecionados, já que não faz sentido ter liderados
+        dispatch({ type: "CLEAR_SELECTED_EMPLOYEE_AND_ROLE" });
+
+        // Reset de flags de erro
         dispatch({ type: 'SET_IS_INVALID_EMPLOYEE_LEADER_COMPONENT', payload: false });
         dispatch({ type: 'SET_SHOW_ERROR_FEEDBACK_EMPLOYEE_LEADER_COMPONENT', payload: false });
     };
 
     const handleHasEmployeeLeader = () => {
+        // Se o colaborador não exerce liderança, habilitamos a seleção de líder
         dispatch({ type: 'SET_HAS_EMPLOYEE_LEADER', payload: !state.hasEmployeeLeader });
         dispatch({ type: 'SET_IS_EMPLOYEE_LEADER', payload: false });
-        dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME_STATE', payload: null });
+
+        // Limpamos lista de líderes apenas se o usuário desmarcar a opção
+        if (state.collaboratorData.hasEmployeeLeader) {
+            // se está desmarcando a opção, limpa a lista
+            dispatch({ type: "CLEAR_SELECTED_EMPLOYEE_AND_ROLE" });
+        }
+
+        // Reset de flags de erro
         dispatch({ type: 'SET_IS_INVALID_EMPLOYEE_LEADER_COMPONENT', payload: false });
         dispatch({ type: 'SET_SHOW_ERROR_FEEDBACK_EMPLOYEE_LEADER_COMPONENT', payload: false });
     };
@@ -198,7 +202,7 @@ function EmployeeUserUpdate(
     const handleClear = () => {
         dispatch({ type: 'RESET_COLLABORATOR_DATA' });
         localStorage.removeItem('collaboratorData');
-        setCepTouched(false);
+        // setCepTouched(false);
         handleIsLoadingContractDetailsEmployeeToUpdateData(false);
     };
 
@@ -239,18 +243,18 @@ function EmployeeUserUpdate(
         dispatch({ type: 'TOUCH_EMPLOYEE_STATUS' });
     };
 
-    const handleCEPChange = (e) => {
-        const newValue = e.target.value;
-        handleSaveCEP(newValue);
+    // const handleCEPChange = (e) => {
+    //     const newValue = e.target.value;
+    //     handleSaveCEP(newValue);
 
-        if (!cepTouched) {
-            setCepTouched(true);
-            setFieldTouchStatus((prev) => ({
-                ...prev,
-                customerZipCode: { ...prev.customerZipCode, touched: true },
-            }));
-        }
-    };
+    //     if (!cepTouched) {
+    //         setCepTouched(true);
+    //         setFieldTouchStatus((prev) => ({
+    //             ...prev,
+    //             customerZipCode: { ...prev.customerZipCode, touched: true },
+    //         }));
+    //     }
+    // };
 
     const isDataLoaded =
         employeeIdToUpdate &&
@@ -262,7 +266,6 @@ function EmployeeUserUpdate(
         state.collaboratorData.contractTypeDataList.length > 0 &&
         state.collaboratorData.workModelDataList.length > 0 &&
         state.collaboratorData.workplaceDataList.length > 0;
-
 
     useEffect(() => {
         if (!state || !state.collaboratorData) return;
@@ -404,7 +407,6 @@ function EmployeeUserUpdate(
             return;
         }
 
-
         const fetchCompanyNames = async (employee) => {
             try {
                 const companyData = await useFindClientCompany(employee.customerId);
@@ -418,6 +420,7 @@ function EmployeeUserUpdate(
         const fetchEmployeeById = async () => {
             try {
                 const foundEmployee = await useFindEmployee(employeeIdToUpdate);
+                console.log('Found Employee:', foundEmployee);
                 const employeeCompanyName = await fetchCompanyNames(foundEmployee);
 
                 dispatch({ type: 'SET_EMPLOYEE_COMPANY_NAME', payload: employeeCompanyName });
@@ -426,7 +429,6 @@ function EmployeeUserUpdate(
                 dispatch({ type: 'SET_LAST_NAME', payload: foundEmployee.lastName });
                 dispatch({ type: 'SET_EMAIL_ADDRESS', payload: foundEmployee.email });
                 dispatch({ type: 'SET_PHONE_NUMBER', payload: foundEmployee.phoneNumber });
-                dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME', payload: foundEmployee.LeaderName });
                 dispatch({ type: 'SET_EMPLOYEE_STATUS', payload: foundEmployee.status });
 
                 if (foundEmployee.isLead === true) {
@@ -437,8 +439,43 @@ function EmployeeUserUpdate(
                     dispatch({ type: 'SET_HAS_EMPLOYEE_LEADER', payload: true });
                 }
 
-                dispatch({ type: 'SET_BIRTHDATE', payload: new Date(foundEmployee.birthdate) });
+                // ✅ Parse seguro para YYYY-MM-DD (fuso local)
+                const parseAPIBirthdate = (dateString) => {
+                    if (!dateString) return null;
+
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+                        // Vem no formato YYYY-MM-DD → cria Date no fuso local
+                        const [year, month, day] = dateString.split('-').map(Number);
+                        return new Date(year, month - 1, day);
+                    }
+
+                    if (dateString.includes('/')) {
+                        // Vem no formato DD/MM/YYYY → fallback para compatibilidade
+                        const [day, month, year] = dateString.split('/').map(Number);
+                        return new Date(year, month - 1, day);
+                    }
+
+                    // Caso venha em outro formato, tenta converter direto
+                    return new Date(dateString);
+                };
+
+                const parsedBirthdate = parseAPIBirthdate(foundEmployee.birthdate);
+
+                // Salva string e objeto Date no reducer (para o ReactDatetime)
+                dispatch({ type: 'SET_BIRTHDATE', payload: parsedBirthdate });
                 setFormattedBirthdate(foundEmployee.birthdate);
+
+                if (Array.isArray(foundEmployee.headedBy) && foundEmployee.headedBy.length > 0) {
+                    foundEmployee.headedBy.forEach(leader => {
+                        dispatch({
+                            type: "MOVE_TO_HEADED_BY",
+                            payload: {
+                                id: leader.id.toString(),
+                                text: `${leader.fullName ?? ''}, ${leader.roleName ?? ''} no departamento ${leader.departmentName ?? ''}`,
+                            },
+                        });
+                    });
+                }
             } catch (error) {
                 console.error(`Error fetching employee data for ID ${employeeIdToUpdate}:`, error);
             }
@@ -447,6 +484,7 @@ function EmployeeUserUpdate(
         const fetchEmployeeAndContractDetailsById = async () => {
             try {
                 const foundContractDetails = await useFindEmployeeContractDetails(employeeIdToUpdate);
+                console.log('Found Contract Details:', foundContractDetails);
 
                 dispatch({ type: 'SET_EMPLOYEE_ENTRY_TIME', payload: foundContractDetails.entryTime });
                 dispatch({ type: 'SET_EMPLOYEE_START_BREAK_TIME', payload: foundContractDetails.startBreakTime });
@@ -466,6 +504,13 @@ function EmployeeUserUpdate(
                         'id',
                     );
                 }
+                // Buscar líderes do departamento ANTES de setar headedBy
+                await employmentContractDataSearchAndProcess(
+                    () => useFindAllEmployeeAndRole(foundContractDetails.departmentId),
+                    (data) => dispatch({ type: 'SET_EMPLOYEE_AND_ROLE_DATA_LIST', payload: data }),
+                    'employeeAndRole',
+                    'EmployeeUserUpdate'
+                );
                 if (state.collaboratorData.roleDataList.length > 0) {
                     selectedListItemToUpdate(
                         dispatch,
@@ -516,9 +561,31 @@ function EmployeeUserUpdate(
                         'SET_EMPLOYEE_WORKPLACE_STATE'
                     );
                 }
-                console.log("FoundContractDetails: ", foundContractDetails);
-                dispatch({ type: 'SET_EMPLOYEE_ADMISSION_DATE', payload: new Date(foundContractDetails.adimissionDate) });
+
+                // ✅ Parse seguro para YYYY-MM-DD (fuso local)
+                const parseAPIEmployeeAdmission = (dateString) => {
+                    if (!dateString) return null;
+
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+                        // Vem no formato YYYY-MM-DD → cria Date no fuso local
+                        const [year, month, day] = dateString.split('-').map(Number);
+                        return new Date(year, month - 1, day);
+                    }
+
+                    if (dateString.includes('/')) {
+                        // Vem no formato DD/MM/YYYY → fallback para compatibilidade
+                        const [day, month, year] = dateString.split('/').map(Number);
+                        return new Date(year, month - 1, day);
+                    }
+
+                    // Caso venha em outro formato, tenta converter direto
+                    return new Date(dateString);
+                };
+
+                const parsedEmployeeAdmission = parseAPIEmployeeAdmission(foundContractDetails.adimissionDate);
+                dispatch({ type: 'SET_EMPLOYEE_ADMISSION_DATE', payload: parsedEmployeeAdmission });
                 setFormattedEmployeeAdmission(foundContractDetails.adimissionDate);
+
                 setIsPreloadingSelection(false);
             } catch (error) {
                 console.error(`Error fetching employee contract details for ID ${employeeIdToUpdate}:`, error);
@@ -527,8 +594,8 @@ function EmployeeUserUpdate(
 
         const loadData = async () => {
             handleIsLoadingDetailsSelectedEmployeeData(true);
-            await fetchEmployeeById();
             await fetchEmployeeAndContractDetailsById();
+            await fetchEmployeeById();
             handleIsLoadingDetailsSelectedEmployeeData(false);
         }
 
@@ -568,27 +635,11 @@ function EmployeeUserUpdate(
     useEffect(() => {
         if (isShouldUpdateEmployee) {
             handleValidateUpdateEmployeeForm(
-                handleOpenEmployeeModal,
-                state.collaboratorData.firstName,
-                state.collaboratorData.lastName,
+                state,
+                dispatch,
                 formattedBirthdate,
-                state.collaboratorData.emailAddress,
-                state.collaboratorData.phoneNumber,
-                state.collaboratorData.employeeLeaderName,
-                state.collaboratorData.isEmployeeLeader,
-                state.collaboratorData.hasEmployeeLeader,
-                state.collaboratorData.employeeStatus,
-                state.collaboratorData.employeeDepartment,
-                state.collaboratorData.employeeRole,
-                state.collaboratorData.employeeFunction,
-                state.collaboratorData.employeeContractType,
-                state.collaboratorData.employeeWorkModel,
-                state.collaboratorData.employeeWorkplace,
                 formattedEmployeeAdmission,
-                state.collaboratorData.employeeEntryTime,
-                state.collaboratorData.employeeStartBreakTime,
-                state.collaboratorData.employeeStopBreakTime,
-                state.collaboratorData.employeeDepartureTime,
+                handleOpenEmployeeModal,
                 handleEmployeeIdToUpdate,
                 handleEmployeeIdStatusCleanupToUpdate,
                 handleClear
@@ -686,7 +737,7 @@ function EmployeeUserUpdate(
                                 }}
                                 timeFormat={false}
                                 dateFormat="DD/MM/YYYY"
-                                value={state.collaboratorData.birthdate || ''}
+                                value={state.collaboratorData.birthdate || null}
                                 onChange={(e) => handleDateFormatting(
                                     dispatch,
                                     e,
@@ -921,18 +972,52 @@ function EmployeeUserUpdate(
                             >
                                 Liderado por
                             </label>
-                            <Input
+                            <Select2
+                                multiple
                                 id="validationSelectLeader"
-                                placeholder="Nome do líder"
-                                type="text"
-                                value={state.collaboratorData.employeeLeaderName}
-                                valid={state.collaboratorData.employeeLeaderNameState === "valid"}
-                                invalid={state.collaboratorData.employeeLeaderNameState === "invalid"}
-                                onChange={handleEmployeeLeaderNameChange}
-                                onFocus={handleEmployeeLeaderNameTouch}
+                                data-minimum-results-for-search="Infinity"
+                                options={{
+                                    placeholder: "Selecione um líder",
+                                    allowClear: true,
+                                    language: {
+                                        noResults: () =>
+                                            "Não há líderes, é necessário selecionar um departamento primeiro ou cadastrar colaboradores que exercem liderança."
+                                    }
+                                }}
+                                data={state.collaboratorData.employeeAndRoleDataList || []}
+                                value={getSelect2Value(state.collaboratorData.selectedEmployeeAndRole)}
+                                onSelect={(e) => {
+                                    const selectedItem = parseSelect2Change(
+                                        e,
+                                        state.collaboratorData.employeeAndRoleDataList
+                                    );
+                                    if (selectedItem) {
+                                        dispatch({ type: "MOVE_TO_HEADED_BY", payload: selectedItem });
+                                        dispatch({ type: 'SET_IS_INVALID_EMPLOYEE_LEADER_COMPONENT', payload: false });
+                                        dispatch({ type: 'SET_SHOW_ERROR_FEEDBACK_EMPLOYEE_LEADER_COMPONENT', payload: false });
+                                    }
+                                }}
+                                onUnselect={(e) => {
+                                    const unselectedItem = parseSelect2Change(
+                                        e,
+                                        state.collaboratorData.employeeHeadedByList
+                                    );
+                                    if (unselectedItem) {
+                                        setTimeout(() => {
+                                            dispatch({ type: "REMOVE_FROM_HEADED_BY", payload: unselectedItem });
+                                        }, 1000);
+                                    }
+                                }}
+                                className={
+                                    state.collaboratorData.isInvalidEmployeeLeaderComponent
+                                        ? "is-invalid"
+                                        : ""
+                                }
                             />
-                            {state.collaboratorData.hasEmployeeLeader && !state.collaboratorData.employeeLeaderName?.value && (
-                                <div className="invalid-feedback">É necessário preencher este campo.</div>
+                            {state.collaboratorData.showErrorFeedbackEmployeeLeaderComponent && (
+                                <div className="invalid-feedback d-block">
+                                    É necessário selecionar pelo menos um líder.
+                                </div>
                             )}
                         </Col>
                     </div>

@@ -52,6 +52,12 @@ function ModelSelectionReviewProvider({ children }) {
     }
   };
 
+  const [hasSelectedLeaders, setHasSelectedLeaders] = useState(false);
+
+  const handleHasSelectedLeaders = (value) => {
+    setHasSelectedLeaders(value);
+  }
+
   return (
     <ModelSelectionReviewContext.Provider
       value={{
@@ -65,7 +71,9 @@ function ModelSelectionReviewProvider({ children }) {
         handleClearStepIndex,
         handleSubmit,
         stateGlobalReviewReducer,
-        dispatchGlobalReviewReducer
+        dispatchGlobalReviewReducer,
+        hasSelectedLeaders,
+        handleHasSelectedLeaders
       }}>
       {children}
     </ModelSelectionReviewContext.Provider>

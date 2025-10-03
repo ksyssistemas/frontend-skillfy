@@ -226,13 +226,13 @@ function ModalRole({ handleOpenRoleUpdateModal, modalOpen }) {
                     className="form-control-label"
                     htmlFor="validationReportToRole"
                   >
-                    Reporta ao Departamento
+                    Reporta ao Cargo
                   </label>
                   <Select2
                     id="validationReportToRole"
                     className="form-control"
                     data-minimum-results-for-search="Infinity"
-                    options={{ placeholder: "Selecione um departamento:" }}
+                    options={{ placeholder: "Selecione um Cargo:" }}
                     value={selectedRole}
                     onChange={(e) => setSelectedRole(e.target.value)}
                     data={employeeRoleDataList}

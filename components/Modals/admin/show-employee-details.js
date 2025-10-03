@@ -56,8 +56,30 @@ function ShowEmployeeDetailsModal(
 
   const [isLoadingDetailsSelectedEmployeeData, setIsLoadingDetailsSelectedEmployeeData] = useState(false);
 
-  function formatDate(dateString) {
-    const date = new Date(dateString);
+  function formatDate(input) {
+    if (!input) return "";
+
+    let date;
+
+    if (input instanceof Date) {
+      // Já é um objeto Date, usa direto
+      date = input;
+    } else if (typeof input === "string") {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(input)) {
+        // Formato YYYY-MM-DD → cria data no fuso local para evitar UTC shift
+        const [year, month, day] = input.split('-').map(Number);
+        date = new Date(year, month - 1, day);
+      } else {
+        // Outros formatos (ex.: ISO completo com timezone)
+        // Usa new Date normalmente
+        date = new Date(input);
+      }
+    } else {
+      return ""; // Caso venha algo inesperado
+    }
+
+    // Se ainda assim der data inválida, retorna vazio
+    if (isNaN(date)) return "";
 
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -180,14 +202,27 @@ function ShowEmployeeDetailsModal(
     );
   }
 
+  // Pré-processa a lista de líderes fora do JSX
+  let renderedLeaders = "Não possuí";
+
+  if (detailsSelectedEmployee?.headedBy?.length > 0) {
+    renderedLeaders = (
+      <ul style={{ listStyleType: "none", paddingLeft: 0 }}>
+        {detailsSelectedEmployee.headedBy.map((leader, index) => (
+          <li key={index} className="text-sm">
+            {`${leader.fullName} - ${leader.roleName}`}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
   return (
     <Modal
       toggle={handleShowEmployeeDetailsModal}
       isOpen={modalOpen}
       size="xl"
       key={idSelectedToShowEmployeeDetails ? idSelectedToShowEmployeeDetails : employeeIdToUpdate}
-    //key={`${detailsSelectedEmployee.id}.${addressDetailsSelectedEmployee.id}.${contractDetailsSelectedEmployee.id}`}
-    //fullscreen
     >
       <div className=" modal-header">
         <h5 className="modal-title" id="exampleModalLabel">
@@ -457,11 +492,7 @@ function ShowEmployeeDetailsModal(
                       >
                         Liderado por
                       </label>
-                      <div className="mt-1 mb-3">
-                        <span className="name text-sm">
-                          {detailsSelectedEmployee?.LeaderName ? detailsSelectedEmployee?.LeaderName : "Não possuí"}
-                        </span>
-                      </div>
+                      <div className="mt-1 mb-3">{renderedLeaders}</div>
                     </Col>
                     <Col className="mb-3" md="4">
                       <label
@@ -621,7 +652,6 @@ function ShowEmployeeDetailsModal(
       }
     </Modal >
   );
-
 }
 
 ShowEmployeeDetailsModal.defaultProps = {

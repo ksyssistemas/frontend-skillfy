@@ -234,7 +234,7 @@ function ModalEmployeeFunction({ handleOpenEmployeeFunctionUpdateModal, modalOpe
                     id="validationReportToRole"
                     className="form-control"
                     data-minimum-results-for-search="Infinity"
-                    options={{ placeholder: "Selecione um departamento:" }}
+                    options={{ placeholder: "Selecione um cargo:" }}
                     value={selectedEmployeeFunction}
                     onChange={(e) => setSelectedEmployeeFunction(e.target.value)}
                     data={employeeFunctionDataList}

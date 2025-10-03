@@ -40,6 +40,7 @@ import { CompetenciesProvider } from "../contexts/RecordsContext/CompetenciesCon
 import { PdiProvider } from "../contexts/RecordsContext/PdiContext";
 import { ModelSelectionCustomerRecordProvider } from "../contexts/PerformanceContext/ModelSelectionCustomerRecordContext";
 import { EmployeeSettingsProvider } from "../contexts/RecordsContext/EmployeeSettingsContext";
+import { ReviewParticipantSelectionProvider } from "../contexts/PerformanceContext/RightSideSummaryPanel/ReviewParticipantSelectionContext";
 
 Router.events.on("routeChangeStart", (url) => {
   console.log(`Loading: ${url}`);
@@ -106,33 +107,35 @@ export default class MyApp extends App {
                           <EmployeeSettingsProvider>
                             <EmployeeProvider>
                               <ModelSelectionReviewProvider>
-                                <AppraisalCycleProvider>
-                                  <SweetAlertProvider>
-                                    <AppraisalSkillsProvider>
-                                      <AppraisalEvidencesProvider>
-                                        <AppraisalCaptionsProvider>
-                                          <CompetenciesProvider>
-                                            <PdiProvider>
-                                              <PerformanceReviewContext>
-                                                <ModelSelectionCustomerRecordProvider>
-                                                  <Head>
-                                                    <meta
-                                                      name="viewport"
-                                                      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-                                                    />
-                                                    <title>SkillFy</title>
-                                                    {/* <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script> */}
-                                                  </Head>
-                                                  {getLayout(<Component {...pageProps} />)}
-                                                </ModelSelectionCustomerRecordProvider>
-                                              </PerformanceReviewContext>
-                                            </PdiProvider>
-                                          </CompetenciesProvider>
-                                        </AppraisalCaptionsProvider>
-                                      </AppraisalEvidencesProvider>
-                                    </AppraisalSkillsProvider>
-                                  </SweetAlertProvider>
-                                </AppraisalCycleProvider>
+                                <ReviewParticipantSelectionProvider>
+                                  <AppraisalCycleProvider>
+                                    <SweetAlertProvider>
+                                      <AppraisalSkillsProvider>
+                                        <AppraisalEvidencesProvider>
+                                          <AppraisalCaptionsProvider>
+                                            <CompetenciesProvider>
+                                              <PdiProvider>
+                                                <PerformanceReviewContext>
+                                                  <ModelSelectionCustomerRecordProvider>
+                                                    <Head>
+                                                      <meta
+                                                        name="viewport"
+                                                        content="width=device-width, initial-scale=1, shrink-to-fit=no"
+                                                      />
+                                                      <title>SkillFy</title>
+                                                      {/* <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script> */}
+                                                    </Head>
+                                                    {getLayout(<Component {...pageProps} />)}
+                                                  </ModelSelectionCustomerRecordProvider>
+                                                </PerformanceReviewContext>
+                                              </PdiProvider>
+                                            </CompetenciesProvider>
+                                          </AppraisalCaptionsProvider>
+                                        </AppraisalEvidencesProvider>
+                                      </AppraisalSkillsProvider>
+                                    </SweetAlertProvider>
+                                  </AppraisalCycleProvider>
+                                </ReviewParticipantSelectionProvider>
                               </ModelSelectionReviewProvider>
                             </EmployeeProvider>
                           </EmployeeSettingsProvider>

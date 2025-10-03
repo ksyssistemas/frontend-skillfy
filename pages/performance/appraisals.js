@@ -3,98 +3,20 @@ import { Container } from "reactstrap";
 import Performance from "../../layouts/Performance";
 import AppraisalListHeader from "../../components/Headers/PerformanceHeader/AppraisalListHeader";
 import AppraisalsListTable from "../../components/Tables/AppraisalTables/Appraisal/AppraisalsListTable";
+import DynamicLayout from "../../layouts/DynamicLayout";
 
 function Appraisals() {
-  const [admins, setAdmins] = useState([]);
-  const [appraisalIdToBeShown, setAppraisalIdToBeShown] = useState(null);
-
-  useEffect(() => {
-    async function fetchAdmins() {
-      try {
-        const response = await fetch('http://localhost:4008/administrator/findAll');
-        if (!response.ok) {
-          throw new Error('Network response was not ok.');
-        }
-        const data = await response.json();
-        setAdmins(data);
-      } catch (error) {
-        console.error('There was a problem fetching the data:', error);
-      }
-    }
-    fetchAdmins();
-  }, []);
-
-  const deleteAdmin = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:4008/administrator/${id}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
-        throw new Error('Failed to delete admin.');
-      }
-      setAdmins(admins.filter(admin => admin.id !== id));
-    } catch (error) {
-      console.error('There was a problem deleting the admin:', error);
-    }
-  };
-
-  function handleShowAppraisalList(appraisalId) {
-    setAppraisalIdToBeShown(appraisalId);
-  }
-
-
-  const [modalOpen, setModalOpen] = React.useState(false);
-
-  function handleOpenAddAppraisalCycleModal() {
-    setModalOpen(!modalOpen)
-  }
-
-  const [cycleIdToUpdate, setCycleIdToUpdate] = useState('');
-
-  function handleCycleIdToUpdate() {
-    setCycleIdToUpdate('');
-  }
-
-  function handleAppraisalCycleUpdate(cycleId) {
-    setCycleIdToUpdate(cycleId);
-    setModalOpen(true);
-  }
 
   return (
-    // <>
-    //   {
-    //     appraisalIdToBeShown
-    //       ? (
     <>
       <AppraisalListHeader name="Avaliações" parentName="Desempenho" />
       <Container className="mt--6" fluid>
         <AppraisalsListTable />
       </Container>
     </>
-    //       )
-    //       : (
-    //         <>
-    //           <AppraisalCycleHeader name="Ciclos de Avaliação" parentName="Desempenho" handleOpenAddAppraisalCycleModal={handleOpenAddAppraisalCycleModal} />
-    //           <Container className="mt--6" fluid>
-    //             <AppraisalCycleTable
-    //               handleShowAppraisalList={handleShowAppraisalList}
-    //               handleOpenAddAppraisalCycleModal={handleOpenAddAppraisalCycleModal}
-    //               handleAppraisalCycleUpdate={handleAppraisalCycleUpdate}
-    //             />
-    //           </Container>
-    //         </>
-    //       )
-    //   }
-    //   <AddAppraisalCycleModal
-    //     handleOpenAddAppraisalCycleModal={handleOpenAddAppraisalCycleModal}
-    //     modalOpen={modalOpen}
-    //     cycleIdToUpdate={cycleIdToUpdate}
-    //     handleCycleIdToUpdate={handleCycleIdToUpdate}
-    //   />
-    // </>
   );
 }
 
-Appraisals.layout = Performance;
+Appraisals.getLayout = (page) => <DynamicLayout>{page}</DynamicLayout>;
 
 export default Appraisals;

@@ -20,7 +20,7 @@ export const initialState = {
         employeeFunction: '',
         isEmployeeLeader: false,
         hasEmployeeLeader: false,
-        employeeLeaderName: '',
+        employeeHeadedByList: [],
         isInvalidEmployeeLeaderComponent: false,
         showErrorFeedbackEmployeeLeaderComponent: false,
         employeeContractType: '',
@@ -40,7 +40,8 @@ export const initialState = {
         contractTypeDataList: [],
         workModelDataList: [],
         workplaceDataList: [],
-        employeeAndRoleDataList: [],
+        employeeAndRoleDataList: null,
+        employeeAndRoleRawDataList: [],
         firstNameState: null,
         lastNameState: null,
         emailAddressState: null,
@@ -55,7 +56,7 @@ export const initialState = {
         employeeDepartmentState: null,
         employeeRoleState: null,
         employeeFunctionState: null,
-        employeeLeaderNameState: null,
+        employeeHeadedByListState: null,
         employeeContractTypeState: null,
         employeeWorkModelState: null,
         employeeWorkplaceState: null,
@@ -73,7 +74,7 @@ export const initialState = {
         birthdateTouched: false,
         phoneNumberTouched: false,
         isEmployeeLeaderTouched: false,
-        employeeLeaderNameTouched: false,
+        employeeHeadedByListTouched: false,
         employeeAdmissionDateTouched: false,
         employeeEntryTimeTouched: false,
         employeeStartBreakTimeTouched: false,
@@ -151,7 +152,6 @@ export const formReducer = (state, action) => {
                     phoneNumber: action.payload
                 },
             };
-
         case 'SET_SELECTED_DEPARTMENT':
             return {
                 ...state,
@@ -216,15 +216,53 @@ export const formReducer = (state, action) => {
                     selectedWorkplace: action.payload
                 },
             };
-        case 'SET_SELECTED_EMPLOYEE_AND_ROLE':
+        case "SET_SELECTED_EMPLOYEE_AND_ROLE": {
+            let newSelected;
+
+            if (Array.isArray(action.payload)) {
+                // 👇 Se for um array vazio, força string "" (para exibir placeholder no Select2)
+                newSelected = action.payload.length === 0 ? "" : action.payload;
+            } else {
+                // se for objeto (um item), adiciona sem duplicar
+                const current = Array.isArray(state.collaboratorData.selectedEmployeeAndRole)
+                    ? state.collaboratorData.selectedEmployeeAndRole
+                    : [];
+                newSelected = [
+                    ...current,
+                    action.payload,
+                ].filter(
+                    (v, i, arr) => arr.findIndex(x => x.id === v.id) === i
+                );
+            }
+
             return {
                 ...state,
                 collaboratorData: {
                     ...state.collaboratorData,
-                    selectedEmployeeAndRole: action.payload
+                    selectedEmployeeAndRole: newSelected,
                 },
             };
+        }
+        // Limpar tudo — restaura a lista formatada a partir do raw e remove disableds
+        case "CLEAR_SELECTED_EMPLOYEE_AND_ROLE": {
+            const raw = state.collaboratorData.employeeAndRoleRawDataList || [];
+            // reconstrói a lista formatada (mesma lógica do seu mapping)
+            const restoredList = raw.map((item) => ({
+                id: item.id?.toString() ?? '',
+                text: `${item.fullName ?? ''}, ${item.roleName ?? ''} no departamento ${item.departmentName ?? ''}`,
+                disabled: false,
+            }));
 
+            return {
+                ...state,
+                collaboratorData: {
+                    ...state.collaboratorData,
+                    selectedEmployeeAndRole: "",
+                    employeeHeadedByList: [],
+                    employeeAndRoleDataList: restoredList,
+                },
+            };
+        }
         case 'SET_EMPLOYEE_DEPARTMENT':
             return {
                 ...state,
@@ -249,7 +287,6 @@ export const formReducer = (state, action) => {
                     employeeFunction: action.payload
                 },
             };
-
         case 'SET_IS_EMPLOYEE_LEADER':
             return {
                 ...state,
@@ -264,14 +301,6 @@ export const formReducer = (state, action) => {
                 collaboratorData: {
                     ...state.collaboratorData,
                     hasEmployeeLeader: action.payload
-                },
-            };
-        case 'SET_EMPLOYEE_LEADER_NAME':
-            return {
-                ...state,
-                collaboratorData: {
-                    ...state.collaboratorData,
-                    employeeLeaderName: action.payload
                 },
             };
         case 'SET_IS_INVALID_EMPLOYEE_LEADER_COMPONENT':
@@ -290,7 +319,6 @@ export const formReducer = (state, action) => {
                     showErrorFeedbackEmployeeLeaderComponent: action.payload
                 },
             };
-
         case 'SET_EMPLOYEE_CONTRACT_TYPE':
             return {
                 ...state,
@@ -315,7 +343,6 @@ export const formReducer = (state, action) => {
                     employeeWorkplace: action.payload
                 },
             };
-
         case 'SET_EMPLOYEE_ADMISSION_DATE':
             return {
                 ...state,
@@ -364,7 +391,6 @@ export const formReducer = (state, action) => {
                     employeeStatus: action.payload
                 },
             };
-
         case 'SET_FIRST_NAME_STATE':
             return {
                 ...state,
@@ -405,7 +431,6 @@ export const formReducer = (state, action) => {
                     phoneNumberState: action.payload
                 },
             };
-
         case 'SET_EMPLOYEE_ADDRESS_STATE':
             return {
                 ...state,
@@ -454,7 +479,6 @@ export const formReducer = (state, action) => {
                     federatedUnitState: action.payload
                 },
             };
-
         case 'SET_EMPLOYEE_DEPARTMENT_STATE':
             return {
                 ...state,
@@ -479,16 +503,64 @@ export const formReducer = (state, action) => {
                     employeeFunctionState: action.payload
                 },
             };
+        // Move para headedBy e marca option como disabled (mantém na lista para o Select2 renderizar)
+        case "MOVE_TO_HEADED_BY": {
+            const item = action.payload; // { id, text }
 
-        case 'SET_EMPLOYEE_LEADER_NAME_STATE':
+            const currentSelected = state.collaboratorData.selectedEmployeeAndRole || [];
+            const currentHeadedBy = state.collaboratorData.employeeHeadedByList || [];
+            const currentDataList = state.collaboratorData.employeeAndRoleDataList || [];
+
             return {
                 ...state,
                 collaboratorData: {
                     ...state.collaboratorData,
-                    employeeLeaderNameState: action.payload
+                    // adiciona ao selected (mantendo sem duplicatas)
+                    selectedEmployeeAndRole: [
+                        ...currentSelected,
+                        item,
+                    ].filter((v, i, arr) => arr.findIndex(x => x.id === v.id) === i),
+
+                    // adiciona à lista oficial de ledados
+                    employeeHeadedByList: [
+                        ...currentHeadedBy,
+                        item,
+                    ].filter((v, i, arr) => arr.findIndex(x => x.id === v.id) === i),
+
+                    // marca o item como disabled na lista de opções (mantém a opção presente)
+                    employeeAndRoleDataList: currentDataList.map(opt =>
+                        opt.id === item.id ? { ...opt, disabled: true } : opt
+                    ),
                 },
             };
+        }
+        // Remove de headedBy e reabilita a opção na data list
+        case "REMOVE_FROM_HEADED_BY": {
+            const item = action.payload; // { id, text }
+            const currentSelected = state.collaboratorData.selectedEmployeeAndRole || [];
+            const currentHeadedBy = state.collaboratorData.employeeHeadedByList || [];
+            const currentDataList = state.collaboratorData.employeeAndRoleDataList || [];
 
+            return {
+                ...state,
+                collaboratorData: {
+                    ...state.collaboratorData,
+                    selectedEmployeeAndRole: currentSelected.filter(i => i.id !== item.id),
+                    employeeHeadedByList: currentHeadedBy.filter(i => i.id !== item.id),
+                    employeeAndRoleDataList: currentDataList.map(opt =>
+                        opt.id === item.id ? { ...opt, disabled: false } : opt
+                    ),
+                },
+            };
+        }
+        case 'SET_EMPLOYEE_HEADED_BY_LIST_STATE':
+            return {
+                ...state,
+                collaboratorData: {
+                    ...state.collaboratorData,
+                    employeeHeadedByListState: action.payload
+                },
+            };
         case 'SET_EMPLOYEE_CONTRACT_TYPE_STATE':
             return {
                 ...state,
@@ -513,7 +585,6 @@ export const formReducer = (state, action) => {
                     employeeWorkplaceState: action.payload
                 },
             };
-
         case 'SET_EMPLOYEE_ADMISSION_DATE_STATE':
             return {
                 ...state,
@@ -562,7 +633,6 @@ export const formReducer = (state, action) => {
                     employeeStatusState: action.payload
                 },
             };
-
         case 'SET_SELECTED_DEPARTMENT_ID':
             return {
                 ...state,
@@ -627,15 +697,33 @@ export const formReducer = (state, action) => {
                     workplaceDataList: Array.isArray(action.payload) ? action.payload : [],
                 },
             };
-        case 'SET_EMPLOYEE_AND_ROLE_DATA_LIST':
+        // Atualiza a lista de dados para o select
+        case "SET_EMPLOYEE_AND_ROLE_DATA_LIST":
+            let formattedData = null;
+            let rawData = [];
+
+            if (action.payload) {
+                if (Array.isArray(action.payload?.formatted)) {
+                    formattedData = action.payload.formatted;
+                    rawData = action.payload.raw || [];
+                } else if (Array.isArray(action.payload)) {
+                    formattedData = action.payload;
+                }
+            }
+
+            // ⚡️ Garantia extra: remover item fake (id === "0")
+            if (formattedData?.length > 0) {
+                formattedData = formattedData.filter(item => item.id !== "0");
+            }
+
             return {
                 ...state,
                 collaboratorData: {
                     ...state.collaboratorData,
-                    employeeAndRoleDataList: action.payload,
+                    employeeAndRoleDataList: formattedData,
+                    employeeAndRoleRawDataList: rawData,
                 },
             };
-
         case 'SET_FORMATTED_BIRTHDATE':
             return {
                 ...state,
@@ -652,8 +740,7 @@ export const formReducer = (state, action) => {
                     formattedAdmissionDate: action.payload
                 },
             };
-
-            case 'TOUCH_FIRST_NAME':
+        case 'TOUCH_FIRST_NAME':
             return {
                 ...state,
                 collaboratorData: {
@@ -661,15 +748,15 @@ export const formReducer = (state, action) => {
                     firstNameTouched: true,
                 },
             };
-            case 'TOUCH_LAST_NAME':
-                return {
-                    ...state,
-                    collaboratorData: {
-                        ...state.collaboratorData,
-                        lastNameTouched: true,
-                    },
-                };
-            case 'TOUCH_EMAIL_ADDRESS':
+        case 'TOUCH_LAST_NAME':
+            return {
+                ...state,
+                collaboratorData: {
+                    ...state.collaboratorData,
+                    lastNameTouched: true,
+                },
+            };
+        case 'TOUCH_EMAIL_ADDRESS':
             return {
                 ...state,
                 collaboratorData: {
@@ -677,15 +764,15 @@ export const formReducer = (state, action) => {
                     emailAddressTouched: true,
                 },
             };
-            case 'TOUCH_BIRTHDATE':
-                return {
-                    ...state,
-                    collaboratorData: {
-                        ...state.collaboratorData,
-                        birthdateTouched: true,
-                    },
-                };
-            case 'TOUCH_PHONE_NUMBER':
+        case 'TOUCH_BIRTHDATE':
+            return {
+                ...state,
+                collaboratorData: {
+                    ...state.collaboratorData,
+                    birthdateTouched: true,
+                },
+            };
+        case 'TOUCH_PHONE_NUMBER':
             return {
                 ...state,
                 collaboratorData: {
@@ -693,39 +780,39 @@ export const formReducer = (state, action) => {
                     phoneNumberTouched: true,
                 },
             };
-            case 'TOUCH_IS_EMPLOYEE_LEADER':
-                return {
-                    ...state,
-                    collaboratorData: {
-                        ...state.collaboratorData,
-                        isEmployeeLeaderTouched: true,
-                    },
-                };
-            case 'TOUCH_EMPLOYEE_LEADER_NAME':
+        case 'TOUCH_IS_EMPLOYEE_LEADER':
             return {
                 ...state,
                 collaboratorData: {
                     ...state.collaboratorData,
-                    employeeLeaderNameTouched: true,
+                    isEmployeeLeaderTouched: true,
                 },
             };
-            case 'TOUCH_EMPLOYEE_ADMISSION_DATE':
-                return {
-                    ...state,
-                    collaboratorData: {
-                        ...state.collaboratorData,
-                        employeeAdmissionDateTouched: true,
-                    },
-                };
-            case 'TOUCH_EMPLOYEE_ENTRY_TIME':
-                return {
-                    ...state,
-                    collaboratorData: {
-                        ...state.collaboratorData,
-                        employeeEntryTimeTouched: true,
-                    },
-                };
-            case 'TOUCH_EMPLOYEE_START_BREAK_TIME':
+        case 'TOUCH_EMPLOYEE_HEADED_BY_LIST':
+            return {
+                ...state,
+                collaboratorData: {
+                    ...state.collaboratorData,
+                    employeeHeadedByListTouched: true,
+                },
+            };
+        case 'TOUCH_EMPLOYEE_ADMISSION_DATE':
+            return {
+                ...state,
+                collaboratorData: {
+                    ...state.collaboratorData,
+                    employeeAdmissionDateTouched: true,
+                },
+            };
+        case 'TOUCH_EMPLOYEE_ENTRY_TIME':
+            return {
+                ...state,
+                collaboratorData: {
+                    ...state.collaboratorData,
+                    employeeEntryTimeTouched: true,
+                },
+            };
+        case 'TOUCH_EMPLOYEE_START_BREAK_TIME':
             return {
                 ...state,
                 collaboratorData: {
@@ -733,15 +820,15 @@ export const formReducer = (state, action) => {
                     employeeStartBreakTimeTouched: true,
                 },
             };
-            case 'TOUCH_EMPLOYEE_STOP_BREAK_TIME':
-                return {
-                    ...state,
-                    collaboratorData: {
-                        ...state.collaboratorData,
-                        employeeStopBreakTimeTouched: true,
-                    },
-                };
-            case 'TOUCH_EMPLOYEE_DEPARTURE_TIME':
+        case 'TOUCH_EMPLOYEE_STOP_BREAK_TIME':
+            return {
+                ...state,
+                collaboratorData: {
+                    ...state.collaboratorData,
+                    employeeStopBreakTimeTouched: true,
+                },
+            };
+        case 'TOUCH_EMPLOYEE_DEPARTURE_TIME':
             return {
                 ...state,
                 collaboratorData: {
@@ -749,18 +836,16 @@ export const formReducer = (state, action) => {
                     employeeDepartureTimeTouched: true,
                 },
             };
-            case 'TOUCH_EMPLOYEE_STATUS':
-                return {
-                    ...state,
-                    collaboratorData: {
-                        ...state.collaboratorData,
-                        employeeStatusTouched: true,
-                    },
-                };
-
+        case 'TOUCH_EMPLOYEE_STATUS':
+            return {
+                ...state,
+                collaboratorData: {
+                    ...state.collaboratorData,
+                    employeeStatusTouched: true,
+                },
+            };
         case 'CLEAR_FORM':
             return initialState;
-
         default:
             return state;
     }
