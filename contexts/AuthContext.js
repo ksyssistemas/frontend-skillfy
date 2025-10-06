@@ -9,27 +9,36 @@ function AuthProvider({ children }) {
 
     const [authenticationDataLoggedInUser, setAuthenticationDataLoggedInUser] = useState(null);
 
+    // Carrega dados do sessionStorage (se existir)
     useEffect(() => {
         if (typeof window !== "undefined") {
-          const storedUser = sessionStorage.getItem("userAuthData");
-          if (storedUser) {
-            setAuthenticationDataLoggedInUser(JSON.parse(storedUser));
-          }
+            const storedUser = sessionStorage.getItem("userAuthData");
+            if (storedUser) {
+                try {
+                    const parsedUser = JSON.parse(storedUser);
+                    setAuthenticationDataLoggedInUser(parsedUser);
+                } catch (error) {
+                    console.error("Erro ao parsear userAuthData do sessionStorage:", error);
+                    sessionStorage.removeItem("userAuthData");
+                }
+            }
         }
-      }, []);
-      
+    }, []);
 
+    // Salva dados de autenticação
     function handleSaveAuthenticationDataLoggedInUser(userAuthenticationData) {
         setAuthenticationDataLoggedInUser(userAuthenticationData);
         sessionStorage.setItem('userAuthData', JSON.stringify(userAuthenticationData));
     }
 
+    // Logout: limpa contexto e storage
     function handleLogout() {
         setAuthenticationDataLoggedInUser("");
         sessionStorage.removeItem('userAuthData');
-    }    
+    }
 
-    TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT = authenticationDataLoggedInUser.role;
+    // Define tipo de acesso do usuário (com fallback)
+    TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT = authenticationDataLoggedInUser?.role || "";
 
     return (
         <AuthContext.Provider
