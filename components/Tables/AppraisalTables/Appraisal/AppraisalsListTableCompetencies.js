@@ -139,7 +139,6 @@ function AppraisalsListTableCompetencies() {
 
     const { colorClass, text } = statusConfig[newStatus] || { colorClass: "bg-secondary", text: "desconhecido" };
 
-    console.log(colorClass, text);
     return (
       <Badge color="" className="badge-dot mr-4">
         <i className={colorClass} />
@@ -273,11 +272,20 @@ function AppraisalsListTableCompetencies() {
           }
 
           // -------------------------
-          // 2) LÍDER
+          // 2) LÍDER → LIDERADOS
           // -------------------------
           if (me.participateAsLeader) {
-            // eu avalio todos os liderados com selfEval
-            const ledParticipants = allParticipants.filter(p => p.participatesAsSelfEvaluator && p.reviewParticipantId !== me.reviewParticipantId);
+            const leaderEmployee = employeesData.find(e => Number(e.id) === Number(me.reviewParticipantId));
+            if (!leaderEmployee) continue;
+
+            const ledParticipants = allParticipants.filter(p => {
+              if (!p.participatesAsSelfEvaluator || p.reviewParticipantId === me.reviewParticipantId) return false;
+
+              const ledEmployee = employeesData.find(e => Number(e.id) === Number(p.reviewParticipantId));
+              if (!ledEmployee?.headedBy?.length) return false;
+
+              return ledEmployee.headedBy.some(h => Number(h.id) === Number(me.reviewParticipantId));
+            });
 
             for (const led of ledParticipants) {
               const ledEmployee = employeesData.find(e => Number(e.id) === Number(led.reviewParticipantId));
@@ -297,16 +305,15 @@ function AppraisalsListTableCompetencies() {
               }
             }
           } else {
-            // se não sou líder mas tenho selfEval, avalio meu(s) líder(es)
+            // -------------------------
+            // 2b) LIDERADO → LÍDER(ES)
+            // -------------------------
             if (me.participatesAsSelfEvaluator) {
-              // pega o employee correspondente ao participante atual
               const meEmployee = employeesData.find(e => Number(e.id) === Number(me.reviewParticipantId));
               if (meEmployee?.headedBy?.length > 0) {
-                // busca todos os participantes que são líderes
                 const leaders = allParticipants.filter(p => p.participateAsLeader);
 
                 for (const leader of leaders) {
-                  // só considera se o líder está no headedBy do funcionário
                   const isMyLeader = meEmployee.headedBy.some(h => Number(h.id) === Number(leader.reviewParticipantId));
                   if (!isMyLeader) continue;
 
@@ -404,6 +411,10 @@ function AppraisalsListTableCompetencies() {
   } = useContext(ReviewContext);
 
   const handleSetId = (reviewData, reviewerParticipant, reviewedParticipant, reviewParticipationData) => {
+    console.log('Revisão selecionada:', reviewData);
+    console.log('Revisor selecionado:', reviewerParticipant);
+    console.log('Avaliado selecionado:', reviewedParticipant);
+    console.log('Dados de participação na revisão:', reviewParticipationData);
     handlePerformanceReviewData(reviewData);
     handleReviewerIdOnPerformanceReview(reviewerParticipant);
     handleReviewedIdOnPerformanceReview(reviewedParticipant);

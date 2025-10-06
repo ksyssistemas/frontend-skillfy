@@ -54,62 +54,7 @@ function ModalContactPerson(
   } = useContext(ContactPersonContext);
 
   const {
-    firstName,
-    setFirstName,
-    firstNameState,
-    setFirstNameState,
-    lastName,
-    setLastName,
-    lastNameState,
-    setLastNameState,
-    taxIdentificationNumber,
-    setTaxIdentificationNumber,
-    taxIdentificationNumberState,
-    setTaxIdentificationNumberState,
-    emailAddress,
-    setEmailAddress,
-    emailAddressState,
-    setEmailAddressState,
-    birthdate,
-    setBirthdate,
-    birthdateState,
-    setBirthdateState,
-    password,
-    setPassword,
-    passwordState,
-    setPasswordState,
-    confirmPassword,
-    setConfirmPassword,
-    confirmPasswordState,
-    setConfirmPasswordState,
-    phoneNumber,
-    setPhoneNumber,
-    phoneNumberState,
-    setPhoneNumberState,
-    contactStatus,
-    setContactStatus,
-    contactStatusState,
-    setContactStatusState,
-    checkbox,
-    setCheckbox,
-    checkboxState,
-    setCheckboxState,
-    isCustomerAccountHolderFormValidated,
-    setIsCustomerAccountHolderFormValidated,
-    validateCheckboxIsChecked,
-    handleBirthdateChange,
-    handleChangeCPF,
-    validateEmail,
-    handleValidateAddCustomerAccountHolderForm,
     resetCreateCustomer,
-    contactPersonOccupation,
-    setContactPersonOccupation,
-    contactPersonOccupationState,
-    setContactPersonOccupationState,
-    contactPersonBelongsToClientCompany,
-    setContactPersonBelongsToClientCompany,
-    contactPersonBelongsToClientCompanyState,
-    setContactPersonBelongsToClientCompanyState,
   } = useCreateCustomerAccountHolder();
 
   const { handleValidateUpdateCustomerAccountHolderForm } = useUpdateContactPerson();
@@ -151,7 +96,7 @@ function ModalContactPerson(
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (detailedContactPersonData.length <= 0) {
+        if (detailedContactPersonData.length <= 0 && selectedIdToShowContactPersonDetails !== null) {
           const foundContact = await useFindContactPerson(selectedIdToShowContactPersonDetails);
           setDetailedContactPersonData(foundContact);
         }

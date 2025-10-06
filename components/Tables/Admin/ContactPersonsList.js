@@ -52,10 +52,28 @@ function ContactPersonsList() {
     setModalOpen(!modalOpen)
   }
 
-  function handleShowContactPersonDetailsModal(contactId, contactName, contactLastName) {
-    const name = `${contactName} ${contactLastName}`
+  // ABRIR MODAL: pega o companyName do array (ou busca on-demand se necessário)
+  async function handleShowContactPersonDetailsModal(contactId, contactName, contactLastName) {
+    const name = `${contactName} ${contactLastName}`;
     setSelectedIdToShowContactPersonDetails(contactId);
     setContactPersonName(name);
+
+    // tenta tirar do estado já populado
+    const cp = userContactAccountData.find(c => c.id === contactId);
+    let companyName = cp?.companyName;
+
+    // se não tiver (ex.: usuário clicou antes do fetch terminar), faz fetch único
+    if ((!companyName || companyName === '') && (cp?.customerId || cp?.customerId === 0)) {
+      try {
+        const companyData = await useFindClientCompany(cp.customerId);
+        companyName = companyData.companyName;
+      } catch (err) {
+        console.error('Erro ao buscar empresa on-demand:', err);
+        companyName = 'Desconhecida';
+      }
+    }
+
+    setCompanyNameToModalDetails(companyName ?? 'Desconhecida');
     handleOpenContactModal();
   }
 
@@ -115,47 +133,44 @@ function ContactPersonsList() {
     (contactPersonIdToUpdate && contactPersonIdToUpdate !== 0);
 
   useEffect(() => {
+    let mounted = true;
     const fetchCompanyNames = async (contactPersons) => {
-      const updatedContactPersons = await Promise.all(
+      const updated = await Promise.all(
         contactPersons.map(async (contactPerson) => {
           try {
             const companyData = await useFindClientCompany(contactPerson.customerId);
-            setCompanyNameToModalDetails(companyData.companyName);
             return { ...contactPerson, companyName: companyData.companyName };
           } catch (error) {
             console.error(`Error fetching company data for customerId ${contactPerson.customerId}:`, error);
-            return { ...contactPerson, companyName: 'Unknown' };
+            return { ...contactPerson, companyName: 'Desconhecida' };
           }
         })
       );
-      setUserContactAccountData(updatedContactPersons);
+      if (mounted) setUserContactAccountData(updated);
     };
 
 
     const fetchData = async () => {
-      if (!userContactAccountData || userContactAccountData.length === 0 || hasUpdatedContactRecord || hasDeletedContactRecord) {
-        try {
-          const foundContactPersons = await useFindAllContactPerson();
-          if (foundContactPersons && Array.isArray(foundContactPersons)) {
-            await fetchCompanyNames(foundContactPersons);
-          } else {
-            console.error('Invalid data format:', foundContactPersons);
-          }
-        } catch (error) {
-          console.error('Error fetching contact persons:', error);
+      try {
+        const foundContactPersons = await useFindAllContactPerson();
+        if (foundContactPersons && Array.isArray(foundContactPersons)) {
+          await fetchCompanyNames(foundContactPersons);
+        } else {
+          console.error('Invalid data format:', foundContactPersons);
+          if (mounted) setUserContactAccountData([]);
         }
+      } catch (error) {
+        console.error('Error fetching contact persons:', error);
+      } finally {
+        // reset flags se existirem
+        if (hasUpdatedContactRecord) handleUpdatedContactRecordStatusChange();
+        if (hasDeletedContactRecord) handleDeletedContactRecordStatusChange();
       }
     };
 
     fetchData();
-    if (hasUpdatedContactRecord) {
-      handleUpdatedContactRecordStatusChange();
-    }
-    if (hasDeletedContactRecord) {
-      handleDeletedContactRecordStatusChange();
-    }
-
-  }, [userContactAccountData, hasUpdatedContactRecord, hasDeletedContactRecord]);
+    return () => { mounted = false; };
+  }, [hasUpdatedContactRecord, hasDeletedContactRecord]);
 
   return (
     <Card>
