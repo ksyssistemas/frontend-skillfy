@@ -20,36 +20,19 @@ import { useAuth } from '../hooks/useAuth';
 const routes = () => {
   const { authenticationDataLoggedInUser } = useAuth();
 
-  let companyName = authenticationDataLoggedInUser ?
-    authenticationDataLoggedInUser.data.companyName : "Seu Dashboard";
+  let companyName = authenticationDataLoggedInUser?.data?.companyName || "Seu Dashboard";
+  const sector = authenticationDataLoggedInUser?.data?.sector;
 
-  // Defina os valores padrão para 'name' e 'path'
-  let departmentsName = authenticationDataLoggedInUser &&
-    authenticationDataLoggedInUser.data.sector === "publico" ?
-    "Órgãos Públicos" : "Departamentos";
-  let employeesName = authenticationDataLoggedInUser &&
-    authenticationDataLoggedInUser.data.sector === "publico" ?
-    "Agentes Públicos" : "Colaboradores";
-  let departmentsPath = "/departments";
-  let employeesPath = "/employees";
+  // Definições condicionais conforme o setor
+  const isPublicSector = sector === "publico";
 
-  // Se authenticationDataLoggedInUser não está disponível ou se o setor não está definido, mantenha os valores padrão
-  if (!authenticationDataLoggedInUser || !authenticationDataLoggedInUser.data.sector) {
-    departmentsName = "Departamentos";
-    employeesName = "Colaboradores";
-  }
+  const departmentsName = isPublicSector ? "Órgãos Públicos" : "Departamentos";
+  const employeesName = isPublicSector ? "Agentes Públicos" : "Colaboradores";
+  const departmentsPath = "/departments";
+  const employeesPath = "/employees";
 
-  // Defina os valores padrão para 'miniName'
-  let departmentsMiniName = authenticationDataLoggedInUser &&
-    authenticationDataLoggedInUser.data.sector === "publico" ? "O" : "D";
-  let employeesMiniName = authenticationDataLoggedInUser &&
-    authenticationDataLoggedInUser.data.sector === "publico" ? "A" : "C";
-
-  // Se authenticationDataLoggedInUser não está disponível ou se o setor não está definido, mantenha os valores padrão
-  if (!authenticationDataLoggedInUser || !authenticationDataLoggedInUser.data.sector) {
-    departmentsMiniName = "D";
-    employeesMiniName = "C";
-  }
+  const departmentsMiniName = isPublicSector ? "O" : "D";
+  const employeesMiniName = isPublicSector ? "A" : "C";
 
   return [
     {

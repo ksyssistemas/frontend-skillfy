@@ -36,15 +36,24 @@ function Dashboard() {
     setActiveNav(index);
     setChartExample1Data(chartExample1Data === "data1" ? "data2" : "data1");
   };
-  
+
   if (typeof window !== "undefined" && window.Chart) {
     parseOptions(Chart, chartOptions());
   }
 
   const { authenticationDataLoggedInUser } = useAuth();
+
+  const companyName =
+    authenticationDataLoggedInUser &&
+      authenticationDataLoggedInUser.data &&
+      authenticationDataLoggedInUser.data.companyName
+      ? authenticationDataLoggedInUser.data.companyName
+      : "Seu Dashboard";
+
+
   return (
     <>
-      <CardsHeader name={authenticationDataLoggedInUser.data.companyName} parentName="Dashboard" />
+      <CardsHeader name={companyName} parentName="Dashboard" />
       <Container className="mt--6" fluid>
         <Row>
           <Col xl="0">

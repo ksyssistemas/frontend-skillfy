@@ -153,6 +153,7 @@ export function AppraisalsSkillsRegister() {
     useEffect(() => {
         const fetchOccupationalGroups = async () => {
             const foundOccupationalGroups = await useFindAllOccupationalGroups();
+            console.log('Found Occupational Groups:', foundOccupationalGroups);
             setOccupationalGroupsData(foundOccupationalGroups);
         };
         if (performanceReviewData.id) {
@@ -238,7 +239,7 @@ export function AppraisalsSkillsRegister() {
                     useFindSkillType(evidenceRuler.reviewCompetenceId)
                 )
             )
-                .then((details) => setPerformanceSkillTypeData(details))
+                .then((details) => { console.log('PerformanceSkillTypeData Details: ', details); setPerformanceSkillTypeData(details); })
                 .catch((error) =>
                     console.error("Erro ao buscar competências :", error)
                 );
@@ -329,9 +330,8 @@ export function AppraisalsSkillsRegister() {
         setOptions(newOptions);
     }, [performanceRuleOptionData]);
 
-    // Processa e reorganiza os dados de competências profissionais em uma estrutura hierárquica agrupada 
+    // Processa e reorganiza os dados de competências em estrutura hierárquica agrupada
     useEffect(() => {
-        // Verifica se todos os arrays necessários estão disponíveis
         if (
             !Array.isArray(occupationalGroupsData) ||
             !Array.isArray(skillClassificationsData) ||
@@ -342,25 +342,41 @@ export function AppraisalsSkillsRegister() {
             return;
         }
 
-        // Inicia o agrupamento pelos grupos ocupacionais
-        const grouped = occupationalGroupsData.map((group) => {
+        // 1. Cria mapa auxiliar de grupos ocupacionais
+        const groupsMap = new Map(
+            occupationalGroupsData.map((g) => [g.id, { ...g }])
+        );
+
+        // 2. Cria um "grupo especial" para quando não houver vínculo
+        const ungroupedGroup = {
+            id: "no-group",
+            competencieName: "Sem grupo ocupacional",
+        };
+
+        // 3. Adiciona manualmente o grupo fictício ao mapa
+        groupsMap.set("no-group", ungroupedGroup);
+
+        // 4. Constrói dados agrupados
+        const grouped = Array.from(groupsMap.values()).map((group) => {
             const { id: groupId, competencieName: groupName } = group;
 
-            // Filtra habilidades pertencentes a este grupo ocupacional
-            const groupSkills = (performanceSkillTypeData || []).filter(
-                (skill) => Number(skill?.occupationalGroupId) === Number(groupId)
-            );
+            // Seleciona competências ligadas a este grupo
+            const groupSkills = performanceSkillTypeData.filter((skill) => {
+                if (groupId === "no-group") {
+                    return !skill.occupationalGroupId; // sem grupo
+                }
+                return Number(skill.occupationalGroupId) === Number(groupId);
+            });
 
-            // Para cada grupo, mapeia as classificações de habilidades
+            // Agrupa por classificação
             const classificationData = skillClassificationsData.map((classification) => {
                 const { id: classificationId, competenceClassificationName } = classification;
 
-                // Filtra as habilidades dessa classificação específica
                 const classificationSkills = groupSkills.filter(
                     (skill) => Number(skill.skillClassificationId) === Number(classificationId)
                 );
 
-                // Para cada habilidade, adiciona suas evidências
+                // Associa evidências
                 const skillsWithEvidences = classificationSkills.map((skill) => {
                     const evidences = performanceEvidenceData.filter(
                         (evidence) => Number(evidence.evidenceName) === Number(skill.id)
@@ -368,7 +384,6 @@ export function AppraisalsSkillsRegister() {
                     return { ...skill, evidences };
                 });
 
-                // Retorna o objeto de classificação com suas habilidades e evidências
                 return {
                     classificationId,
                     classificationName: competenceClassificationName,
@@ -379,13 +394,17 @@ export function AppraisalsSkillsRegister() {
             return {
                 groupId,
                 groupName,
-                classificationData
+                classificationData,
             };
         });
 
-        // Atualiza o estado com os dados agrupados
         setNewGroupedData(grouped);
-    }, [performanceEvidenceData, occupationalGroupsData, skillClassificationsData, performanceSkillTypeData]);
+    }, [
+        performanceEvidenceData,
+        occupationalGroupsData,
+        skillClassificationsData,
+        performanceSkillTypeData,
+    ]);
 
     // Agrupa as Evidências e Réguas de Avaliação às Competências avaliadas 
     useEffect(() => {
@@ -432,6 +451,7 @@ export function AppraisalsSkillsRegister() {
             rulers.map(async (ruler) => {
                 try {
                     const rulerOptionData = await useFindCaptionOptionByCaptionId(ruler.id);
+                    console.log('Ruler Option Data:', rulerOptionData);
                     //Cria um novo objeto combinando os dados da Régua original com as Opções encontradas
                     return {
                         ...ruler,
@@ -460,6 +480,7 @@ export function AppraisalsSkillsRegister() {
                     const captionType = foundRuler.text;
                     //Busca a Régua usando o Tipo de Régua
                     const foundCaption = await useFindCaptionOptionByCaptionType(captionType);
+                    console.log('Found Caption:', foundCaption);
                     await fetchCaptionOption(foundCaption);
                 } else {
                     console.error('Ruler type not found');

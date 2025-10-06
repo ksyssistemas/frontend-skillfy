@@ -74,10 +74,16 @@ function EmployeeUserRegister() {
     };
 
     const validateEmail = (email) => {
-        if (email) {
-            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return regex.test(email);
-        }
+        if (!email) return false;
+
+        // Regex robusta mas legível
+        const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/;
+
+        // Extra: bloqueia duplo ponto no domínio e TLD inválido
+        if (!regex.test(email)) return false;
+        if (/\.\./.test(email)) return false; // evita "user@domain..com"
+
+        return true;
     };
 
     const handlePhoneNumberChange = (value) => {
@@ -119,11 +125,6 @@ function EmployeeUserRegister() {
             () => dispatch({ type: setHasDepartmentSelectedAction, payload: true }),
             savedDataType
         );
-    };
-
-    const handleEmployeeLeaderNameChange = (e) => {
-        dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME', payload: e.target.value });
-        dispatch({ type: 'SET_EMPLOYEE_LEADER_NAME_STATE', payload: e.target.value === '' ? 'invalid' : 'valid' });
     };
 
     const handleIsEmployeeLeader = () => {
@@ -736,7 +737,7 @@ function EmployeeUserRegister() {
                                     if (selectedItem) {
                                         // move + marca disabled (MOVE_TO_HEADED_BY também atualiza selected)
                                         dispatch({ type: "MOVE_TO_HEADED_BY", payload: selectedItem });
-                                        
+
                                         dispatch({ type: 'SET_IS_INVALID_EMPLOYEE_LEADER_COMPONENT', payload: false });
                                         dispatch({ type: 'SET_SHOW_ERROR_FEEDBACK_EMPLOYEE_LEADER_COMPONENT', payload: false });
                                     }
@@ -884,7 +885,7 @@ function EmployeeUserRegister() {
                             </label>
                             <InputMask
                                 mask="99:99:99"
-                                placeholder="08:00:00"
+                                placeholder="00:00:00"
                                 value={state.collaboratorData.employeeEntryTime}
                                 onChange={handleTimeChange('SET_EMPLOYEE_ENTRY_TIME', 'SET_EMPLOYEE_ENTRY_TIME_STATE')}
                             >
@@ -911,7 +912,7 @@ function EmployeeUserRegister() {
                             </label>
                             <InputMask
                                 mask="99:99:99"
-                                placeholder="12:00:00"
+                                placeholder="00:00:00"
                                 value={state.collaboratorData.employeeStartBreakTime}
                                 onChange={handleTimeChange('SET_EMPLOYEE_START_BREAK_TIME', 'SET_EMPLOYEE_START_BREAK_TIME_STATE')}
                             >
@@ -938,7 +939,7 @@ function EmployeeUserRegister() {
                             </label>
                             <InputMask
                                 mask="99:99:99"
-                                placeholder="13:00:00"
+                                placeholder="00:00:00"
                                 value={state.collaboratorData.employeeStopBreakTime}
                                 onChange={handleTimeChange('SET_EMPLOYEE_STOP_BREAK_TIME', 'SET_EMPLOYEE_STOP_BREAK_TIME_STATE')}
                             >
@@ -965,7 +966,7 @@ function EmployeeUserRegister() {
                             </label>
                             <InputMask
                                 mask="99:99:99"
-                                placeholder="18:00:00"
+                                placeholder="00:00:00"
                                 value={state.collaboratorData.employeeDepartureTime}
                                 onChange={handleTimeChange('SET_EMPLOYEE_DEPARTURE_TIME', 'SET_EMPLOYEE_DEPARTURE_TIME_STATE')}
                             >

@@ -7,7 +7,7 @@ export let TYPE_USER_ACCESS_DEFINES_PAGE_LAYOUT = "";
 
 function AuthProvider({ children }) {
 
-    const [authenticationDataLoggedInUser, setAuthenticationDataLoggedInUser] = useState("");
+    const [authenticationDataLoggedInUser, setAuthenticationDataLoggedInUser] = useState(null);
 
     useEffect(() => {
         if (typeof window !== "undefined") {
