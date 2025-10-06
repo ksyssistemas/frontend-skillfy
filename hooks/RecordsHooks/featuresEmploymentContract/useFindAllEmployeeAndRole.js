@@ -1,7 +1,7 @@
 export async function useFindAllEmployeeAndRole(departmentId) {
     
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE}/department/${departmentId}/leads`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE}/customerId/${customerId}/leads`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

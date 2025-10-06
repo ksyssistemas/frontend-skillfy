@@ -256,7 +256,7 @@ function EmployeeUserRegister() {
         }
     ];
 
-    const lastFetchedDepartmentId = useRef(null);
+    const lastFetchedCustomerId  = useRef(null);
 
     /**
      * Efeito que gerencia automaticamente o carregamento de múltiplas listas de dados relacionados ao colaborador.
@@ -276,15 +276,14 @@ function EmployeeUserRegister() {
                 dataRefreshConfigs.map(async ({ label, dataKey, fetchFn, dispatchType }) => {
                     const shouldFetch = (() => {
                         if (label === "employeeAndRole") {
-                            const { hasDepartmentSelected, selectedDepartmentId, employeeAndRoleDataList } =
-                                state.collaboratorData;
+                            const { customerId, employeeAndRoleDataList } = state.collaboratorData;
 
-                            if (!selectedDepartmentId) return false;
+                            if (!customerId) return false;
 
-                            // evita refetch se já buscou para o mesmo departamento
-                            if (lastFetchedDepartmentId.current === selectedDepartmentId) return false;
+                            // evita refetch se já buscou para o mesmo customer
+                            if (lastFetchedCustomerId .current === customerId) return false;
 
-                            return hasDepartmentSelected || !employeeAndRoleDataList?.length;
+                            return !employeeAndRoleDataList?.length;
                         }
 
                         return state.collaboratorData[dataKey]?.length === 0;
@@ -300,7 +299,7 @@ function EmployeeUserRegister() {
 
                         // marca o departmentId já buscado
                         if (label === "employeeAndRole" && state.collaboratorData.selectedDepartmentId) {
-                            lastFetchedDepartmentId.current = state.collaboratorData.selectedDepartmentId;
+                            lastFetchedCustomerId .current = state.collaboratorData.selectedDepartmentId;
                         }
                     }
                 })
@@ -724,7 +723,7 @@ function EmployeeUserRegister() {
                                     allowClear: true,
                                     language: {
                                         noResults: () =>
-                                            "Não há líderes, é necessário selecionar um departamento primeiro ou cadastrar colaboradores que exercem liderança."
+                                            "Não há líderes cadastrados ainda."
                                     }
                                 }}
                                 data={state.collaboratorData.employeeAndRoleDataList || []}
