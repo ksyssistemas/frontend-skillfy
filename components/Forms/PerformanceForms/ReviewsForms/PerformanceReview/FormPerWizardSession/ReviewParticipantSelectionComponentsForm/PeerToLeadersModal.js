@@ -29,7 +29,6 @@ export function PeerToLeadersModal({
   const [possiblePeers, setPossiblePeers] = useState([]);
 
   // 🔎 Busca o líder pelo ID
-  // 🔎 Busca o líder pelo ID
   useEffect(() => {
     async function fetchLeaderAndPeers() {
       if (!leaderIdToAddingPairsToLeader) {
@@ -51,13 +50,11 @@ export function PeerToLeadersModal({
         return;
       }
 
-      // 🔹 ALTERADO: filtra apenas líderes do mesmo departamento
       const peers = allEmployees.filter((emp) => {
-        const sameDept = emp.departmentId === foundLeader.departmentId;
         const notLeader = emp.id !== foundLeader.id;
         const isLeader = emp.isLead === true; // 🔹 NOVO: verifica se é líder
 
-        return sameDept && notLeader && isLeader;
+        return notLeader && isLeader;
       });
 
       setPossiblePeers(peers);

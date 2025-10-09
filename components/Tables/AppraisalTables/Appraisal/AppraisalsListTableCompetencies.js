@@ -411,10 +411,6 @@ function AppraisalsListTableCompetencies() {
   } = useContext(ReviewContext);
 
   const handleSetId = (reviewData, reviewerParticipant, reviewedParticipant, reviewParticipationData) => {
-    console.log('Revisão selecionada:', reviewData);
-    console.log('Revisor selecionado:', reviewerParticipant);
-    console.log('Avaliado selecionado:', reviewedParticipant);
-    console.log('Dados de participação na revisão:', reviewParticipationData);
     handlePerformanceReviewData(reviewData);
     handleReviewerIdOnPerformanceReview(reviewerParticipant);
     handleReviewedIdOnPerformanceReview(reviewedParticipant);

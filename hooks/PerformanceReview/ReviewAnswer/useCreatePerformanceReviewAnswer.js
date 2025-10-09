@@ -25,7 +25,7 @@ const useCreatePerformanceReviewAnswer = () => {
     const handleSubmit = async (finalData) => {
         try {
             const payload = {
-                performanceReview: finalData.performanceReview,
+                performanceReviewId: finalData.performanceReview,
                 evaluationRulerId: finalData.evaluationRulerId,
                 reviewParticipantId: String(finalData.reviewParticipantId),
                 reviewParticipantComment: null,
@@ -34,6 +34,9 @@ const useCreatePerformanceReviewAnswer = () => {
                 answeredAsPairOf: {},
                 status: "completed"
             };
+
+            console.log('Final Data to submit: ', finalData);
+            console.log('finalData.performanceReview typeof: ', typeof finalData.performanceReview);
 
             if (finalData.reviewParticipantComment && finalData.reviewParticipantComment !== "") {
                 payload.reviewParticipantComment = finalData.reviewParticipantComment

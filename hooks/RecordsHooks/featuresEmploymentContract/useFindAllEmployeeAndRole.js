@@ -1,7 +1,7 @@
-export async function useFindAllEmployeeAndRole(departmentId) {
+export async function useFindAllEmployeeAndRole(customerId) {
     
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE}/customerId/${customerId}/leads`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_EMPLOYEE}/customer/${customerId}/leads`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -15,6 +15,8 @@ export async function useFindAllEmployeeAndRole(departmentId) {
         }
         
         const data = await response.json();
+
+        console.log("Dados recebidos da API:", data);
 
         const requiredFields = ["id", "name", "lastName", "departmentId", "rolesId"];
 
