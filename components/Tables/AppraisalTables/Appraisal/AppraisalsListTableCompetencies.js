@@ -92,6 +92,7 @@ function AppraisalsListTableCompetencies() {
   useEffect(() => {
     const fetchPerformanceReviewAnswerData = async () => {
       const foundReviewAnswerData = await useFindReviewAnswersByReviewParticipantId(userLoggedId);
+      console.log('foundReviewAnswerData: ', foundReviewAnswerData);
       if (foundReviewAnswerData &&
         Number(foundReviewAnswerData.performanceReview) === Number(userLoggedParticipationOnPerformanceReviewData.performanceReviewId)
       ) {
@@ -111,6 +112,7 @@ function AppraisalsListTableCompetencies() {
   };
 
   const renderStatusBadge = (status, endDate = null) => {
+    console.log('Rendering status badge for status:', status, 'and endDate:', endDate);
     let newStatus = '';
 
     // Verificar se endDate existe e comparar com a data atual
@@ -146,6 +148,8 @@ function AppraisalsListTableCompetencies() {
       </Badge>
     );
   };
+
+  const hasReviewCompleted = reviewStatus === 'completed';
 
   // Verificações da participacação do usuário logado nas avalições de desempenho
   const performanceReviewDataById = useMemo(() => {
@@ -467,6 +471,7 @@ function AppraisalsListTableCompetencies() {
                         outline
                         size="sm"
                         type="button"
+                        disabled={hasReviewCompleted}
                         onClick={() => handleSetId(
                           appraisal.performanceReviewToExecute,
                           appraisal.reviewerParticipant,
