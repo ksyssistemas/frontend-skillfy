@@ -7,6 +7,9 @@ const useCreatePerformanceReviewAnswer = () => {
         handlePerformanceIdStatusCleanupToUpdate
     } = useContext(ReviewContext);
 
+    const buildReviewKey = (reviewerId, reviewedId, performanceReviewId) =>
+        `${reviewerId}_${reviewedId}_${performanceReviewId}`;
+
     async function handleValidateAddReviewAnswerForm(finalData) {
         // validateAddAdminForm();
         // if (firstNameState === "valid" &&
@@ -23,16 +26,24 @@ const useCreatePerformanceReviewAnswer = () => {
     }
 
     const handleSubmit = async (finalData) => {
+
         try {
             const payload = {
                 performanceReviewId: finalData.performanceReview,
                 evaluationRulerId: finalData.evaluationRulerId,
                 reviewParticipantId: String(finalData.reviewParticipantId),
+                // reviewerParticipantId: finalData.reviewerParticipantId,
+                // reviewedParticipantId: finalData.reviewedParticipantId,
                 reviewParticipantComment: null,
                 answeredAsLeaderOf: {},
                 answeredAsSelfEvaluationOf: {},
                 answeredAsPairOf: {},
-                status: "completed"
+                status: "completed",
+                id: buildReviewKey(
+                    finalData.reviewerParticipantId.id,
+                    finalData.reviewedParticipantId.id,
+                    finalData.performanceReview
+                )
             };
 
             console.log('Final Data to submit: ', finalData);
@@ -66,7 +77,7 @@ const useCreatePerformanceReviewAnswer = () => {
                 },
                 body: JSON.stringify(payload),
             });
-            
+
             console.log('response: ', response);
             if (response.ok) {
                 //reset();

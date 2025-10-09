@@ -100,6 +100,8 @@ export function AppraisalsSkillsRegister() {
             // 🔹 Dados base do formulário
             const baseData = {
                 performanceReview: Number(performanceReviewData?.id),
+                reviewerParticipantId: reviewerIdOnPerformanceReview,
+                reviewedParticipantId: reviewedIdOnPerformanceReview,
                 evaluationRulerId: performanceReviewData?.reviewRulerId,
                 reviewParticipantId: reviewerIdOnPerformanceReview?.id || userLoggedId,
                 reviewParticipantComment,
