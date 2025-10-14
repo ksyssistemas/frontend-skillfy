@@ -13,7 +13,7 @@ import {
     Col,
     Button,
 } from "reactstrap";
-import { useFindAllOccupationalGroups } from "../../../../../hooks/DefinitionOptionsReview/OccupationalGroups/useFindAllSkillClassifications";
+import { useFindAllOccupationalGroups } from "../../../../../hooks/DefinitionOptionsReview/OccupationalGroups/useFindAllOccupationalGroups";
 import { AppraisalSkillsContext } from "../../../../../contexts/PerformanceContext/AppraisalSkillsContext";
 import { useSweetAlert } from "../../../../../contexts/SweetAlertContext";
 import OccupationalGroupModal from "../../../../Modals/AppraisalModal/OccupationalGroupModal";
