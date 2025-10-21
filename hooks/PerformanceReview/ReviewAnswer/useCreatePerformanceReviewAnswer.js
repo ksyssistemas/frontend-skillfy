@@ -4,72 +4,51 @@ import { ReviewContext } from "../../../contexts/PerformanceContext/PerformanceR
 const useCreatePerformanceReviewAnswer = () => {
 
     const {
-        handlePerformanceIdStatusCleanupToUpdate
+        handlePerformanceIdStatusCleanupToUpdate,
+        reviewStatus,
+        updateReviewStatus,
+        handleSaveReviewToExecuteListData
     } = useContext(ReviewContext);
 
+    /**
+   * Gera a chave única de identificação de uma avaliação
+   * Exemplo: "76_76_81" (avaliador 76, avaliado 76, avaliação 81)
+   */
     const buildReviewKey = (reviewerId, reviewedId, performanceReviewId) =>
         `${reviewerId}_${reviewedId}_${performanceReviewId}`;
 
+    /**
+   * Extrai o ID do participante avaliado, independentemente do tipo de avaliação
+   * - Líder, Par → reviewedIdOnPerformanceReview
+   * - Autoavaliação → reviewerIdOnPerformanceReview
+   */
+    function extractReviewedParticipantId(answer) {
+        return (
+            answer?.answeredAsLeaderOf?.reviewedIdOnPerformanceReview ||
+            answer?.answeredAsPairOf?.reviewedIdOnPerformanceReview ||
+            answer?.answeredAsSelfEvaluationOf?.reviewedIdOnPerformanceReview ||
+            answer?.answeredAsSelfEvaluationOf?.reviewerIdOnPerformanceReview ||
+            null
+        );
+    }
+
     async function handleValidateAddReviewAnswerForm(finalData) {
-        // validateAddAdminForm();
-        // if (firstNameState === "valid" &&
-        //     lastNameState === "valid" &&
-        //     emailAddressState === "valid" &&
-        //     passwordState === "valid" &&
-        //     confirmPasswordState === "valid" &&
-        //     phoneNumberState === "valid"
-        // ) {
-        handleSubmit(finalData);
-        // } else {
-        //     return null;
-        // }
+        await handleSubmit(finalData);
     }
 
     const handleSubmit = async (finalData) => {
-
         try {
             const payload = {
                 performanceReviewId: finalData.performanceReview,
                 evaluationRulerId: finalData.evaluationRulerId,
                 reviewParticipantId: String(finalData.reviewParticipantId),
-                // reviewerParticipantId: finalData.reviewerParticipantId,
-                // reviewedParticipantId: finalData.reviewedParticipantId,
-                reviewParticipantComment: null,
-                answeredAsLeaderOf: {},
-                answeredAsSelfEvaluationOf: {},
-                answeredAsPairOf: {},
+                reviewParticipantComment: finalData.reviewParticipantComment || null,
+                answeredAsLeaderOf: finalData.answeredAsLeaderOf || {},
+                answeredAsSelfEvaluationOf: finalData.answeredAsSelfEvaluationOf || {},
+                answeredAsPairOf: finalData.answeredAsPairOf || {},
                 status: "completed",
-                id: buildReviewKey(
-                    finalData.reviewerParticipantId.id,
-                    finalData.reviewedParticipantId.id,
-                    finalData.performanceReview
-                )
             };
 
-            console.log('Final Data to submit: ', finalData);
-            console.log('finalData.performanceReview typeof: ', typeof finalData.performanceReview);
-
-            if (finalData.reviewParticipantComment && finalData.reviewParticipantComment !== "") {
-                payload.reviewParticipantComment = finalData.reviewParticipantComment
-            }
-
-            if (finalData.answeredAsLeaderOf && finalData.answeredAsLeaderOf !== "") {
-                payload.answeredAsLeaderOf = finalData.answeredAsLeaderOf
-            }
-
-            if (finalData.answeredAsSelfEvaluationOf && finalData.answeredAsSelfEvaluationOf !== "") {
-                payload.answeredAsSelfEvaluationOf = finalData.answeredAsSelfEvaluationOf
-            }
-
-            if (finalData.answeredAsPairOf && finalData.answeredAsPairOf !== "") {
-                payload.answeredAsPairOf = finalData.answeredAsPairOf
-            }
-
-            // if (finalData.status && finalData.status === "") {
-            //     payload.status = "completed"
-            // }
-
-            console.log('Payload: ', payload);
             const response = await fetch(`${process.env.NEXT_PUBLIC_REVIEW_ANSWER}`, {
                 method: 'POST',
                 headers: {
@@ -78,36 +57,50 @@ const useCreatePerformanceReviewAnswer = () => {
                 body: JSON.stringify(payload),
             });
 
-            console.log('response: ', response);
-            if (response.ok) {
-                //reset();
-                handlePerformanceIdStatusCleanupToUpdate();
-                console.log('Data sent successfully!');
-            } else {
-                console.error('Error in response:', response.status);
+            if (!response.ok) {
+                console.error("❌ Erro na resposta da API:", response.status);
+                return;
             }
+
+            const savedAnswer = await response.json();
+            console.log("✅ Resposta salva com sucesso:", savedAnswer);
+
+            const reviewedParticipantId = extractReviewedParticipantId(savedAnswer);
+
+            if (!reviewedParticipantId) {
+                console.warn("⚠️ Não foi possível determinar o reviewedParticipantId. Ignorando atualização de status.");
+                return;
+            }
+
+            const key = buildReviewKey(
+                savedAnswer.reviewParticipantId,
+                reviewedParticipantId,
+                savedAnswer.performanceReviewId
+            );
+
+            // ✅ Atualiza o status no contexto global
+            updateReviewStatus(key, savedAnswer.status);
+
+            // ✅ Atualiza a lista de avaliações em execução
+            handleSaveReviewToExecuteListData((prevList) =>
+                prevList.map((item) =>
+                    item.uniqueKey === key
+                        ? {
+                            ...item,
+                            reviewStatus: savedAnswer.status?.toLowerCase(),
+                            id: savedAnswer.id,
+                        }
+                        : item
+                )
+            );
+
+            // Reseta estados internos relacionados ao formulário
+            handlePerformanceIdStatusCleanupToUpdate();
+            console.log("Avaliação registrada e status atualizado com sucesso!");
         } catch (error) {
-            console.error('Error in request:', error);
+            console.error("Erro na requisição:", error);
         }
     };
-
-    function reset() {
-        // setFirstName("");
-        // setFirstNameState(null);
-        // setLastName("");
-        // setLastNameState(null);
-        // setEmailAddress("");
-        // setEmailAddressState(null);
-        // setBirthdate("");
-        // setBirthdateState(null);
-        // setPhoneNumber("");
-        // setPhoneNumberState(null);
-        // setAdminStatus("");
-        // setAdminStatusState(null);
-        // setAdminPrivilege("");
-        // setAdminPrivilegeState(null);
-    }
-
     return {
         handleValidateAddReviewAnswerForm
     };

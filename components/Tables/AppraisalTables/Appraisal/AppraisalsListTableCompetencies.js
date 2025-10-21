@@ -34,7 +34,11 @@ function AppraisalsListTableCompetencies() {
     handlePerformanceReviewData,
     handleReviewedIdOnPerformanceReview,
     handleReviewerIdOnPerformanceReview,
-    handlePerformanceReviewParticipationData
+    handlePerformanceReviewParticipationData,
+    reviewsToExecuteList,
+    handleSaveReviewToExecuteListData,
+    reviewStatus,
+    initializeReviewStatus
   } = useContext(ReviewContext);
 
   const userLoggedId = authenticationDataLoggedInUser?.data?.id;
@@ -53,17 +57,7 @@ function AppraisalsListTableCompetencies() {
 
   const [employeesData, setEmployeesData] = useState([]);
 
-  const [performanceReviewAndEmployeesLedData, setPerformanceReviewAndEmployeesLedData] = useState([]);
-
   const [userLoggedData, setUserLoggedData] = useState({});
-
-  const [employeesLedData, setEmployeesLedData] = useState([]);
-
-  const [userLoggedPerformanceReviewsList, setUserLoggedPerformanceReviewsList] = useState([]);
-
-  const [reviewsToExecuteList, setReviewsToExecuteList] = useState([]);
-
-  const [reviewStatus, setReviewStatus] = useState({});
 
   useEffect(() => {
     async function fetchData() {
@@ -87,34 +81,6 @@ function AppraisalsListTableCompetencies() {
     }
     fetchData();
   }, [userLoggedId]); // Only trigger when userLoggedId changes
-
-  // =========================================================
-  // 📊 Buscar status de cada relação (avaliador x avaliado x avaliação)
-  // =========================================================
-  useEffect(() => {
-    const fetchReviewStatuses = async () => {
-      try {
-        if (!userLoggedId || reviewsToExecuteList.length === 0) return;
-
-        const answers = await useFindReviewAnswersByReviewParticipantId(userLoggedId);
-        if (!answers || answers.length === 0) return;
-
-        const statusMap = {};
-
-        for (const answer of answers) {
-          const key = `${answer.reviewerParticipantId}_${answer.reviewedParticipantId}_${answer.performanceReviewId}`;
-          statusMap[key] = (answer.status || "pending").toLowerCase();
-        }
-
-        setReviewStatus(statusMap);
-      } catch (error) {
-        console.error("❌ Erro ao buscar status das avaliações:", error);
-      }
-    };
-
-    fetchReviewStatuses();
-  }, [userLoggedId, reviewsToExecuteList]);
-
 
   const statusConfig = {
     late: { colorClass: "bg-danger", text: "atrasada" },
@@ -180,35 +146,6 @@ function AppraisalsListTableCompetencies() {
     return employeesData.filter((led) => led.LeaderName === userName);
   }, [employeesData]);
 
-  useEffect(() => {
-    async function fetchReviewAndEmployees() {
-      try {
-        const employeesLed = await Promise.all(
-          Object.entries(performanceReviewDataById).map(async ([performanceReview, reviewData]) => {
-            if (reviewData.isParticipateAsLeader && userLoggedData) {
-              const employeesLedByEmployeeLogged = await employeesLedId(userLoggedData);
-              return employeesLedByEmployeeLogged;
-            }
-
-            return null; // Retorna null para evitar valores indefinidos
-          })
-        );
-
-        // Atualiza o estado apenas se os valores forem diferentes
-        const filteredEmployeesLed = employeesLed.filter(Boolean).flat();
-        setEmployeesLedData((prev) => JSON.stringify(prev) !== JSON.stringify(filteredEmployeesLed) ? filteredEmployeesLed : prev);
-      } catch (error) {
-        console.error("Error fetching review and employees:", error);
-      }
-    }
-
-    // Verifica se há participação do usuário antes de disparar a função
-    const hasParticipation = Object.values(performanceReviewDataById).some(data => data.hasParticipation);
-    if (hasParticipation) {
-      fetchReviewAndEmployees();
-    }
-  }, [performanceReviewDataById, userLoggedData]);
-
   const performanceReviewCache = useRef(new Map());
 
   async function getPerformanceReview(performanceReviewId) {
@@ -232,8 +169,16 @@ function AppraisalsListTableCompetencies() {
     };
   }
 
-
   useEffect(() => {
+    function getReviewedIdFromAnswer(ans) {
+      return (
+        ans.answeredAsLeaderOf?.reviewedIdOnPerformanceReview ||
+        ans.answeredAsPairOf?.reviewedIdOnPerformanceReview ||
+        ans.answeredAsSelfEvaluationOf?.reviewedIdOnPerformanceReview ||
+        null
+      );
+    }
+
     async function fetchReviewsToExecute() {
       try {
         let newReviewsList = [];
@@ -247,14 +192,13 @@ function AppraisalsListTableCompetencies() {
 
           const performanceReview = await getPerformanceReview(performanceReviewId);
           if (!performanceReview) continue;
-
+          
           const allParticipants = await useFindReviewParticipantsByPerformanceReviewId(performanceReviewId);
           const me = allParticipants.find(p => Number(p.reviewParticipantId) === Number(userLoggedId));
           if (!me) continue;
 
           // Buscar respostas do revisor logado para esse ciclo
           const reviewAnswers = await useFindReviewAnswersByReviewParticipantId(me.reviewParticipantId);
-
           // ---------------------------------------
           // 1) AUTOAVALIAÇÃO
           // ---------------------------------------
@@ -263,14 +207,17 @@ function AppraisalsListTableCompetencies() {
             if (!createdKeys.has(key)) {
               createdKeys.add(key);
 
-              const hasCompleted = reviewAnswers?.some(
-                (ans) =>
-                  Number(ans.reviewedParticipantId) === Number(me.reviewParticipantId) &&
-                  ans.status === "COMPLETED"
-              );
+              const hasCompleted = reviewAnswers?.some((ans) => {
+                const reviewedId = getReviewedIdFromAnswer(ans);
+                const sameReviewed = Number(reviewedId) === Number(me.reviewParticipantId);
+                const isCompleted = ans.status === "completed";
+
+                return sameReviewed && isCompleted;
+              });
 
               newReviewsList.push({
-                id: key,
+                id: null,
+                uniqueKey: key,
                 performanceReviewToExecute: performanceReview,
                 reviewerParticipant: mapEmployeeData(userLoggedData, "Autoavaliação"),
                 reviewedParticipant: mapEmployeeData(userLoggedData),
@@ -278,7 +225,6 @@ function AppraisalsListTableCompetencies() {
                 reviewAs: "Autoavaliação",
                 performanceReviewParticipationData: {
                   ...me,
-                  id: key,
                   reviewParticipantId: me.reviewParticipantId,
                   performanceReviewId: performanceReview.id,
                 },
@@ -311,14 +257,17 @@ function AppraisalsListTableCompetencies() {
               if (!createdKeys.has(key)) {
                 createdKeys.add(key);
 
-                const hasCompleted = reviewAnswers?.some(
-                  (ans) =>
-                    Number(ans.reviewedParticipantId) === Number(ledEmployee.id) &&
-                    ans.status === 'COMPLETED'
-                );
+                const hasCompleted = reviewAnswers?.some((ans) => {
+                  const reviewedId = getReviewedIdFromAnswer(ans);
+                  const sameReviewed = Number(reviewedId) === Number(ledEmployee.id);
+                  const isCompleted = ans.status === "completed";
+
+                  return sameReviewed && isCompleted;
+                });
 
                 newReviewsList.push({
-                  id: key,
+                  id: null,
+                  uniqueKey: key,
                   performanceReviewToExecute: performanceReview,
                   reviewAs: "Líder",
                   reviewerParticipant: mapEmployeeData(userLoggedData, "Líder"),
@@ -326,7 +275,6 @@ function AppraisalsListTableCompetencies() {
                   reviewStatus: hasCompleted ? "completed" : "pending",
                   performanceReviewParticipationData: {
                     ...me,
-                    id: key,
                     reviewParticipantId: me.reviewParticipantId,
                     performanceReviewId: performanceReview.id,
                   },
@@ -353,14 +301,17 @@ function AppraisalsListTableCompetencies() {
                   if (!createdKeys.has(key)) {
                     createdKeys.add(key);
 
-                    const hasCompleted = reviewAnswers?.some(
-                      (ans) =>
-                        Number(ans.reviewedParticipantId) === Number(leaderEmployee.id) &&
-                        ans.status === 'COMPLETED'
-                    );
+                    const hasCompleted = reviewAnswers?.some((ans) => {
+                      const reviewedId = getReviewedIdFromAnswer(ans);
+                      const sameReviewed = Number(reviewedId) === Number(leaderEmployee.id);
+                      const isCompleted = ans.status === "completed";
+
+                      return sameReviewed && isCompleted;
+                    });
 
                     newReviewsList.push({
-                      id: key,
+                      id: null,
+                      uniqueKey: key,
                       performanceReviewToExecute: performanceReview,
                       reviewAs: "Líder",
                       reviewerParticipant: mapEmployeeData(userLoggedData, "Líder"),
@@ -368,7 +319,6 @@ function AppraisalsListTableCompetencies() {
                       reviewStatus: hasCompleted ? "completed" : "pending",
                       performanceReviewParticipationData: {
                         ...me,
-                        id: key,
                         reviewParticipantId: me.reviewParticipantId,
                         performanceReviewId: performanceReview.id,
                       },
@@ -391,14 +341,17 @@ function AppraisalsListTableCompetencies() {
               if (!createdKeys.has(key)) {
                 createdKeys.add(key);
 
-                const hasCompleted = reviewAnswers?.some(
-                  (ans) =>
-                    Number(ans.reviewedParticipantId) === Number(peerEmployee.id) &&
-                    ans.status === 'COMPLETED'
-                );
+                const hasCompleted = reviewAnswers?.some((ans) => {
+                  const reviewedId = getReviewedIdFromAnswer(ans);
+                  const sameReviewed = Number(reviewedId) === Number(peerEmployee.id);
+                  const isCompleted = ans.status === "completed";
+
+                  return sameReviewed && isCompleted;
+                });
 
                 newReviewsList.push({
-                  id: key,
+                  id: null,
+                  uniqueKey: key,
                   performanceReviewToExecute: performanceReview,
                   reviewAs: "Par",
                   reviewerParticipant: mapEmployeeData(userLoggedData, "Par"),
@@ -406,7 +359,6 @@ function AppraisalsListTableCompetencies() {
                   reviewStatus: hasCompleted ? "completed" : "pending",
                   performanceReviewParticipationData: {
                     ...me,
-                    id: key,
                     reviewParticipantId: me.reviewParticipantId,
                     performanceReviewId: performanceReview.id,
                   },
@@ -431,14 +383,17 @@ function AppraisalsListTableCompetencies() {
             if (!createdKeys.has(key)) {
               createdKeys.add(key);
 
-              const hasCompleted = reviewAnswers?.some(
-                (ans) =>
-                  Number(ans.reviewedParticipantId) === Number(peerEmployee.id) &&
-                  ans.status === 'COMPLETED'
-              );
+              const hasCompleted = reviewAnswers?.some((ans) => {
+                const reviewedId = getReviewedIdFromAnswer(ans);
+                const sameReviewed = Number(reviewedId) === Number(peerEmployee.id);
+                const isCompleted = ans.status === "completed";
+
+                return sameReviewed && isCompleted;
+              });
 
               newReviewsList.push({
-                id: key,
+                id: null,
+                uniqueKey: key,
                 performanceReviewToExecute: performanceReview,
                 reviewAs: "Par",
                 reviewerParticipant: mapEmployeeData(userLoggedData, "Par"),
@@ -446,7 +401,6 @@ function AppraisalsListTableCompetencies() {
                 reviewStatus: hasCompleted ? "completed" : "pending",
                 performanceReviewParticipationData: {
                   ...me,
-                  id: key,
                   reviewParticipantId: me.reviewParticipantId,
                   performanceReviewId: performanceReview.id,
                 },
@@ -454,10 +408,11 @@ function AppraisalsListTableCompetencies() {
             }
           }
         }
-        console.log('NewReviewList: ', newReviewsList);
-        setReviewsToExecuteList((prev) =>
+
+        handleSaveReviewToExecuteListData((prev) =>
           JSON.stringify(prev) !== JSON.stringify(newReviewsList) ? newReviewsList : prev
         );
+        initializeReviewStatus(newReviewsList);
       } catch (error) {
         console.error("Error fetching reviews to execute:", error);
       }
@@ -498,10 +453,10 @@ function AppraisalsListTableCompetencies() {
             <tbody className="list">
               {reviewsToExecuteList.length > 0 ? (
                 reviewsToExecuteList.map((appraisal) => {
-                  const id = `${appraisal.reviewerParticipant.id}_${appraisal.reviewedParticipant.id}_${appraisal.performanceReviewToExecute.id}`;
-                  const isCompleted = reviewStatus[appraisal.id] === "completed";
+                  const id = appraisal.uniqueKey;
+                  const isCompleted = reviewStatus[id] === "completed";
                   return (
-                    <tr key={appraisal.id}>
+                    <tr key={appraisal.uniqueKey}>
                       <td scope="row">
                         <Button
                           className="px-0"
@@ -521,7 +476,7 @@ function AppraisalsListTableCompetencies() {
                       <td className="budget">{formatDate(appraisal.performanceReviewToExecute.startDate)}</td>
                       <td className="budget">{formatDate(appraisal.performanceReviewToExecute.endDate)}</td>
                       <td className="text-center">
-                        {renderStatusBadge(id, appraisal.performanceReviewToExecute.endDate)}
+                        {renderStatusBadge(appraisal.uniqueKey, appraisal.performanceReviewToExecute.endDate)}
                       </td>
                       <td className="text-left">
                         <Button

@@ -17,11 +17,12 @@ export function AppraisalsSkillsRegister() {
         performanceReviewData,
         reviewedIdOnPerformanceReview,
         reviewerIdOnPerformanceReview,
-        handlePerformanceIdStatusCleanupToUpdate
+        handlePerformanceIdStatusCleanupToUpdate,
+        handleSaveReviewToExecuteListData
     } = useContext(ReviewContext);
 
     const { authenticationDataLoggedInUser } = useContext(AuthContext);
-    const { handleValidateAddReviewAnswerForm } = useCreatePerformanceReviewAnswer();
+    const { handleValidateAddReviewAnswerForm } = useCreatePerformanceReviewAnswer(handleSaveReviewToExecuteListData);
 
     const quillRef = useRef(null);
 
