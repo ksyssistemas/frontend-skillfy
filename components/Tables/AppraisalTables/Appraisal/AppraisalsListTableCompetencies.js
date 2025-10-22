@@ -13,13 +13,9 @@ import {
 } from 'reactstrap';
 import { useContext } from 'react';
 import { withRouter } from "next/router";
-import { useFindAllPerformanceReview } from '../../../../hooks/PerformanceReview/useFindAllPerformanceReview';
 import { useFindPerformanceReview } from '../../../../hooks/PerformanceReview/useFindPerformanceReview';
-import { EvidencesContext } from '../../../../contexts/PerformanceContext/AppraisalEvidencesContext';
 import { ReviewContext } from '../../../../contexts/PerformanceContext/PerformanceReviewContext';
 import { AuthContext } from '../../../../contexts/AuthContext';
-import { useFindAllReviewParticipants } from '../../../../hooks/PerformanceReview/ReviewParticipants/useFindAllReviewParticipants';
-import { useFindEmployee } from '../../../../hooks/RecordsHooks/employee/useFindEmployee';
 import { useFindAllEmployee } from '../../../../hooks/RecordsHooks/employee/useFindAllEmployee';
 import { useFindReviewParticipantsById } from '../../../../hooks/PerformanceReview/ReviewParticipants/useFindReviewParticipantsById';
 import _ from 'lodash';
@@ -38,7 +34,8 @@ function AppraisalsListTableCompetencies() {
     reviewsToExecuteList,
     handleSaveReviewToExecuteListData,
     reviewStatus,
-    initializeReviewStatus
+    initializeReviewStatus,
+    handleSetReadOnlyMode
   } = useContext(ReviewContext);
 
   const userLoggedId = authenticationDataLoggedInUser?.data?.id;
@@ -117,35 +114,6 @@ function AppraisalsListTableCompetencies() {
     );
   };
 
-  // Verificações da participacação do usuário logado nas avalições de desempenho
-  const performanceReviewDataById = useMemo(() => {
-    return userLoggedParticipationOnPerformanceReviewData.reduce((acc, participant) => {
-      const { performanceReviewId, reviewParticipantId, participateAsPair, participateAsEmployeePeerTo, participatesAsSelfEvaluator, participateAsLeader } = participant;
-
-      acc[performanceReviewId] = {
-        // Verifica se o usuário logado participa da avaliação
-        hasParticipation: Number(reviewParticipantId) === Number(userLoggedId),
-        // Verifica se o usuário logado participa como par (participateAsPair)
-        isParticipateAsPair: participateAsPair,
-        // Se participa como par, armazena os valores de participateAsEmployeePeerTo
-        employeeToWhomIsPaired: participateAsPair ? participateAsEmployeePeerTo : [],
-        // Verifica se o usuário logado participa realizando autoavaliação
-        isParticipateAsSelfEvaluator: participatesAsSelfEvaluator,
-        // Verifica se o usuário logado participa como líder
-        isParticipateAsLeader: participateAsLeader
-      };
-
-      return acc;
-    }, {});
-  }, [userLoggedParticipationOnPerformanceReviewData]);
-
-  // Filtras os usuário líderados pelo usuário logado
-  const employeesLedId = useCallback(async (userData) => {
-    if (!userData) return [];
-    const userName = `${userData.name} ${userData.lastName}`
-    return employeesData.filter((led) => led.LeaderName === userName);
-  }, [employeesData]);
-
   const performanceReviewCache = useRef(new Map());
 
   async function getPerformanceReview(performanceReviewId) {
@@ -192,7 +160,7 @@ function AppraisalsListTableCompetencies() {
 
           const performanceReview = await getPerformanceReview(performanceReviewId);
           if (!performanceReview) continue;
-          
+
           const allParticipants = await useFindReviewParticipantsByPerformanceReviewId(performanceReviewId);
           const me = allParticipants.find(p => Number(p.reviewParticipantId) === Number(userLoggedId));
           if (!me) continue;
@@ -437,7 +405,6 @@ function AppraisalsListTableCompetencies() {
           <CardHeader className="border-0">
             <h3 className="mb-0">Lista de Avaliação</h3>
           </CardHeader>
-
           <Table className="align-items-center table-flush" responsive>
             <thead className="thead-light">
               <tr>
@@ -482,7 +449,6 @@ function AppraisalsListTableCompetencies() {
                         <Button
                           className="btn-warning btn-warning:hover"
                           color="warning"
-                          outline
                           size="sm"
                           type="button"
                           disabled={isCompleted}
@@ -500,6 +466,23 @@ function AppraisalsListTableCompetencies() {
                         >
                           Executar
                         </Button>
+                        {isCompleted &&
+                          <Button
+                            className="btn-info btn-info:hover"
+                            color="info"
+                            size="sm"
+                            type="button"
+                            onClick={() => {
+                              handlePerformanceReviewData(appraisal.performanceReviewToExecute);
+                              handleReviewedIdOnPerformanceReview(appraisal.reviewedParticipant);
+                              handleReviewerIdOnPerformanceReview(appraisal.reviewerParticipant);
+                              handlePerformanceReviewParticipationData(appraisal.performanceReviewParticipationData);
+                              handleSetReadOnlyMode(true);
+                            }}
+                          >
+                            Verificar
+                          </Button>
+                        }
                       </td>
                     </tr>
                   )
@@ -510,9 +493,7 @@ function AppraisalsListTableCompetencies() {
                 </tr>
               )}
             </tbody>
-
           </Table>
-
           <CardFooter className="py-4">
             <nav aria-label="...">
               <Pagination

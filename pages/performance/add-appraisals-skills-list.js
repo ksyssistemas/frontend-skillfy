@@ -6,15 +6,14 @@ import { ReviewContext } from '../../contexts/PerformanceContext/PerformanceRevi
 import EmployeeHeader from "../../components/Headers/EmployeeHeader";
 import DynamicLayout from "../../layouts/DynamicLayout";
 
-
 function Appraisalsskillslist() {
 
-  const { performanceReviewData } = useContext(ReviewContext);
+  const { performanceReviewData, handlePerformanceIdStatusCleanupToUpdate } = useContext(ReviewContext);
 
   return (
 
     <>
-      <EmployeeHeader name="Avaliações" parentName="Desempenho" newRegistrationButtonText="Voltar" />
+      <EmployeeHeader name="Avaliações" parentName="Desempenho" newRegistrationButtonText="Voltar" handlePerformanceIdStatusCleanupToUpdate={handlePerformanceIdStatusCleanupToUpdate}/>
       <Container className="mt--6" fluid>
         {/* Se o ID estiver definido, exibe o registro de habilidades; caso contrário, a lista */}
         {performanceReviewData ? (

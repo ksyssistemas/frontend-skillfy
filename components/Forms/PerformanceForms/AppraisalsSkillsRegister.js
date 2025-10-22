@@ -1,15 +1,22 @@
-import React, { useState, useReducer, useRef, useContext, useEffect, useCallback, useLayoutEffect } from "react";
+import { useState, useRef, useContext, useCallback, useEffect } from "react";
 import {
-    Card, CardHeader, CardBody, CardFooter,
-    CardTitle, Col, Row, Button, Form, ListGroupItem,
+    Card,
+    CardHeader,
+    CardBody,
+    CardFooter,
+    CardTitle,
+    Col,
+    Row,
+    Button,
+    ListGroupItem,
     Spinner
 } from "reactstrap";
 import { ReviewContext } from "../../../contexts/PerformanceContext/PerformanceReviewContext";
 import { AuthContext } from "../../../contexts/AuthContext";
 import useCreatePerformanceReviewAnswer from "../../../hooks/PerformanceReview/ReviewAnswer/useCreatePerformanceReviewAnswer";
-import { reviewScaleAndCriteriaFormReducer, initialStateReviewScaleAndCriteriaForm } from "../../../reducers/ReviewForms/ReviewScaleAndCriteriaFormReducer";
 import { usePerformanceReviewData } from "../../../hooks/PerformanceReview/ReviewAnswer/usePerformanceReviewData";
 import 'quill/dist/quill.snow.css'; // Importando o CSS do Quill
+import { useFindReviewAnswersByReviewParticipantId } from "../../../hooks/PerformanceReview/ReviewAnswer/useFindReviewAnswersByReviewParticipantId";
 
 export function AppraisalsSkillsRegister() {
 
@@ -18,17 +25,21 @@ export function AppraisalsSkillsRegister() {
         reviewedIdOnPerformanceReview,
         reviewerIdOnPerformanceReview,
         handlePerformanceIdStatusCleanupToUpdate,
-        handleSaveReviewToExecuteListData
+        handleSaveReviewToExecuteListData,
+        isReadOnlyMode,
+        handleSetReadOnlyMode,
+        reviewsToExecuteList
     } = useContext(ReviewContext);
 
     const { authenticationDataLoggedInUser } = useContext(AuthContext);
     const { handleValidateAddReviewAnswerForm } = useCreatePerformanceReviewAnswer(handleSaveReviewToExecuteListData);
 
     const quillRef = useRef(null);
-
     const userLoggedId = authenticationDataLoggedInUser?.data?.id;
+
     const [reviewObjective, setReviewObjective] = useState('');
     const [selectedStatus, setSelectedStatus] = useState({});
+    const [reviewAnswers, setReviewAnswers] = useState([]);
 
     // Hook centralizado para todos os dados de avaliação
     const {
@@ -66,22 +77,117 @@ export function AppraisalsSkillsRegister() {
                         ]
                     },
                     placeholder: "Escreva aqui seu combinados...",
-                    theme: 'snow'
+                    theme: 'snow',
+                    readOnly: isReadOnlyMode,
                 });
                 quillRef.current = quillInstance;
 
-                quillInstance.on('text-change', () => {
-                    const text = quillInstance.root.innerText;
-                    setReviewObjective(text);
-                });
+                // 🔁 Preenche o Quill com comentário salvo (caso exista)
+                const savedComment = reviewAnswers?.[0]?.reviewParticipantComment || "";
+                if (savedComment) {
+                    const delta = quillInstance.clipboard.convert(savedComment);
+                    quillInstance.setContents(delta, "silent");
+                    setReviewObjective(savedComment);
+                }
+
+                // 🔄 Captura alterações (modo edição)
+                if (!isReadOnlyMode) {
+                    quillInstance.on('text-change', () => {
+                        const text = quillInstance.root.innerText;
+                        setReviewObjective(text);
+                    });
+                }
             }
         } catch (error) {
             console.error("Erro ao carregar o QuillJS:", error);
         }
     };
 
+    // Atualiza o estado do Quill dinamicamente caso o modo mude
+    useEffect(() => {
+        if (quillRef.current) {
+            quillRef.current.enable(!isReadOnlyMode);
+        }
+    }, [isReadOnlyMode]);
+
+    useEffect(() => {
+        async function fetchReviewAnswers() {
+            try {
+                const response = await useFindReviewAnswersByReviewParticipantId(userLoggedId);
+                if (!response || !Array.isArray(response)) return;
+
+                const reviewAnswers = response[0]; // Supondo que venha 1 avaliação por participante
+                setReviewAnswers(response);
+
+                const answeredSource =
+                    reviewAnswers.answeredAsLeaderOf?.occupationalGroup?.length
+                        ? reviewAnswers.answeredAsLeaderOf
+                        : reviewAnswers.answeredAsSelfEvaluationOf?.occupationalGroup?.length
+                            ? reviewAnswers.answeredAsSelfEvaluationOf
+                            : reviewAnswers.answeredAsPairOf?.occupationalGroup?.length
+                                ? reviewAnswers.answeredAsPairOf
+                                : null;
+
+                if (!answeredSource) {
+                    console.warn("⚠️ Nenhuma fonte de resposta encontrada nos objetos answeredAs...");
+                    return;
+                }
+
+                // 1️⃣ Carregar as evidências salvas (radios)
+                const savedStatuses = {};
+                answeredSource.occupationalGroup?.forEach(group => {
+                    group.skillClassification?.forEach(classification => {
+                        classification.skills?.forEach(skill => {
+                            skill.evidences?.forEach(evidence => {
+                                if (evidence?.evidenceId) {
+                                    savedStatuses[evidence.evidenceId] = {
+                                        selectedOption: evidence.selectedOption ?? "",
+                                        weight: evidence.weight ?? 0,
+                                        evidenceId: evidence.evidenceId,
+                                        evaluationRulerId: evidence.evaluationRulerId ?? 0,
+                                    };
+                                }
+                            });
+                        });
+                    });
+                });
+                setSelectedStatus(savedStatuses);
+
+                // Popula Quill se já existir instância
+                const savedComment = reviewAnswers.reviewParticipantComment || "";
+                if (quillRef.current) {
+                    const delta = quillRef.current.clipboard.convert(savedComment);
+                    quillRef.current.setContents(delta, "silent");
+                    setReviewObjective(savedComment);
+                }
+            } catch (error) {
+                console.error("❌ Erro ao buscar respostas do participante:", error);
+            }
+        }
+
+        if (userLoggedId && isReadOnlyMode) {
+            fetchReviewAnswers();
+        }
+    }, [isReadOnlyMode, userLoggedId]);
+
+    useEffect(() => {
+        const savedComment = reviewAnswers?.[0]?.reviewParticipantComment;
+        if (quillRef.current && savedComment) {
+            const delta = quillRef.current.clipboard.convert(savedComment);
+            quillRef.current.setContents(delta, "silent");
+        }
+    }, [reviewAnswers]);
+
+    useEffect(() => {
+        if (quillRef.current && reviewAnswers?.reviewParticipantComment) {
+            const delta = quillRef.current.clipboard.convert(reviewAnswers.reviewParticipantComment);
+            quillRef.current.setContents(delta, "silent");
+        }
+    }, [quillRef.current, reviewAnswers]);
+
     const handleBackToList = useCallback(() => {
         handlePerformanceIdStatusCleanupToUpdate();
+        handleSetReadOnlyMode(false);
     }, [handlePerformanceIdStatusCleanupToUpdate]);
 
     const handleRadioChange = (e, evidenceId, weight, evaluationRulerId) => {
@@ -464,6 +570,7 @@ export function AppraisalsSkillsRegister() {
                                                                                                         transform: "scale(1.2)",
                                                                                                         cursor: "pointer",
                                                                                                     }}
+                                                                                                    disabled={isReadOnlyMode}
                                                                                                 />
                                                                                             </td>
                                                                                         ))}
@@ -524,24 +631,28 @@ export function AppraisalsSkillsRegister() {
                         >
                             Voltar
                         </Button>
-                        <Button
-                            className="btn-neutral px-5"
-                            color="default"
-                            size="lg"
-                            type="button"
-                            onClick={handleLimpar}
-                        >
-                            <span className="btn-inner--text">Limpar</span>
-                        </Button>
-                        <Button
-                            className="px-5"
-                            color="primary"
-                            size="lg"
-                            type="button"
-                            onClick={handleSalvar}
-                        >
-                            <span className="btn-inner--text">Salvar</span>
-                        </Button>
+                        {!isReadOnlyMode && (
+                            <>
+                                <Button
+                                    className="btn-neutral px-5"
+                                    color="default"
+                                    size="lg"
+                                    type="button"
+                                    onClick={handleLimpar}
+                                >
+                                    <span className="btn-inner--text">Limpar</span>
+                                </Button>
+                                <Button
+                                    className="px-5"
+                                    color="primary"
+                                    size="lg"
+                                    type="button"
+                                    onClick={handleSalvar}
+                                >
+                                    <span className="btn-inner--text">Salvar</span>
+                                </Button>
+                            </>
+                        )}
                     </Col>
                 </Row>
             </CardFooter>

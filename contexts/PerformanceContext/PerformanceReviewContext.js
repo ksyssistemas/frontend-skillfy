@@ -1,5 +1,4 @@
-// Contexto para armazenar informações de autenticação
-import React, { createContext, useCallback, useEffect, useState } from 'react';
+import { createContext, useCallback, useEffect, useState } from 'react';
 import { useFindRole } from '../../hooks/RecordsHooks/role/useFindRole';
 
 export const ReviewContext = createContext({});
@@ -13,6 +12,11 @@ function PerformanceReviewContext({ children }) {
 
     const [reviewsToExecuteList, setReviewsToExecuteList] = useState([]);
     const [reviewStatus, setReviewStatus] = useState({});
+    const [isReadOnlyMode, setIsReadOnlyMode] = useState(false);
+
+    function handleSetReadOnlyMode(value) {
+        setIsReadOnlyMode(value);
+    }
 
     function handlePerformanceIdStatusCleanupToUpdate() {
         setPerformanceReviewData(null);
@@ -125,7 +129,9 @@ function PerformanceReviewContext({ children }) {
                 handleSaveReviewToExecuteListData,
                 reviewStatus,
                 updateReviewStatus,
-                initializeReviewStatus
+                initializeReviewStatus,
+                isReadOnlyMode,
+                handleSetReadOnlyMode
             }}>
             {children}
         </ReviewContext.Provider>
