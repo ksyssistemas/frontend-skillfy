@@ -1,5 +1,4 @@
-// Contexto para armazenar informações de autenticação
-import React, { createContext, useState } from 'react';
+import { createContext, useState } from 'react';
 
 export const CustomerContext = createContext({});
 

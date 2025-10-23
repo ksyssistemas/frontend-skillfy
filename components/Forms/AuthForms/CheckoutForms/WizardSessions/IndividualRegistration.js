@@ -25,7 +25,6 @@ export function IndividualRegistration() {
     handleClearStepIndex,
     stateIndividualRegistration,
     dispatchIndividualRegistration,
-    stateGlobalCustomerRegisterReducer,
     dispatchGlobalCustomerRegisterReducer
   } = useContext(ModelSelectionCustomerRecordContext);
 
@@ -77,14 +76,14 @@ export function IndividualRegistration() {
 
   const handleFirstNameChange = (e) => {
     const value = e.target.value;
-    const filteredValue = value.replace(/[^\p{L}\s'-]/gu, '');
+    const filteredValue = value.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\s'-]/g, '');
     dispatchIndividualRegistration({ type: 'SET_FIRST_NAME', payload: filteredValue });
     dispatchIndividualRegistration({ type: 'SET_FIRST_NAME_STATE', payload: filteredValue ? 'valid' : 'invalid' });
   };
 
   const handleLastNameChange = (e) => {
     const value = e.target.value;
-    const filteredValue = value.replace(/[^\p{L}\s'-]/gu, '');
+    const filteredValue = value.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\s'-]/g, '');
     dispatchIndividualRegistration({ type: 'SET_LAST_NAME', payload: filteredValue });
     dispatchIndividualRegistration({ type: 'SET_LAST_NAME_STATE', payload: filteredValue ? 'valid' : 'invalid' });
   };

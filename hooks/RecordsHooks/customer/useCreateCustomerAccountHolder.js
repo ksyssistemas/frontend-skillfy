@@ -1,8 +1,7 @@
-import React, { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { CustomerContext } from '../../../contexts/RecordsContext/CustomerContext';
 
 const useCreateCustomer = (handleShowContactPersonsUserRegister) => {
-
   const {
     handleIdAccountHolderToLinkToCustomer,
   } = useContext(CustomerContext);

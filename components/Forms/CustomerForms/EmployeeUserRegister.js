@@ -33,6 +33,7 @@ import { mappingEmploymentContractItemName } from "../../../util/mappingEmployme
 import TagsInput from "../../TagsInput/TagsInput";
 import { getSelect2Value } from "../../../util/select2Utils/getSelect2Value";
 import { parseSelect2Change } from "../../../util/select2Utils/parseSelect2Change";
+import { useAuth } from "../../../hooks/useAuth";
 
 function EmployeeUserRegister() {
 
@@ -48,6 +49,10 @@ function EmployeeUserRegister() {
         hasNewEmployeeWorkplaceCreated,
         handleCreatedEmployeeWorkplaceStatusChange
     } = useContext(EmployeeSettingsContext);
+
+    const { authenticationDataLoggedInUser } = useAuth();
+
+    const customerId = authenticationDataLoggedInUser?.data?.id;
 
     const {
         handleValidateAddEmployeeForm,
@@ -247,10 +252,10 @@ function EmployeeUserRegister() {
             dispatchType: "SET_FUNCTION_DATA_LIST",
         },
         {
-            shouldUpdate: state.collaboratorData.hasDepartmentSelected,
+            shouldUpdate: !!customerId,
             resetTrigger: handleResetDepartmentSelectionState,
             fetchFn: () =>
-                useFindAllEmployeeAndRole(state.collaboratorData.selectedDepartmentId),
+                useFindAllEmployeeAndRole(customerId),
             dispatchType: 'SET_EMPLOYEE_AND_ROLE_DATA_LIST',
             label: 'employeeAndRole',
         }

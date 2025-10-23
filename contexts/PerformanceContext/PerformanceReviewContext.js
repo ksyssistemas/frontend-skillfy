@@ -1,5 +1,4 @@
-// Contexto para armazenar informações de autenticação
-import React, { createContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useEffect, useState } from 'react';
 import { useFindRole } from '../../hooks/RecordsHooks/role/useFindRole';
 
 export const ReviewContext = createContext({});
@@ -10,6 +9,14 @@ function PerformanceReviewContext({ children }) {
     const [reviewedIdOnPerformanceReview, setReviewedIdOnPerformanceReview] = useState(null);
     const [reviewerIdOnPerformanceReview, setReviewerIdOnPerformanceReview] = useState(null);
     const [performanceReviewParticipationData, setPerformanceReviewParticipationData] = useState(null);
+
+    const [reviewsToExecuteList, setReviewsToExecuteList] = useState([]);
+    const [reviewStatus, setReviewStatus] = useState({});
+    const [isReadOnlyMode, setIsReadOnlyMode] = useState(false);
+
+    function handleSetReadOnlyMode(value) {
+        setIsReadOnlyMode(value);
+    }
 
     function handlePerformanceIdStatusCleanupToUpdate() {
         setPerformanceReviewData(null);
@@ -33,6 +40,52 @@ function PerformanceReviewContext({ children }) {
     function handlePerformanceReviewParticipationData(reviewParticipationData) {
         setPerformanceReviewParticipationData(reviewParticipationData);
     }
+
+    function handleSaveReviewToExecuteListData(reviewAnswers) {
+        setReviewsToExecuteList(reviewAnswers);
+    }
+
+    /**
+   * Atualiza o status de uma avaliação específica
+   * @param {string} key - uniqueKey da avaliação
+   * @param {string} status - "completed" | "pending" | etc.
+   */
+    const updateReviewStatus = useCallback((key, status) => {
+        setReviewStatus(prev => ({
+            ...prev,
+            [key]: status.toLowerCase(),
+        }));
+    }, []);
+
+    /**
+     * Carrega os status iniciais após fetch do backend
+     * Idealmente chamado no fetchReviewsToExecute()
+     */
+    /**
+ * Inicializa ou atualiza o status das avaliações com base na lista vinda do backend.
+ * - Mantém os status locais mais recentes
+ * - Sobrescreve apenas quando não há valor local
+ */
+    const initializeReviewStatus = useCallback((reviews) => {
+        setReviewStatus(prevStatus => {
+            const newStatus = { ...prevStatus };
+
+            reviews.forEach(r => {
+                if (r.uniqueKey) {
+                    const backendStatus = r.reviewStatus?.toLowerCase() || "pending";
+                    const localStatus = newStatus[r.uniqueKey];
+
+                    // só atualiza se backend estiver mais "avançado" ou se ainda não existe local
+                    if (!localStatus || localStatus !== 'completed') {
+                        newStatus[r.uniqueKey] = backendStatus;
+                    }
+                }
+
+            });
+
+            return newStatus;
+        });
+    }, []);
 
     useEffect(() => {
         const fetchReviewerAndReviewedRole = async () => {
@@ -72,6 +125,13 @@ function PerformanceReviewContext({ children }) {
                 handleReviewedIdOnPerformanceReview,
                 handleReviewerIdOnPerformanceReview,
                 handlePerformanceReviewParticipationData,
+                reviewsToExecuteList,
+                handleSaveReviewToExecuteListData,
+                reviewStatus,
+                updateReviewStatus,
+                initializeReviewStatus,
+                isReadOnlyMode,
+                handleSetReadOnlyMode
             }}>
             {children}
         </ReviewContext.Provider>

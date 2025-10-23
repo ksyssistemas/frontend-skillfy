@@ -1,8 +1,6 @@
 
 import React from "react";
 import { withRouter } from "next/router";
-import Sidebar from "components/Sidebar/SidebarEmployee.js";
-import "assets/css/styles/layoutspage.css";
 import routes from "routes/employee.routes";
 import EmployeeNavbar from "../components/Navbars/EmployeeNavbar";
 import EmployeeFooter from "../components/Footers/EmployeeFooter";

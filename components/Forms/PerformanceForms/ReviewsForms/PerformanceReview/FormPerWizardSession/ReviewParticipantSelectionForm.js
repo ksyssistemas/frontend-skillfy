@@ -9,6 +9,7 @@ import { ReviewParticipantSelectionContext } from "../../../../../../contexts/Pe
 import { ModelSelectionReviewContext } from "../../../../../../contexts/PerformanceContext/ModelSelectionReviewContext";
 import PageChange from "../../../../../PageChange/PageChange";
 import { PeerToLeadersModal } from "./ReviewParticipantSelectionComponentsForm/PeerToLeadersModal";
+import { resetFormAndLocalStorage } from "../../../../../../util/resetReviewFormData";
 
 export function ReviewParticipantSelectionForm() {
     const { state, dispatch } = useContext(ReviewParticipantSelectionContext);

@@ -17,6 +17,8 @@ export const initialStateReviewScaleAndCriteriaForm = {
         reviewRulerOptionSelectedState: null,
         reviewCompetenceEvidenceData: [],
         reviewCompetenceData: [],
+        reviewParticipantComment: '',
+        reviewParticipantCommentState: null,
     },
 };
 
@@ -219,6 +221,22 @@ export const reviewScaleAndCriteriaFormReducer = (state, action) => {
                     ...state.reviewScaleAndCriteriaData,
                     reviewCompetenceEvidenceData: initialStateReviewScaleAndCriteriaForm.reviewScaleAndCriteriaData.reviewCompetenceEvidenceData
                 }
+            };
+        case 'SET_REVIEW_PARTICIPANT_COMMENT':
+            return {
+                ...state,
+                reviewScaleAndCriteriaData: {
+                    ...state.reviewIdentityData,
+                    reviewParticipantComment: action.payload,
+                },
+            };
+        case 'SET_REVIEW_PARTICIPANT_COMMENT_STATE':
+            return {
+                ...state,
+                reviewScaleAndCriteriaData: {
+                    ...state.reviewIdentityData,
+                    reviewParticipantCommentState: action.payload,
+                },
             };
         case 'CLEAR_FORM':
             return initialStateReviewScaleAndCriteriaForm;

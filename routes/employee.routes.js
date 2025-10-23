@@ -60,12 +60,6 @@ const routes = [
             miniName: "R",
             layout: "/performance",
           },
-          {
-            path: "/appraisal-result",
-            name: "Resultados",
-            miniName: "R",
-            layout: "/performance",
-          },
     ],
   },
   {

@@ -28,7 +28,6 @@ function ShowCustomerDetailsModal(
 
   const {
     stateLegalEntityRegistration,
-    dispatchLegalEntityRegistration,
   } = useContext(ModelSelectionCustomerRecordContext);
 
   const {

@@ -6,13 +6,11 @@ import { ReviewContext } from '../../contexts/PerformanceContext/PerformanceRevi
 import EmployeeHeader from "../../components/Headers/EmployeeHeader";
 import DynamicLayout from "../../layouts/DynamicLayout";
 
-
 function ReviewResult() {
 
   const { performanceReviewData } = useContext(ReviewContext);
 
   return (
-
     <>
       <EmployeeHeader name="Avaliações" parentName="Desempenho" newRegistrationButtonText="Voltar" />
       <Container className="mt--6" fluid>

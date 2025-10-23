@@ -22,8 +22,6 @@ function ContactPersonUpdate({ handleOpenContactModal }) {
     const {
         stateIndividualRegistration,
         dispatchIndividualRegistration,
-        stateGlobalCustomerRegisterReducer,
-        dispatchGlobalCustomerRegisterReducer
     } = useContext(ModelSelectionCustomerRecordContext);
 
     const {

@@ -28,7 +28,6 @@ export function LegalEntityRegistration({ data, updateData }) {
     dispatchCNPJ,
     stateCEP,
     dispatchCEP,
-    stateGlobalCustomerRegisterReducer,
     dispatchGlobalCustomerRegisterReducer
   } = useContext(ModelSelectionCustomerRecordContext);
 

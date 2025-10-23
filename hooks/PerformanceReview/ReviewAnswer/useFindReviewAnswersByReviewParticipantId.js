@@ -1,6 +1,6 @@
 export async function useFindReviewAnswersByReviewParticipantId(reviewParticipantId) {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_REVIEW_ANSWER}/reviewParticipant/${reviewParticipantId}`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_REVIEW_ANSWER}/ruler/${reviewParticipantId}`);
       if (!response.ok) {
         throw new Error('Network response was not ok.');
       }

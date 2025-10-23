@@ -1,20 +1,14 @@
-import React, { useContext } from 'react';
-import useFindValidCEP from '../useFindValidCEP';
-import useFindValidCNPJ from '../useFindValidCNPJ';
+import { useContext } from 'react';
 import useCreateCustomer from './useCreateCustomerAccountHolder';
 import { CustomerContext } from '../../../contexts/RecordsContext/CustomerContext';
-import { employmentContractDataSearchAndProcess } from '../../../util/employmentContractDataSearchAndProcess';
 import { validateFieldWithReducer } from '../../../util/validateFieldWithReducer';
 
 const useCreateClientCompany = () => {
-
   const {
     idAccountHolderToLinkToCustomer,
     handleCleaningIdAccountHolderToLinkToCustomer,
     handleShowCustomerUserRegister
   } = useContext(CustomerContext);
-
-  const { resetCreateCustomer } = useCreateCustomer();
 
   const validateAddCustomerCompanyForm = (stateCNPJ, dispatchCNPJ, state, dispatch) => {
     const cnpj = stateCNPJ.cnpjData;

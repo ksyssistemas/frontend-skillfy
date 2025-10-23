@@ -35,7 +35,8 @@ function EmployeeHeader({
     handleShowRolesUserRegister,
     handleShowEmployeeUserRegister,
     employeeRecordEntrySettingsButtonName,
-    handleShowEmployeeRecordEntrySettings
+    handleShowEmployeeRecordEntrySettings,
+    handlePerformanceIdStatusCleanupToUpdate
 }) {
 
     const [modalOpen, setModalOpen] = React.useState(false);
@@ -88,7 +89,10 @@ function EmployeeHeader({
                                                         handleShowDepartmentsUserRegister :
                                                         (handleShowRolesUserRegister ?
                                                             handleShowRolesUserRegister :
-                                                            null)
+                                                            (handlePerformanceIdStatusCleanupToUpdate ?
+                                                                handlePerformanceIdStatusCleanupToUpdate :
+                                                                null)
+                                                        )
                                                     )
                                             }
                                             size="sm"

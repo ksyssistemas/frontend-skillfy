@@ -17,7 +17,7 @@ import { employmentContractDataSearchAndProcess } from "../../../util/employment
 import { handleSelectionEmploymentContractData } from "../../../util/handleSelectionEmploymentContractData";
 import { useFindAllSkillClassifications } from "../../../hooks/DefinitionOptionsReview/SkillsClassifications/useFindAllSkillClassifications";
 import { useFindAllSkillTypes } from "../../../hooks/DefinitionOptionsReview/SkillsTypes/useFindAllSkillTypes";
-import { useFindAllOccupationalGroups } from "../../../hooks/DefinitionOptionsReview/OccupationalGroups/useFindAllSkillClassifications";
+import { useFindAllOccupationalGroups } from "../../../hooks/DefinitionOptionsReview/OccupationalGroups/useFindAllOccupationalGroups";
 import { useFindSkillType } from "../../../hooks/DefinitionOptionsReview/SkillsTypes/useFindSkillType";
 import useCreateSkillType from "../../../hooks/DefinitionOptionsReview/SkillsTypes/useCreateSkillType";
 import useUpdateSkillType from "../../../hooks/DefinitionOptionsReview/SkillsTypes/useUpdateSkillType";
