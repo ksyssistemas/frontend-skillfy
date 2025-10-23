@@ -29,8 +29,6 @@ function CustomerUserUpdate({ handleOpenCustomerModal }) {
         dispatchCNPJ,
         stateCEP,
         dispatchCEP,
-        stateGlobalCustomerRegisterReducer,
-        dispatchGlobalCustomerRegisterReducer
     } = useContext(ModelSelectionCustomerRecordContext);
 
     const {

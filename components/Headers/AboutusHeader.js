@@ -10,7 +10,6 @@ import {
   Col,
   UncontrolledTooltip,
 } from "reactstrap";
-import "assets/css/styles/aboutus.css"
 
 function AboutusHeader() {
 

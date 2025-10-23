@@ -46,14 +46,14 @@ function ContactPersonsRegister({ handleShowContactPersonsUserRegister }) {
 
     const handleFirstNameChange = (e) => {
         const value = e.target.value;
-        const filteredValue = value.replace(/[^\p{L}\s'-]/gu, '');
+        const filteredValue = value.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\s'-]/g, '');
         dispatchIndividualRegistration({ type: 'SET_FIRST_NAME', payload: filteredValue });
         dispatchIndividualRegistration({ type: 'SET_FIRST_NAME_STATE', payload: filteredValue ? 'valid' : 'invalid' });
     };
 
     const handleLastNameChange = (e) => {
         const value = e.target.value;
-        const filteredValue = value.replace(/[^\p{L}\s'-]/gu, '');
+        const filteredValue = value.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\s'-]/g, '');
         dispatchIndividualRegistration({ type: 'SET_LAST_NAME', payload: filteredValue });
         dispatchIndividualRegistration({ type: 'SET_LAST_NAME_STATE', payload: filteredValue ? 'valid' : 'invalid' });
     };
@@ -106,7 +106,7 @@ function ContactPersonsRegister({ handleShowContactPersonsUserRegister }) {
 
     const handleContactPersonOccupationChange = (e) => {
         const value = e.target.value;
-        const filteredValue = value.replace(/[^\p{L}\s'-]/gu, '');
+        const filteredValue = value.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\s'-]/g, '');
         dispatchIndividualRegistration({ type: 'SET_CONTACT_PERSON_OCCUPATION', payload: filteredValue });
         dispatchIndividualRegistration({ type: 'SET_CONTACT_PERSON_OCCUPATION_STATE', payload: filteredValue ? 'valid' : 'invalid' });
     };
@@ -144,7 +144,7 @@ function ContactPersonsRegister({ handleShowContactPersonsUserRegister }) {
     // Execute o carregamento dos dados ao montar o componente
     useEffect(() => {
         // Função para carregar os dados do localStorage
-        const loadIndividualRegistrationData = async () => {
+        const loadIndividualRegistrationData = () => {
             try {
                 const rawData = localStorage.getItem('individualRegistrationDataInside');
                 if (rawData) {

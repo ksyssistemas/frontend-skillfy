@@ -26,7 +26,6 @@ import Auth from "layouts/Auth.js";
 // import AuthHeader from "components/Headers/AuthHeader.js";
 import { useAuth } from '../../hooks/useAuth';
 import { useRouter } from 'next/router';
-import "assets/css/styles/login.css"
 import useEmailValidation from '../../hooks/RecordsHooks/useEmailValidation';
 import useChangePassword from '../../hooks/RecordsHooks/useChangePassword';
 import { useAlert } from '../../contexts/AlertContext';

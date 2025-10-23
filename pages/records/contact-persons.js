@@ -7,20 +7,6 @@ import DynamicLayout from "../../layouts/DynamicLayout";
 
 function ContactPersonsRecords() {
 
-  // const deleteAdmin = async (id) => {
-  //   try {
-  //     const response = await fetch(`http://localhost:4008/administrator/${id}`, {
-  //       method: 'DELETE',
-  //     });
-  //     if (!response.ok) {
-  //       throw new Error('Failed to delete admin.');
-  //     }
-  //     setAdmins(admins.filter(admin => admin.id !== id));
-  //   } catch (error) {
-  //     console.error('There was a problem deleting the admin:', error);
-  //   }
-  // };
-
   const [isShouldSubmitContactPersonsRegistration, setIsShouldSubmitContactPersonsRegistration] = useState(false);
 
   function handleShowContactPersonsUserRegister() {
